@@ -53,15 +53,15 @@ In recognition of this problem, KrakenUniq has been extended for database proces
 
 If only a smaller group of a few 100 species/strains is under consideration, then it seems promising to simply \emph{generate a smaller database that contains just the $k$-mers from respective genomes}. \emph{However, this very likely leads to many false positives} even when using KrakenUniq. The reason for this is that due to the evolutionary relationship of organisms, \emph{a large fraction of $k$-mers that belong to the genome of a species are unspecific} in a sense that they can as well be found in the genome other species not considered for analysis. Thus, when using too small a database, a read may be falsely assigned to a species because it consists of $k$-mers that \emph{also} belong to another species' genome that was not included in the database.
  
-In order to enable a smaller database with no false positives emerging from this problem, Genestrip employs a \emph{two-phase} database generation process: During the \emph{entry phase}, all $k$-mers of genomes from selected species are entered into the database on the basis of the RefSeq \citep{refseq} and optionally GenBank \citep{genbank}. During the \emph{update phase}, all stored $k$-mers from the database are checked against the genomes of other species from the RefSeq. If a stored $k$-mer also occurs in another species which is not part of the database, the $k$-mer's tax id gets updated in the database and the least common ancestor's taxonomic identifier is entered instead. This prevents $k$-mers from being associated with one of selected species even though they are unspecific.
+In order to enable a smaller database with no false positives emerging from this problem, Genestrip employs a \emph{two-phase} database generation process: During the \emph{entry phase}, all $k$-mers of genomes from selected species are entered into the database on the basis of the RefSeq \citep{refseq} and optionally GenBank \citep{genbank}. During the \emph{update phase}, all stored $k$-mers from the database are checked against the genomes of all other species in the same kingdom (from the RefSeq). If a stored $k$-mer also occurs in another species which is not part of the database, the $k$-mer's tax id gets updated in the database and the least common ancestor's taxonomic identifier is entered instead. This prevents $k$-mers from being associated with one of selected species even though they are unspecific.
 
-Based on this approach we achieve very low memory footprints during analysis and a competitive $k$-mer matching and read classification performance. The actual $k$-mer counting results are similar to those of Kraken 1 \citep{kraken} or KrakenUniq \citep{krakenUniq} with regard to the selected species. Much as KrakenUniq, Genestrip supports unique $k$-mer counting with exact counts but with very low memory overhead.
+Based on this approach we achieve very low memory footprints during analysis and a competitive $k$-mer matching and read classification performance. The actual $k$-mer counting results are similar to those of KrakenUniq \citep{krakenUniq} with regard to the selected species. Much as KrakenUniq, Genestrip supports unique $k$-mer counting with exact counts but with very low memory overhead.
 
 \section{Methods}\label{methods}
 
 \subsection{System Structure}
 
-Genestrip builds on the specification of selected groups of species whose genomes will be represented accurately and exclusively in a resulting database. The desired genuses, species and strains must be set via a configuration file. Users may choose organisms by listing their taxonomic identifiers in that file. If higher ranked taxonomic identifiers are entered, then \emph{all} of the the descending organisms will be included and $k$-mers of their genomes will be added to the database accordingly. 
+Genestrip builds on the specification of selected groups of species whose genomes will be exclusively represented in a resulting database. The desired genuses, species and strains must be set via a configuration file. Users may choose organisms by listing their taxonomic identifiers in that file. If higher ranked taxonomic identifiers are entered, then \emph{all} of the the descending organisms will be included and $k$-mers of their genomes will be added to the database accordingly. 
 
 Genestrip generates a database for a selected group of species mainly via the 
 reference genomes from the RefSeq \citep{refseq}.
@@ -73,15 +73,16 @@ the goals \verb|match| and \verb|matchlr| are for fastq file analysis but they w
 
 \begin{figure}[h]%
 \centering
-\includegraphics[width=10cm]{GoalGraph.eps}
+\includegraphics[width=14cm]{GoalGraph.eps}
 \caption{Dependency Graph of Goals in Genestrip}\label{f:goalgraph}
 \end{figure}
+\clearpage
 
 \subsection{Database and Filter Generation}
 
 Genestrip stores a database primarily as a large array \verb|S| of sorted long values. Each long value encodes a $k$-mer from a reference genome of a selected species. The default for $k$ is $31$ but other values are possible. A second array of the same size encodes taxonomy identifiers for each $k$-mer in \verb|S|. During fastq file analysis, lookups in \verb|S| are performed via binary search.
 
-An additional Bloom filter \citep{bloomfilter} also contains all stored $k$-mers. It is used by default at analysis time to check whether a certain $k$-mer is stored in \verb|S|. A negative results avoids a more expensive binary search in \verb|S| and therefore saves overall execution cost.
+An additional Bloom filter \citep{bloomfilter} also contains all stored $k$-mers. It is used by default at analysis time to check whether a certain $k$-mer is stored in \verb|S|. A negative result avoids a more expensive binary search in \verb|S| and therefore saves overall execution cost.
 
 Moreover, the parts of the NCBI taxonomy tree \citep{taxonomy} required at analysis time are included in 
 the database. The taxonomy extract comprises entries for the selected species and all of its ancestors.
@@ -99,16 +100,18 @@ Table \ref{goals} describes the most relevant goals for database generation in t
   Duplicate $k$-mer entries are avoided via a Boom filter that tracks the already stored $k$-mers. Finally, the stored $k$-mers are sorted in order to enable binary search at analysis time and for the goal \verb|updatedb| from below.\\
 % \verb|tempdb| & Stores the populated database as intermediate result. \\
  \verb|updatedb| & Updates the populated database to account for common $k$-mers between species.
- \emph{All} genomes from the RefSeq belonging to a set of pre-configurable taxonomic kingdoms will be considered. This step ensures that a $k$-mer from a selected species obtains the correct taxonomic identifier as the $k$-mer may also occur in the genome of another species (which might be represented in database or not). Concerning the finished database, the respective $k$-mer will be associated with least common taxonomic ancestor of all species whose genome(s) contain(s) the $k$-mer.\\
+ \emph{All} genomes from the RefSeq belonging to a set of pre-configurable taxonomic kingdoms will be considered. This step ensures that a $k$-mer from a selected species obtains the correct taxonomic identifier as the $k$-mer may also occur in the genome of another species (which might be represented in database or not). Concerning the finished database, the respective $k$-mer will be associated with the least common taxonomic ancestor of all species whose genome(s) contain(s) the $k$-mer.\\
 \end{tabular}
 \caption{Description of Genestrip's most Relevant Goals for Database Generation.}\label{goals}
 \end{figure}
 
-Besides $k$-mer matching and read classification, Genestrip also supports filtering of fastq files via a Bloom filter in similarity to \citep{biobloom}. When generated via the goal \verb|index| the Bloom filter gets stored in separate file. The goal \verb|filter| loads the filter and processes fastq files accordingly. The standard configuration for the filtering process rewrites a read to the output if the read contains at least one $k$-mer that is recognized by the filter and thus may belong to a selected species.
+Besides $k$-mer matching and read classification, Genestrip also supports filtering of fastq files via a Bloom filter in similarity to \citep{biobloom}. When generated via the goal \verb|index|, the Bloom filter gets stored in separate file. The goal \verb|filter| loads the filter and processes fastq files accordingly. The standard configuration for the filtering process rewrites a read to the output if the read contains at least one $k$-mer that is recognized by the filter and thus, the read may belong to a selected species.
 
 \subsection{$k$-mer Matching and Counting}
 
 \subsection{Statistical considerations for $k$-mer counts}
+TODO: How does Braken compare to this?
+
 
 Let $k_{t,f,d}$ be the number of $k$-mers for taxonomy identifier $t$ found in fastq file $f$ with respect to database $d$ and $u_{t,f,d}$ be the corresponding number of unique $k$-mers. Similarly $u_{t,d}$ is the number of (unique) $k$-mers for $t$ stored $d$, $k_f$ the total number of $k$-mers in $f$, $u_d$ the total number of (unique) $k$-mers stored in $d$ and so on.
 
@@ -141,6 +144,10 @@ This relative density $r'$ ranges between $0$ and $1$ where $1$ is best and impl
 %Let $k_{t,d}(i)$ be the number of times a unique kmer $i$ occurs in the genome of $t$ with $1 \leq i \leq u_{t,d}$ and $\vec{k}_{t,d}$ the corresponding vector:
 %\[ E_q(k_{t,f,d},\vec{k}_{t,d}) = \sum_{i = 1}^{u_{t,d}} k_{t,d}(i) \cdot (1 - (1 - 1/k_{t,d}(i))^{k_{t,f,d}}) \]
 
+\subsection{Additional Features}
+
+Genomic Dust, Removing $k$-mers from contaminating genomes.
+
 \section{Results}\label{results}
 
 \subsection{Accuracy}
@@ -159,7 +166,7 @@ Regarding Kraken2 we followed a similar procedure (see Table \ref{dbs}).
 \begin{tabular}{c|p{2cm}|p{6cm}|r|r}
 Type & Name & Description & Disk Size &$k$-mers\\
   \hline
-G & Tick Borne & Genomes of all descendants of the geni Yersinia, Bartonella, Rickettsia, Anaplasma, Ehrlichia, Borrelia, Borreliella, Chlamydia and Mycoplasma from the RefSeq & 3 GB & 228 Mio. \\
+G & Tick Borne & Genomes of all descendants of the genuses Yersinia, Bartonella, Rickettsia, Anaplasma, Ehrlichia, Borrelia, Borreliella, Chlamydia and Mycoplasma from the RefSeq & 3 GB & 228 Mio. \\
 K & Standard & From \url{https://benlangmead.github.io/aws-indexes/k2} (6/16/2022) & 377 GB & ?? \\
 K & Tick Borne K & Same as for "Tick Borne" & ?? GB & ?? \\
 K2 & Standard & From \url{https://benlangmead.github.io/aws-indexes/k2} (9/4/2024) & 80 GB & 15046 Mio. \\  
@@ -173,52 +180,13 @@ K2 & Tick Borne K2 & Same as for "Tick Borne" & ?? GB & ?? \\
 To assess Genestrips's performance for $k$-mer counting, we compared its analysis time and memory use with 
 corresponding analysis runs using KrakenUniq and Kraken2.
 
-\subsection{Correctness and efficiency of filtering}
-
-Average/max/min reduction in reads per fastq file:
-
-\begin{figure}[h]%
-\centering
-\includegraphics[width=0.9\textwidth]{fig.eps}
-\caption{$k$-mer counts of Kraken 1 for filtered vs. unfiltered fastq files for the group of taxons from section \ref{}. Every point represents a result for one taxon and for one fastq file from \ref{}.}\label{fig3}
-\end{figure}
-
-\subsection{Database statistics}
-
-Stored $k$ number of $k$-mers.\\
-Ratio stored / per total $k$-kmers per genus.\\
-g-zipped database size.\\
-
-\subsection{Performance}
-
-Server configuration:\\
-
-Database generation time:\\
-
-Main memory consumption:\\
-Database loading time:\\
-Read processing speed:\\
-Total processing time for all fastq file from Section \ref{}.\\
-Number of threads: 9\\
-Comparing numbers for KrakenUniq...\\
-
-\subsection{Average specific $k$-mer contig length (askcol) as a new feature for analysis}
-
-\begin{figure}[h]%
-\centering
-\includegraphics[width=0.9\textwidth]{fig.eps}
-\caption{askol vs. unique $k$-mer of KrakenUniq files for the group of taxons from section \ref{}. Every point represents a result for one taxon and for one fastq file from \ref{}.}\label{fig4}
-\end{figure}
-
-\subsection{Finding Species-specific $k$-mers}
-Generating fastq file with from fasta file with one read per $k$-mer as given by sliding window in genome sequence of fasta file.
-
-Run fastq file against Kraken 1/KrakenUniq to obtain taxon of each $k$-mer.
-Keep $k$-mers with taxon belonging to taxon set of chosen group of species.
-Store such $k$-mers along with its taxon in Genestrip database.
-
+...
 \section{Discussion}\label{discussion}
 
+\section{Availability}
+Tell where to download all of the software...
+
+\clearpage
 \bibliography{bibliography}
 
 \end{document}
