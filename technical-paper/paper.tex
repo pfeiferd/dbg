@@ -39,7 +39,7 @@ The consumption of computational resources is a significant burden in modern met
 \section{Introduction}
 
 %Metagenomic analysis has become an extremely import field in bio informatics. 
-With the availability of low cost and small-scale sequencing devices, metagenomic analysis will likely replace many established technologies for the detection and surveillance of specific groups of microorganisms. Related applications may affect various areas such as farming, ecology, food production and medicine. While sequencing devices have become ready for ubiquitous use, software tools for metagenomics still tend to be resource intensive and hard to use for end users.
+With the availability of low cost and small-scale sequencing devices, metagenomic analysis will likely replace many established technologies for the detection and surveillance of specific groups of microorganisms. Related applications may affect various areas such as farming, ecology, food production and medicine. While sequencing devices have become ready for ubiquitous use, software tools for metagenomics still tend to be resource intensive and too hard to use for end users.
 
 We present Genestrip, a new metagenomic tool based on $k$-mer matching and filtering that addresses the need for low resource consumption and ease of use. Genestrip is based on Java and can be run on all modern operating systems. ... competitive performance ...
 
@@ -55,7 +55,15 @@ If only a smaller group of a few 100 species/strains is under consideration, the
  
 In order to enable a smaller database with no false positives emerging from this problem, Genestrip employs a \emph{two-phase} database generation process: During the \emph{entry phase}, all $k$-mers of genomes from selected species are entered into the database on the basis of the RefSeq \citep{refseq} and optionally GenBank \citep{genbank}. During the \emph{update phase}, all stored $k$-mers from the database are checked against the genomes of all other species in the same kingdom (from the RefSeq). If a stored $k$-mer also occurs in another species which is not part of the database, the $k$-mer's tax id gets updated in the database and the least common ancestor's taxonomic identifier is entered instead. This prevents $k$-mers from being associated with one of selected species even though they are unspecific.
 
-Based on this approach we achieve very low memory footprints during analysis and a competitive $k$-mer matching and read classification performance. The actual $k$-mer counting results are similar to those of KrakenUniq \citep{krakenUniq} with regard to the selected species. Much as KrakenUniq, Genestrip supports unique $k$-mer counting with exact counts but with very low memory overhead.
+Based on this approach Genestrip achieves very low memory footprints during analysis and a competitive $k$-mer matching and read classification performance. The actual $k$-mer counting results are similar to those of KrakenUniq \citep{krakenUniq} with regard to the selected species. Much as KrakenUniq, Genestrip supports unique $k$-mer counting with exact counts but with very low memory overhead.
+
+Although Genestrip supports read classification, the system's focus is on $k$-mer counting and associated statistics for several reasons:
+\begin{itemize}
+	\item Many modern sequencing devices produce long reads (with thousands of base pairs) but some with an error rate higher than 3\% per base pair \citep{nanoporeq, Delahaye:2021up}. Assuming an error of just 3\% per base pair, the chance of an erroneous $31$-mer is more than 60\%. This counters consistent read classification with high confidence --- particularly for long reads.
+	\item Various, often configurable read classifications algorithms make respective results hard to compare and somewhat arbitrary \citep{metagenexp}.
+	\item The authors of \cite{krakenUniq} show that statistics based on $k$-mer counting tend to be more predictive than read classification (Table 1 and Figure 3).
+	\item Read classification incurs a considerable computational overhead at classification time.
+\end{itemize}
 
 \section{Methods}\label{methods}
 
@@ -96,10 +104,9 @@ Table \ref{goals} describes the most relevant goals for database generation in t
   \hline
  \verb|fillsize| & Determines the maximum size of the database in number of $k$-mers by reading over all reverence genome files and including genomes of selected species. It is a very conservative estimate as duplicates are double counted. \\
  \verb|tempindex| & Creates a Bloom filter filled with all $k$-mers of genomes of selected species. The Bloom filter's size is initially set via the result from \verb|fillsize|. As the Bloom filter avoids double counting, its final number of entries can serve as a more exact basis for the actual database size.\\
- \verb|filldb| & Initially populates the database with all $k$-mers of genomes from selected species. The appropriate size of the database is a close but conservative estimate based on \verb|tempindex|.
+ \verb|filldb| & This \emph{entry phase} populates the database with all $k$-mers of genomes from selected species. The appropriate size of the database is a close but conservative estimate based on \verb|tempindex|.
   Duplicate $k$-mer entries are avoided via a Boom filter that tracks the already stored $k$-mers. Finally, the stored $k$-mers are sorted in order to enable binary search at analysis time and for the goal \verb|updatedb| from below.\\
-% \verb|tempdb| & Stores the populated database as intermediate result. \\
- \verb|updatedb| & Updates the populated database to account for common $k$-mers between species.
+ \verb|updatedb| & This \emph{update phase} updates the populated database to account for common $k$-mers between species.
  \emph{All} genomes from the RefSeq belonging to a set of pre-configurable taxonomic kingdoms will be considered. This step ensures that a $k$-mer from a selected species obtains the correct taxonomic identifier as the $k$-mer may also occur in the genome of another species (which might be represented in database or not). Concerning the finished database, the respective $k$-mer will be associated with the least common taxonomic ancestor of all species whose genome(s) contain(s) the $k$-mer.\\
 \end{tabular}
 \caption{Description of Genestrip's most Relevant Goals for Database Generation.}\label{goals}
@@ -109,9 +116,9 @@ Besides $k$-mer matching and read classification, Genestrip also supports filter
 
 \subsection{$k$-mer Matching and Counting}
 
-\subsection{Statistical considerations for $k$-mer counts}
-TODO: How does Braken compare to this?
+\subsection{Statistical measures for $k$-mer counts}
 
+Besides $k$-mer counts, unique $k$-mer counts and other results, Genestrip reports two novel, derived statistical measures -- \emph{the unbiased $k$-mer count $k'_{t,f,d}$} and the \emph{$k$-mer consistency score} as described in the following.
 
 Let $k_{t,f,d}$ be the number of $k$-mers for taxonomy identifier $t$ found in fastq file $f$ with respect to database $d$ and $u_{t,f,d}$ be the corresponding number of unique $k$-mers. Similarly $u_{t,d}$ is the number of (unique) $k$-mers for $t$ stored $d$, $k_f$ the total number of $k$-mers in $f$, $u_d$ the total number of (unique) $k$-mers stored in $d$ and so on.
 
@@ -124,21 +131,40 @@ We suggest a new measure -- \emph{the unbiased $k$-mer count $k'_{t,f,d}$} that 
 \[ k'_{t,f,d} := c_{F} \cdot k_{t,f,d} /  k_{f} \cdot  u_d / u_{t,d} \approx k_{t,f,d} / p_k(t,f\ |\ d) \]
 where $c_{F}$ captures the normalizing factor for $F$. As we don't depend on values in the range of $[0,1]$, we can simply set $c_{F} := 1$.
 
+The \emph{the unbiased $k$-mer count $k'_{t,f,d}$} accounts for the size of a species' genome as represented in a database. This is relevant for abundance estimation via $k$-mer counting. As an example, assume a species $A$ has only got half as many specific $k$-mers in the database as another species $B$, so $u_{A,d} = 2 \cdot u_{B,d}$. Then, the same number of individual organisms for $A$ and $B$ in a sample would likely result in just half as many corresponding $k$-mers in a fastq file $f$ from shotgun sequencing, so $k_{A,f,d} \approx 2 \cdot k_{B,f,d}$. Still, the unbiased $k$-mer count would yield $k'_{A,f,d} \approx k'_{B,f,d}$. 
+%In other words, the unbiased $k$-mer count accounts for different representation ratios between species in 
+% Genestrip databases to allow for unbiased abundance comparisons. 
+	In analogous way, the unbiased $k$-mer count also roughly accounts for differences in sequencing depths causing different values $k_{f}$ for different fastq files.
+\footnote{Note that the unbiased $k$-mer count becomes less conclusive for abundance comparisons at higher taxonomic ranks $t$ because $u_{t,d}$ may result from a mix of species whose $k$-mers have all been pushed to $t$ as the least common ancestor. E.g., a $k$-mer under $t$ might be present in some but not all of the species under $t$ which skews $u_{t,d}$ as an estimation parameter in $k'_{t,f,d}$ with respect to abundance.}
+
+Braken \citep{braken} follows a similar basic idea with respect to abundance estimation on the 
+level of reads for Kraken. Still, Braken's approach is significantly different from ours as it targets abundance estimation correction related to the specifics of the read classification algorithm behind Kraken.
+  
 Given $k_{t,f,d}$, the a-priori probability $p_u(t\ |\ k_{t,f,d})$ of a unique $k$-mer for $t$ from $d$ to be found \emph{at least once} in $f$\ is:
 \[ p_u(t\ |\ k_{t,f,d}) = 1 - (1 - 1/u_{t,d})^{k_{t,f,d}}\]
 Therefore, the corresponding \emph{expected number of unique $k$-mers} $E_q$ is:
 \[ E_q(k_{t,f,d},u_{t,d}) = u_{t,d} \cdot p_u(t\ |\ k_{t,f,d})\]
-$E_q$ is very useful as we can compare this expectation with the actual count $u_{t,f,d}$. If these quantities divert too much from each other, then the consistency of the counting results for $t$ in $f$ should be questioned. If, on the other hand, these quantities are close, then this supports the consistency of the counting results. This justifies the following ratio as a consistency score, which ideally is close to $1$:
+It is useful to compare $E_q$ with the actual count $u_{t,f,d}$: If these quantities divert too much from each other, then the consistency of the $k$-mer counting results for $t$ in $f$ should be questioned. If, on the other hand, these quantities are close, then this supports the consistency of the counting results. This justifies the following ratio as the \emph{$k$-mer consistency score}, which ideally is close to $1$:
 \[ r(k_{t,f,d}, u_{t,f,d}) := u_{t,f,d} / E_q(k_{t,f,d},u_{t,d})\]
+Table \ref{ebv} gives a real-world example where the $k$-mer consistency score shows to be useful.
 
-A more mathematically sound approach is to consider the probability distribution 
+\begin{figure}[h]
+\centering
+\begin{tabular}{c|c|c|c|c|c|c}
+$t$ & $u_{t,d}$ & $k_{t,f,d}$ & $u_{t,f,d}$ & $E_q(k_{t,f,d},u_{t,d})$ & $r(k_{t,f,d}, u_{t,f,d})$ & Coverage $u_{t,f,d} / u_{t,d}$  \\
+  \hline
+  10376 & $139502$ & $4151610$ & $120419$ & $139514$ & $0.8631$ & $0.8632$
+\end{tabular}
+\caption{Real extract of Genestrip analysis results for Human Gammaherpesvirus 4 from sequencing a human saliva sample: The $k$-mer count is over 34 times higher than the unique $k$-mer count but due to the short viral genome this is still close to the expectation as indicated by the $k$-mer consistency score of $0.8631$.}\label{ebv}
+\end{figure}
+
+\footnote{A more mathematically sound approach is to consider the probability distribution 
 $q(u_{t,f,d}\ |\ k_{t,f,d})$, i.e. the probability to obtain exactly $u_{t,f,d}$ unique $k$-mers for a given (non-unique) $k$-mer count of $k_{t,f,d}$ with  sampling with replacement as the underlying random process.
-Interestingly, this distribution is non-trivial and has been investigated in \cite{Mendelson2016WhatIT}. The authors have shown that the distribution can be approximated by a normal distribution under most practically relevant conditions. Moreover, they confirm the expectation $E_q$ from above and give a formula for the variance $\sigma^2_q$ which in our case depends on $k_{t,f,d}$ and $u_{t,d}$.
-
-So, as a second, alternative consistency score we set
-\[ r'(k_{t,f,d}, u_{t,f,d}) := f(u_{t,f,d}) / f(E_q),\]
+Interestingly, this distribution is non-trivial and has been investigated in \cite{Mendelson2016WhatIT}. The authors have shown that the distribution can be approximated by a normal distribution under most practically relevant conditions. Moreover, they confirm the expectation $E_q$ from above and give a formula for the variance $\sigma^2_q$ which in our case depends on $k_{t,f,d}$ and $u_{t,d}$. 
+So, as an alternative consistency score one could set $r'(k_{t,f,d}, u_{t,f,d}) := f(u_{t,f,d}) / f(E_q)$,
 where $f$ is the density of the normal distribution $\mathcal{N}(E_q,\sigma^2_q)$.
 This relative density $r'$ ranges between $0$ and $1$ where $1$ is best and implies $u_{t,f,d} = E_q$.
+TODO: Why not used?}
 
 %Expectation accounting for duplicate kmers in DB:
 %Let $k_{t,d}(i)$ be the number of times a unique kmer $i$ occurs in the genome of $t$ with $1 \leq i \leq u_{t,d}$ and $\vec{k}_{t,d}$ the corresponding vector:
@@ -174,6 +200,10 @@ K2 & Tick Borne K2 & Same as for "Tick Borne" & ?? GB & ?? \\
 \end{tabular}
 \caption{Databases used for Accuracy and Performance Comparisons ("G" means Genestrip, "K" means KrakenUniq, "K2" means Kraken2)}\label{dbs}
 \end{figure}
+
+TODO: Correlation figures for $k$-mer counts, number of $k$-mers per database for selected species per rank (for tick borne K, tick borne and tick borne k2)
+
+TODO: Same for grape vine fungi...
 
 \subsection{Performance}
 
