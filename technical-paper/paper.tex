@@ -97,7 +97,7 @@ the database. The taxonomy extract comprises entries for the selected species an
 
 Table \ref{goals} describes the most relevant goals for database generation in their typical execution order.
 
-\begin{figure}[h]
+\begin{table}[h]
 \centering
 \begin{tabular}{l|p{10cm}}
  Goal Name & Description \\
@@ -110,11 +110,9 @@ Table \ref{goals} describes the most relevant goals for database generation in t
  \emph{All} genomes from the RefSeq belonging to a set of pre-configurable taxonomic kingdoms will be considered. This step ensures that a $k$-mer from a selected species obtains the correct taxonomic identifier as the $k$-mer may also occur in the genome of another species (which might be represented in database or not). Concerning the finished database, the respective $k$-mer will be associated with the least common taxonomic ancestor of all species whose genome(s) contain(s) the $k$-mer.\\
 \end{tabular}
 \caption{Description of Genestrip's most Relevant Goals for Database Generation.}\label{goals}
-\end{figure}
+\end{table}
 
 Besides $k$-mer matching and read classification, Genestrip also supports filtering of fastq files via a Bloom filter in similarity to \citep{biobloom}. When generated via the goal \verb|index|, the Bloom filter gets stored in separate file. The goal \verb|filter| loads the filter and processes fastq files accordingly. The standard configuration for the filtering process rewrites a read to the output if the read contains at least one $k$-mer that is recognized by the filter and thus, the read may belong to a selected species.
-
-\subsection{$k$-mer Matching and Counting}
 
 \subsection{Statistical measures for $k$-mer counts}
 
@@ -125,10 +123,10 @@ Let $k_{t,f,d}$ be the number of $k$-mers for taxonomy identifier $t$ found in f
 Let $F$ be the set of analyzed fastq-files.
 In order to compare $k_{t,f,d}$ between different files in $f \in F$ and potentially different databases $d$ or taxonomy identifiers $t$, we need to account for the a-priori bias caused by different file sizes $k_f$ and different numbers of stored $k$-mers $u_{t,d}$ of different taxonomy identifiers $t$ and different databases $d$.
 
-We therefore consider the a-priori probability $p_k(t,f\ |\ d)$ which denotes the probability of $t$ to occur in $f$ given that (unique) $k$-mers of $t$ are stored in $d$. As this is an a-priori probability, we must assume independency between $t$ and $f$. As $f$ does not depend on $d$ this gives:
-\[ p_k(t,f\ |\ d) = p(f\ |\ d) \cdot p(t\ |\ d) = p(f) \cdot p(t\ |\ d) \approx k_{f} / \sum_{g \in F} k_{g} \cdot u_{t,d} / u_d\] 
+We therefore consider the a-priori probability $p(t,f\ |\ d,F)$ which denotes the probability of $t$ to occur in $f$ given that (unique) $k$-mers of $t$ are stored in $d$. As this is an a-priori probability, we must assume independency between $t$ and any $g \in F$. As $f$ does not depend on $d$ this gives:
+\[ p(t,f\ |\ d, F) = p(f\ |\ F) \cdot p(t\ |\ d) \approx k_{f} / \sum_{g \in F} k_{g} \cdot u_{t,d} / u_d\] 
 We suggest a new measure -- \emph{the unbiased $k$-mer count $k'_{t,f,d}$} that accounts for the a-priori bias:
-\[ k'_{t,f,d} := c_{F} \cdot k_{t,f,d} /  k_{f} \cdot  u_d / u_{t,d} \approx k_{t,f,d} / p_k(t,f\ |\ d) \]
+\[ k'_{t,f,d} := c_{F} \cdot k_{t,f,d} /  k_{f} \cdot  u_d / u_{t,d} \approx k_{t,f,d} / p(t,f\ |\ d, F) \]
 where $c_{F}$ captures the normalizing factor for $F$. As we don't depend on values in the range of $[0,1]$, we can simply set $c_{F} := 1$.
 
 The \emph{the unbiased $k$-mer count $k'_{t,f,d}$} accounts for the size of a species' genome as represented in a database. This is relevant for abundance estimation via $k$-mer counting. As an example, assume a species $A$ has only got half as many specific $k$-mers in the database as another species $B$, so $u_{A,d} = 2 \cdot u_{B,d}$. Then, the same number of individual organisms for $A$ and $B$ in a sample would likely result in just half as many corresponding $k$-mers in a fastq file $f$ from shotgun sequencing, so $k_{A,f,d} \approx 2 \cdot k_{B,f,d}$. Still, the unbiased $k$-mer count would yield $k'_{A,f,d} \approx k'_{B,f,d}$. 
@@ -148,7 +146,7 @@ It is useful to compare $E_q$ with the actual count $u_{t,f,d}$: If these quanti
 \[ r(k_{t,f,d}, u_{t,f,d}) := u_{t,f,d} / E_q(k_{t,f,d},u_{t,d})\]
 Table \ref{ebv} gives a real-world example where the $k$-mer consistency score shows to be useful.
 
-\begin{figure}[h]
+\begin{table}[h]
 \centering
 \begin{tabular}{c|c|c|c|c|c|c}
 $t$ & $u_{t,d}$ & $k_{t,f,d}$ & $u_{t,f,d}$ & $E_q(k_{t,f,d},u_{t,d})$ & $r(k_{t,f,d}, u_{t,f,d})$ & Coverage $u_{t,f,d} / u_{t,d}$  \\
@@ -156,7 +154,7 @@ $t$ & $u_{t,d}$ & $k_{t,f,d}$ & $u_{t,f,d}$ & $E_q(k_{t,f,d},u_{t,d})$ & $r(k_{t
   10376 & $139502$ & $4151610$ & $120419$ & $139514$ & $0.8631$ & $0.8632$
 \end{tabular}
 \caption{Real extract of Genestrip analysis results for Human Gammaherpesvirus 4 from sequencing a human saliva sample: The $k$-mer count is over 34 times higher than the unique $k$-mer count but due to the short viral genome this is still close to the expectation as indicated by the $k$-mer consistency score of $0.8631$.}\label{ebv}
-\end{figure}
+\end{table}
 
 \footnote{A more mathematically sound approach is to consider the probability distribution 
 $q(u_{t,f,d}\ |\ k_{t,f,d})$, i.e. the probability to obtain exactly $u_{t,f,d}$ unique $k$-mers for a given (non-unique) $k$-mer count of $k_{t,f,d}$ with  sampling with replacement as the underlying random process.
@@ -169,6 +167,9 @@ TODO: Why not used?}
 %Expectation accounting for duplicate kmers in DB:
 %Let $k_{t,d}(i)$ be the number of times a unique kmer $i$ occurs in the genome of $t$ with $1 \leq i \leq u_{t,d}$ and $\vec{k}_{t,d}$ the corresponding vector:
 %\[ E_q(k_{t,f,d},\vec{k}_{t,d}) = \sum_{i = 1}^{u_{t,d}} k_{t,d}(i) \cdot (1 - (1 - 1/k_{t,d}(i))^{k_{t,f,d}}) \]
+
+\subsection{$k$-mer Counting and Read Classification}
+
 
 \subsection{Additional Features}
 
@@ -187,7 +188,7 @@ For comparison with KrakeUniq, we used with two different KrakenUniq databases: 
 As an alternative, we created our own KrakenUniq database that covers the exact same genomes as the Genestrip database "Tick Borne" from Table \ref{dbs}. This database aims to show that a small KrakenUniq database covering just the organisms of interest, results in false positive $k$-mer counts and is therefore unsuitable for use.
 Regarding Kraken2 we followed a similar procedure (see Table \ref{dbs}).
 
-\begin{figure}[h]
+\begin{table}[h]
 \centering
 \begin{tabular}{c|p{2cm}|p{6cm}|r|r}
 Type & Name & Description & Disk Size &$k$-mers\\
@@ -199,7 +200,7 @@ K2 & Standard & From \url{https://benlangmead.github.io/aws-indexes/k2} (9/4/202
 K2 & Tick Borne K2 & Same as for "Tick Borne" & ?? GB & ?? \\
 \end{tabular}
 \caption{Databases used for Accuracy and Performance Comparisons ("G" means Genestrip, "K" means KrakenUniq, "K2" means Kraken2)}\label{dbs}
-\end{figure}
+\end{table}
 
 TODO: Correlation figures for $k$-mer counts, number of $k$-mers per database for selected species per rank (for tick borne K, tick borne and tick borne k2)
 
