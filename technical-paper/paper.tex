@@ -53,7 +53,7 @@ In recognition of this problem, KrakenUniq has been extended for database proces
 
 If only a smaller group of a few 100 species/strains is under consideration, then it seems promising to simply \emph{generate a smaller database that contains just the $k$-mers from respective genomes}. \emph{However, this very likely leads to many false positives} even when using KrakenUniq. The reason for this is that due to the evolutionary relationship of organisms, \emph{a large fraction of $k$-mers that belong to the genome of a species are unspecific} in a sense that they can as well be found in the genome other species not considered for analysis. Thus, when using too small a database, a read may be falsely assigned to a species because it consists of $k$-mers that \emph{also} belong to another species' genome that was not included in the database.
  
-In order to enable a smaller database with no false positives emerging from this problem, Genestrip employs a \emph{two-phase} database generation process: During the \emph{entry phase}, all $k$-mers of genomes from selected species are entered into the database on the basis of the RefSeq \citep{refseq} and optionally GenBank \citep{genbank}. During the \emph{update phase}, all stored $k$-mers from the database are checked against the genomes of all other species in the same kingdom (from the RefSeq). If a stored $k$-mer also occurs in another species which is not part of the database, the $k$-mer's tax id gets updated in the database and the least common ancestor's taxonomic identifier is entered instead. This prevents $k$-mers from being associated with one of selected species even though they are unspecific.
+In order to enable a smaller database with no false positives emerging from this problem, Genestrip employs a \emph{two-phase} database generation process: During the \emph{entry phase}, all $k$-mers of genomes from selected species are entered into the database on the basis of the RefSeq \citep{refseq} and optionally GenBank \citep{genbank}. During the \emph{update phase}, all stored $k$-mers from the database are checked against the genomes of all other species in the same kingdom (from the RefSeq). If a stored $k$-mer also occurs in another species which is not part of the database, the $k$-mer's taxonomic identifier gets updated in the database and the least common ancestor's taxonomic identifier is entered instead. This prevents $k$-mers from being associated with one of selected species even though they are unspecific.
 
 Based on this approach Genestrip achieves very low memory footprints during analysis and a competitive $k$-mer matching and read classification performance. The actual $k$-mer counting results are similar to those of KrakenUniq \citep{krakenUniq} with regard to the selected species. Much as KrakenUniq, Genestrip supports unique $k$-mer counting with exact counts but with very low memory overhead.
 
@@ -116,7 +116,7 @@ Besides $k$-mer matching and read classification, Genestrip also supports filter
 
 \subsection{Statistical measures for $k$-mer counts}
 
-Besides $k$-mer counts, unique $k$-mer counts and other results, Genestrip reports two novel, derived statistical measures -- \emph{the unbiased $k$-mer count $k'_{t,f,d}$} and the \emph{$k$-mer consistency score} as described in the following.
+Besides $k$-mer counts, unique $k$-mer counts and other results, Genestrip reports two novel, derived statistical measures -- \emph{the normalized $k$-mer count $k'_{t,f,d}$} and the \emph{$k$-mer consistency score} as described in the following.
 
 Let $k_{t,f,d}$ be the number of $k$-mers for taxonomy identifier $t$ found in fastq file $f$ with respect to database $d$ and $u_{t,f,d}$ be the corresponding number of unique $k$-mers. Similarly $u_{t,d}$ is the number of (unique) $k$-mers for $t$ stored $d$, $k_f$ the total number of $k$-mers in $f$, $u_d$ the total number of (unique) $k$-mers stored in $d$ and so on.
 
@@ -125,15 +125,15 @@ In order to compare $k_{t,f,d}$ between different files in $f \in F$ and potenti
 
 We therefore consider the a-priori probability $p(t,f\ |\ d,F)$ which denotes the probability of $t$ to occur in $f$ given that (unique) $k$-mers of $t$ are stored in $d$. As this is an a-priori probability, we must assume independency between $t$ and any $g \in F$. As $f$ does not depend on $d$ this gives:
 \[ p(t,f\ |\ d, F) = p(f\ |\ F) \cdot p(t\ |\ d) \approx k_{f} / \sum_{g \in F} k_{g} \cdot u_{t,d} / u_d\] 
-We suggest a new measure -- \emph{the unbiased $k$-mer count $k'_{t,f,d}$} that accounts for the a-priori bias:
+We suggest a new measure -- \emph{the normalized $k$-mer count $k'_{t,f,d}$} that accounts for the a-priori bias:
 \[ k'_{t,f,d} := c_{F} \cdot k_{t,f,d} /  k_{f} \cdot  u_d / u_{t,d} \approx k_{t,f,d} / p(t,f\ |\ d, F) \]
 where $c_{F}$ captures the normalizing factor for $F$. As we don't depend on values in the range of $[0,1]$, we can simply set $c_{F} := 1$.
 
-The \emph{the unbiased $k$-mer count $k'_{t,f,d}$} accounts for the size of a species' genome as represented in a database. This is relevant for abundance estimation via $k$-mer counting. As an example, assume a species $A$ has only got half as many specific $k$-mers in the database as another species $B$, so $u_{A,d} = 2 \cdot u_{B,d}$. Then, the same number of individual organisms for $A$ and $B$ in a sample would likely result in just half as many corresponding $k$-mers in a fastq file $f$ from shotgun sequencing, so $k_{A,f,d} \approx 2 \cdot k_{B,f,d}$. Still, the unbiased $k$-mer count would yield $k'_{A,f,d} \approx k'_{B,f,d}$. 
-%In other words, the unbiased $k$-mer count accounts for different representation ratios between species in 
-% Genestrip databases to allow for unbiased abundance comparisons. 
-	In analogous way, the unbiased $k$-mer count also roughly accounts for differences in sequencing depths causing different values $k_{f}$ for different fastq files.
-\footnote{Note that the unbiased $k$-mer count becomes less conclusive for abundance comparisons at higher taxonomic ranks $t$ because $u_{t,d}$ may result from a mix of species whose $k$-mers have all been pushed to $t$ as the least common ancestor. E.g., a $k$-mer under $t$ might be present in some but not all of the species under $t$ which skews $u_{t,d}$ as an estimation parameter in $k'_{t,f,d}$ with respect to abundance.}
+The \emph{the normalized $k$-mer count $k'_{t,f,d}$} accounts for the size of a species' genome as represented in a database. This is relevant for abundance estimation via $k$-mer counting. As an example, assume a species $A$ has only got half as many specific $k$-mers in the database as another species $B$, so $u_{A,d} = 2 \cdot u_{B,d}$. Then, the same number of individual organisms for $A$ and $B$ in a sample would likely result in just half as many corresponding $k$-mers in a fastq file $f$ from shotgun sequencing, so $k_{A,f,d} \approx 2 \cdot k_{B,f,d}$. Still, the normalized $k$-mer count would yield $k'_{A,f,d} \approx k'_{B,f,d}$. 
+%In other words, the normalized $k$-mer count accounts for different representation ratios between species in 
+% Genestrip databases to allow for normalized abundance comparisons. 
+	In analogous way, the normalized $k$-mer count also roughly accounts for differences in sequencing depths causing different values $k_{f}$ for different fastq files.
+\footnote{Note that the normalized $k$-mer count becomes less conclusive for abundance comparisons at higher taxonomic ranks $t$ because $u_{t,d}$ may result from a mix of species whose $k$-mers have all been pushed to $t$ as the least common ancestor. E.g., a $k$-mer under $t$ might be present in some but not all of the species under $t$ which skews $u_{t,d}$ as an estimation parameter in $k'_{t,f,d}$ with respect to abundance.}
 
 Braken \citep{braken} follows a similar basic idea with respect to abundance estimation on the 
 level of reads for Kraken. Still, Braken's approach is significantly different from ours as it targets abundance estimation correction related to the specifics of the read classification algorithm behind Kraken.
@@ -162,7 +162,7 @@ Interestingly, this distribution is non-trivial and has been investigated in \ci
 So, as an alternative consistency score one could set $r'(k_{t,f,d}, u_{t,f,d}) := f(u_{t,f,d}) / f(E_q)$,
 where $f$ is the density of the normal distribution $\mathcal{N}(E_q,\sigma^2_q)$.
 This relative density $r'$ ranges between $0$ and $1$ where $1$ is best and implies $u_{t,f,d} = E_q$.
-TODO: Why not used?}
+Although mathematically sound, $r'$ did not appear useful with respect to $k$-mer counts because $\mathcal{N}(E_q,\sigma^2_q)$ tends to be extremely peaked and so, even small deviations from $E_q$ result in a $r' \approx 0$.}
 
 %Expectation accounting for duplicate kmers in DB:
 %Let $k_{t,d}(i)$ be the number of times a unique kmer $i$ occurs in the genome of $t$ with $1 \leq i \leq u_{t,d}$ and $\vec{k}_{t,d}$ the corresponding vector:
@@ -173,7 +173,7 @@ TODO: Why not used?}
 
 \subsection{Additional Features}
 
-Genomic Dust, Removing $k$-mers from contaminating genomes.
+Genomic Dust, Removing $k$-mers from contaminating genomes. Read classification. Fully automated database builds.
 
 \section{Results}\label{results}
 
@@ -193,7 +193,7 @@ Regarding Kraken2 we followed a similar procedure (see Table \ref{dbs}).
 \begin{tabular}{c|p{2cm}|p{6cm}|r|r}
 Type & Name & Description & Disk Size &$k$-mers\\
   \hline
-G & Tick Borne & Genomes of all descendants of the genuses Yersinia, Bartonella, Rickettsia, Anaplasma, Ehrlichia, Borrelia, Borreliella, Chlamydia and Mycoplasma from the RefSeq & 3 GB & 228 Mio. \\
+G & Tick Borne & Genomes of a selection ??? species from the genuses Yersinia, Bartonella, Rickettsia, Anaplasma, Ehrlichia, Borrelia, Borreliella, Chlamydia, Mycoplasma, Malacoplasma, Mycoplasmoides and Metamycoplasma from the RefSeq (see taxlist for details)& 3 GB & 228 Mio. \\
 K & Standard & From \url{https://benlangmead.github.io/aws-indexes/k2} (6/16/2022) & 377 GB & ?? \\
 K & Tick Borne K & Same as for "Tick Borne" & ?? GB & ?? \\
 K2 & Standard & From \url{https://benlangmead.github.io/aws-indexes/k2} (9/4/2024) & 80 GB & 15046 Mio. \\  
@@ -212,6 +212,36 @@ To assess Genestrips's performance for $k$-mer counting, we compared its analysi
 corresponding analysis runs using KrakenUniq and Kraken2.
 
 ...
+
+\subsection{Relevance of Update Phase}
+
+In order to validate the relevance of Genestrip's update phase we compared the contents of variants of the same database. In particular, we assessed how the number of $k$-mers associated with each taxonomic identifier changes depending on the spectrum of genomes considered for the least common ancestor update. The database variants differed by having either
+\begin{enumerate}
+	\item no update phase (but just the entry phase), \label{noupdate}
+	\item an update phase based \emph{exclusively} on the genomes from the entry phase, \label{minupdate}
+	\item an update phase based on \emph{all} of the genomes of the corresponding taxonomic kingdom from the RefSeq.\label{completeupdate} 
+\end{enumerate}
+Table \ref{updaterelevance} documents respective results for ? different databases: Perhaps not surprisingly, the average percentage of $k$-mers that moved to higher taxonomic ranks is high  when comparing \ref{noupdate} to \ref{minupdate} (see Column (1)). However, a considerable amount of $k$-mers is also moved up when comparing \ref{minupdate} and \ref{completeupdate} (see Column (2)). This indicates the importance of update phase based on \emph{all} of the genomes of the corresponding taxonomic kingdom from the RefSeq as otherwise $k$-mer matches may lead to false positives at fastq file analysis time.
+
+Figures \ref{tickchangekmers1} and \ref{tickchangekmers2} compare the results of fastq file analysis based on the "Tick Borne" database using variant \ref{minupdate} versus variant \ref{completeupdate}. We used the fastq files from \cite{} and show the results for Tick 3 and Tick 4 as representative examples. The considerable changes in $k$-mer counts confirm that variant \ref{minupdate} is inferior for reliable $k$-mer counting due to false positives. It confirms the design choice for Genestrip to offer an update phase according to \ref{completeupdate} as its default.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{p{1.5cm}|c|p{1.5cm}|c|c|p{1cm}|c|p{1cm}|p{1cm}}
+Database Name & Kingdom & Genuses With at Least One Species & Species & Strains & Disk Size &$k$-mers & (1) \% of $k$-mers moved up &  (2) \% of $k$-mers moved up \\
+  \hline
+  \hline
+ Tick Borne & Bacteria & 12 & ?? & ?? \\
+  \hline
+ Grape Vine Fungus & Fungal & ?? & ??
+\end{tabular}
+\caption{Change of taxonomic identifiers for $k$-mers in Genestrip databases due to the update phase: The comparison of database variants is between \\
+(1) \emph{no} update phase (but just the entry phase) versus an update phase based \emph{exclusively} on the genomes from the entry phase or else, \\
+(2)	an update phase based \emph{exclusively} on the genomes from the entry phase versus \emph{all} of the genomes of the corresponding taxonomic kingdom from the RefSeq.}
+\label{updaterelevance}
+\end{table}
+
+
 \section{Discussion}\label{discussion}
 
 \section{Availability}
