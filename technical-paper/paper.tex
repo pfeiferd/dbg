@@ -1,5 +1,7 @@
 \documentclass[letterpaper,11pt,leqno]{article}
 \usepackage{paper}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.5}
 \bibliographystyle{bibliography}
 
 % Enter paper title to populate PDF metadata:
@@ -88,12 +90,14 @@ the goals \verb|match| and \verb|matchlr| are for fastq file analysis but they w
 
 \subsection{Database and Filter Generation}
 
-Genestrip stores a database primarily as a large array \verb|S| of sorted long values. Each long value encodes a $k$-mer from a reference genome of a selected species. The default for $k$ is $31$ but other values are possible. A second array of the same size encodes taxonomy identifiers for each $k$-mer in \verb|S|. During fastq file analysis, lookups in \verb|S| are performed via binary search.
+Genestrip stores a database primarily as a large array \verb|S| of sorted long values. Each long value encodes a $k$-mer from a reference genome of a selected species. The default for $k$ is $31$ but other values are possible. A second array of the same size as \verb|S| encodes taxonomy identifiers for each $k$-mer in \verb|S|. During fastq file analysis, lookups in \verb|S| are performed via binary search.
 
-An additional Bloom filter \citep{bloomfilter} also contains all stored $k$-mers. It is used by default at analysis time to check whether a certain $k$-mer is stored in \verb|S|. A negative result avoids a more expensive binary search in \verb|S| and therefore saves overall execution cost.
-
+At analysis time, A bit vector with same size as \verb|S| indicates which $k$-mers from \verb|S| were found at least once. This is sufficient for exact unique $k$-mer counting and is space-efficient, as it requires only about 1.6\% of additional memory with respect to \verb|S|.
+An optional Bloom filter \citep{bloomfilter} also contains all stored $k$-mers. It is used by default at analysis time to check whether a certain $k$-mer is stored in \verb|S|. A negative result avoids a more expensive binary search in \verb|S| and therefore saves overall execution cost. 
 Moreover, the parts of the NCBI taxonomy tree \citep{taxonomy} required at analysis time are included in 
 the database. The taxonomy extract comprises entries for the selected species and all of its ancestors.
+
+Besides $k$-mer matching and read classification, Genestrip also supports filtering of fastq files via a Bloom filter in similarity to \citep{biobloom}. When generated via the goal \verb|index|, the Bloom filter gets stored in separate file. The goal \verb|filter| loads the filter and processes fastq files accordingly. The standard configuration for the filtering process rewrites a read to the output if the read contains at least one $k$-mer that is recognized by the filter and thus, the read may belong to a selected species.
 
 Table \ref{goals} describes the most relevant goals for database generation in their typical execution order.
 
@@ -111,8 +115,6 @@ Table \ref{goals} describes the most relevant goals for database generation in t
 \end{tabular}
 \caption{Description of Genestrip's most Relevant Goals for Database Generation.}\label{goals}
 \end{table}
-
-Besides $k$-mer matching and read classification, Genestrip also supports filtering of fastq files via a Bloom filter in similarity to \citep{biobloom}. When generated via the goal \verb|index|, the Bloom filter gets stored in separate file. The goal \verb|filter| loads the filter and processes fastq files accordingly. The standard configuration for the filtering process rewrites a read to the output if the read contains at least one $k$-mer that is recognized by the filter and thus, the read may belong to a selected species.
 
 \subsection{Statistical measures for $k$-mer counts}
 
@@ -138,7 +140,7 @@ The \emph{the normalized $k$-mer count $k'_{t,f,d}$} accounts for the size of a 
 Braken \citep{braken} follows a similar basic idea with respect to abundance estimation on the 
 level of reads for Kraken. Still, Braken's approach is significantly different from ours as it targets abundance estimation correction related to the specifics of the read classification algorithm behind Kraken.
   
-Given $k_{t,f,d}$, the a-priori probability $p_u(t\ |\ k_{t,f,d})$ of a unique $k$-mer for $t$ from $d$ to be found \emph{at least once} in $f$\ is:
+Given $k_{t,f,d}$, the a-priori probability $p_u(t\ |\ k_{t,f,d})$ of a unique $k$-mer from $d$ belonging to $t$ to occur \emph{at least once} in $f$\ is approximately\footnote{The close but simplifying approximation being that all $k$-mers in $d$ belonging to $t$ are equally likely to be found in $f$.}:
 \[ p_u(t\ |\ k_{t,f,d}) = 1 - (1 - 1/u_{t,d})^{k_{t,f,d}}\]
 Therefore, the corresponding \emph{expected number of unique $k$-mers} $E_q$ is:
 \[ E_q(k_{t,f,d},u_{t,d}) = u_{t,d} \cdot p_u(t\ |\ k_{t,f,d})\]
@@ -213,17 +215,17 @@ corresponding analysis runs using KrakenUniq and Kraken2.
 
 ...
 
-\subsection{Relevance of Update Phase}
+\subsection{Relevance of the Update Phase}
 
-In order to validate the relevance of Genestrip's update phase we compared the contents of variants of the same database. In particular, we assessed how the number of $k$-mers associated with each taxonomic identifier changes depending on the spectrum of genomes considered for the least common ancestor update. The database variants differed by having either
+In order to validate the relevance of Genestrip's update phase we compared the contents of variants of the same database. (See Section \ref{background} and Table \ref{goals} for background on the update phase.) In particular, we assessed how the number of $k$-mers associated with each taxonomic identifier changes depending on the spectrum of genomes considered for the least common ancestor update. The database variants differed by having either
 \begin{enumerate}
 	\item no update phase (but just the entry phase), \label{noupdate}
 	\item an update phase based \emph{exclusively} on the genomes from the entry phase, \label{minupdate}
 	\item an update phase based on \emph{all} of the genomes of the corresponding taxonomic kingdom from the RefSeq.\label{completeupdate} 
 \end{enumerate}
-Table \ref{updaterelevance} documents respective results for ? different databases: Perhaps not surprisingly, the average percentage of $k$-mers that moved to higher taxonomic ranks is high  when comparing \ref{noupdate} to \ref{minupdate} (see Column (1)). However, a considerable amount of $k$-mers is also moved up when comparing \ref{minupdate} and \ref{completeupdate} (see Column (2)). This indicates the importance of update phase based on \emph{all} of the genomes of the corresponding taxonomic kingdom from the RefSeq as otherwise $k$-mer matches may lead to false positives at fastq file analysis time.
+Table \ref{updaterelevance} documents respective results for ? different databases: Perhaps not surprisingly, the average percentage of $k$-mers that moved to higher taxonomic ranks is large when comparing variant \ref{noupdate} against variant \ref{minupdate} (see Column (1)). However, a considerable amount of $k$-mers is also moved up when comparing variant \ref{minupdate} against variant \ref{completeupdate} (see Column (2)). This indicates the importance of the update phase according to variant \ref{completeupdate} as otherwise, $k$-mer matches may lead to false positives at analysis time.
 
-Figures \ref{tickchangekmers1} and \ref{tickchangekmers2} compare the results of fastq file analysis based on the "Tick Borne" database using variant \ref{minupdate} versus variant \ref{completeupdate}. We used the fastq files from \cite{} and show the results for Tick 3 and Tick 4 as representative examples. The considerable changes in $k$-mer counts confirm that variant \ref{minupdate} is inferior for reliable $k$-mer counting due to false positives. It confirms the design choice for Genestrip to offer an update phase according to \ref{completeupdate} as its default.
+Figures \ref{tickchangekmers1} and \ref{tickchangekmers2} compare the results of fastq file analyses based on the "Tick Borne" database using variant \ref{minupdate} versus variant \ref{completeupdate}. We used the fastq files from \cite{nanoporeticks} and show the results for Tick 3 and Tick 4 as representative examples. The considerable changes in $k$-mer counts confirm that variant \ref{minupdate} is inferior for reliable $k$-mer counting due to false positives. This solidifies the design choice for Genestrip to employ an update phase according to \ref{completeupdate} as its default.
 
 \begin{table}[h]
 \centering
@@ -241,6 +243,20 @@ Database Name & Kingdom & Genuses With at Least One Species & Species & Strains 
 \label{updaterelevance}
 \end{table}
 
+\begin{figure}[h]%
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+title=$k$-mer counts for Tick 3,
+xlabel={$k$-mers according to \ref{minupdate}},
+ylabel={$k$-mers according to \ref{completeupdate}},
+]
+\addplot+ [only marks,mark size=0.6pt]
+table {concat_VV_together_grid.dat};
+\end{axis}
+\end{tikzpicture}
+\caption{Tick 3 }\label{tickchangekmers1}
+\end{figure}
 
 \section{Discussion}\label{discussion}
 
