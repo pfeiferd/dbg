@@ -1,5 +1,6 @@
 \documentclass[letterpaper,11pt,leqno]{article}
 \usepackage{paper}
+\usepackage{csquotes}
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.5}
 \bibliographystyle{bibliography}
@@ -113,7 +114,7 @@ Table \ref{goals} describes the most relevant goals for database generation in t
  \verb|updatedb| & This \emph{update phase} updates the populated database to account for common $k$-mers between species.
  \emph{All} genomes from the RefSeq belonging to a set of pre-configurable taxonomic kingdoms will be considered. This step ensures that a $k$-mer from a selected species obtains the correct taxonomic identifier as the $k$-mer may also occur in the genome of another species (which might be represented in database or not). Concerning the finished database, the respective $k$-mer will be associated with the least common taxonomic ancestor of all species whose genome(s) contain(s) the $k$-mer.\\
 \end{tabular}
-\caption{Description of Genestrip's most Relevant Goals for Database Generation.}\label{goals}
+\caption{Description of Genestrip's most relevant goals for database generation}\label{goals}
 \end{table}
 
 \subsection{Statistical measures for $k$-mer counts}
@@ -187,7 +188,7 @@ We generated an adequate Genestrip database covering well-known tick-transmitted
 Table \ref{dbs}.
 
 For comparison with KrakeUniq, we used with two different KrakenUniq databases: One commonly used, large database available online that includes all bacterial genomes from the RefSeq and more.
-As an alternative, we created our own KrakenUniq database that covers the exact same genomes as the Genestrip database "Tick Borne" from Table \ref{dbs}. This database aims to show that a small KrakenUniq database covering just the organisms of interest, results in false positive $k$-mer counts and is therefore unsuitable for use.
+As an alternative, we created our own KrakenUniq database that covers the exact same genomes as the Genestrip database \enquote{Tick Borne} from Table \ref{dbs}. This database aims to show that a small KrakenUniq database covering just the organisms of interest, results in false positive $k$-mer counts and is therefore unsuitable for use.
 Regarding Kraken2 we followed a similar procedure (see Table \ref{dbs}).
 
 \begin{table}[h]
@@ -197,11 +198,11 @@ Type & Name & Description & Disk Size &$k$-mers\\
   \hline
 G & Tick Borne & Genomes of a selection ??? species from the genuses Yersinia, Bartonella, Rickettsia, Anaplasma, Ehrlichia, Borrelia, Borreliella, Chlamydia, Mycoplasma, Malacoplasma, Mycoplasmoides and Metamycoplasma from the RefSeq (see taxlist for details)& 3 GB & 228 Mio. \\
 K & Standard & From \url{https://benlangmead.github.io/aws-indexes/k2} (6/16/2022) & 377 GB & ?? \\
-K & Tick Borne K & Same as for "Tick Borne" & ?? GB & ?? \\
+K & Tick Borne K & Same as for \enquote{Tick Borne} & ?? GB & ?? \\
 K2 & Standard & From \url{https://benlangmead.github.io/aws-indexes/k2} (9/4/2024) & 80 GB & 15046 Mio. \\  
-K2 & Tick Borne K2 & Same as for "Tick Borne" & ?? GB & ?? \\
+K2 & Tick Borne K2 & Same as for \enquote{Tick Borne} & ?? GB & ?? \\
 \end{tabular}
-\caption{Databases used for Accuracy and Performance Comparisons ("G" means Genestrip, "K" means KrakenUniq, "K2" means Kraken2)}\label{dbs}
+\caption{Databases used for accuracy and performance comparisons (\enquote{G} means Genestrip, \enquote{K} means KrakenUniq, \enquote{K2} means Kraken2)}\label{dbs}
 \end{table}
 
 TODO: Correlation figures for $k$-mer counts, number of $k$-mers per database for selected species per rank (for tick borne K, tick borne and tick borne k2)
@@ -225,7 +226,7 @@ In order to validate the relevance of Genestrip's update phase we compared the c
 \end{enumerate}
 Table \ref{updaterelevance} documents respective results for ? different databases: Perhaps not surprisingly, the average percentage of $k$-mers that moved to higher taxonomic ranks is large when comparing variant \ref{noupdate} against variant \ref{minupdate} (see Column (1)). However, a considerable amount of $k$-mers is also moved up when comparing variant \ref{minupdate} against variant \ref{completeupdate} (see Column (2)). This indicates the importance of the update phase according to variant \ref{completeupdate} as otherwise, $k$-mer matches may lead to false positives at analysis time.
 
-Figures \ref{tickchangekmers1} and \ref{tickchangekmers2} compare the results of fastq file analyses based on the "Tick Borne" database using variant \ref{minupdate} versus variant \ref{completeupdate}. We used the fastq files from \cite{nanoporeticks} and show the results for Tick 3 and Tick 4 as representative examples. The considerable changes in $k$-mer counts confirm that variant \ref{minupdate} is inferior for reliable $k$-mer counting due to false positives. This solidifies the design choice for Genestrip to employ an update phase according to \ref{completeupdate} as its default.
+Figure \ref{tickchangekmers1} compares the results of fastq file analyses based on the \enquote{Tick Borne} database using variant \ref{minupdate} versus variant \ref{completeupdate}. We used the fastq files from \cite{nanoporeticks} and show the results for Tick 3 and Tick 6 as representative examples. The considerable changes in unique $k$-mer counts confirm that variant \ref{minupdate} is inferior for reliable $k$-mer counting due to false positives. This solidifies the design choice for Genestrip to employ an update phase according to \ref{completeupdate} as its default.
 
 \begin{table}[h]
 \centering
@@ -247,15 +248,34 @@ Database Name & Kingdom & Genuses With at Least One Species & Species & Strains 
 \centering
 \begin{tikzpicture}
 \begin{axis}[
-title=$k$-mer counts for Tick 3,
-xlabel={$k$-mers according to \ref{minupdate}},
-ylabel={$k$-mers according to \ref{completeupdate}},
+title=Tick 3,
+xlabel={unique $k$-mers, variant \ref{minupdate}},
+ylabel={unique $k$-mers, variant \ref{completeupdate}},
+xmode=log,
+ymode=log,
+width = 0.6\textwidth,
+height = 0.6\textwidth
 ]
-\addplot+ [only marks,mark size=0.6pt]
-table {concat_VV_together_grid.dat};
+\addplot+ [only marks,mark size=1pt]
+table[col sep=semicolon, header=true, x = {kmers 2}, y = {kmers 1}] {/Users/dpfeifer/dev/intellij/genestrip-docs/genestrip-paper/results/chronicb/tick3_ukmer_scatter.csv};
 \end{axis}
 \end{tikzpicture}
-\caption{Tick 3 }\label{tickchangekmers1}
+
+\begin{tikzpicture}
+\begin{axis}[
+title=Tick 6,
+xlabel={unique $k$-mers, variant \ref{minupdate}},
+ylabel={unique $k$-mers, variant \ref{completeupdate}},
+xmode=log,
+ymode=log,
+width = 0.6\textwidth,
+height = 0.6\textwidth
+]
+\addplot+ [only marks,mark size=1pt]
+table[col sep=semicolon, header=true, x = {kmers 2}, y = {kmers 1}] {/Users/dpfeifer/dev/intellij/genestrip-docs/genestrip-paper/results/chronicb/tick6_ukmer_scatter.csv};
+\end{axis}
+\end{tikzpicture}
+\caption{Scatter plots of unique $k$-mers for fastq files from \cite{nanoporeticks} analyzed using Genestrip and the variants \ref{minupdate} and \ref{completeupdate} of the \enquote{Tick Borne} Database on logarithmic scales. Each datapoint represents a taxonimic identifier with counts greater zero for at least one variant.}\label{tickchangekmers1}
 \end{figure}
 
 \section{Discussion}\label{discussion}
