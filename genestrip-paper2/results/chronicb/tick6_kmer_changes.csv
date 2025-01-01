@@ -1,0 +1,11 @@
+key; taxid; name; old rank; old unique kmers; new unique kmers; new rank; unique kmer change percent;
+tick6;64895;Borreliella;1;225461;228646;1;1.41;
+tick6;948;Anaplasma phagocytophilum;2;162640;170384;2;4.76;
+tick6;139;Borreliella burgdorferi;3;132102;127568;3;-3.43;
+tick6;780;Rickettsia;12;5642;67393;4;1094.49;
+tick6;114277;spotted fever group;4;52932;22580;5;-57.34;
+tick6;1643685;Borreliaceae;7;19224;18779;6;-2.31;
+tick6;1359167;Ehrlichia cf. muris str. EmCRT;5;24037;17121;7;-28.77;
+tick6;1359162;Anaplasma phagocytophilum str. Webster;6;22002;13955;8;-36.57;
+tick6;943;Ehrlichia;176;0;12114;9;∞;
+tick6;35795;Ehrlichia muris;8;12238;8554;10;-30.10;

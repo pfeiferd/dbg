@@ -1,0 +1,11 @@
+key; taxid; name; old rank; old unique kmers; new unique kmers; new rank; unique kmer change percent;
+tick3;47466;Borrelia miyamotoi;1;93291;92786;1;-0.54;
+tick3;64895;Borreliella;2;18305;18486;2;0.99;
+tick3;139;Borreliella burgdorferi;3;11455;11127;3;-2.86;
+tick3;780;Rickettsia;10;627;7796;4;1143.38;
+tick3;138;Borrelia;4;6438;6643;5;3.18;
+tick3;1359157;Anaplasma phagocytophilum str. CRT53-1;6;3099;3099;6;0.00;
+tick3;114277;spotted fever group;5;6228;2553;7;-59.01;
+tick3;1643685;Borreliaceae;7;1970;1999;8;1.47;
+tick3;2;Bacteria;14;165;693;9;320.00;
+tick3;131567;cellular organisms;138;0;693;10;∞;
