@@ -67,7 +67,7 @@ In recognition of this problem, KrakenUniq has been extended for database proces
 
 If only a smaller group of a few 100 species/strains is under consideration, then it seems promising to simply \emph{generate a smaller database that contains just the $k$-mers from respective genomes}. \emph{However, this very likely leads to many false positives} even when using KrakenUniq. The reason for this is that due to the evolutionary relationship of organisms, \emph{a large fraction of $k$-mers that belong to the genome of a species are unspecific} in a sense that they can as well be found in the genome other species not considered for analysis. Thus, when using too small a database, a read may be falsely assigned to a species because it consists of $k$-mers that \emph{also} belong to another species' genome that was not included in the database.
  
-In order to enable a smaller database with no false positives emerging from this problem, Genestrip employs a \emph{two-phase} database generation process: During the \emph{entry phase}, all $k$-mers of genomes from selected species are entered into the database on the basis of the RefSeq \citep{refseq} and optionally GenBank \citep{genbank}. During the \emph{update phase}, all stored $k$-mers from the database are checked against the genomes of all other species in the same kingdom (from the RefSeq). If a stored $k$-mer also occurs in another species which is not part of the database, the $k$-mer's taxonomic identifier gets updated in the database and the least common ancestor's taxonomic identifier is entered instead. This prevents $k$-mers from being associated with one of selected species even though they are unspecific.
+In order to enable a smaller database with no false positives emerging from this problem, Genestrip employs a \emph{two-phase} database generation process: During the \emph{entry phase}, all $k$-mers of genomes from selected species are entered into the database on the basis of the RefSeq \citep{refseq} and optionally GenBank \citep{genbank}. During the \emph{update phase}, all stored $k$-mers from the database are checked against the genomes of all other species in the same (super-)kingdom (from the RefSeq). If a stored $k$-mer also occurs in another species which is not part of the database, the $k$-mer's taxonomic identifier gets updated in the database and the least common ancestor's taxonomic identifier is entered instead. This prevents $k$-mers from being associated with one of selected species even though they are unspecific.
 
 Based on this approach Genestrip achieves very low memory footprints during analysis and a competitive $k$-mer matching and read classification performance. The actual $k$-mer counting results are similar to those of KrakenUniq \citep{krakenUniq} with regard to the selected species. Much as KrakenUniq, Genestrip supports unique $k$-mer counting with exact counts but with very low memory overhead.
 
@@ -123,7 +123,7 @@ Table \ref{goals} describes the most relevant goals for database generation in t
  \verb|filldb| & This \emph{entry phase} populates the database with all $k$-mers of genomes from selected species. The appropriate size of the database is a close but conservative estimate based on \verb|tempindex|.
   Duplicate $k$-mer entries are avoided via a Boom filter that tracks the already stored $k$-mers. Finally, the stored $k$-mers are sorted in order to enable binary search at analysis time and for the goal \verb|updatedb| from below.\\
  \verb|updatedb| & This \emph{update phase} updates the populated database to account for common $k$-mers between species.
- \emph{All} genomes from the RefSeq belonging to a set of pre-configurable taxonomic kingdoms will be considered. This step ensures that a $k$-mer from a selected species obtains the correct taxonomic identifier as the $k$-mer may also occur in the genome of another species (which might be represented in database or not). Concerning the finished database, the respective $k$-mer will be associated with the least common taxonomic ancestor of all species whose genome(s) contain(s) the $k$-mer.\\
+ \emph{All} genomes from the RefSeq belonging to a set of pre-configurable taxonomic (super-)kingdoms will be considered. This step ensures that a $k$-mer from a selected species obtains the correct taxonomic identifier as the $k$-mer may also occur in the genome of another species (which might be represented in database or not). Concerning the finished database, the respective $k$-mer will be associated with the least common taxonomic ancestor of all species whose genome(s) contain(s) the $k$-mer.\\
 \end{tabular}
 \caption{Description of Genestrip's most relevant goals for database generation}\label{goals}
 \end{table}
@@ -220,38 +220,31 @@ TODO: Correlation figures for $k$-mer counts, number of $k$-mers per database fo
 
 TODO: Same for grape vine fungi...
 
-\subsection{Performance}
-
-To assess Genestrips's performance for $k$-mer counting, we compared its analysis time and memory use with 
-corresponding analysis runs using KrakenUniq and Kraken2.
-
-...
-
 \subsection{Relevance of the Update Phase}
 
-In order to validate the relevance of Genestrip's update phase we compared the contents of variants of the same database. (See Section \ref{background} and Table \ref{goals} for background on the update phase.) In particular, we assessed how the number of $k$-mers associated with each taxonomic identifier changes depending on the spectrum of genomes considered for the least common ancestor update. The database variants differed by having either
+In order to validate the relevance of Genestrip's update phase we compared the contents of variants of the same Genestrip database. (See Section \ref{background} and Table \ref{goals} for background on the update phase.) In particular, we assessed, how the number of $k$-mers associated with each taxonomic identifier changes depending on the spectrum of genomes considered for the least common ancestor update. The database variants differed by having either
 \begin{enumerate}
 	\item no update phase (but just the entry phase), \label{noupdate}
 	\item an update phase based \emph{exclusively} on the genomes from the entry phase, \label{minupdate}
-	\item an update phase based on \emph{all} of the genomes of the corresponding taxonomic kingdom from the RefSeq.\label{completeupdate} 
+	\item an update phase based on \emph{all} of the genomes of the corresponding taxonomic (super-)kingdom from the RefSeq.\label{completeupdate} 
 \end{enumerate}
-Table \ref{updaterelevance} documents respective results for ? different databases: Perhaps not surprisingly, the average percentage of $k$-mers that moved to higher taxonomic ranks is large when comparing variant \ref{noupdate} against variant \ref{minupdate} (see Column (1)). However, a considerable amount of $k$-mers is also moved up when comparing variant \ref{minupdate} against variant \ref{completeupdate} (see Column (2)). This indicates the importance of the update phase according to variant \ref{completeupdate} as otherwise, $k$-mer matches may lead to false positives at analysis time.
+Table \ref{updaterelevance} documents respective results for ? different databases: Perhaps not surprisingly, the average percentage of $k$-mers that moved to higher taxonomic ranks is large when comparing variant \ref{noupdate} against variant \ref{minupdate} (see Column ($\bullet$)). However, a considerable amount of $k$-mers is also moved up when comparing variant \ref{minupdate} against variant \ref{completeupdate} (see Column($\circ$)). This indicates the importance of the update phase according to variant \ref{completeupdate} as otherwise, $k$-mer matches may lead to false positives at analysis time.
 
-Figure \ref{tickchangekmers1} compares the results of fastq file analyses based on the \enquote{Tick Borne} database using variant \ref{minupdate} versus variant \ref{completeupdate}. We used the fastq files from \cite{nanoporeticks} and show the results for Tick 3 and Tick 6 as representative examples. The considerable changes in unique $k$-mer counts confirm that variant \ref{minupdate} is inferior for reliable $k$-mer counting due to false positives. This solidifies the design choice for Genestrip to employ an update phase according to \ref{completeupdate} as its default.
+Figure \ref{tickchangekmers1} compares the results of fastq file analyses based on the \enquote{Tick Borne} database using variant \ref{minupdate} versus variant \ref{completeupdate}. We used the fastq files from \cite{nanoporeticks} and show the results for Tick 3 and Tick 6 as representative examples. The considerable changes in unique $k$-mer counts confirm that variant \ref{minupdate} is inferior for reliable $k$-mer counting due to false positives. Table \ref{topresultsticks} shows how the top ten hits under variant \ref{completeupdate} have changed under \ref{minupdate}: Major differences in rank and of unique $k$-mer counts solidify the design choice for Genestrip to employ an update phase according to \ref{completeupdate} as its default. Noteworthy, the results from Table \ref{topresultsticks} are also in line with the findings from \cite{nanoporeticks}.
 
 \begin{table}[h]
 \centering
-\begin{tabular}{p{1.5cm}|c|p{1.5cm}|c|c|p{1cm}|c|p{1cm}|p{1cm}}
-Database Name & Kingdom & Genuses With at Least One Species & Species & Strains & Disk Size &$k$-mers & (1) \% of $k$-mers moved up &  (2) \% of $k$-mers moved up \\
+\begin{tabular}{p{1.5cm}|p{1.5cm}|R{1.3cm}|R{1.3cm}|R{1.5cm}|r|R{1.5cm}|R{1.5cm}}
+Database Name & (Super-)Kingdom & Genuses With at Least One Species & Species & Strains & $k$-mers & ($\bullet$) \newline \% of $k$-mers moved up &  ($\circ$) \newline \% of $k$-mers moved up \\
   \hline
   \hline
- Tick Borne & Bacteria & 12 & ?? & ?? \\
+ Tick Borne & Bacteria & 13 & 95 & 574 & 226765827 & & 17.75 \\
   \hline
  Grape Vine Fungus & Fungal & ?? & ??
 \end{tabular}
 \caption{Change of taxonomic identifiers for $k$-mers in Genestrip databases due to the update phase: The comparison of database variants is between \\
-(1) \emph{no} update phase (but just the entry phase) versus an update phase based \emph{exclusively} on the genomes from the entry phase or else, \\
-(2)	an update phase based \emph{exclusively} on the genomes from the entry phase versus \emph{all} of the genomes of the corresponding taxonomic kingdom from the RefSeq.}
+(1) \ref{noupdate} versus \ref{minupdate}, i.e. \emph{no} update phase (but just the entry phase) versus an update phase based \emph{exclusively} on the genomes from the entry phase or else, \\
+(2)	\ref{minupdate} versus \ref{completeupdate}, i.e. an update phase based \emph{exclusively} on the genomes from the entry phase versus \emph{all} of the genomes of the corresponding taxonomic (super-)kingdom from the RefSeq.}
 \label{updaterelevance}
 \end{table}
 
@@ -305,6 +298,13 @@ Name & Tax. Id. & Rank under Variant \ref{minupdate} & Unique $k$-mers under Var
 \end{tabular}
 \caption{Change of unique $k$-mer counts for top ten hits of Tick 3 and Tick 6 from \cite{nanoporeticks} using Genestrip and the variants \ref{minupdate} versus \ref{completeupdate} of the \enquote{Tick Borne} database}\label{topresultsticks}
 \end{table}
+
+\subsection{Performance}
+
+To assess Genestrips's performance for $k$-mer counting, we compared its analysis time and memory use with 
+corresponding analysis runs using KrakenUniq and Kraken2.
+
+...
 
 \section{Discussion}\label{discussion}
 
