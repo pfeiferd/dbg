@@ -229,7 +229,7 @@ In order to validate the relevance of Genestrip's update phase we compared the c
 \end{enumerate}
 Table \ref{updaterelevance} documents respective results for ? different databases: Perhaps not surprisingly, the average percentage of $k$-mers that moved to higher taxonomic ranks is large when comparing variant \ref{noupdate} against variant \ref{minupdate} (see Column ($\bullet$)). However, a considerable amount of $k$-mers is also moved up when comparing variant \ref{minupdate} against variant \ref{completeupdate} (see Column($\circ$)). This indicates the importance of the update phase according to variant \ref{completeupdate} as otherwise, $k$-mer matches may lead to false positives at analysis time.
 
-Figure \ref{tickchangekmers1} compares the results of fastq file analyses based on the \enquote{Tick Borne} database using variant \ref{minupdate} versus variant \ref{completeupdate}. We used the fastq files from \cite{nanoporeticks} and show the results for Tick 3 and Tick 6 as representative examples. The considerable changes in unique $k$-mer counts confirm that variant \ref{minupdate} is inferior for reliable $k$-mer counting due to false positives. Table \ref{topresultsticks} shows how the top ten hits under variant \ref{completeupdate} have changed under \ref{minupdate}: Major differences in rank and of unique $k$-mer counts solidify the design choice for Genestrip to employ an update phase according to \ref{completeupdate} as its default. Noteworthy, the results from Table \ref{topresultsticks} are also in line with the findings from \cite{nanoporeticks}.
+Figure \ref{tickchangekmers1} compares the results of fastq file analyses based on the \enquote{Tick Borne} database using variant \ref{minupdate} versus variant \ref{completeupdate}. We used the fastq files from \cite{nanoporeticks} and show the results for Tick 3 and Tick 6 as representative examples. The considerable changes in unique $k$-mer counts confirm that variant \ref{minupdate} is inferior for reliable $k$-mer counting due to false positives. Table \ref{topresultsticks} shows how the top ten hits under variant \ref{completeupdate} have changed under \ref{minupdate}: Major differences of unique $k$-mer counts and of respective frequency ranks solidify the design choice for Genestrip to employ an update phase according to \ref{completeupdate} as its default. Noteworthy, the results from Table \ref{topresultsticks} are also in line with the findings from \cite{nanoporeticks}.
 
 \begin{table}[h]
 \centering
@@ -284,13 +284,13 @@ table[col sep=semicolon, header=true, x = {kmers 2}, y = {kmers 1}] {\csvpath re
 \begin{table}[h]
 \small 
 \centering
-\begin{tabular}{C{2.1cm}|c|R{1.5cm}|R{1.5cm}|R{1.5cm}|R{1.5cm}|R{1.5cm}}
-Name & Tax. Id. & Rank under Variant \ref{minupdate} & Unique $k$-mers under Variant \ref{minupdate} & Rank under Variant \ref{completeupdate} & Unique $k$-mers under Variant \ref{completeupdate} & Unique $k$-mer Change \% \\
+\begin{tabular}{C{2.1cm}|c|R{1.6cm}|R{1.6cm}|R{1.5cm}|R{1.5cm}|R{1.5cm}}
+Name & Tax. Id. & Unique $k$-mers under Variant \ref{minupdate} & Resulting Rank under Variant \ref{minupdate} & Unique $k$-mers under Variant \ref{completeupdate} & Resulting Rank under Variant \ref{completeupdate} & Unique $k$-mer Change from \ref{minupdate} to  \ref{completeupdate} in \% \\
 \hline
 \hline
 \textbf{Tick 3} \\
 \hline
-\csvreader[separator=semicolon]{\csvpath results/chronicb/tick3_kmer_changes.csv}{}{\csvcoliii & \csvcolii & \csvcoliv & \csvcolv & \csvcolvi & \csvcolvii & \csvcolviii \\   \hline }	
+\csvreader[separator=semicolon]{\csvpath results/chronicb/tick3_kmer_changes.csv}{}{\csvcoliii & \csvcolii & \csvcolv & \csvcoliv & \csvcolvi & \csvcolvii & \csvcolviii \\   \hline }	
 \textbf{Tick 6} \\
 \hline
 \csvreader[separator=semicolon]{\csvpath results/chronicb/tick6_kmer_changes.csv}{}{\csvcoliii & \csvcolii & \csvcoliv & \csvcolv & \csvcolvi & \csvcolvii & \csvcolviii \\   \hline }	
