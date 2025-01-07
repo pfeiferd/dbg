@@ -28,7 +28,7 @@
 \begin{document}
 
 % Enter title:
-\title{Genestrip: Efficient read classification, filtering and $k$-mer counting for selected groups of organisms}
+\title{Genestrip: Space-Efficient $k$-mer Counting, Filtering and Read Classification for Selected Groups of Organisms}
 
 % Enter authors:
 \author{Daniel Pfeifer (daniel.pfeifer@hs-heilbronn.de)
@@ -128,14 +128,14 @@ Table \ref{goals} describes the most relevant goals for database generation in t
 \caption{Description of Genestrip's most relevant goals for database generation}\label{goals}
 \end{table}
 
-\subsection{Statistical measures for $k$-mer counts}
+\subsection{Statistical measures for $k$-mer counts} \label{measures}
 
 Besides $k$-mer counts, unique $k$-mer counts and other results, Genestrip reports two novel, derived statistical measures -- \emph{the normalized $k$-mer count $k'_{t,f,d}$} and the \emph{$k$-mer consistency score} as described in the following.
 
-Let $k_{t,f,d}$ be the number of $k$-mers for taxonomy identifier $t$ found in fastq file $f$ with respect to database $d$ and $u_{t,f,d}$ be the corresponding number of unique $k$-mers. Similarly $u_{t,d}$ is the number of (unique) $k$-mers for $t$ stored $d$, $k_f$ the total number of $k$-mers in $f$, $u_d$ the total number of (unique) $k$-mers stored in $d$ and so on.
+Let $k_{t,f,d}$ be the number of $k$-mers for taxonomic identifier $t$ found in fastq file $f$ with respect to database $d$ and $u_{t,f,d}$ be the corresponding number of unique $k$-mers. Similarly $u_{t,d}$ is the number of (unique) $k$-mers for $t$ stored $d$, $k_f$ the total number of $k$-mers in $f$, $u_d$ the total number of (unique) $k$-mers stored in $d$ and so on.
 
 Let $F$ be the set of analyzed fastq-files.
-In order to compare $k_{t,f,d}$ between different files in $f \in F$ and potentially different databases $d$ or taxonomy identifiers $t$, we need to account for the a-priori bias caused by different file sizes $k_f$ and different numbers of stored $k$-mers $u_{t,d}$ of different taxonomy identifiers $t$ and different databases $d$.
+In order to compare $k_{t,f,d}$ between different files in $f \in F$ and potentially different databases $d$ or taxonomic identifiers $t$, we need to account for the a-priori bias caused by different file sizes $k_f$ and different numbers of stored $k$-mers $u_{t,d}$ of different taxonomic identifiers $t$ and different databases $d$.
 
 We therefore consider the a-priori probability $p(t,f\ |\ d,F)$ which denotes the probability of $t$ to occur in $f$ given that (unique) $k$-mers of $t$ are stored in $d$. As this is an a-priori probability, we must assume independency between $t$ and any $g \in F$. As $f$ does not depend on $d$ this gives:
 \[ p(t,f\ |\ d, F) = p(f\ |\ F) \cdot p(t\ |\ d) \approx k_{f} / \sum_{g \in F} k_{g} \cdot u_{t,d} / u_d\] 
@@ -297,6 +297,19 @@ Name & Tax. Id. & Unique $k$-mers under Variant \ref{minupdate} & Resulting Rank
 \end{tabular}
 \caption{Change of unique $k$-mer counts for top ten hits of Tick 3 and Tick 6 from \cite{nanoporeticks} using Genestrip and the variants \ref{minupdate} versus \ref{completeupdate} of the \enquote{Tick Borne} database}\label{topresultsticks}
 \end{table}
+
+\subsection{Abundance Estimation via the Normalized $k$-mer Count}
+
+We assess the quality of an abundance estimation via the 
+normalized $k$-mer count $k'_{t,f,d}$ from Section \ref{measures}.
+
+We base our assessment on three well-defined, sequenced mock community datasets $r$ named \enquote{PB\_Zymo}, \enquote{ONT\_Zymo} and \enquote{PB\_ATCC} as used and described in \cite{classifier_eval}.
+The datasets' real abundance is known and stated by corresponding sequence device producers. To determine the relative estimated abundance $A_t$ with Genestrip, we compute
+\[ A_t = k'_{t,f,d} / \sum_{s \in S} k'_{t,f,d} \]
+where $s$ is the list of all species-level taxonomic identifiers in the respective Genestrip database $d$.
+
+We created three Genestrip databases where each contains just the taxonomic identifiers of all bacterial species as present a corresponding dataset from above. While this is not a realistic scenario (as ground truth is partially used with respect to the present species), it still allows for a quality assessment of the abundance estimation itself. The assessment depends on both: the use of $k$-mer counting via Genestrip for this purpose \emph{and} the use of $k'_{t,f,d}$ as respective measure. As in \cite{classifier_eval} we use the $L1$ norm for error quantification:
+\[ L1_r = \sum_{s \in S} |(x_r)_s - x^*_r)_s |\]
 
 \subsection{Performance}
 
