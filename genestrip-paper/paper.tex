@@ -239,7 +239,12 @@ Database Name & (Super-)Kingdom & Genuses With at Least One Species & Species & 
   \hline
  Tick Borne & Bacteria & 13 & 95 & 574 & 226765827 & 43.27 & 17.39 \\
   \hline
- Grape Vine Fungus & Fungal & ?? & ??
+ Grape Vine Fungus & Fungal & 9 & 10 & 6 & 376771718 & 20.33 & 4.46 \\
+ \hline
+ Human Virus & Viral & N/A  & N/A & 686 genomes & 6789616 & 13.54 & 4.04 \\
+  \hline
+ Human Pathogenic Protozoa & Protozoa & 16 & 62 & 21 & 1398497017 & 10.46 & 0.15 \\
+  
 \end{tabular}
 \caption{Change of taxonomic identifiers for $k$-mers in Genestrip databases due to the update phase: The comparison of database variants is between \\
 ($\bullet$) \ref{noupdate} versus \ref{minupdate}, i.e. \emph{no} update phase (but just the entry phase) versus an update phase based \emph{exclusively} on the genomes from the entry phase or else, \\
@@ -302,15 +307,14 @@ Name & Tax. Id. & Unique $k$-mers under Variant \ref{minupdate} & Resulting Rank
 
 We assess the quality of an abundance estimation via the 
 normalized $k$-mer count $k'_{t,f,d}$ from Section \ref{measures}.
+Our assessment is based on three well-defined, sequenced mock community datasets named \enquote{PB\_Zymo}, \enquote{ONT\_Zymo} and \enquote{PB\_ATCC} as used and described in \cite{classifier_eval}.
+The datasets' real species abundance is known and stated by corresponding producers. To determine the relative estimated abundance $A_t$ with Genestrip, we compute
+\[ A_{t,f,d} = k'_{t,f,d} / \sum_{s \in S_d} k'_{s,f,d} \]
+where $S_d$ is the list of all species-level taxonomic identifiers in the respective Genestrip database $d$.
 
-We base our assessment on three well-defined, sequenced mock community datasets $r$ named \enquote{PB\_Zymo}, \enquote{ONT\_Zymo} and \enquote{PB\_ATCC} as used and described in \cite{classifier_eval}.
-The datasets' real abundance is known and stated by corresponding sequence device producers. To determine the relative estimated abundance $A_t$ with Genestrip, we compute
-\[ A_t = k'_{t,f,d} / \sum_{s \in S} k'_{t,f,d} \]
-where $s$ is the list of all species-level taxonomic identifiers in the respective Genestrip database $d$.
-
-We created three Genestrip databases where each contains just the taxonomic identifiers of all bacterial species as present a corresponding dataset from above. While this is not a realistic scenario (as ground truth is partially used with respect to the present species), it still allows for a quality assessment of the abundance estimation itself. The assessment depends on both: the use of $k$-mer counting via Genestrip for this purpose \emph{and} the use of $k'_{t,f,d}$ as respective measure. As in \cite{classifier_eval} we use the $L1$ norm for error quantification:
-\[ L1_r = \sum_{s \in S} |(x_r)_s - x^*_r)_s |\]
-
+We created three Genestrip databases where each contains just the taxonomic identifiers of all bacterial species as present in a corresponding dataset from above. While this is not a realistic scenario (as ground truth is partially used with respect to the present species), it still allows for a quality assessment of the abundance estimation itself. Note that successful abundance estimation depends on both, the use of species-level $k$-mer counting for this purpose \emph{and} the use of $k'_{t,f,d}$ as a suitable abundance measure. Regarding a dataset (i.e. fastq file) $f$ and a database $d$, we use the averaged relative distance to the real abundances on the species level as the error quantification:
+\[ err_{f,d} := 1 / | S_d | \cdot \sum_{t \in S_d} |a_{f,t} -  A_{t,f,d}| / a_{f,t} \]
+with $a_{f,s}$ being the true relative abundance of $s$ in $f$.
 \subsection{Performance}
 
 To assess Genestrips's performance for $k$-mer counting, we compared its analysis time and memory use with 
