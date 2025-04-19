@@ -46,7 +46,9 @@
 \maketitle
 
 % Enter abstract:
-The consumption of computational resources is a significant burden in modern metagenomic analysis even when applying (unique) $k$-mer-counting. Genestrip overcomes this problem by focusing on small but freely selectable groups of organisms. Regarding the selected organisms, it produces results comparable to Kraken 1 and KrakenUniq but at a fraction of their required memory resources. Thus, mass data analysis may be performed even on small-sized PCs or servers. Moreover, Genestrip can be used to extremely reduce the size of sequence files for downstream steps without loss of relevant data regarding the selected organisms. We assess the usefulness, correctness and performance of Genestrip in the context of tick surveillance, ?? and ....
+The consumption of main memory resources is a significant burden in modern metagenomic analysis when performing read classification (unique) $k$-mer-counting. Genestrip overcomes this problem by focusing on small but freely configurable groups of organisms. Regarding the selected organisms, it produces databases and results comparable to those Kraken 1 and KrakenUniq but at a fraction of their required memory resources. Thus, database creation and mass data analysis may be performed even on small-sized PCs or edge machines. Moreover, Genestrip can be used to extremely reduce the size of sequence files for downstream steps without loss of relevant data regarding the selected organisms. 
+
+	We assess the correctness, performance and usefulness of Genestrip in different contexts and show that Genestrip ascertains high read classification accuracy even though databases remain limited to the genomes of the selected organisms. Due to Genestrip's particular way of finding the least common ancestors of *k*-mers, both database production and use can be realized on small-sized PCs. This empowers users to flexibly create and apply databases with a very with deep genomic coverage for the selected organisms.
 
 \end{titlepage}
 
@@ -151,6 +153,8 @@ The \emph{the normalized $k$-mer count $k'_{t,f,d}$} accounts for the size of an
 Bracken \citep{lu2017bracken} follows a similar basic idea with respect to abundance estimation on the 
 level of reads for Kraken. Still, Bracken's approach is significantly different from ours as it targets abundance estimation correction related to the specifics of the read classification algorithm behind Kraken.
   
+\textbf{IMPORTANT: The following fails with 16S amplification:}  
+  
 Given $k_{t,f,d}$, the a-priori probability $p_u(t\ |\ k_{t,f,d})$ of a unique $k$-mer from $d$ belonging to $t$ to occur \emph{at least once} in $f$\ is approximately\footnote{The close but simplifying approximation being that all $k$-mers in $d$ belonging to $t$ are equally likely to be found in $f$.}:
 \[ p_u(t\ |\ k_{t,f,d}) = 1 - (1 - 1/u_{t,d})^{k_{t,f,d}}\]
 Therefore, the corresponding \emph{expected number of unique $k$-mers} $E_q$ is:
@@ -227,7 +231,7 @@ In order to validate the relevance of Genestrip's update phase we compared the c
 	\item an update phase based \emph{exclusively} on the genomes from the entry phase, \label{minupdate}
 	\item an update phase based on \emph{all} of the genomes of the corresponding taxonomic (super-)kingdom from the RefSeq.\label{completeupdate} 
 \end{enumerate}
-Table \ref{updaterelevance} documents respective results for ? different databases: Perhaps not surprisingly, the average percentage of $k$-mers that moved to higher taxonomic ranks is large when comparing variant \ref{noupdate} against variant \ref{minupdate} (see Column ($\bullet$)). However, a considerable amount of $k$-mers is also moved up when comparing variant \ref{minupdate} against variant \ref{completeupdate} (see Column($\circ$)). This indicates the importance of the update phase according to variant \ref{completeupdate} as otherwise, $k$-mer matches may lead to false positives at analysis time.
+Table \ref{updaterelevance} documents respective results for 4 different databases: Perhaps not surprisingly, the average percentage of $k$-mers that moved to higher taxonomic ranks is large when comparing variant \ref{noupdate} against variant \ref{minupdate} (see Column ($\bullet$)). However, in three out of four databases, a considerable amount of $k$-mers was also moved up when comparing variant \ref{minupdate} against variant \ref{completeupdate} (see Column($\circ$)). This indicates the importance of the update phase according to variant \ref{completeupdate} as otherwise, $k$-mer matches may lead to false positives at analysis time.
 
 Figure \ref{tickchangekmers1} compares the results of fastq file analyses based on the \enquote{Tick Borne} database using variant \ref{minupdate} versus variant \ref{completeupdate}. We used the fastq files from \cite{nanoporeticks} and show the results for Tick 3 and Tick 6 as representative examples. The considerable changes in unique $k$-mer counts confirm that variant \ref{minupdate} is inferior for reliable $k$-mer counting due to false positives. Table \ref{topresultsticks} shows how the top ten hits under variant \ref{completeupdate} have changed under \ref{minupdate}: Major differences of unique $k$-mer counts and of resulting frequency ranks solidify the design choice for Genestrip to employ an update phase according to \ref{completeupdate} as its default. Noteworthy, the results from Table \ref{topresultsticks} are also in line with the findings from \cite{nanoporeticks}.
 
@@ -314,7 +318,7 @@ where $S_d$ is the list of all species-level taxonomic identifiers in the respec
 
 We created three Genestrip databases where each contains just the taxonomic identifiers of all bacterial species as present in a corresponding dataset from above. While this is not a realistic scenario (as ground truth is partially used with respect to the present species), it still allows for a quality assessment of the abundance estimation itself. Note that successful abundance estimation depends on both, the use of species-level $k$-mer counting for this purpose \emph{and} the use of $k'_{t,f,d}$ as a suitable abundance measure. Regarding a dataset (i.e. fastq file) $f$ and a database $d$, we use the averaged relative distance to the real abundances on the species level as the error quantification:
 \[ err_{f,d} := 1 / | S_d | \cdot \sum_{t \in S_d} |a_{f,t} -  A_{t,f,d}| / a_{f,t} \]
-with $a_{f,s}$ being the true relative abundance of $s$ in $f$.
+with $a_{f,t}$ being the true relative abundance of $t$ in $f$.
 \subsection{Performance}
 
 To assess Genestrips's performance for $k$-mer counting, we compared its analysis time and memory use with 
