@@ -86,8 +86,8 @@ Note that also Kraken 2 is no suitable alternative in fields such as medical dia
 
 Genestrip's database generation mandates the setting of groups of organisms whose genomes will be exclusively represented in a resulting database. Users choose desired genuses, species or strains via a configuration file by listing respective taxonomic identifiers. If higher ranked taxonomic identifiers are entered, then \emph{all} of the descending organisms will be included and $k$-mers of their genomes will be added to the database accordingly. 
 
-Genestrip generates a database for a selected group of organisms primarily via the 
-reference genomes from the RefSeq \citep{refseq}.
+Genestrip generates a database for a selected group of organisms primarily via 
+genomes from the RefSeq \citep{refseq} but genomes from Genbank or own genomic files may be included on top.
 To better handle the complexity of the generation process, we employ a goal-oriented approach in similarity to Make \citep{feldman1979make}: Upon access, each goal returns a file or an object in main memory. A goal is only executed if its result is not yet available. Goal execution may involve the access of other goals which turn, may trigger their execution. Respective goal dependencies are explicitly specified in terms of a directed acyclic graph. 
 
 Figure \ref{f:goalgraph} depicts an extract of Genestrip's goal graph: Several goals (prefixed with \verb|d:|) revolve around downloading files from the RefSeq, Genbank and other data from the NCBI. Several object goals (prefixed with \verb|o:|) load files and represent them as data structures in main memory for further processing. Most file goals (prefixed with \verb|f:|) write computational results to files.
@@ -137,7 +137,7 @@ Read classification like Kraken. Handling Reverse Complements. Error Rate. Multi
 
 Genestrip produces analysis reports in CSV file format with a broad set of statistical values. We use the following notation to describe them: Let $k_{t,f,d}$ be the number of $k$-mers for taxonomic identifier $t$ found in fastq file $f$ with respect to database $d$ and $u_{t,f,d}$ be the corresponding number of unique $k$-mers. Similarly $u_{t,d}$ is the number of (unique) $k$-mers for $t$ stored in $d$.
 
-Table \ref{csvcolumns} describes the most important reported columns. Additional columns exist to  accumulate $k$-mer counts and read counts etc. upwards to higher ranks of the taxonomy. We also track standard deviations of \verb|avg. contig length|, \verb|avg. read length| and \verb|mean class error| and other columns where suitable. 
+Table \ref{csvcolumns} describes the most important reported columns. Additional columns exist to  accumulate $k$-mer counts and read counts etc. upwards to higher ranks in the taxonomy. We also track standard deviations of \verb|avg. contig length|, \verb|avg. read length| and \verb|mean class error| and other columns where suitable. 
 
 \begin{table}[h]
 \centering
@@ -152,15 +152,15 @@ Column Name & Description  \\
 \verb|avg. contig length| & The average length of contiguous sequences of $k$-mers that are specific to the $t$'s genome(s)  \\
 \verb|max contig length| & The maximum length of all contiguous sequences of $k$-mers that are specific to the $t$'s genome(s)  \\
 \verb|avg. read length| & The avg. length of reads for $t$ in base pairs \\
-\verb|db coverage| & The ratio $u_{t,f} / u_{t,d}$ (see text) \\
+\verb|db coverage| & The ratio $u_{t,f} / u_{t,d}$ \\
 \verb|exp. unique kmers| & $E(k_{t,f,d},u_{t,d})$ (see text) \\
-\verb|unique kmers / exp.| & $r(k_{t,f,d}, u_{t,f,d})$ (see text) \\
+\verb|unique kmers / exp.| & $k$-mer consistency ratio $r(k_{t,f,d}, u_{t,f,d})$ (see text) \\
 \verb|mean class error| & The mean ratio of $k$-mers from a read $r$ for $t$, where those $k$-mers are not consistent with $t$ per $r$'s total number $k$-mers. \\
 \end{tabular}
 \caption{Extract of columns from Genestrip's read analysis reports}\label{csvcolumns}
 \end{table}
 
-Notably, Genestrip introduces a novel, derived statistical measure -- the \emph{$k$-mer consistency score} as explained in the following: Given $k_{t,f,d}$, the a-priori probability $p(t\ |\ k_{t,f,d})$ of a unique $k$-mer from $d$ belonging to $t$ to occur \emph{at least once} in $f$\ is approximately:\footnote{The approximation is based on the simplifying assumption that all $k$-mers in $d$ belonging to $t$ are equally likely to be found in $f$ \cite{ticks}. Still, this may be countered by special DNA library preparation protocols like 16S amplification \cite{?}.}
+Notably, Genestrip introduces a novel, derived statistical measure -- the \emph{$k$-mer consistency ratio} as explained in the following: Given $k_{t,f,d}$, the a-priori probability $p(t\ |\ k_{t,f,d})$ of a unique $k$-mer from $d$ belonging to $t$ to occur \emph{at least once} in $f$\ is approximately:\footnote{The approximation is based on the simplifying assumption that all $k$-mers in $d$ belonging to $t$ are equally likely to be found in $f$ \cite{ticks}. Still, this may be countered by special DNA library preparation protocols like 16S amplification \cite{?}.}
 \[ p(t\ |\ k_{t,f,d}) = 1 - (1 - 1/u_{t,d})^{k_{t,f,d}}\] 
 
 The corresponding \emph{expected number of unique $k$-mers} $E$ is (\cite{Mendelson2016WhatIT}):
@@ -195,10 +195,10 @@ $t$ & $u_{t,d}$ & $k_{t,f,d}$ & $u_{t,f,d}$ & $E(k_{t,f,d},u_{t,d})$ & $r(k_{t,f
 
 \subsection{Correctness and Accuracy}
 
-To assess Genestrips's correctness with regard to $k$-mer counting and read classification, we compared its databases and respective results with those from KrakenUniq.
+To assess Genestrips's correctness with regard to $k$-mer counting and read classification, we compared its databases and respective analysis results with those from KrakenUniq.
 
 As a first test, we created database contents for both systems that were as identical as possible in terms and their genomic basis and their stored $k$-mers. 
-We then applied the created databases to suitable analysis files in order to compare the results between both systems. Highly similar results from this check mutually solidify the correctness of both systems since they had been developed completely independently.
+We then applied the created databases to a suitable fastq file in order to compare the results between both systems. Highly similar results from this check mutually solidify the correctness of both systems since they had been developed completely independently.
 
 In this context, we chose all RefSeq genomes from the viral super-kingdom on the assembly level "complete genome" (RefSeq Release 229). Figure \ref{viraldbscatter} compares the structure of the resulting two databases from KrakenUniq and Genestrip, respectively: They are almost perfectly identical with regard to the number of $k$-mers stored per taxonomic identifier with 15 genomes and respective taxonomic identifiers occurring in KrakenUniq but not Genestrip and 33 genomes vice versa.\footnote{The differences between the sets selected genomes are caused by different approaches on how the genomes are preselected and downloaded by KrakenUniq and Genestrip, respectively. They do not constitute erroneous behavior of either system.} The slightly differing sets of genomes result in 158 differences in $k$-mers stored per taxonomic identifier due to effects of least common ancestor updates for stored $k$-mers.
  
@@ -219,7 +219,7 @@ height = 0.4\textwidth
 table[col sep=semicolon, header=true, x = {ku stored kmers}, y = {genestrip stored kmers} , meta=rank] {\csvpath results/viral/gku_kmer_counts.csv};
 \end{axis}
 \end{tikzpicture}
-\caption{Scatter plot of $k$-mer for RefSeq databases from KrakenUniq and Genestrip covering the entire viral super-kingdom (based on a logarithmic scale with 1 added to each value in order to enable the representation of zero-counts). All of the 27.098 entries from both databases are included.}\label{viraldbscatter}
+\caption{Scatter plot of $k$-mer for RefSeq databases from KrakenUniq and Genestrip covering the entire viral super-kingdom (based on a logarithmic scale with 1 added to each value in order to enable the representation of zero-counts). All of the 27.098 entries from both databases are represented.}\label{viraldbscatter}
 \end{figure}
 
 We applied the two databases to a simulated fastq file extracted from \cite{Wu:2024aa} where the file's reads were used to benchmark several metagenomic pipelines regarding viral DNA. As the ground truth is known, this allowed for a similarity comparison but also for testing classification accuracy. The file contains 61,550 long reads extracted from 6,155 viral standard genomes from the RefSeq (\cite{Wu:2024aa}).
