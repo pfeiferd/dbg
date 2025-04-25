@@ -61,7 +61,7 @@ We present Genestrip, a new metagenomic tool based on $k$-mer matching and filte
 
 \section{Background}\label{background}
 
-To analyze large sets of reads, researchers use software tools based on $k$-mer matching and counting such as Kraken 1 \citep{kraken}, Kraken 2 \citep{kraken2} or KrakenUniq \citep{krakenUniq}. With regard to pathogen detection KrakenUniq is particularly suited because of its very low false positive rate but also because its efficiency, precision and sensitivity \citep{krakenUniq}.
+To analyze large sets of reads, researchers use software tools based on $k$-mer matching and counting such as Kraken 1 \citep{kraken}, Kraken 2 \citep{kraken2} or KrakenUniq \citep{krakenUniq}. With regard to pathogen detection KrakenUniq is particularly suited because of its very low false positive rate but also because its efficiency and high sensitivity \citep{krakenUniq}.
 
 In order to avoid false positive classifications of reads or mismatches of $k$-mers, all of these tools resort to very large databases, containing millions of encoded $k$-mers along with their respective taxons. A database is usually loaded entirely into main memory and consumes tens of gigabytes of space \footnote{See \url{https://benlangmead.github.io/aws-indexes/k2} for related Databases}. This requirement mandates specialized and expensive compute servers with very large main memory.
 
@@ -147,23 +147,23 @@ Column Name & Description  \\
 \verb|taxid| & The taxonomic identifier $t$ \\
 \verb|reads| & The number of reads classified with respect to $t$\\
 \verb|kmers from reads| & The number of $k$-mers from reads for $t$ which are consistent with $t$ \\
-\verb|kmers| & \emph{All} matched $k$-mers which are specific to the $t$'s genome (according to $d$) \\
-\verb|unique kmers| & \emph{All} unique $k$-mers, which are specific to $t$'s genome(s) (according to $d$) \\
+\verb|kmers| & $k_{t,f,d}$\\ %, i.e. \emph{all} $k$-mers which are specific to the $t$'s genome (according to $d$) \\
+\verb|unique kmers| & $u_{t,d}$\\ %, i.e. \emph{all} unique $k$-mers, which are specific to $t$'s genome(s) (according to $d$) \\
 \verb|avg. contig length| & The average length of contiguous sequences of $k$-mers that are specific to the $t$'s genome(s)  \\
 \verb|max contig length| & The maximum length of all contiguous sequences of $k$-mers that are specific to the $t$'s genome(s)  \\
 \verb|avg. read length| & The avg. length of reads for $t$ in base pairs \\
-\verb|db coverage| & The ratio $u_{t,f} / u_{t,d}$ \\
-\verb|exp. unique kmers| & $E(k_{t,f,d},u_{t,d})$ (see text) \\
-\verb|unique kmers / exp.| & $k$-mer consistency ratio $r(k_{t,f,d}, u_{t,f,d})$ (see text) \\
-\verb|mean class error| & The mean ratio of $k$-mers from a read $r$ for $t$, where those $k$-mers are not consistent with $t$ per $r$'s total number $k$-mers. \\
+\verb|db coverage| & $u_{t,f} / u_{t,d}$ \\
+\verb|exp. unique kmers| & $E(k_{t,f,d},u_{t,d})$ (see text below) \\
+\verb|unique kmers / exp.| & The $k$-mer consistency ratio $r(k_{t,f,d}, u_{t,f,d})$ (see text below) \\
+\verb|mean class error| & The mean ratio of $k$-mers from a read $r$ for $t$, where those $k$-mers are not consistent with $t$ per $r$'s total number of $k$-mers. \\
 \end{tabular}
-\caption{Extract of columns from Genestrip's read analysis reports}\label{csvcolumns}
+\caption{Extract of columns from Genestrip's read analysis reports \textbf{TODO: Add normalized kmers and reads here}}\label{csvcolumns}
 \end{table}
 
-Notably, Genestrip introduces a novel, derived statistical measure -- the \emph{$k$-mer consistency ratio} as explained in the following: Given $k_{t,f,d}$, the a-priori probability $p(t\ |\ k_{t,f,d})$ of a unique $k$-mer from $d$ belonging to $t$ to occur \emph{at least once} in $f$\ is approximately:\footnote{The approximation is based on the simplifying assumption that all $k$-mers in $d$ belonging to $t$ are equally likely to be found in $f$ \cite{ticks}. Still, this may be countered by special DNA library preparation protocols like 16S amplification \cite{?}.}
+ Genestrip introduces a novel, derived statistical measure -- the \emph{$k$-mer consistency ratio} as explained in the following: Given $k_{t,f,d}$, the a-priori probability $p(t\ |\ k_{t,f,d})$ of a unique $k$-mer from $d$ belonging to $t$ to occur \emph{at least once} in $f$\ is approximately:\footnote{The approximation is based on the simplifying assumption that all $k$-mers in $d$ belonging to $t$ are equally likely to be found in $f$ \cite{ticks}. Still, this may be countered by special DNA library preparation protocols like 16S amplification \cite{?}.}
 \[ p(t\ |\ k_{t,f,d}) = 1 - (1 - 1/u_{t,d})^{k_{t,f,d}}\] 
 
-The corresponding \emph{expected number of unique $k$-mers} $E$ is (\cite{Mendelson2016WhatIT}):
+The corresponding \emph{expected number of unique $k$-mers} $E$ is:
 \[ E(k_{t,f,d},u_{t,d}) = u_{t,d} \cdot p(t\ |\ k_{t,f,d})\]
 It is useful to compare $E$ with the actual count $u_{t,f,d}$: If these quantities divert too much from each other, then the consistency of the $k$-mer counting results for $t$ in $f$ should be questioned. If, on the other hand, these quantities are close, then this supports the consistency of the counting results. This justifies the following ratio as the \emph{$k$-mer consistency score}, which ideally is close to $1$:\footnote{A mathematically sounder approach is to consider the probability distribution 
 $q(u_{t,f,d}\ |\ k_{t,f,d})$, i.e. the probability to obtain exactly $u_{t,f,d}$ unique $k$-mers for a given (non-unique) $k$-mer count of $k_{t,f,d}$ with  sampling with replacement as the underlying random process.
