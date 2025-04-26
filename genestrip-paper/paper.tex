@@ -193,14 +193,14 @@ $t$ & $u_{t,d}$ & $k_{t,f,d}$ & $u_{t,f,d}$ & $E(k_{t,f,d},u_{t,d})$ & $r(k_{t,f
 
 \section{Results}\label{results}
 
-To assess Genestrips's correctness with regard to $k$-mer counting and read classification, we compared its databases and respective analysis results with those from KrakenUniq. We consulted KrakenUniq because Genestrip aims to provide a similar $k$-mer based functionality but with the promise of enabling small databases without loss of accuracy. Also, KrakenUniq is highly trusted by a large user base in bioinformatics and therefore applied in many highly regarded publications \cite{??}.
-
 \subsection{Correctness}
 
-As a first test, we created database contents for KrakenUniq as well as Genestrip that were as identical as possible in terms of their genomic basis and their stored $k$-mers. 
-We then applied the created databases to a suitable fastq file in order to compare the results between both systems. Highly similar results from this check mutually solidify the correctness of both systems since they had been developed completely independently. Besides, Genestrip's correctness is also supported by extensive functional tests with high test coverage.
+To assess Genestrips's correctness with regard to $k$-mer counting and read classification, we compared its databases and respective analysis results with those from KrakenUniq. We consulted KrakenUniq because Genestrip aims to provide a similar $k$-mer based functionality but with the promise of enabling small databases without loss of accuracy. Also, KrakenUniq is highly trusted by a large user base in bioinformatics and therefore applied in many highly regarded publications \cite{??}.
 
-In this context, we chose all RefSeq genomes from the viral super-kingdom on the assembly level "complete genome" (RefSeq Release 229). Figure \ref{viraldbscatter} compares the structure of the two databases produced by KrakenUniq (with 373,250,262 $k$-mers in total) and Genestrip (with 373,989,857 $k$-mers in total). The databases are nearly identical with regard to the number of $k$-mers stored per taxonomic identifier with 15 genomes and respective taxonomic identifiers occurring in KrakenUniq but not in Genestrip and 33 genomes vice versa.\footnote{The differences between the sets of selected genomes are caused by different approaches on how the genomes are preselected and downloaded by KrakenUniq and Genestrip, respectively. They do not constitute erroneous behavior of either system.} The slightly differing sets of genomes result in 158 differences in $k$-mers stored per taxonomic identifier and are caused by the least common ancestor update on stored $k$-mers. 
+As our test procedure, we created database contents under both systems that were as identical as possible in terms of their genomic basis and their stored $k$-mers. 
+We then applied the created databases to a suitable fastq file in order to compare the results between both systems. Highly similar results from this check mutually solidify the correctness of both systems since they had been developed completely independently. But besides, Genestrip's correctness is also supported by extensive functional tests with high test coverage.
+
+To create the databases, we chose all RefSeq genomes from the viral super-kingdom on the assembly level "complete genome" (RefSeq Release 229). Figure \ref{viraldbscatter} compares the structure of the two databases produced by KrakenUniq (with 373,250,262 $k$-mers in total) and Genestrip (with 373,989,857 $k$-mers in total). The databases are nearly identical with regard to the number of $k$-mers stored per taxonomic identifier with 15 genomes and respective taxonomic identifiers occurring in KrakenUniq but not in Genestrip and 33 genomes vice versa.\footnote{The differences between the sets of selected genomes are caused by different approaches on how the genomes are preselected and downloaded by KrakenUniq and Genestrip, respectively. They do not constitute erroneous behavior of either system.} The slightly differing sets of genomes result in 158 differences in $k$-mers stored per taxonomic identifier and are caused by the least common ancestor update on stored $k$-mers (see \cite{} and Section \ref{}, respectively). 
 \begin{figure}[h]%
 \centering
 \begin{tikzpicture}
@@ -230,7 +230,7 @@ Figure \ref{viralscatter} shows a scatter plots of $k$-mer counts and read count
 \centering
 \begin{tikzpicture}
 \begin{axis}[
-title=$k$-mer Counts (a),
+title=(a) $k$-mer Counts,
 xlabel={KrakenUniq},
 ylabel={Genestrip},
 xmode=log,
@@ -245,7 +245,7 @@ table[col sep=semicolon, header=true, x = {ku kmers}, y = {genestrip kmers} , me
 \end{tikzpicture}
 \begin{tikzpicture}
 \begin{axis}[
-title=Counts of Classified Reads (b),
+title=(b) Counts of Classified Reads,
 xlabel={KrakenUniq},
 ylabel={Genestrip},
 xmode=log,
