@@ -149,13 +149,13 @@ Column Name & Description  \\
 \verb|kmers from reads| & The number of $k$-mers from reads for $t$ which are consistent with $t$ \\
 \verb|kmers| & $k_{t,f,d}$\\ %, i.e. \emph{all} $k$-mers which are specific to the $t$'s genome (according to $d$) \\
 \verb|unique kmers| & $u_{t,d}$\\ %, i.e. \emph{all} unique $k$-mers, which are specific to $t$'s genome(s) (according to $d$) \\
-\verb|avg. contig length| & The average length of contiguous sequences of $k$-mers that are specific to the $t$'s genome(s)  \\
+\verb|avg. contig length| & The average length of contiguous sequences of $k$-mers that are specific to $t$'s genome(s) as represented in $d$ \\
 \verb|max contig length| & The maximum length of all contiguous sequences of $k$-mers that are specific to the $t$'s genome(s)  \\
 \verb|avg. read length| & The avg. length of reads for $t$ in base pairs \\
 \verb|db coverage| & $u_{t,f} / u_{t,d}$ \\
 \verb|exp. unique kmers| & $E(k_{t,f,d},u_{t,d})$ (see text below) \\
 \verb|unique kmers / exp.| & The $k$-mer consistency ratio $r(k_{t,f,d}, u_{t,f,d})$ (see text below) \\
-\verb|mean class error| & The mean ratio of $k$-mers from a read $r$ for $t$, where those $k$-mers are not consistent with $t$ per $r$'s total number of $k$-mers. \\
+\verb|mean class error| & The mean ratio of $k$-mers from a read $r$ for $t$, where those $k$-mers are not consistent with $t$ per $r$'s total number of $k$-mers \\
 \end{tabular}
 \caption{Extract of columns from Genestrip's read analysis reports \textbf{TODO: Add normalized kmers and reads here}}\label{csvcolumns}
 \end{table}
@@ -184,7 +184,7 @@ Table \ref{ebv} gives a real-world example where the $k$-mer consistency score p
 \begin{table}[h]
 \centering
 \begin{tabular}{c|c|c|c|c|c|c}
-$t$ & $u_{t,d}$ & $k_{t,f,d}$ & $u_{t,f,d}$ & $E(k_{t,f,d},u_{t,d})$ & $r(k_{t,f,d}, u_{t,f,d})$ & Coverage $u_{t,f,d} / u_{t,d}$  \\
+$t$ & $u_{t,d}$ & $k_{t,f,d}$ & $u_{t,f,d}$ & $E(k_{t,f,d},u_{t,d})$ & $r(k_{t,f,d}, u_{t,f,d})$ & $u_{t,f,d} / u_{t,d}$  \\
   \hline
   10376 & $139,502$ & $4,151,610$ & $120,419$ & $139,514$ & $0.8631$ & $0.8632$
 \end{tabular}
@@ -195,12 +195,12 @@ $t$ & $u_{t,d}$ & $k_{t,f,d}$ & $u_{t,f,d}$ & $E(k_{t,f,d},u_{t,d})$ & $r(k_{t,f
 
 \subsection{Correctness}
 
-To assess Genestrips's correctness with regard to $k$-mer counting and read classification, we compared its databases and respective analysis results with those from KrakenUniq. We consulted KrakenUniq because Genestrip aims to provide a similar $k$-mer based functionality but with the promise of enabling small databases without loss of accuracy. Also, KrakenUniq is highly trusted by a large user base in bioinformatics and therefore applied in many highly regarded publications \cite{??}.
+To assess Genestrips's correctness with regard to $k$-mer counting and read classification, we compared its databases and respective analysis results with those from KrakenUniq. We consulted KrakenUniq because Genestrip aims to provide a similar $k$-mer based functionality while also enabling small databases without loss of accuracy. Moreover, KrakenUniq is highly trusted by a large user base in bioinformatics and therefore applied in highly regarded research publications \cite{??}.
 
-As our test procedure, we created database contents under both systems that were as identical as possible in terms of their genomic basis and their stored $k$-mers. 
-We then applied the created databases to a suitable fastq file in order to compare the results between both systems. Highly similar results from this check mutually solidify the correctness of both systems since they had been developed completely independently. But besides, Genestrip's correctness is also supported by extensive functional tests with high test coverage.
+As part of our test procedure, we created database contents under both systems that were as identical as possible in terms of their genomic basis and their stored $k$-mers. 
+We then applied the created databases to a suitable fastq file in order to compare the results between both systems. Highly similar results from this check mutually solidify the correctness of both systems since they had been developed completely independently. Besides, Genestrip's correctness is also supported by extensive functional tests with high test coverage.
 
-To create the databases, we chose all RefSeq genomes from the viral super-kingdom on the assembly level "complete genome" (RefSeq Release 229). Figure \ref{viraldbscatter} compares the structure of the two databases produced by KrakenUniq (with 373,250,262 $k$-mers in total) and Genestrip (with 373,989,857 $k$-mers in total). The databases are nearly identical with regard to the number of $k$-mers stored per taxonomic identifier with 15 genomes and respective taxonomic identifiers occurring in KrakenUniq but not in Genestrip and 33 genomes vice versa.\footnote{The differences between the sets of selected genomes are caused by different approaches on how the genomes are preselected and downloaded by KrakenUniq and Genestrip, respectively. They do not constitute erroneous behavior of either system.} The slightly differing sets of genomes result in 158 differences in $k$-mers stored per taxonomic identifier and are caused by the least common ancestor update on stored $k$-mers (see \cite{} and Section \ref{}, respectively). 
+To create the databases, we chose all RefSeq genomes from the viral super-kingdom on the assembly level "complete genome" (RefSeq Release 229). Figure \ref{viraldbscatter} compares the structure of the two databases produced by KrakenUniq (with 373,250,262 $k$-mers in total) and Genestrip (with 373,989,857 $k$-mers in total). The databases are nearly identical with regard to the number of $k$-mers stored per taxonomic identifier with 15 genomes and respective taxonomic identifiers occurring in KrakenUniq but not in Genestrip and 33 genomes vice versa.\footnote{The differences between the sets of selected genomes are caused by different approaches on how the genomes are preselected and downloaded by KrakenUniq and Genestrip, respectively. They do not constitute erroneous behavior of either system.} The slightly differing sets of genomes result in 158 differences in $k$-mers stored per taxonomic identifier. They are in parts a consequence of the necessary least common ancestor update on stored $k$-mers (see \cite{} and Section \ref{}, respectively). 
 \begin{figure}[h]%
 \centering
 \begin{tikzpicture}
@@ -223,8 +223,8 @@ table[col sep=semicolon, header=true, x = {ku stored kmers}, y = {genestrip stor
 
 We applied the two databases to a simulated fastq file extracted from \cite{Wu:2024aa} where the file's reads were used to benchmark metagenomic pipelines aiming at the discovery of viruses. As the ground truth is known, this allowed for a similarity comparison but also for checking classification accuracy. The file contains 61,550 long reads extracted from 6,155 viral standard genomes from the RefSeq (\cite{Wu:2024aa}).
 
-Figure \ref{viralscatter} shows a scatter plots of $k$-mer counts and read counts from both tools on a logarithmic scale. Each data point represents a count from KrakenUniq and Genestrip with respect to a taxonomic identifier. As can been seen in (a), the $k$-mer counts are almost identical and only differ in 58 out of a total of 6,248 data points. The differences are rooted in the slightly differing database contents as mentioned above. The read counts in (b) are 100\% identical. As stated before, this high correlation mutually solidifies the correctness of both systems, but obviously, it does yet not highlight the advantages of Genestrip when creating and using small databases for selected groups organisms.
-\textbf{TODO: }Of note, both tools scored are read accuracy of 100\%....
+Figure \ref{viralscatter} shows a scatter plots of $k$-mer counts and read counts from both tools on a logarithmic scale. Each data point represents a count from KrakenUniq and Genestrip with respect to a taxonomic identifier. As can been seen in (a), the $k$-mer counts are almost identical and only differ in 58 out of a total of 6,248 data points. The differences are rooted in the slightly differing database contents as mentioned above. The read counts in (b) are 100\% identical. As stated before, this identity mutually solidifies the correctness of both systems, but obviously, it does yet not highlight the advantages of Genestrip when creating and using small databases for selected groups organisms.
+\textbf{TODO: }Both tools scored are read accuracy of 100\%....
  
 \begin{figure}[h]%
 \centering
