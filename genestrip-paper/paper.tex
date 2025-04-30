@@ -46,9 +46,9 @@
 \maketitle
 
 % Enter abstract:
-The consumption of main memory resources is a significant burden in modern metagenomic analysis when performing read classification and (unique) $k$-mer-counting. Genestrip addresses this issue by focusing on small but freely configurable groups of organisms. Regarding the selected organisms, it produces databases and results comparable to those of Kraken 1 and KrakenUniq but at a fraction of their required memory resources. Thus, database creation and read classification may be performed even on small-sized PCs or edge machines. Moreover, Genestrip can be used to extremely reduce the size of sequence files for downstream steps without loss of relevant data regarding the selected organisms. 
+The consumption of main memory resources is a significant burden in modern metagenomic analysis when creating analysis databases as well as performing read classification and (unique) $k$-mer-counting. Genestrip addresses this issue by focusing on small but freely configurable groups of organisms. Regarding the selected organisms, it produces databases and results comparable to those of Kraken 1 and KrakenUniq but at a fraction of their required memory resources. Thus, database creation and read classification may be performed even on small-sized PCs or edge machines. Moreover, Genestrip can be used to extremely reduce the size of sequence files for downstream steps without loss of relevant data regarding the selected organisms. 
 
-	We assess the correctness, performance and usefulness of Genestrip in different contexts and show that it ascertains high read classification accuracy even though a corresponding database only covers the genomes of the selected organisms. Due to Genestrip's particular way of updating the $k$-mers' least common ancestors stored in a database, both database production and its use can be realized with little memory. This empowers users to flexibly create and apply such databases potentially with a very deep genomic coverage for the selected organisms.
+	We assess the correctness, performance and usefulness of Genestrip in different contexts and show that it ascertains high read classification accuracy even though a corresponding database only covers the genomes of the selected organisms. Due to Genestrip's particular way of updating the $k$-mers' least common ancestors stored in a database, both database production and its use can be realized with little memory. This empowers users to flexibly create and apply such databases potentially with a very deep genomic coverage for the chosen organisms.
 
 \end{titlepage}
 
@@ -225,7 +225,7 @@ table[col sep=semicolon, header=true, x = {ku stored kmers}, y = {genestrip stor
 We applied the two databases to a simulated fastq file extracted from \cite{Wu:2024aa} where the file's reads were used to benchmark metagenomic pipelines aiming at the discovery of viruses. As the ground truth is known, this allowed for a similarity comparison but also for checking classification accuracy. The file contains 61,550 long reads extracted from 6,155 viral standard genomes from the RefSeq (\cite{Wu:2024aa}).
 
 Figure \ref{viralscatter} shows two scatter plots of $k$-mer counts and read counts from both tools on a logarithmic scale. Each data point represents a count from KrakenUniq and Genestrip with respect to a taxonomic identifier. As can been seen in (a), the $k$-mer counts are almost identical and only differ in 58 out of a total of 6,248 data points. The differences are rooted in the slightly differing database contents as mentioned above. The read counts in (b) are 100\% identical. As stated before, this identity mutually solidifies the correctness of both systems, but obviously, it does yet not highlight the advantages of Genestrip when creating and using small databases for selected groups organisms.
-Both tools scored are read classification accuracy of 99.4\% on the rank "genus" and 95.3\% on the rank "species".
+Both tools scored are read classification accuracy of 99.4\% on the genus rank and 95.3\% on the species rank.
 
 \begin{figure}[h]%
 \centering
@@ -307,9 +307,12 @@ table[col sep=semicolon, header=true, x = {ku reads}, y = {genestrip reads} , me
 
 The following results highlight the importance of the update phase according to Section \ref{background} in the context of smaller databases.
 
-As a first example, we created two small viral databases based on the RefSeq covering \emph{human viruses} only\footnote{The list of human viruses originates from \url{https://viralzone.expasy.org/678}. Some human viruses known to be missing were manually added.} -- again under both KrakenUniq and Genestrip. We again assured that the databases were as identical as possible in terms of their genomic basis and their stored $k$-mers.
-Figure \ref{viraldbscomp} compares the viral database contents for the databases from Section \ref{correctness} with the respective "human virus only" database for (a) KrakenUniq and (b) Genestrip. The plots only depict entries of the 212 taxonomic identifiers covered in both databases.
-While datapoints for the KrakenUniq databases scatter significantly this is not the case for Genestrip ...
+As a first example, we created two small viral databases based on the RefSeq covering \emph{human viruses only}\footnote{The list of human viruses originates from \url{https://viralzone.expasy.org/678}. Some human viruses known to be missing were manually added. All taxonomic identifiers were chosen on the species rank.} -- again under both KrakenUniq and Genestrip. We again assured that the databases were as identical as possible in terms of their genomic basis and their stored $k$-mers.
+Figure \ref{viraldbscomp} compares the viral database contents for the databases from Section \ref{correctness} with the respective "human virus only" database for (a) KrakenUniq and (b) Genestrip. The plots only depict entries of the 407 taxonomic identifiers referenced in both databases.
+
+Regarding Genestrip's databases from Figure \ref{viraldbscomp} (b), all $k$-mer counts on the species rank and below are identical as an effect of the update phase (as discussed in Section \ref{background}). This is an important precondition met by Genestrip's "human virus only" database to avoid false positives at read classification time. Nevertheless, data points from higher taxonomic ranks scatter because the complete viral database contains $k$-mers from many more non-human viruses, and these $k$-mers where pushed to higher ranks due to the least common ancestor update. Obviously, these additional $k$-mers are not required to accurately classify reads with respect to human viruses. The human virus database contains only 4.175.715 $k$-mers versus with a disk size of just 60 MB, whereas the complete viral databases has as disk size of 5.4 GB and almost 90 times more $k$-mers.
+
+KrakenUniq...
 
 \begin{figure}[h]%
 \centering
@@ -338,16 +341,15 @@ ymode=log,
 width = 0.4\textwidth,
 height = 0.4\textwidth,
 legend columns=-1,
-legend entries={{Below Species},{Species},{Genus},{Above Genus}},
+legend entries={{Species or Below},{Genus},{Above Genus}},
 legend to name=named, 
 ] 
 \addplot+ [scatter, only marks,mark size=1pt,
 point meta=explicit symbolic,
  scatter/classes={
-            {below species}={mark=*,blue},
-            species={mark=square*,black},
-            genus={mark=o,green},
-            null={mark=square,red} %  <-- don't add comma
+            {species or below}={mark=*,blue},
+            genus={mark=square*,green},
+            null={mark=triangle*,red} %  <-- don't add comma
         }
 ]
 table[col sep=semicolon, header=true, x = {viral kmers}, y = {human_virus kmers} , meta={rank}] {\csvpath results/viral_human_virus_dbcomp.csv};
