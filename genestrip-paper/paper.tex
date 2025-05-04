@@ -368,7 +368,7 @@ table[col sep=semicolon, header=true, x = {viral_db kmers}, y = {human_virus_db 
 \caption{Scatter plots of $k$-mers per taxonomic identifier in a complete viral database versus a "human virus only" database both from the RefSeq created via (a) KrakenUniq and (b) Genestrip (based on a logarithmic scale with 1 added to each value in order to enable the representation of zero-counts).}\label{viraldbscomp}
 \end{figure}
 
-Figure \ref{genestripsalivascatter} (a) shows the scatter plots of $k$-mer counts and read counts from Genestrip on a logarithmic scale for the complete viral database versus the "human virus only" database when applied to the human saliva fastq file from Section {}. 
+Figure \ref{genestripsalivascatter} (a) shows the scatter plots of $k$-mer counts and read counts from Genestrip on a logarithmic scale for the complete viral database versus the "human virus only" database when applied to the human saliva fastq file from Section \ref{correctness}. 
 
 \begin{figure}[h]%
 \centering
@@ -420,9 +420,7 @@ table[col sep=semicolon, header=true, x = {genestrip reads 1}, y = {genestrip re
 \end{axis}
 \end{tikzpicture}
 \\
-\\
 \textbf{Genestrip}\\
-\\
 \begin{tikzpicture}
 \begin{axis}[
 title=(c) $k$-mer Counts,
@@ -470,13 +468,31 @@ table[col sep=semicolon, header=true, x = {genestrip reads 1}, y = {genestrip re
 \end{axis}
 \end{tikzpicture}
 \\
-\\
  
 \ref{named} 
-\caption{Scatter plots of $k$-mers (a, c) and classified reads (b, d) for the real-world fastq file from sequencing human saliva analyzed with KrakenUniq (a, b)  and Genestrip (c, d) using the complete viral database versus the "human virus only" database both as in Figure \ref{viraldbscomp} (based on a logarithmic scale with 1 added to each value in order to enable the representation of zero-counts).}\label{krakenuniqsalivascatter}
+\caption{Scatter plots of $k$-mers (a, c) and classified reads (b, d) for the human saliva fastq from Section \ref{correctness} analyzed with KrakenUniq (a, b) and Genestrip (c, d) using the complete viral database versus the "human virus only" database both as in Figure \ref{viraldbscomp} (based on a logarithmic scale with 1 added to each value in order to enable the representation of zero-counts).}\label{krakenuniqsalivascatter}
 \end{figure}
 
-We applied the two human virus databases to the human saliva file from section \ref{}...				
+ Let $S_d$ be the list of all taxonomic identifiers on the rank species or below  in a respective database $d$ from KrakenUniq or Genestrip.
+In addition to the results from Figur \ref{krakenuniqsalivascatter}, we measured the mean absolute error $err_{f,cv,hv}$ of $k$-mer counts for ?? human saliva fastq files from ?? different donors between the complete viral databases $cv$ and the "human virus only" databases $hv$ with $cv$ and $hv$ both belonging either to KrakenUniq or Genestrip, respectively:
+\[ err_{f,cv,hv} := 1 / | S_{cv} \cap S_{hv} | \cdot \sum_{t \in S_{cv} \cap S_{hv}} |k_{t,f,cv} -  k_{t,f,hv}| \]
+We did the same with regard to the counts of classified reads. As shown in Table \ref{errorscvhv} the error rates under Genestrip are considerably lower than under KrakenUniq across all examples. These results solidify the accuracy of Genestrip analysis results in the context of smaller databases.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{r|r|r|r|r|r|r}
+\# $f$ & Reads in $f$ & Avg. BPs / Read & 
+\multicolumn{2}{c}{Err. for $k$-mers (Std. Dev.)} & 
+\multicolumn{2}{c}{Err for Reads (Std Dev.)} \\
+& & & KrakenUniq & Genstrip & KrakenUniq & Genstrip \\
+  \hline
+\\  
+\end{tabular}
+\caption{Mean absolute error of $k$-mer counts and read counts for ?? human saliva fastq files between the complete viral databases $cv$ and the "human virus only" databases $hv$ belonging to KrakenUniq and Genestrip, respectively. Standard deviations for the errors are included in parenthises.}\label{errorscvhv}
+\end{table}
+
+\subsection{Example Use Case: "Tick Borne Bacterial Infections"}
 
 We used the fastq files from \citep{nanoporeticks} where eight field-collected ticks were checked for tick-borne bacterial infections using Nanopore sequencing.
 We generated an adequate Genestrip database covering well-known tick-transmitted bacteria as detailed in Line 1 of 
@@ -494,27 +510,9 @@ Type & Name & Description & Disk Size &$k$-mers\\
 G & Tick Borne & Genomes of a selection ??? species from the genuses Yersinia, Bartonella, Rickettsia, Anaplasma, Ehrlichia, Borrelia, Borreliella, Chlamydia, Mycoplasma, Malacoplasma, Mycoplasmoides and Metamycoplasma from the RefSeq (see taxlist for details)& 3 GB & 228 Mio. \\
 K & Standard & From \url{https://benlangmead.github.io/aws-indexes/k2} (6/16/2022) & 377 GB & ?? \\
 K & Tick Borne K & Same as for \enquote{Tick Borne} & ?? GB & ?? \\
-K2 & Standard & From \url{https://benlangmead.github.io/aws-indexes/k2} (9/4/2024) & 80 GB & 15046 Mio. \\  
-K2 & Tick Borne K2 & Same as for \enquote{Tick Borne} & ?? GB & ?? \\
 \end{tabular}
-\caption{Databases used for accuracy and performance comparisons (\enquote{G} means Genestrip, \enquote{K} means KrakenUniq, \enquote{K2} means Kraken2)}\label{dbs}
+\caption{Databases used for accuracy and performance comparisons (\enquote{G} means Genestrip, \enquote{K} means KrakenUniq)}\label{dbs}
 \end{table}
-
-TODO: Correlation figures for $k$-mer counts, number of $k$-mers per database for selected species per rank (for tick borne K, tick borne and tick borne k2)
-
-TODO: Same for grape vine fungi...
-
-\subsection{Relevance of the Update Phase}
-
-In order to validate the relevance of Genestrip's update phase we compared the contents of variants of the same Genestrip database. (See Section \ref{background} and Table \ref{goals} for background on the update phase.) In particular, we assessed, how the number of $k$-mers associated with each taxonomic identifier changes depending on the spectrum of genomes considered for the least common ancestor update. The database variants differed by having either
-\begin{enumerate}
-	\item no update phase (but just the entry phase), \label{noupdate}
-	\item an update phase based \emph{exclusively} on the genomes from the entry phase, \label{minupdate}
-	\item an update phase based on \emph{all} of the genomes of the corresponding taxonomic (super-)kingdom from the RefSeq.\label{completeupdate} 
-\end{enumerate}
-Table \ref{updaterelevance} documents respective results for 4 different databases: Perhaps not surprisingly, the average percentage of $k$-mers that moved to higher taxonomic ranks is large when comparing variant \ref{noupdate} against variant \ref{minupdate} (see Column ($\bullet$)). However, in three out of four databases, a considerable amount of $k$-mers was also moved up when comparing variant \ref{minupdate} against variant \ref{completeupdate} (see Column($\circ$)). This indicates the importance of the update phase according to variant \ref{completeupdate} as otherwise, $k$-mer matches may lead to false positives at analysis time.
-
-Figure \ref{tickchangekmers1} compares the results of fastq file analyses based on the \enquote{Tick Borne} database using variant \ref{minupdate} versus variant \ref{completeupdate}. We used the fastq files from \cite{nanoporeticks} and show the results for Tick 3 and Tick 6 as representative examples. The considerable changes in unique $k$-mer counts confirm that variant \ref{minupdate} is inferior for reliable $k$-mer counting due to false positives. Table \ref{topresultsticks} shows how the top ten hits under variant \ref{completeupdate} have changed under \ref{minupdate}: Major differences of unique $k$-mer counts and of resulting frequency ranks solidify the design choice for Genestrip to employ an update phase according to \ref{completeupdate} as its default. Noteworthy, the results from Table \ref{topresultsticks} are also in line with the findings from \cite{nanoporeticks}.
 
 \begin{table}[h]
 \centering
@@ -588,18 +586,6 @@ Name & Tax. Id. & Unique $k$-mers under Variant \ref{minupdate} & Resulting Rank
 \caption{Change of unique $k$-mer counts for top ten hits of Tick 3 and Tick 6 from \cite{nanoporeticks} using Genestrip and the variants \ref{minupdate} versus \ref{completeupdate} of the \enquote{Tick Borne} database}\label{topresultsticks}
 \end{table}
 
-\subsection{Abundance Estimation via the Normalized $k$-mer Count}
-
-We assess the quality of an abundance estimation via the 
-normalized $k$-mer count $k'_{t,f,d}$ from Section \ref{measures}.
-Our assessment is based on three well-defined, sequenced mock community datasets named \enquote{PB\_Zymo}, \enquote{ONT\_Zymo} and \enquote{PB\_ATCC} as used and described in \cite{classifier_eval}.
-The datasets' real species abundance is known and stated by corresponding producers. To determine the relative estimated abundance $A_t$ with Genestrip, we compute
-\[ A_{t,f,d} = k'_{t,f,d} / \sum_{s \in S_d} k'_{s,f,d} \]
-where $S_d$ is the list of all species-level taxonomic identifiers in the respective Genestrip database $d$.
-
-We created three Genestrip databases where each contains just the taxonomic identifiers of all bacterial species as present in a corresponding dataset from above. While this is not a realistic scenario (as ground truth is partially used with respect to the present species), it still allows for a quality assessment of the abundance estimation itself. Note that successful abundance estimation depends on both, the use of species-level $k$-mer counting for this purpose \emph{and} the use of $k'_{t,f,d}$ as a suitable abundance measure. Regarding a dataset (i.e. fastq file) $f$ and a database $d$, we use the averaged relative distance to the real abundances on the species level as the error quantification:
-\[ err_{f,d} := 1 / | S_d | \cdot \sum_{t \in S_d} |a_{f,t} -  A_{t,f,d}| / a_{f,t} \]
-with $a_{f,t}$ being the true relative abundance of $t$ in $f$.
 \subsection{Performance}
 
 To assess Genestrips's performance for $k$-mer counting, we compared its analysis time and memory use with 
