@@ -18,6 +18,12 @@
 %
 \newcommand{\csvpath}{/Users/dpfeifer/dev/intellij/genestrip-docs/genestrip-paper/}
 
+%
+% Workaround for faster compile without scatter plots:
+%
+\newif\ifscatter
+\scattertrue
+
 % Enter paper title to populate PDF metadata:
 %\hypersetup{pdftitle={MGenestrip: Efficient read classification, filtering and $k$-mer counting for selected groups of species}}
 
@@ -204,100 +210,109 @@ As part of our test procedure, we created database contents under both systems t
 We then applied the created databases to a suitable fastq file in order to compare the results between both systems. Highly similar results from this check mutually solidify the correctness of both systems since they had been developed completely independently. Besides, Genestrip's correctness is also supported by extensive functional tests with high test coverage.
 
 To create the databases, we chose all RefSeq genomes from the viral super-kingdom on the assembly level "complete genome" (RefSeq Release 229). Figure \ref{viraldbscatter} compares the structure of the two databases produced by KrakenUniq (with 373,250,262 $k$-mers in total) and Genestrip (with 373,989,857 $k$-mers in total). The databases are nearly identical with regard to the number of $k$-mers stored per taxonomic identifier with 15 genomes and respective taxonomic identifiers occurring in KrakenUniq but not in Genestrip and 33 genomes vice versa.\footnote{The differences between the sets of selected genomes are caused by different approaches on how the genomes are preselected and downloaded by KrakenUniq and Genestrip, respectively. They do not constitute erroneous behavior of either system.} The slightly differing sets of genomes result in 158 differences in $k$-mers stored per taxonomic identifier. A large part of differences is a consequence of the necessary least common ancestor update on stored $k$-mers (see \cite{} and Section \ref{}, respectively). 
-%\begin{figure}[h]%
-%\centering
-%\begin{tikzpicture}
-%\begin{axis}[
-%title=$k$-mer Counts,
-%xlabel={KrakenUniq},
-%ylabel={Genestrip},
-%xmode=log,
-%ymode=log,
-%width = 0.4\textwidth,
-%height = 0.4\textwidth,
-%legend columns=-1,
-%legend entries={{Species or Below},{Genus},{Above Genus}},
-%legend to name=named
-%]
-%\addplot+ [scatter, only marks,mark size=1pt,
-%point meta=explicit symbolic,
-% scatter/classes={
-%            {species or below}={mark=*,blue},
-%            genus={mark=square*,green},
-%            null={mark=triangle*,red} %  <-- don't add comma
-%        }
-%]
-%table[col sep=semicolon, header=true, x = {kmers 2}, y = {kmers 1} , meta=rank] {\csvpath results/viral_gs_ku_dbcomp.csv};
-%\end{axis}
-%\end{tikzpicture}
-%\\
-%
-%\ref{named}
-%
-%\caption{Scatter plot of $k$-mer for RefSeq databases from KrakenUniq and Genestrip covering the entire viral super-kingdom (based on a logarithmic scale with 1 added to each value in order to enable the representation of zero-counts). The 27,098 depicted entries cover all of the taxonomic identifiers present in both databases.}\label{viraldbscatter}
-%\end{figure}
+
+\begin{figure}[h]%
+\centering
+\ifscatter
+\begin{tikzpicture}
+\begin{axis}[
+title=$k$-mer Counts,
+xlabel={KrakenUniq},
+ylabel={Genestrip},
+xmode=log,
+ymode=log,
+width = 0.4\textwidth,
+height = 0.4\textwidth,
+legend columns=-1,
+legend entries={{Species or Below},{Genus},{Above Genus}},
+legend to name=legend1
+]
+\addplot+ [scatter, only marks,mark size=1pt,
+point meta=explicit symbolic,
+ scatter/classes={
+            {species or below}={mark=*,blue},
+            genus={mark=square*,green},
+            null={mark=triangle*,red} %  <-- don't add comma
+        }
+]
+table[col sep=semicolon, header=true, x = {kmers 2}, y = {kmers 1} , meta=rank] {\csvpath results/viral_gs_ku_dbcomp.csv};
+\end{axis}
+\end{tikzpicture}
+\\
+
+\ref{legend1}
+
+\fi
+\caption{Scatter plot of $k$-mer for RefSeq databases from KrakenUniq and Genestrip covering the entire viral super-kingdom (based on a logarithmic scale with 1 added to each value in order to enable the representation of zero-counts). The 16,087 depicted entries cover all of the taxonomic identifiers present in both databases.}\label{viraldbscatter}
+\end{figure}
 
 We applied the two databases to a simulated fastq file extracted from \cite{Wu:2024aa} where the file's reads were used to benchmark metagenomic pipelines aiming at the discovery of viruses. As the ground truth is known, this allowed for a similarity comparison but also for checking classification accuracy. The file contains 61,550 long reads extracted from 6,155 viral standard genomes from the RefSeq (\cite{Wu:2024aa}).
 
 Figure \ref{viralscatter} shows two scatter plots of $k$-mer counts and read counts from both tools on a logarithmic scale. Each data point represents a count from KrakenUniq and Genestrip with respect to a taxonomic identifier. As can been seen in (a), the $k$-mer counts are almost identical and only differ in 58 out of a total of 6,248 data points. The differences are rooted in the slightly differing database contents as mentioned above. The read counts in (b) are 100\% identical. As stated before, this identity mutually solidifies the correctness of both systems, but obviously, it does  not yet fhighlight the advantages of Genestrip when creating and using small databases for selected groups organisms.
 Both tools scored a read classification accuracy of 99.4\% on the genus rank and 95.3\% on the species rank.
 
-%\begin{figure}[h]%
-%\centering
-%\begin{tikzpicture}
-%\begin{axis}[
-%title=(a) $k$-mer Counts,
-%xlabel={KrakenUniq},
-%ylabel={Genestrip},
-%xmode=log,
-%ymode=log,
-%width = 0.4\textwidth,
-%height = 0.4\textwidth,
-%legend columns=-1,
-%legend entries={{Species or Below},{Genus},{Above Genus}},
-%legend to name=named
-%]
-%\addplot+ [scatter, only marks,mark size=1pt,
-%point meta=explicit symbolic,
-% scatter/classes={
-%            {species or below}={mark=*,blue},
-%            genus={mark=square*,green},
-%            null={mark=triangle*,red} %  <-- don't add comma
-%        }
-%]
-%table[col sep=semicolon, header=true, x = {kmers 2}, y = {kmers 1} , meta=rank] {\csvpath results/viral_fastq1_gs_ku_comp.csv};
-%\end{axis}
-%\end{tikzpicture}
-%\begin{tikzpicture}
-%\begin{axis}[
-%title=(b) Counts of Classified Reads,
-%xlabel={KrakenUniq},
-%ylabel={},
-%xmode=log,
-%ymode=log,
-%width = 0.4\textwidth,
-%height = 0.4\textwidth
-%]
-%\addplot+ [scatter, only marks,mark size=1pt,
-%point meta=explicit symbolic,
-% scatter/classes={
-%            {species or below}={mark=*,blue},
-%            genus={mark=square*,green},
-%            null={mark=triangle*,red} %  <-- don't add comma
-%        }
-%]
-%table[col sep=semicolon, header=true, x = {reads 2}, y = {reads 1} , meta=rank] {\csvpath results/viral_fastq1_gs_ku_comp.csv};
-%]
-%\end{axis}
-%\end{tikzpicture}
-%
-%\caption{Scatter plots of $k$-mers (a) and classified reads (b) for a simulated viral fastq file from \cite{Wu:2024aa} analyzed with KrakenUniq and Genestrip using the viral databases from Figure \ref{viraldbscatter} (based on a logarithmic scale with 1 added to each value in order to enable the representation of zero-counts).}\label{viralscatter}
-%\end{figure}
+\begin{figure}[h]%
+\centering
+\ifscatter
+\begin{tikzpicture}
+\begin{axis}[
+title=(a) $k$-mer Counts,
+xlabel={KrakenUniq},
+ylabel={Genestrip},
+xmode=log,
+ymode=log,
+width = 0.4\textwidth,
+height = 0.4\textwidth,
+legend columns=-1,
+legend entries={{Species or Below},{Genus},{Above Genus}},
+legend to name=legend2
+]
+\addplot+ [scatter, only marks,mark size=1pt,
+point meta=explicit symbolic,
+ scatter/classes={
+            {species or below}={mark=*,blue},
+            genus={mark=square*,green},
+            null={mark=triangle*,red} %  <-- don't add comma
+        }
+]
+table[col sep=semicolon, header=true, x = {kmers 2}, y = {kmers 1} , meta=rank] {\csvpath results/viral_fastq1_gs_ku_comp.csv};
+\end{axis}
+\end{tikzpicture}
+\begin{tikzpicture}
+\begin{axis}[
+title=(b) Counts of Classified Reads,
+xlabel={KrakenUniq},
+ylabel={},
+xmode=log,
+ymode=log,
+width = 0.4\textwidth,
+height = 0.4\textwidth
+]
+\addplot+ [scatter, only marks,mark size=1pt,
+point meta=explicit symbolic,
+ scatter/classes={
+            {species or below}={mark=*,blue},
+            genus={mark=square*,green},
+            null={mark=triangle*,red} %  <-- don't add comma
+        }
+]
+table[col sep=semicolon, header=true, x = {reads 2}, y = {reads 1} , meta=rank] {\csvpath results/viral_fastq1_gs_ku_comp.csv};
+]
+\end{axis}
+\end{tikzpicture}
+\\
+
+\ref{legend2}
+
+\fi
+\caption{Scatter plots of $k$-mers (a) and classified reads (b) for a simulated viral fastq file from \cite{Wu:2024aa} analyzed with KrakenUniq and Genestrip using the viral databases from Figure \ref{viraldbscatter} (based on a logarithmic scale with 1 added to each value in order to enable the representation of zero-counts).}\label{viralscatter}
+\end{figure}
 
 As a real-world example, we applied the two databases to a short-read fastq file from sequencing DNA from a person's saliva with about ?? reads and an average read length of about 150 base pairs. Figure \ref{viralscatter} shows the scatter plots of $k$-mer counts and read counts from KrakenUniq and Genestrip on a logarithmic scale. As can be seen, the results are 100\% identical.
 
 \begin{figure}[h]%
 \centering
+\ifscatter
 \begin{tikzpicture}
 \begin{axis}[
 title=(a) $k$-mer Counts,
@@ -307,6 +322,9 @@ xmode=log,
 ymode=log,
 width = 0.4\textwidth,
 height = 0.4\textwidth,
+    legend columns=-1,
+    legend entries={{Species or Below},{Genus},{Above Genus}},
+    legend to name=legend3
 ]
 \addplot+ [scatter, only marks,mark size=1pt,
 point meta=explicit symbolic,
@@ -341,7 +359,11 @@ table[col sep=semicolon, header=true, x = {reads 2}, y = {reads 1} , meta=rank] 
 ]
 \end{axis}
 \end{tikzpicture}
+\\
 
+\ref{legend3}
+
+\fi
 \caption{Scatter plots of $k$-mers (a) and classified reads (b) for a real-world fastq file from sequencing a human saliva sample analyzed with KrakenUniq and Genestrip using the viral databases from Figure \ref{viraldbscatter} (based on a logarithmic scale with 1 added to each value in order to enable the representation of zero-counts).}\label{viralscatter}
 \end{figure}
 
@@ -358,6 +380,7 @@ KrakenUniq's corresponding $k$-mer counts from Figure \ref{viraldbscomp} (b) are
 
 \begin{figure}[h]%
 \centering
+\ifscatter
 \textbf{$k$-mers in Database}\\
 \begin{tikzpicture}
 \begin{axis}[
@@ -368,7 +391,10 @@ xmode=log,
 ymode=log,
 width = 0.4\textwidth,
 height = 0.4\textwidth,
-] 
+    legend columns=-1,
+    legend entries={{Species or Below},{Genus},{Above Genus}},
+    legend to name=legend4
+]
 \addplot+ [scatter, only marks,mark size=1pt,
 point meta=explicit symbolic,
  scatter/classes={
@@ -402,7 +428,11 @@ point meta=explicit symbolic,
 table[col sep=semicolon, header=true, x = {kmers 1}, y = {kmers 2} , meta=rank] {\csvpath results/viral_db_human_virus_db_ku_ku_dbcomp.csv};
 \end{axis}
 \end{tikzpicture}
+\\
 
+\ref{legend4}
+
+\fi
 \caption{Scatter plots of $k$-mers per taxonomic identifier in a complete viral database versus a "human virus only" database both from the RefSeq created via (a) KrakenUniq and (b) Genestrip (based on a logarithmic scale with 1 added to each value in order to enable the representation of zero-counts).}\label{viraldbscomp}
 \end{figure}
 
@@ -410,6 +440,7 @@ Figure \ref{genestripsalivascatter} (a) shows the scatter plots of $k$-mer count
 
 \begin{figure}[h]%
 \centering
+\ifscatter
 \textbf{KrakenUniq}\\
 \begin{tikzpicture}
 \begin{axis}[
@@ -420,7 +451,10 @@ xmode=log,
 ymode=log,
 width = 0.4\textwidth,
 height = 0.4\textwidth,
-] 
+    legend columns=-1,
+    legend entries={{Species or Below},{Genus},{Above Genus}},
+    legend to name=legend5
+]
 \addplot+ [scatter, only marks,mark size=1pt,
 point meta=explicit symbolic,
  scatter/classes={
@@ -441,8 +475,7 @@ ylabel={},
 xmode=log,
 ymode=log,
 width = 0.4\textwidth,
-height = 0.4\textwidth,
-]
+height = 0.4\textwidth]
 \addplot+ [scatter, only marks,mark size=1pt,
 point meta=explicit symbolic,
  scatter/classes={
@@ -464,10 +497,7 @@ ylabel={Human Viruses Only},
 xmode=log,
 ymode=log,
 width = 0.4\textwidth,
-height = 0.4\textwidth,
-legend columns=-1,
-legend entries={{Species or Below},{Genus},{Above Genus}},
-legend to name=named, 
+height = 0.4\textwidth
 ] 
 \addplot+ [scatter, only marks,mark size=1pt,
 point meta=explicit symbolic,
@@ -502,7 +532,11 @@ point meta=explicit symbolic,
 table[col sep=semicolon, header=true, x = {reads 1}, y = {reads 2} , meta=rank] {\csvpath results/viral_human_virus_saliva2_gs_gs_comp.csv};
 \end{axis}
 \end{tikzpicture}
+\\
 
+\ref{legend5}
+
+\fi
 \caption{Scatter plots of $k$-mers (a, c) and classified reads (b, d) for the human saliva fastq file from Section \ref{correctness} analyzed with KrakenUniq (a, b) and Genestrip (c, d) using the complete viral database versus the "human virus only" database both as in Figure \ref{viraldbscomp} (based on a logarithmic scale with 1 added to each value in order to enable the representation of zero-counts).}\label{krakenuniqsalivascatter}
 \end{figure}
 
