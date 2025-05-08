@@ -22,7 +22,7 @@
 % Workaround for faster compile without scatter plots:
 %
 \newif\ifscatter
-\scattertrue
+%\scattertrue
 
 % Enter paper title to populate PDF metadata:
 %\hypersetup{pdftitle={MGenestrip: Efficient read classification, filtering and $k$-mer counting for selected groups of species}}
@@ -543,20 +543,24 @@ table[col sep=semicolon, header=true, x = {reads 1}, y = {reads 2} , meta=rank] 
  
 In addition to the results from Figure \ref{krakenuniqsalivascatter}, we measured the mean absolute error of $k$-mer counts for ?? "human saliva" fastq files from ?? different donors between the complete viral database $cv$ and the "human virus only" database $hv$ in a variant where $cv$ and $hv$ both belong to KrakenUniq and another variant where they both belong to Genestrip. 
 
-Let $S_d$ be the list of all taxonomic identifiers on the rank species or below in a respective database $d = cv$ or $d = hv$. The mean absolute error $err_{f,cv,hv}$ is then defined as follows:
-\[ err_{f,cv,hv} := 1 / | S_{cv} \cap S_{hv} | \cdot \sum_{t \in S_{cv} \cap S_{hv}} |k_{t,f,cv} -  k_{t,f,hv}| \]
+Let $S_d$ be the list of all taxonomic identifiers on the rank species or below in a respective database $d = cv$ or $d = hv$.
+The mean absolute percentage error $err_{f,cv,hv}$ is then defined as follows:\footnote{The expression "$k_{t,f,cv} + 1$" in the formula includes a Laplace correction to avoid division by zero.}
+\[ err_{f,cv,hv} := 100 / | S_{cv} \cap S_{hv} | \cdot \sum_{t \in S_{cv} \cap S_{hv}} |k_{t,f,cv} - k_{t,f,hv}| / (k_{t,f,cv} + 1) \]
 Analogously, we also measured the error with regard to the counts of classified reads. As shown in Table \ref{errorscvhv} the error rates under Genestrip are considerably lower than under KrakenUniq across all examples. These results solidify the accuracy of Genestrip analysis results in the context of smaller databases.
 
 \begin{table}[h]
 \centering
-\small
-\begin{tabular}{r|r|r|r|r|r|r}
-\# $f$ & Reads in $f$ & Avg. BPs / Read & 
-\multicolumn{2}{c}{Err. for $k$-mers (Std. Dev.)} & 
-\multicolumn{2}{c}{Err. for Class. Reads (Std Dev.)} \\
-& & & KrakenUniq & Genstrip & KrakenUniq & Genstrip \\
-  \hline
-\\  
+\footnotesize
+\begin{tabular}{r|r|r|rr|rr|rr|rr}
+\# $f$ & Reads in $f$ & Avg. BPs / Read &
+\multicolumn{4}{c|}{Err. for $k$-mers (Std. Dev.)} &
+\multicolumn{4}{c}{Err. for Class. Reads (Std Dev.)} \\
+& & & \multicolumn{2}{c|}{KrakenUniq} & \multicolumn{2}{c|}{Genestrip} & \multicolumn{2}{c|}{KrakenUniq} & \multicolumn{2}{c}{Genestrip}
+%no; key; reads; gs read len;
+%gs errs; gs kmer err; gs kmer err std dev; gs read err; gs read err std dev;
+%%ku errs; ku kmer err; ku kmer err std dev; ku read err; ku read err std dev;
+\csvreader[separator=semicolon,before filter=\\\hline]{\csvpath results/viral_human_virus_errors_gs_ku_comp.csv}{}
+{ \csvcoli & \csvcoliii & \csvcoliv & \csvcolxi & (\csvcolxii) & \csvcolvi & (\csvcolvii) & \csvcolxiii & (\csvcolxiv) & \csvcolviii & (\csvcolix)}
 \end{tabular}
 \caption{Mean absolute error of $k$-mer counts and read counts for ?? "human saliva" fastq files between the complete viral database $cv$ and the "human virus only" database $hv$ where $cv$ and $hv$ both belong to KrakenUniq or Genestrip, respectively. Standard deviations for the errors are included in parentheses.}\label{errorscvhv}
 \end{table}
