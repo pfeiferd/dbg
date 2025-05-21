@@ -84,7 +84,7 @@ Based on this approach, Genestrip achieves low memory footprint during database 
 
 Genestrip's $k$-mer counting results are similar to those of KrakenUniq \citep{krakenUniq} with regard to the selected organisms. Much as KrakenUniq, Genestrip supports unique $k$-mer counting with exact counts but with low memory overhead.
 
-Note that Kraken 2 may not a suitable alternative either in fields such as medical diagnostics where classification accuracy is paramount. Although Kraken 2 produces smaller databases than KrakenUniq, it compresses stored $k$-mers under loss of information, therefore enabling false positive $k$-mer counts \cite{kraken2, lowmemkraken}. 
+Note that Kraken 2 is not a suitable alternative either in fields such as medical diagnostics where read classification accuracy is paramount. Although Kraken 2 produces smaller databases than KrakenUniq, it compresses stored $k$-mers under loss of information, therefore enabling false positive $k$-mer counts \cite{kraken2, lowmemkraken}. 
 
 \section{Methods}\label{methods}
 
@@ -93,7 +93,7 @@ Note that Kraken 2 may not a suitable alternative either in fields such as medic
 Genestrip's database generation mandates the setting of groups of organisms whose genomes will be exclusively represented in a resulting database. Users choose desired genuses, species or strains via a configuration file by listing respective \taxon s. If higher ranked \taxon s are entered, then by default, \emph{all} of the descending \taxon s will be included and $k$-mers of their genomes will be added to the database accordingly. 
 
 Genestrip generates a database for a selected group of organisms primarily via 
-genomes from the RefSeq \citep{refseq} but genomes from Genbank and additional genomic files may be included on top.
+genomes from the RefSeq \citep{refseq} but genomes from Genbank and additional genomic files may be included on top or instead.
 To better handle the complexity of the generation process, it employs a goal-oriented approach in similarity to Make \citep{feldman1979make}: Upon access, each goal returns a file or an object in main memory. A goal is only executed if its result is not yet available. Goal execution may involve the access of other goals which turn, may trigger their execution. Respective goal dependencies are explicitly specified in terms of a directed acyclic graph. 
 
 Figure \ref{f:goalgraph} depicts an extract of Genestrip's goal graph: Several goals (prefixed with \verb|d:|) revolve around downloading files from the RefSeq, Genbank and other data from the NCBI. Several object goals (prefixed with \verb|o:|) load files and represent them as data structures in main memory for further processing. Most file goals (prefixed with \verb|f:|) write computational results to files.
@@ -112,7 +112,7 @@ the goals \verb|match| and \verb|matchlr| are for fastq file analysis but they w
 Genestrip stores a database primarily as a large array \verb|S| of sorted long values. Each long value encodes a $k$-mer from a reference genome of a selected organism. The default for $k$ is $31$ but other values are possible. A second array of the same size as \verb|S| encodes \taxon s for each $k$-mer in \verb|S|. During fastq file analysis, lookups in \verb|S| are performed via a binary search.
 
 At analysis time, a bit vector with same size as \verb|S| indicates which $k$-mers from \verb|S| were found at least once. This is sufficient for exact unique $k$-mer counting and is space-efficient, as it requires only about 1.6\% of additional memory with respect to \verb|S|.
-An optional Bloom filter \citep{bloomfilter} also contains all stored $k$-mers. It is used by default at analysis time to check whether a certain $k$-mer is stored in \verb|S|. A negative result avoids a more expensive binary search in \verb|S| and therefore saves overall execution cost. 
+An additional Bloom filter \citep{bloomfilter} also contains all stored $k$-mers. It is used by default at analysis time to check whether a certain $k$-mer is stored in \verb|S|. A negative result avoids a more expensive binary search in \verb|S| and therefore saves overall execution cost. 
 Moreover, the parts of the NCBI taxonomy tree \citep{taxonomy} which are required at analysis time are also included in 
 the database. The taxonomy extract comprises entries for the selected organisms and all of its ancestors.
 
@@ -137,20 +137,36 @@ Table \ref{goals} describes the most relevant goals for database generation in t
 
 \subsection{Read Classification}
 
-Read classification like Kraken. Handling Reverse Complements. Error Rate. Multi-Threading, Fully automated database builds. Genomic Dust, Removing $k$-mers from contaminating genomes.
+The principal read classification algorithm is similar to the one from  Kraken 1 \cite{kraken}. However, when considering reverse complements of reads, Genestrip supports two alternative approaches with the first as its default: 
+\begin{enumerate}
+  \item Under this approach, a read is first analyzed in its given order and, if not a single contained $k$-mer was found in database, then the read's reverse complement is tried second.
+  \item When iterating of the a read's $k$-mers, each $k$-mer is first looked up in the database in its given order and if there is no match, then the $k$-mer's reverse complement is tried second. Although unlikely, this could lead to mixed $k$-mer counts for a read where some $k$-mers have been found in the database in regular and others in reverse complement order. 
+\end{enumerate}
+By comparison of respective analysis results we concluded that KrakenUniq follows alternative \b). We therefore applied this alternative for comparison experiments with KrakenUniq according to Section \ref{results}.
+
+Two types of error thresholds can be configured for a read to get classified:
+\begin{enumerate}
+  \item The ratio or number of $k$-mers that must at least be found in the database and
+  \item the ratio or number of $k$-mers that must be consistent a read's designated class taxon. 
+\end{enumerate}
+A $k$-mer is consistent with a read's class taxon if the $k$-mer's taxon as stored in the database is the same or if it is a taxonomic ancestor of class taxon.
+
+Genestrip implements a multi-threading enabled classification procedure following a producer consumer pattern, where a producer thread reads a fastq file and puts reads into an in-memory queue while consumer threads pick reads from the queue in order to classify them.
+
+Fully automated database builds. Genomic Dust, Removing $k$-mers from contaminating genomes.
 
 \subsection{Analysis Reports for Reads} \label{measures}
 
 Genestrip produces analysis reports in CSV file format with a broad set of statistical values. We use the following notation to describe them: Let $k_{t,f,d}$ be the number of $k$-mers for \taxon $t$ found in fastq file $f$ with respect to database $d$ and $u_{t,f,d}$ be the corresponding number of unique $k$-mers. Similarly $u_{t,d}$ is the number of (unique) $k$-mers for $t$ stored in $d$.
 
-Table \ref{csvcolumns} describes the most important reported columns. Additional columns exist to  accumulate $k$-mer counts and read counts etc. upwards to higher ranks in the taxonomy. We also track standard deviations of \verb|avg. contig length|, \verb|avg. read length| and \verb|mean class error| and other columns where suitable. 
+Table \ref{csvcolumns} describes the most important reported columns. Additional columns exist to  accumulate $k$-mer counts and read counts etc. upwards to ancestores in the taxonomy. We also track standard deviations of \verb|avg. contig length|, \verb|avg. read length|, \verb|mean class error| and other columns whereever suitable. 
 
 \begin{table}[h]
 \centering
 \begin{tabular}{l|p{10cm}}
 Column Name & Description  \\
   \hline
-\verb|taxid| & The \taxon $t$ \\
+\verb|taxid| & The class \taxon\ $t$ \\
 \verb|reads| & The number of reads classified with respect to $t$\\
 \verb|kmers from reads| & The number of $k$-mers from reads for $t$ which are consistent with $t$ \\
 \verb|kmers| & $k_{t,f,d}$\\ %, i.e. \emph{all} $k$-mers which are specific to the $t$'s genome (according to $d$) \\
@@ -306,10 +322,27 @@ table[col sep=semicolon, header=true, x = {reads 2}, y = {reads 1} , meta=rank] 
 \caption{Scatter plots of $k$-mers (a) and classified reads (b) for a simulated viral fastq file from \cite{Wu:2024aa} analyzed with KrakenUniq and Genestrip using the viral databases from Figure \ref{viraldbscatter} (based on a logarithmic scale with 1 added to each value in order to enable the representation of zero-counts).}\label{viralscatter}
 \end{figure}
 
-As real-world examples, we applied the two databases to a short-read fastq files from sequencing DNA 3 persons' saliva. Figure \ref{viralscatter} shows scatter plots of $k$-mer counts and read counts from KrakenUniq and Genestrip on a logarithmic scale for a corresponding first fastq file. As can be seen, the results are 100\% identical. Table \begin{verbatim}
-  TODO: More examples from different donors here.
-\end{verbatim}
+As real-world examples, we applied the two databases to six short-read fastq files from DNA-sequencing human saliva of three donors. We measured the mean absolute percentage error of $k$-mer counts for these "human saliva" fastq files according to the following error criterion. 
 
+Let $S_d$ be the list of all \taxon s in a database $d$.
+The mean absolute percentage error $err_{f,d}(e)$ for a database $e$ with respect to fastq file $f$ and database $d$ is:\footnote{The term "$k_{t,f,d} + 1$" in the formula includes a Laplace correction to avoid division by zero.}
+\[ err_{f,d}(e) := 100 / | S_{d} \cup S_{e} | \cdot \sum_{t \in S_{d} \cup S_{e}} |k_{t,f,d} - k_{t,f,e}| / (k_{t,f,d} + 1) \]
+Analogously, we also measured the error with regard to the counts of classified reads. As shown in Table \ref{errorsviral} the error rates are .... These results mutually solidify the correctness analysis results from KrakenUniq and Genestrip.
+
+\begin{table}[h]
+\centering
+\footnotesize
+\begin{tabular}{rr|r|r|rr|rr}
+\multicolumn{2}{c|}{\# $f$ (Donor)} & Reads in $f$ & Avg. BPs / Read &
+\multicolumn{2}{c|}{$err_{f,d}(e)$ for $k$-mers (Std. Dev.)} &
+\multicolumn{2}{c}{$err_{f,d}(e)$ for Class. Reads (Std Dev.)} \\
+\end{tabular}
+\caption{Mean absolute percentage error of $k$-mer counts and read counts  for six real-world fastq files from DNA-sequencing human saliva samples analyzed using the KrakenUniq viral database $d$ and the Genestrip viral database $e$ as in Figure \ref{viraldbscatter}. Standard deviations for the errors are included in parentheses.}\label{errorsviral}
+\end{table}
+
+
+
+Figure \ref{viralscatter} shows scatter plots of $k$-mer counts and read counts from KrakenUniq and Genestrip on a logarithmic scale for a fastq file #1. As can be seen, the results are 100\% identical.
 
 \begin{figure}[h]%
 \centering
@@ -542,11 +575,11 @@ table[col sep=semicolon, header=true, x = {reads 1}, y = {reads 2} , meta=rank] 
 \end{figure}
 
  
-In addition to the results from Figure \ref{krakenuniqsalivascatter}, we measured the mean absolute error of $k$-mer counts for ?? "human saliva" fastq files from ?? different donors between the complete viral database $cv$ and the "human virus only" database $hv$ in a variant where $cv$ and $hv$ both belong to KrakenUniq and another variant where they both belong to Genestrip. 
+In addition to the results from Figure \ref{krakenuniqsalivascatter}, we measured the mean absolute percentage error of $k$-mer counts for the six "human saliva" fastq files from Section \ref{correctness} between the complete viral database $cv$ and the "human virus only" database $hv$ in a variant where $cv$ and $hv$ both belong to KrakenUniq and another variant where they both belong to Genestrip. 
 
-Let $S_d$ be the list of all \taxon s on the rank species or below in a respective database $d = cv$ or $d = hv$.
-The mean absolute percentage error $err_{f,cv,hv}$ is then defined as follows:\footnote{The term "$k_{t,f,cv} + 1$" in the formula includes a Laplace correction to avoid division by zero.}
-\[ err_{f,cv,hv} := 100 / | S_{cv} \cap S_{hv} | \cdot \sum_{t \in S_{cv} \cap S_{hv}} |k_{t,f,cv} - k_{t,f,hv}| / (k_{t,f,cv} + 1) \]
+Let $S'_d$ be the list of all \taxon s on the rank species or below in a respective database $d$.
+The mean absolute percentage error $err'_{f,d}(e)$ for a database $e$ with respect to fastq file $f$ and database $d$ is:\footnote{The term "$k_{t,f,d} + 1$" in the formula includes a Laplace correction to avoid division by zero.}
+\[ err'_{f,d}(e) := 100 / | S'_{d} \cap S'_{e} | \cdot \sum_{t \in S'_{d} \cap S'_{e}} |k_{t,f,d} - k_{t,f,e}| / (k_{t,f,d} + 1) \]
 Analogously, we also measured the error with regard to the counts of classified reads. As shown in Table \ref{errorscvhv} the error rates under Genestrip are considerably lower than under KrakenUniq across all examples. These results solidify the accuracy of Genestrip analysis results in the context of smaller databases.
 
 \begin{table}[h]
@@ -563,7 +596,7 @@ Analogously, we also measured the error with regard to the counts of classified 
 \csvreader[separator=semicolon,before filter=\\\hline]{\csvpath results/viral_human_virus_errors_gs_ku_comp.csv}{}
 { \csvcoli & \csvcoliii & \csvcoliv & \csvcolxi & (\csvcolxii) & \csvcolvi & (\csvcolvii) & \csvcolxiii & (\csvcolxiv) & \csvcolviii & (\csvcolix)}
 \end{tabular}
-\caption{Mean absolute error of $k$-mer counts and read counts for ?? "human saliva" fastq files between the complete viral database $cv$ and the "human virus only" database $hv$ where $cv$ and $hv$ both belong to KrakenUniq or Genestrip, respectively. Standard deviations for the errors are included in parentheses.}\label{errorscvhv}
+\caption{Mean absolute percentage error of $k$-mer counts and read counts for ?? "human saliva" fastq files between the complete viral database $cv$ and the "human virus only" database $hv$ where $cv$ and $hv$ both belong to KrakenUniq or Genestrip, respectively. Standard deviations for the errors are included in parentheses.}\label{errorscvhv}
 \end{table}
 
 \subsection{Example Use Case: "Tick Borne Bacterial Infections"}
