@@ -592,13 +592,10 @@ Analogously, we also measured the error with regard to the counts of classified 
 \footnotesize
 \begin{tabular}{r|r|r|rr|rr|rr|rr}
 \# $f$ & Reads & Avg. BPs / &
-\multicolumn{4}{c|}{$err'_{f,d}(e)$ (Std. Dev.)} &
-\multicolumn{4}{c}{$err'_{f,d}(e)$ (Std Dev.)} \\
+\multicolumn{4}{c|}{$err'_{f,\texttt{cv\_ku}}(\texttt{hv\_ku})$ (Std. Dev.)} &
+\multicolumn{4}{c}{$err'_{f,\texttt{hv\_g}}(\texttt{hv\_g})$ (Std Dev.)} \\
  & in $f$ & Read &
-\multicolumn{4}{c|}{for $k$-mers} &
-\multicolumn{4}{c}{for Class. Reads} \\
-& & & \multicolumn{2}{c|}{$d = \texttt{cv\_ku}$, } & \multicolumn{2}{c|}{$d = \texttt{cv\_g}$, } & \multicolumn{2}{c|}{$d = \texttt{cv\_ku}$, } & \multicolumn{2}{c}{$d = \texttt{cv\_g}$} \\
-& & & \multicolumn{2}{c|}{$e = \texttt{hv\_ku}$} & \multicolumn{2}{c|}{$e = \texttt{hv\_g}$} & \multicolumn{2}{c|}{$e = \texttt{hv\_ku}$} & \multicolumn{2}{c}{ $e = \texttt{hv\_g}$}
+\multicolumn{2}{c|}{for $k$-mers} & \multicolumn{2}{c|}{for Class. Reads} & \multicolumn{2}{c|}{for $k$-mers} & \multicolumn{2}{c}{for Class. Reads}
 %no; key; reads; gs read len;
 %gs errs; gs kmer err; gs kmer err std dev; gs read err; gs read err std dev;
 %%ku errs; ku kmer err; ku kmer err std dev; ku read err; ku read err std dev;
