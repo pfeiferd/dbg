@@ -110,8 +110,8 @@ the goals \verb|match| and \verb|matchlr| are for fastq file analysis but they w
 \subsection{Database and Filter Generation}
 \label{database}
 
-Genestrip stores a database primarily as a large array \verb|S| of sorted long values. Each long value encodes a $k$-mer from a reference genome of a selected organism. 
-To handle reverse complements of reads later at read analysis time, stored $k$-mers are standardized in the following way: Each $k$-mer is encoded twice as a long value -- once in its regular version and once via its reverse complement but only the larger of the two encoded values is stored in the database.
+Genestrip stores a database primarily as a large array \verb|S| of sorted long values. Each long value encodes a $k$-mer from a genome of a selected organism. 
+To handle reverse complements of reads later at read analysis time, stored $k$-mers are standardized in the following way: Each $k$-mer is encoded twice as a long value -- once in its regular version and once via its reverse complement -- but only the larger of the two encoded values is stored in the database. 
 
 The default for $k$ is $31$ but other values are possible. A second array of the same size as \verb|S| encodes \taxon s for each $k$-mer in \verb|S|. During fastq file analysis, lookups in \verb|S| are performed via a binary search.
 
@@ -143,7 +143,7 @@ TODO: Addtional genomes for the update phase - like human genome. Dust filtering
 
 \subsection{Read Classification}
 
-The principal read classification algorithm is similar to the one from  Kraken 1 \citep{kraken}. When iterating over a read's $k$-mers, each $k$-mer is encoded once as a long in regular order and once in reverse complement order but only the larger of the two values is looked up in the database. This is sufficient because, if at all, then only just the larger of two values is stored in the database (see Section \ref{database}). 
+The principal read classification algorithm is similar to the one from  Kraken 1 \citep{kraken}. When iterating over a read's $k$-mers, each $k$-mer is encoded once as a long in regular order and once in reverse complement order but only the larger of the two values is looked up in the database. This is sufficient because, if at all, then only just the larger of two values is stored in the database (see also Section \ref{database}). 
 
 Two types of error thresholds can be configured for a read to get classified:
 \begin{enumerate}
