@@ -108,8 +108,12 @@ the goals \verb|match| and \verb|matchlr| are for fastq file analysis but they w
 \clearpage
 
 \subsection{Database and Filter Generation}
+\label{database}
 
-Genestrip stores a database primarily as a large array \verb|S| of sorted long values. Each long value encodes a $k$-mer from a reference genome of a selected organism. The default for $k$ is $31$ but other values are possible. A second array of the same size as \verb|S| encodes \taxon s for each $k$-mer in \verb|S|. During fastq file analysis, lookups in \verb|S| are performed via a binary search.
+Genestrip stores a database primarily as a large array \verb|S| of sorted long values. Each long value encodes a $k$-mer from a reference genome of a selected organism. 
+To handle reverse complements of reads later at read analysis time, stored $k$-mers are standardized in the following way: Each $k$-mer is encoded twice as a long value -- once in its regular version and once via its reverse complement but only the larger of the two encoded values is stored in the database.
+
+The default for $k$ is $31$ but other values are possible. A second array of the same size as \verb|S| encodes \taxon s for each $k$-mer in \verb|S|. During fastq file analysis, lookups in \verb|S| are performed via a binary search.
 
 At analysis time, a bit vector with same size as \verb|S| indicates which $k$-mers from \verb|S| were found at least once. This is sufficient for exact unique $k$-mer counting and is space-efficient, as it requires only about 1.6\% of additional memory with respect to \verb|S|.
 An additional Bloom filter \citep{bloomfilter} also contains all stored $k$-mers. It is used by default at analysis time to check whether a certain $k$-mer is stored in \verb|S|. A negative result avoids a more expensive binary search in \verb|S| and therefore saves overall execution cost. 
@@ -139,12 +143,7 @@ TODO: Addtional genomes for the update phase - like human genome. Dust filtering
 
 \subsection{Read Classification}
 
-The principal read classification algorithm is similar to the one from  Kraken 1 \citep{kraken}. However, when considering reverse complements of reads, Genestrip supports two alternative approaches with the first as its default: 
-\begin{enumerate}
-  \item Under this approach, a read is first analyzed in its given order and, if not a single contained $k$-mer was found in database, then the read's reverse complement is tried second.
-  \item When iterating of the a read's $k$-mers, each $k$-mer is first looked up in the database in its given order and if there is no match, then the $k$-mer's reverse complement is tried second. Although unlikely, this could lead to mixed $k$-mer counts for a read where some $k$-mers have been found in the database in regular and others in reverse complement order. 
-\end{enumerate}
-By comparison of respective analysis results we concluded that KrakenUniq follows alternative b). We therefore applied this alternative for comparison experiments with KrakenUniq according to Section \ref{results}.
+The principal read classification algorithm is similar to the one from  Kraken 1 \citep{kraken}. When iterating over a read's $k$-mers, each $k$-mer is encoded once as a long in regular order and once in reverse complement order but only the larger of the two values is looked up in the database. This is sufficient because, if at all, then only just the larger of two values is stored in the database (see Section \ref{database}). 
 
 Two types of error thresholds can be configured for a read to get classified:
 \begin{enumerate}
