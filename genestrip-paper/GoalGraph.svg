@@ -1,768 +1,882 @@
-<svg width="611" height="541" viewBox="0 0 458.25 405.75" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="translate(106.80433294404051,404.75307125307125) scale(0.24923218673218672)">
+<svg width="538" height="519" viewBox="0 0 403.5 389.25" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="translate(48.99313782052086,388.24935732647816) scale(0.25016066838046275)">
 <title>regexp</title>
-<polygon fill="white" stroke="none" points="-4,4 -4,-1624 985.58,-1624 985.58,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-1552 1225.27,-1552 1225.27,4 -4,4"/>
 <!-- showall -->
 <g id="node1" class="node">
 <title>showall</title>
-<polygon fill="none" stroke="black" stroke-width="2" points="59.55,-36 0,-36 0,0 59.55,0 59.55,-36"/>
-<text text-anchor="middle" x="29.78" y="-13.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">showall</text>
+<polygon fill="none" stroke="black" stroke-width="2" points="396.78,-36 337.22,-36 337.22,0 396.78,0 396.78,-36"/>
+<text text-anchor="middle" x="367" y="-13.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">showall</text>
 </g>
 <!-- show -->
 <g id="node2" class="node">
 <title>show</title>
-<polygon fill="none" stroke="black" stroke-width="2" points="131.78,-36 77.78,-36 77.78,0 131.78,0 131.78,-36"/>
-<text text-anchor="middle" x="104.78" y="-13.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">show</text>
+<polygon fill="none" stroke="black" stroke-width="2" points="469,-36 415,-36 415,0 469,0 469,-36"/>
+<text text-anchor="middle" x="442" y="-13.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">show</text>
 </g>
 <!-- commonsetup -->
 <g id="node3" class="node">
 <title>commonsetup</title>
-<path fill="none" stroke="black" d="M560.32,-1620C560.32,-1620 481.23,-1620 481.23,-1620 475.23,-1620 469.23,-1614 469.23,-1608 469.23,-1608 469.23,-1596 469.23,-1596 469.23,-1590 475.23,-1584 481.23,-1584 481.23,-1584 560.32,-1584 560.32,-1584 566.32,-1584 572.32,-1590 572.32,-1596 572.32,-1596 572.32,-1608 572.32,-1608 572.32,-1614 566.32,-1620 560.32,-1620"/>
-<text text-anchor="middle" x="520.78" y="-1597.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">f:commonsetup</text>
+<path fill="none" stroke="black" d="M441.55,-1548C441.55,-1548 362.45,-1548 362.45,-1548 356.45,-1548 350.45,-1542 350.45,-1536 350.45,-1536 350.45,-1524 350.45,-1524 350.45,-1518 356.45,-1512 362.45,-1512 362.45,-1512 441.55,-1512 441.55,-1512 447.55,-1512 453.55,-1518 453.55,-1524 453.55,-1524 453.55,-1536 453.55,-1536 453.55,-1542 447.55,-1548 441.55,-1548"/>
+<text text-anchor="middle" x="402" y="-1525.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">f:commonsetup</text>
 </g>
 <!-- taxdownload -->
 <g id="node4" class="node">
 <title>taxdownload</title>
-<path fill="none" stroke="black" d="M407.38,-1548C407.38,-1548 332.17,-1548 332.17,-1548 326.17,-1548 320.17,-1542 320.17,-1536 320.17,-1536 320.17,-1524 320.17,-1524 320.17,-1518 326.17,-1512 332.17,-1512 332.17,-1512 407.38,-1512 407.38,-1512 413.38,-1512 419.38,-1518 419.38,-1524 419.38,-1524 419.38,-1536 419.38,-1536 419.38,-1542 413.38,-1548 407.38,-1548"/>
-<text text-anchor="middle" x="369.78" y="-1525.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">d:taxdownload</text>
+<path fill="none" stroke="black" d="M706.6,-1476C706.6,-1476 631.4,-1476 631.4,-1476 625.4,-1476 619.4,-1470 619.4,-1464 619.4,-1464 619.4,-1452 619.4,-1452 619.4,-1446 625.4,-1440 631.4,-1440 631.4,-1440 706.6,-1440 706.6,-1440 712.6,-1440 718.6,-1446 718.6,-1452 718.6,-1452 718.6,-1464 718.6,-1464 718.6,-1470 712.6,-1476 706.6,-1476"/>
+<text text-anchor="middle" x="669" y="-1453.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">d:taxdownload</text>
 </g>
 <!-- taxdownload&#45;&gt;commonsetup -->
 <g id="edge1" class="edge">
 <title>taxdownload-&gt;commonsetup</title>
-<path fill="none" stroke="black" d="M407.49,-1548.48C427.29,-1557.66 451.77,-1569.01 472.9,-1578.8"/>
-<polygon fill="black" stroke="black" points="471.36,-1581.95 481.91,-1582.98 474.31,-1575.6 471.36,-1581.95"/>
+<path fill="none" stroke="black" d="M619.09,-1472.08C575.5,-1483.51 512,-1500.16 464.93,-1512.5"/>
+<polygon fill="black" stroke="black" points="464.19,-1509.08 455.4,-1515 465.97,-1515.85 464.19,-1509.08"/>
 </g>
 <!-- taxtree -->
 <g id="node5" class="node">
 <title>taxtree</title>
-<path fill="none" stroke="black" d="M205.26,-1260C205.26,-1260 164.29,-1260 164.29,-1260 158.29,-1260 152.29,-1254 152.29,-1248 152.29,-1248 152.29,-1236 152.29,-1236 152.29,-1230 158.29,-1224 164.29,-1224 164.29,-1224 205.26,-1224 205.26,-1224 211.26,-1224 217.26,-1230 217.26,-1236 217.26,-1236 217.26,-1248 217.26,-1248 217.26,-1254 211.26,-1260 205.26,-1260"/>
-<text text-anchor="middle" x="184.78" y="-1237.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:taxtree</text>
+<path fill="none" stroke="black" d="M722.49,-1332C722.49,-1332 681.51,-1332 681.51,-1332 675.51,-1332 669.51,-1326 669.51,-1320 669.51,-1320 669.51,-1308 669.51,-1308 669.51,-1302 675.51,-1296 681.51,-1296 681.51,-1296 722.49,-1296 722.49,-1296 728.49,-1296 734.49,-1302 734.49,-1308 734.49,-1308 734.49,-1320 734.49,-1320 734.49,-1326 728.49,-1332 722.49,-1332"/>
+<text text-anchor="middle" x="702" y="-1309.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:taxtree</text>
 </g>
 <!-- taxtree&#45;&gt;taxdownload -->
 <g id="edge2" class="edge">
 <title>taxtree-&gt;taxdownload</title>
-<path fill="none" stroke="black" d="M196.07,-1260.46C227.3,-1308.74 314.98,-1444.29 352.45,-1502.21"/>
-<polygon fill="black" stroke="black" points="349.44,-1504 357.81,-1510.5 355.31,-1500.2 349.44,-1504"/>
+<path fill="none" stroke="black" d="M697.95,-1332.41C692.36,-1356.5 682.19,-1400.25 675.52,-1428.97"/>
+<polygon fill="black" stroke="black" points="672.17,-1427.88 673.32,-1438.41 678.99,-1429.47 672.17,-1427.88"/>
 </g>
 <!-- taxnodes -->
 <g id="node6" class="node">
 <title>taxnodes</title>
-<path fill="none" stroke="black" d="M246.1,-1188C246.1,-1188 193.45,-1188 193.45,-1188 187.45,-1188 181.45,-1182 181.45,-1176 181.45,-1176 181.45,-1164 181.45,-1164 181.45,-1158 187.45,-1152 193.45,-1152 193.45,-1152 246.1,-1152 246.1,-1152 252.1,-1152 258.1,-1158 258.1,-1164 258.1,-1164 258.1,-1176 258.1,-1176 258.1,-1182 252.1,-1188 246.1,-1188"/>
-<text text-anchor="middle" x="219.78" y="-1165.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:taxnodes</text>
+<path fill="none" stroke="black" d="M911.33,-1260C911.33,-1260 858.67,-1260 858.67,-1260 852.67,-1260 846.67,-1254 846.67,-1248 846.67,-1248 846.67,-1236 846.67,-1236 846.67,-1230 852.67,-1224 858.67,-1224 858.67,-1224 911.33,-1224 911.33,-1224 917.33,-1224 923.33,-1230 923.33,-1236 923.33,-1236 923.33,-1248 923.33,-1248 923.33,-1254 917.33,-1260 911.33,-1260"/>
+<text text-anchor="middle" x="885" y="-1237.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:taxnodes</text>
 </g>
 <!-- taxnodes&#45;&gt;taxtree -->
 <g id="edge3" class="edge">
 <title>taxnodes-&gt;taxtree</title>
-<path fill="none" stroke="black" d="M211.12,-1188.3C207.31,-1195.93 202.73,-1205.08 198.47,-1213.6"/>
-<polygon fill="black" stroke="black" points="195.35,-1212.03 194,-1222.54 201.61,-1215.16 195.35,-1212.03"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M846.19,-1257.85C816.63,-1269.15 775.93,-1284.72 745.31,-1296.43"/>
+<polygon fill="black" stroke="black" points="744.44,-1293.02 736.35,-1299.86 746.94,-1299.56 744.44,-1293.02"/>
 </g>
 <!-- refseqrelease -->
 <g id="node7" class="node">
 <title>refseqrelease</title>
-<path fill="none" stroke="black" d="M578.75,-1548C578.75,-1548 502.8,-1548 502.8,-1548 496.8,-1548 490.8,-1542 490.8,-1536 490.8,-1536 490.8,-1524 490.8,-1524 490.8,-1518 496.8,-1512 502.8,-1512 502.8,-1512 578.75,-1512 578.75,-1512 584.75,-1512 590.75,-1518 590.75,-1524 590.75,-1524 590.75,-1536 590.75,-1536 590.75,-1542 584.75,-1548 578.75,-1548"/>
-<text text-anchor="middle" x="540.78" y="-1525.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">d:refseqrelease</text>
+<path fill="none" stroke="black" d="M202.97,-1476C202.97,-1476 127.03,-1476 127.03,-1476 121.03,-1476 115.03,-1470 115.03,-1464 115.03,-1464 115.03,-1452 115.03,-1452 115.03,-1446 121.03,-1440 127.03,-1440 127.03,-1440 202.97,-1440 202.97,-1440 208.97,-1440 214.97,-1446 214.97,-1452 214.97,-1452 214.97,-1464 214.97,-1464 214.97,-1470 208.97,-1476 202.97,-1476"/>
+<text text-anchor="middle" x="165" y="-1453.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">d:refseqrelease</text>
 </g>
 <!-- refseqrelease&#45;&gt;commonsetup -->
 <g id="edge4" class="edge">
 <title>refseqrelease-&gt;commonsetup</title>
-<path fill="none" stroke="black" d="M535.83,-1548.3C533.7,-1555.76 531.15,-1564.68 528.77,-1573.03"/>
-<polygon fill="black" stroke="black" points="525.46,-1571.86 526.08,-1582.44 532.19,-1573.79 525.46,-1571.86"/>
+<path fill="none" stroke="black" d="M215.26,-1473.85C251.53,-1484.56 300.73,-1499.09 339.53,-1510.55"/>
+<polygon fill="black" stroke="black" points="338.14,-1513.79 348.72,-1513.26 340.12,-1507.07 338.14,-1513.79"/>
 </g>
 <!-- refseqcat -->
 <g id="node8" class="node">
 <title>refseqcat</title>
-<path fill="none" stroke="black" d="M695.48,-1476C695.48,-1476 642.07,-1476 642.07,-1476 636.07,-1476 630.07,-1470 630.07,-1464 630.07,-1464 630.07,-1452 630.07,-1452 630.07,-1446 636.07,-1440 642.07,-1440 642.07,-1440 695.48,-1440 695.48,-1440 701.48,-1440 707.48,-1446 707.48,-1452 707.48,-1452 707.48,-1464 707.48,-1464 707.48,-1470 701.48,-1476 695.48,-1476"/>
-<text text-anchor="middle" x="668.78" y="-1453.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">d:refseqcat</text>
+<path fill="none" stroke="black" d="M177.7,-1404C177.7,-1404 124.3,-1404 124.3,-1404 118.3,-1404 112.3,-1398 112.3,-1392 112.3,-1392 112.3,-1380 112.3,-1380 112.3,-1374 118.3,-1368 124.3,-1368 124.3,-1368 177.7,-1368 177.7,-1368 183.7,-1368 189.7,-1374 189.7,-1380 189.7,-1380 189.7,-1392 189.7,-1392 189.7,-1398 183.7,-1404 177.7,-1404"/>
+<text text-anchor="middle" x="151" y="-1381.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">d:refseqcat</text>
 </g>
 <!-- refseqcat&#45;&gt;commonsetup -->
 <g id="edge5" class="edge">
 <title>refseqcat-&gt;commonsetup</title>
-<path fill="none" stroke="black" d="M657.76,-1476.4C645.2,-1495.38 623.36,-1525.98 599.78,-1548 588.14,-1558.87 574.06,-1569.07 561.03,-1577.56"/>
-<polygon fill="black" stroke="black" points="559.18,-1574.59 552.61,-1582.9 562.93,-1580.5 559.18,-1574.59"/>
+<path fill="none" stroke="black" d="M181.78,-1404.41C226.97,-1429.98 311.34,-1477.71 361.51,-1506.09"/>
+<polygon fill="black" stroke="black" points="359.62,-1509.04 370.05,-1510.92 363.07,-1502.95 359.62,-1509.04"/>
 </g>
 <!-- refseqcat&#45;&gt;refseqrelease -->
 <g id="edge6" class="edge">
 <title>refseqcat-&gt;refseqrelease</title>
-<path fill="none" stroke="black" d="M636.81,-1476.48C620.34,-1485.49 600.06,-1496.58 582.39,-1506.24"/>
-<polygon fill="black" stroke="black" points="580.76,-1503.14 573.67,-1511.01 584.12,-1509.29 580.76,-1503.14"/>
+<path fill="none" stroke="black" d="M154.46,-1404.3C155.94,-1411.68 157.7,-1420.48 159.35,-1428.75"/>
+<polygon fill="black" stroke="black" points="155.89,-1429.29 161.28,-1438.41 162.75,-1427.92 155.89,-1429.29"/>
 </g>
 <!-- checksummap -->
 <g id="node9" class="node">
 <title>checksummap</title>
-<path fill="none" stroke="black" d="M841.26,-1404C841.26,-1404 758.29,-1404 758.29,-1404 752.29,-1404 746.29,-1398 746.29,-1392 746.29,-1392 746.29,-1380 746.29,-1380 746.29,-1374 752.29,-1368 758.29,-1368 758.29,-1368 841.26,-1368 841.26,-1368 847.26,-1368 853.26,-1374 853.26,-1380 853.26,-1380 853.26,-1392 853.26,-1392 853.26,-1398 847.26,-1404 841.26,-1404"/>
-<text text-anchor="middle" x="799.78" y="-1381.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:checksummap</text>
+<path fill="none" stroke="black" d="M210.49,-1116C210.49,-1116 127.51,-1116 127.51,-1116 121.51,-1116 115.51,-1110 115.51,-1104 115.51,-1104 115.51,-1092 115.51,-1092 115.51,-1086 121.51,-1080 127.51,-1080 127.51,-1080 210.49,-1080 210.49,-1080 216.49,-1080 222.49,-1086 222.49,-1092 222.49,-1092 222.49,-1104 222.49,-1104 222.49,-1110 216.49,-1116 210.49,-1116"/>
+<text text-anchor="middle" x="169" y="-1093.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:checksummap</text>
 </g>
 <!-- checksummap&#45;&gt;refseqcat -->
 <g id="edge7" class="edge">
 <title>checksummap-&gt;refseqcat</title>
-<path fill="none" stroke="black" d="M767.06,-1404.48C750.13,-1413.53 729.26,-1424.68 711.12,-1434.38"/>
-<polygon fill="black" stroke="black" points="709.58,-1431.23 702.41,-1439.03 712.88,-1437.4 709.58,-1431.23"/>
+<path fill="none" stroke="black" d="M160.8,-1116.35C143.53,-1155.19 106.43,-1252 125,-1332 127.01,-1340.65 130.63,-1349.51 134.55,-1357.46"/>
+<polygon fill="black" stroke="black" points="131.46,-1359.09 139.24,-1366.27 137.64,-1355.8 131.46,-1359.09"/>
 </g>
 <!-- clear -->
 <g id="node10" class="node">
 <title>clear</title>
-<polygon fill="none" stroke="black" stroke-width="2" points="275.78,-36 221.78,-36 221.78,0 275.78,0 275.78,-36"/>
-<text text-anchor="middle" x="248.78" y="-13.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">f:clear</text>
+<polygon fill="none" stroke="black" stroke-width="2" points="869,-36 815,-36 815,0 869,0 869,-36"/>
+<text text-anchor="middle" x="842" y="-13.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">f:clear</text>
 </g>
 <!-- categories -->
 <g id="node11" class="node">
 <title>categories</title>
-<path fill="none" stroke="black" d="M634.59,-1404C634.59,-1404 574.96,-1404 574.96,-1404 568.96,-1404 562.96,-1398 562.96,-1392 562.96,-1392 562.96,-1380 562.96,-1380 562.96,-1374 568.96,-1368 574.96,-1368 574.96,-1368 634.59,-1368 634.59,-1368 640.59,-1368 646.59,-1374 646.59,-1380 646.59,-1380 646.59,-1392 646.59,-1392 646.59,-1398 640.59,-1404 634.59,-1404"/>
-<text text-anchor="middle" x="604.78" y="-1381.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:categories</text>
+<path fill="none" stroke="black" d="M386.82,-1404C386.82,-1404 327.18,-1404 327.18,-1404 321.18,-1404 315.18,-1398 315.18,-1392 315.18,-1392 315.18,-1380 315.18,-1380 315.18,-1374 321.18,-1368 327.18,-1368 327.18,-1368 386.82,-1368 386.82,-1368 392.82,-1368 398.82,-1374 398.82,-1380 398.82,-1380 398.82,-1392 398.82,-1392 398.82,-1398 392.82,-1404 386.82,-1404"/>
+<text text-anchor="middle" x="357" y="-1381.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:categories</text>
 </g>
 <!-- refseqfna -->
 <g id="node12" class="node">
 <title>refseqfna</title>
-<path fill="none" stroke="black" d="M823.26,-1332C823.26,-1332 768.29,-1332 768.29,-1332 762.29,-1332 756.29,-1326 756.29,-1320 756.29,-1320 756.29,-1308 756.29,-1308 756.29,-1302 762.29,-1296 768.29,-1296 768.29,-1296 823.26,-1296 823.26,-1296 829.26,-1296 835.26,-1302 835.26,-1308 835.26,-1308 835.26,-1320 835.26,-1320 835.26,-1326 829.26,-1332 823.26,-1332"/>
-<text text-anchor="middle" x="795.78" y="-1309.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">d:refseqfna</text>
+<path fill="none" stroke="black" d="M298.48,-972C298.48,-972 243.52,-972 243.52,-972 237.52,-972 231.52,-966 231.52,-960 231.52,-960 231.52,-948 231.52,-948 231.52,-942 237.52,-936 243.52,-936 243.52,-936 298.48,-936 298.48,-936 304.48,-936 310.48,-942 310.48,-948 310.48,-948 310.48,-960 310.48,-960 310.48,-966 304.48,-972 298.48,-972"/>
+<text text-anchor="middle" x="271" y="-949.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">d:refseqfna</text>
 </g>
 <!-- refseqfna&#45;&gt;refseqcat -->
 <g id="edge9" class="edge">
 <title>refseqfna-&gt;refseqcat</title>
-<path fill="none" stroke="black" d="M775.11,-1332.35C763.66,-1342.33 749.43,-1355.37 737.78,-1368 719.46,-1387.86 700.82,-1412.21 687.53,-1430.41"/>
-<polygon fill="black" stroke="black" points="684.82,-1428.19 681.81,-1438.34 690.5,-1432.28 684.82,-1428.19"/>
+<path fill="none" stroke="black" d="M231.21,-960.74C164.66,-972.83 38,-1007.59 38,-1097 38,-1097 38,-1097 38,-1243 38,-1293.25 81.87,-1336.01 114.94,-1361.1"/>
+<polygon fill="black" stroke="black" points="112.58,-1363.71 122.71,-1366.81 116.72,-1358.07 112.58,-1363.71"/>
 </g>
 <!-- refseqfna&#45;&gt;checksummap -->
 <g id="edge10" class="edge">
 <title>refseqfna-&gt;checksummap</title>
-<path fill="none" stroke="black" d="M796.76,-1332.3C797.18,-1339.59 797.68,-1348.27 798.15,-1356.46"/>
-<polygon fill="black" stroke="black" points="794.65,-1356.6 798.71,-1366.38 801.64,-1356.2 794.65,-1356.6"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M258.49,-972.41C240.81,-997.03 208.36,-1042.2 187.78,-1070.86"/>
+<polygon fill="black" stroke="black" points="185.17,-1068.5 182.17,-1078.66 190.85,-1072.58 185.17,-1068.5"/>
 </g>
 <!-- refseqfna&#45;&gt;categories -->
 <g id="edge8" class="edge">
 <title>refseqfna-&gt;categories</title>
-<path fill="none" stroke="black" d="M756.2,-1329.5C727.66,-1339.96 688.83,-1354.2 657.64,-1365.63"/>
-<polygon fill="black" stroke="black" points="656.56,-1362.3 648.37,-1369.02 658.97,-1368.87 656.56,-1362.3"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M276.87,-972.26C285.34,-998.75 300,-1051.21 300,-1097 300,-1097 300,-1097 300,-1243 300,-1283.97 307.66,-1294.43 324,-1332 327.83,-1340.81 332.96,-1349.87 338.03,-1357.95"/>
+<polygon fill="black" stroke="black" points="335.1,-1359.85 343.5,-1366.3 340.95,-1356.02 335.1,-1359.85"/>
 </g>
 <!-- accmapsize -->
 <g id="node13" class="node">
 <title>accmapsize</title>
-<path fill="none" stroke="black" d="M712.48,-1260C712.48,-1260 645.08,-1260 645.08,-1260 639.08,-1260 633.08,-1254 633.08,-1248 633.08,-1248 633.08,-1236 633.08,-1236 633.08,-1230 639.08,-1224 645.08,-1224 645.08,-1224 712.48,-1224 712.48,-1224 718.48,-1224 724.48,-1230 724.48,-1236 724.48,-1236 724.48,-1248 724.48,-1248 724.48,-1254 718.48,-1260 712.48,-1260"/>
-<text text-anchor="middle" x="678.78" y="-1237.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:accmapsize</text>
+<path fill="none" stroke="black" d="M221.7,-1332C221.7,-1332 154.3,-1332 154.3,-1332 148.3,-1332 142.3,-1326 142.3,-1320 142.3,-1320 142.3,-1308 142.3,-1308 142.3,-1302 148.3,-1296 154.3,-1296 154.3,-1296 221.7,-1296 221.7,-1296 227.7,-1296 233.7,-1302 233.7,-1308 233.7,-1308 233.7,-1320 233.7,-1320 233.7,-1326 227.7,-1332 221.7,-1332"/>
+<text text-anchor="middle" x="188" y="-1309.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:accmapsize</text>
 </g>
 <!-- accmapsize&#45;&gt;refseqcat -->
 <g id="edge12" class="edge">
 <title>accmapsize-&gt;refseqcat</title>
-<path fill="none" stroke="black" d="M677.97,-1260.15C676.26,-1296.86 672.22,-1383.34 670.11,-1428.47"/>
-<polygon fill="black" stroke="black" points="666.62,-1428.1 669.65,-1438.26 673.61,-1428.43 666.62,-1428.1"/>
+<path fill="none" stroke="black" d="M178.85,-1332.3C174.78,-1340.02 169.88,-1349.29 165.33,-1357.89"/>
+<polygon fill="black" stroke="black" points="162.33,-1356.08 160.75,-1366.56 168.52,-1359.35 162.33,-1356.08"/>
 </g>
 <!-- accmapsize&#45;&gt;categories -->
 <g id="edge11" class="edge">
 <title>accmapsize-&gt;categories</title>
-<path fill="none" stroke="black" d="M669.7,-1260.41C657.04,-1284.71 633.95,-1329.03 618.99,-1357.73"/>
-<polygon fill="black" stroke="black" points="615.91,-1356.06 614.39,-1366.55 622.12,-1359.3 615.91,-1356.06"/>
-</g>
-<!-- accmapsize&#45;&gt;refseqfna -->
-<g id="edge13" class="edge">
-<title>accmapsize-&gt;refseqfna</title>
-<path fill="none" stroke="black" d="M708,-1260.48C722.91,-1269.4 741.24,-1280.37 757.28,-1289.97"/>
-<polygon fill="black" stroke="black" points="755.25,-1292.83 765.63,-1294.96 758.84,-1286.82 755.25,-1292.83"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M230.21,-1332.48C252.78,-1341.83 280.77,-1353.43 304.71,-1363.34"/>
+<polygon fill="black" stroke="black" points="303.06,-1366.45 313.64,-1367.04 305.74,-1359.98 303.06,-1366.45"/>
 </g>
 <!-- accmap -->
 <g id="node14" class="node">
 <title>accmap</title>
-<path fill="none" stroke="black" d="M724.59,-1188C724.59,-1188 678.96,-1188 678.96,-1188 672.96,-1188 666.96,-1182 666.96,-1176 666.96,-1176 666.96,-1164 666.96,-1164 666.96,-1158 672.96,-1152 678.96,-1152 678.96,-1152 724.59,-1152 724.59,-1152 730.59,-1152 736.59,-1158 736.59,-1164 736.59,-1164 736.59,-1176 736.59,-1176 736.59,-1182 730.59,-1188 724.59,-1188"/>
-<text text-anchor="middle" x="701.78" y="-1165.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:accmap</text>
+<path fill="none" stroke="black" d="M210.82,-1260C210.82,-1260 165.18,-1260 165.18,-1260 159.18,-1260 153.18,-1254 153.18,-1248 153.18,-1248 153.18,-1236 153.18,-1236 153.18,-1230 159.18,-1224 165.18,-1224 165.18,-1224 210.82,-1224 210.82,-1224 216.82,-1224 222.82,-1230 222.82,-1236 222.82,-1236 222.82,-1248 222.82,-1248 222.82,-1254 216.82,-1260 210.82,-1260"/>
+<text text-anchor="middle" x="188" y="-1237.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:accmap</text>
 </g>
 <!-- accmap&#45;&gt;refseqcat -->
-<g id="edge15" class="edge">
+<g id="edge14" class="edge">
 <title>accmap-&gt;refseqcat</title>
-<path fill="none" stroke="black" d="M666.64,-1182.88C646.1,-1191.43 621.08,-1204.86 604.78,-1224 560.75,-1275.69 565.28,-1301.09 553.78,-1368 551.07,-1383.77 545.15,-1390.53 553.78,-1404 568.22,-1426.56 594.96,-1439.65 619.03,-1447.17"/>
-<polygon fill="black" stroke="black" points="617.81,-1450.47 628.39,-1449.84 619.73,-1443.73 617.81,-1450.47"/>
+<path fill="none" stroke="black" d="M162.33,-1260.28C151.08,-1269.42 139.07,-1281.72 133,-1296 124.68,-1315.58 130.13,-1339.26 137.16,-1357.27"/>
+<polygon fill="black" stroke="black" points="133.86,-1358.46 141.02,-1366.27 140.29,-1355.7 133.86,-1358.46"/>
 </g>
 <!-- accmap&#45;&gt;categories -->
-<g id="edge14" class="edge">
+<g id="edge13" class="edge">
 <title>accmap-&gt;categories</title>
-<path fill="none" stroke="black" d="M666.55,-1186.43C650.86,-1195.15 633.72,-1207.63 623.78,-1224 599.06,-1264.71 598.71,-1321.95 601.32,-1356.07"/>
-<polygon fill="black" stroke="black" points="597.84,-1356.38 602.24,-1366.02 604.81,-1355.74 597.84,-1356.38"/>
-</g>
-<!-- accmap&#45;&gt;refseqfna -->
-<g id="edge16" class="edge">
-<title>accmap-&gt;refseqfna</title>
-<path fill="none" stroke="black" d="M729.94,-1188.48C742.74,-1197.67 757.14,-1209.95 766.78,-1224 779.21,-1242.14 786.6,-1265.98 790.81,-1284.42"/>
-<polygon fill="black" stroke="black" points="787.37,-1285.08 792.83,-1294.16 794.23,-1283.66 787.37,-1285.08"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M205.96,-1260.27C225.26,-1278.61 257.09,-1308.17 286,-1332 297.9,-1341.8 311.36,-1352.05 323.34,-1360.9"/>
+<polygon fill="black" stroke="black" points="321.21,-1363.68 331.35,-1366.76 325.34,-1358.03 321.21,-1363.68"/>
 </g>
 <!-- accmap&#45;&gt;accmapsize -->
-<g id="edge17" class="edge">
+<g id="edge15" class="edge">
 <title>accmap-&gt;accmapsize</title>
-<path fill="none" stroke="black" d="M696.09,-1188.3C693.64,-1195.76 690.71,-1204.68 687.96,-1213.03"/>
-<polygon fill="black" stroke="black" points="684.66,-1211.86 684.87,-1222.46 691.32,-1214.05 684.66,-1211.86"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M188,-1260.3C188,-1267.59 188,-1276.27 188,-1284.46"/>
+<polygon fill="black" stroke="black" points="184.5,-1284.38 188,-1294.38 191.5,-1284.38 184.5,-1284.38"/>
 </g>
 <!-- taxfromgenbank -->
 <g id="node15" class="node">
 <title>taxfromgenbank</title>
-<path fill="none" stroke="black" d="M587.09,-1116C587.09,-1116 492.46,-1116 492.46,-1116 486.46,-1116 480.46,-1110 480.46,-1104 480.46,-1104 480.46,-1092 480.46,-1092 480.46,-1086 486.46,-1080 492.46,-1080 492.46,-1080 587.09,-1080 587.09,-1080 593.09,-1080 599.09,-1086 599.09,-1092 599.09,-1092 599.09,-1104 599.09,-1104 599.09,-1110 593.09,-1116 587.09,-1116"/>
-<text text-anchor="middle" x="539.78" y="-1093.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:taxfromgenbank</text>
+<path fill="none" stroke="black" d="M586.32,-1188C586.32,-1188 491.68,-1188 491.68,-1188 485.68,-1188 479.68,-1182 479.68,-1176 479.68,-1176 479.68,-1164 479.68,-1164 479.68,-1158 485.68,-1152 491.68,-1152 491.68,-1152 586.32,-1152 586.32,-1152 592.32,-1152 598.32,-1158 598.32,-1164 598.32,-1164 598.32,-1176 598.32,-1176 598.32,-1182 592.32,-1188 586.32,-1188"/>
+<text text-anchor="middle" x="539" y="-1165.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:taxfromgenbank</text>
 </g>
 <!-- taxfromgenbank&#45;&gt;taxnodes -->
-<g id="edge19" class="edge">
+<g id="edge17" class="edge">
 <title>taxfromgenbank-&gt;taxnodes</title>
-<path fill="none" stroke="black" d="M479.96,-1112.08C419.21,-1125.37 326.2,-1145.72 269.4,-1158.15"/>
-<polygon fill="black" stroke="black" points="268.69,-1154.72 259.67,-1160.27 270.19,-1161.55 268.69,-1154.72"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M598.48,-1183.03C665.42,-1196.58 772.95,-1218.33 835.49,-1230.98"/>
+<polygon fill="black" stroke="black" points="834.65,-1234.38 845.15,-1232.94 836.04,-1227.52 834.65,-1234.38"/>
 </g>
 <!-- taxfromgenbank&#45;&gt;categories -->
-<g id="edge18" class="edge">
+<g id="edge16" class="edge">
 <title>taxfromgenbank-&gt;categories</title>
-<path fill="none" stroke="black" d="M536.76,-1116.33C530.63,-1156.35 519.88,-1257.51 552.78,-1332 557.34,-1342.33 564.86,-1351.79 572.79,-1359.77"/>
-<polygon fill="black" stroke="black" points="570.29,-1362.23 579.99,-1366.5 575.07,-1357.11 570.29,-1362.23"/>
-</g>
-<!-- taxfromgenbank&#45;&gt;refseqfna -->
-<g id="edge20" class="edge">
-<title>taxfromgenbank-&gt;refseqfna</title>
-<path fill="none" stroke="black" d="M560.18,-1116.43C583.01,-1135.44 621.56,-1166.08 657.78,-1188 689.75,-1207.35 705.25,-1199.85 733.78,-1224 754.03,-1241.14 770.77,-1266.38 781.73,-1285.6"/>
-<polygon fill="black" stroke="black" points="778.6,-1287.17 786.48,-1294.25 784.73,-1283.8 778.6,-1287.17"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M535.24,-1188.49C527.51,-1220.69 507,-1289.89 466,-1332 450.58,-1347.84 429.46,-1359.6 409.92,-1367.97"/>
+<polygon fill="black" stroke="black" points="408.63,-1364.71 400.67,-1371.71 411.26,-1371.2 408.63,-1364.71"/>
 </g>
 <!-- taxfromgenbank&#45;&gt;accmap -->
-<g id="edge21" class="edge">
+<g id="edge18" class="edge">
 <title>taxfromgenbank-&gt;accmap</title>
-<path fill="none" stroke="black" d="M580.24,-1116.48C603.24,-1126.42 632.11,-1138.9 655.95,-1149.2"/>
-<polygon fill="black" stroke="black" points="654.54,-1152.4 665.11,-1153.16 657.32,-1145.98 654.54,-1152.4"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M479.46,-1182.87C410.23,-1196.68 297.42,-1219.18 234.37,-1231.75"/>
+<polygon fill="black" stroke="black" points="233.81,-1228.3 224.69,-1233.68 235.18,-1235.16 233.81,-1228.3"/>
 </g>
 <!-- assemblydownload -->
 <g id="node16" class="node">
 <title>assemblydownload</title>
-<path fill="none" stroke="black" d="M504.88,-1476C504.88,-1476 394.67,-1476 394.67,-1476 388.67,-1476 382.67,-1470 382.67,-1464 382.67,-1464 382.67,-1452 382.67,-1452 382.67,-1446 388.67,-1440 394.67,-1440 394.67,-1440 504.88,-1440 504.88,-1440 510.88,-1440 516.88,-1446 516.88,-1452 516.88,-1452 516.88,-1464 516.88,-1464 516.88,-1470 510.88,-1476 504.88,-1476"/>
-<text text-anchor="middle" x="449.78" y="-1453.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">d:assemblydownload</text>
+<path fill="none" stroke="black" d="M561.1,-1476C561.1,-1476 450.9,-1476 450.9,-1476 444.9,-1476 438.9,-1470 438.9,-1464 438.9,-1464 438.9,-1452 438.9,-1452 438.9,-1446 444.9,-1440 450.9,-1440 450.9,-1440 561.1,-1440 561.1,-1440 567.1,-1440 573.1,-1446 573.1,-1452 573.1,-1452 573.1,-1464 573.1,-1464 573.1,-1470 567.1,-1476 561.1,-1476"/>
+<text text-anchor="middle" x="506" y="-1453.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">d:assemblydownload</text>
 </g>
 <!-- assemblydownload&#45;&gt;commonsetup -->
-<g id="edge22" class="edge">
+<g id="edge19" class="edge">
 <title>assemblydownload-&gt;commonsetup</title>
-<path fill="none" stroke="black" d="M454.39,-1476.35C459.65,-1494.76 469.19,-1524.38 481.78,-1548 486.64,-1557.13 492.95,-1566.43 499.06,-1574.64"/>
-<polygon fill="black" stroke="black" points="496.25,-1576.73 505.13,-1582.51 501.79,-1572.45 496.25,-1576.73"/>
+<path fill="none" stroke="black" d="M480.02,-1476.48C467.02,-1485.24 451.09,-1495.96 437.03,-1505.42"/>
+<polygon fill="black" stroke="black" points="435.24,-1502.41 428.9,-1510.89 439.15,-1508.21 435.24,-1502.41"/>
 </g>
 <!-- fastasgenbank -->
 <g id="node17" class="node">
 <title>fastasgenbank</title>
-<path fill="none" stroke="black" d="M455.87,-1044C455.87,-1044 373.68,-1044 373.68,-1044 367.68,-1044 361.68,-1038 361.68,-1032 361.68,-1032 361.68,-1020 361.68,-1020 361.68,-1014 367.68,-1008 373.68,-1008 373.68,-1008 455.87,-1008 455.87,-1008 461.87,-1008 467.87,-1014 467.87,-1020 467.87,-1020 467.87,-1032 467.87,-1032 467.87,-1038 461.87,-1044 455.87,-1044"/>
-<text text-anchor="middle" x="414.78" y="-1021.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:fastasgenbank</text>
+<path fill="none" stroke="black" d="M656.1,-1116C656.1,-1116 573.9,-1116 573.9,-1116 567.9,-1116 561.9,-1110 561.9,-1104 561.9,-1104 561.9,-1092 561.9,-1092 561.9,-1086 567.9,-1080 573.9,-1080 573.9,-1080 656.1,-1080 656.1,-1080 662.1,-1080 668.1,-1086 668.1,-1092 668.1,-1092 668.1,-1104 668.1,-1104 668.1,-1110 662.1,-1116 656.1,-1116"/>
+<text text-anchor="middle" x="615" y="-1093.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:fastasgenbank</text>
 </g>
 <!-- fastasgenbank&#45;&gt;taxtree -->
-<g id="edge23" class="edge">
+<g id="edge20" class="edge">
 <title>fastasgenbank-&gt;taxtree</title>
-<path fill="none" stroke="black" d="M401.33,-1044.31C376.73,-1075.33 321.92,-1141.49 266.78,-1188 254.05,-1198.73 239.03,-1209.02 225.34,-1217.64"/>
-<polygon fill="black" stroke="black" points="223.63,-1214.58 216.95,-1222.8 227.3,-1220.54 223.63,-1214.58"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M623.43,-1116.04C628.43,-1126.36 634.8,-1139.84 640,-1152 659.81,-1198.31 680.35,-1253.26 692.11,-1285.51"/>
+<polygon fill="black" stroke="black" points="688.67,-1286.29 695.37,-1294.49 695.25,-1283.9 688.67,-1286.29"/>
 </g>
 <!-- fastasgenbank&#45;&gt;taxfromgenbank -->
-<g id="edge24" class="edge">
+<g id="edge21" class="edge">
 <title>fastasgenbank-&gt;taxfromgenbank</title>
-<path fill="none" stroke="black" d="M446,-1044.48C462.08,-1053.49 481.88,-1064.58 499.13,-1074.24"/>
-<polygon fill="black" stroke="black" points="497.2,-1077.17 507.63,-1079 500.62,-1071.06 497.2,-1077.17"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M596.21,-1116.3C587.17,-1124.63 576.16,-1134.78 566.22,-1143.93"/>
+<polygon fill="black" stroke="black" points="563.93,-1141.28 558.95,-1150.63 568.67,-1146.43 563.93,-1141.28"/>
 </g>
 <!-- fastasgenbank&#45;&gt;assemblydownload -->
-<g id="edge25" class="edge">
+<g id="edge22" class="edge">
 <title>fastasgenbank-&gt;assemblydownload</title>
-<path fill="none" stroke="black" d="M414.78,-1044.49C414.78,-1071.29 414.78,-1124.13 414.78,-1169 414.78,-1169 414.78,-1169 414.78,-1315 414.78,-1355.62 428.44,-1400.92 438.69,-1429.19"/>
-<polygon fill="black" stroke="black" points="435.37,-1430.3 442.16,-1438.43 441.93,-1427.84 435.37,-1430.3"/>
+<path fill="none" stroke="black" d="M617.23,-1116.45C620.44,-1143.21 626,-1196 626,-1241 626,-1241 626,-1241 626,-1315 626,-1366.26 579.82,-1408.57 544.76,-1433.3"/>
+<polygon fill="black" stroke="black" points="543.2,-1430.13 536.91,-1438.65 547.15,-1435.91 543.2,-1430.13"/>
 </g>
 <!-- fastasgenbankdl -->
 <g id="node18" class="node">
 <title>fastasgenbankdl</title>
-<path fill="none" stroke="black" d="M522.32,-972C522.32,-972 429.23,-972 429.23,-972 423.23,-972 417.23,-966 417.23,-960 417.23,-960 417.23,-948 417.23,-948 417.23,-942 423.23,-936 429.23,-936 429.23,-936 522.32,-936 522.32,-936 528.32,-936 534.32,-942 534.32,-948 534.32,-948 534.32,-960 534.32,-960 534.32,-966 528.32,-972 522.32,-972"/>
-<text text-anchor="middle" x="475.78" y="-949.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">d:fastasgenbankdl</text>
+<path fill="none" stroke="black" d="M661.54,-1044C661.54,-1044 568.46,-1044 568.46,-1044 562.46,-1044 556.46,-1038 556.46,-1032 556.46,-1032 556.46,-1020 556.46,-1020 556.46,-1014 562.46,-1008 568.46,-1008 568.46,-1008 661.54,-1008 661.54,-1008 667.54,-1008 673.54,-1014 673.54,-1020 673.54,-1020 673.54,-1032 673.54,-1032 673.54,-1038 667.54,-1044 661.54,-1044"/>
+<text text-anchor="middle" x="615" y="-1021.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">d:fastasgenbankdl</text>
 </g>
 <!-- fastasgenbankdl&#45;&gt;fastasgenbank -->
-<g id="edge26" class="edge">
+<g id="edge23" class="edge">
 <title>fastasgenbankdl-&gt;fastasgenbank</title>
-<path fill="none" stroke="black" d="M460.7,-972.3C453.61,-980.44 445,-990.31 437.17,-999.3"/>
-<polygon fill="black" stroke="black" points="434.61,-996.92 430.68,-1006.75 439.88,-1001.51 434.61,-996.92"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M615,-1044.3C615,-1051.59 615,-1060.27 615,-1068.46"/>
+<polygon fill="black" stroke="black" points="611.5,-1068.38 615,-1078.38 618.5,-1068.38 611.5,-1068.38"/>
 </g>
 <!-- adddownloads -->
 <g id="node19" class="node">
 <title>adddownloads</title>
-<path fill="none" stroke="black" d="M348.66,-972C348.66,-972 264.89,-972 264.89,-972 258.89,-972 252.89,-966 252.89,-960 252.89,-960 252.89,-948 252.89,-948 252.89,-942 258.89,-936 264.89,-936 264.89,-936 348.66,-936 348.66,-936 354.66,-936 360.66,-942 360.66,-948 360.66,-948 360.66,-960 360.66,-960 360.66,-966 354.66,-972 348.66,-972"/>
-<text text-anchor="middle" x="306.78" y="-949.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">d:adddownloads</text>
+<path fill="none" stroke="black" d="M825.88,-1044C825.88,-1044 742.12,-1044 742.12,-1044 736.12,-1044 730.12,-1038 730.12,-1032 730.12,-1032 730.12,-1020 730.12,-1020 730.12,-1014 736.12,-1008 742.12,-1008 742.12,-1008 825.88,-1008 825.88,-1008 831.88,-1008 837.88,-1014 837.88,-1020 837.88,-1020 837.88,-1032 837.88,-1032 837.88,-1038 831.88,-1044 825.88,-1044"/>
+<text text-anchor="middle" x="784" y="-1021.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">d:adddownloads</text>
 </g>
 <!-- addfastas -->
 <g id="node20" class="node">
 <title>addfastas</title>
-<path fill="none" stroke="black" d="M443.27,-900C443.27,-900 388.29,-900 388.29,-900 382.29,-900 376.29,-894 376.29,-888 376.29,-888 376.29,-876 376.29,-876 376.29,-870 382.29,-864 388.29,-864 388.29,-864 443.27,-864 443.27,-864 449.27,-864 455.27,-870 455.27,-876 455.27,-876 455.27,-888 455.27,-888 455.27,-894 449.27,-900 443.27,-900"/>
-<text text-anchor="middle" x="415.78" y="-877.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:addfastas</text>
+<path fill="none" stroke="black" d="M639.49,-972C639.49,-972 584.51,-972 584.51,-972 578.51,-972 572.51,-966 572.51,-960 572.51,-960 572.51,-948 572.51,-948 572.51,-942 578.51,-936 584.51,-936 584.51,-936 639.49,-936 639.49,-936 645.49,-936 651.49,-942 651.49,-948 651.49,-948 651.49,-960 651.49,-960 651.49,-966 645.49,-972 639.49,-972"/>
+<text text-anchor="middle" x="612" y="-949.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:addfastas</text>
 </g>
 <!-- addfastas&#45;&gt;taxtree -->
-<g id="edge28" class="edge">
+<g id="edge25" class="edge">
 <title>addfastas-&gt;taxtree</title>
-<path fill="none" stroke="black" d="M376.04,-885.03C337.36,-889.11 279.34,-901.09 243.78,-936 171.66,-1006.79 188.75,-1052.22 172.78,-1152 169.55,-1172.14 172.76,-1194.93 176.66,-1212.41"/>
-<polygon fill="black" stroke="black" points="173.25,-1213.22 179.04,-1222.1 180.05,-1211.55 173.25,-1213.22"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M644.93,-972.44C658.69,-981.32 673.62,-993.37 683,-1008 704.82,-1042.05 702,-1056.55 702,-1097 702,-1097 702,-1097 702,-1171 702,-1210.26 702,-1255.62 702,-1284.31"/>
+<polygon fill="black" stroke="black" points="698.5,-1284 702,-1294 705.5,-1284 698.5,-1284"/>
 </g>
 <!-- addfastas&#45;&gt;fastasgenbank -->
-<g id="edge29" class="edge">
+<g id="edge26" class="edge">
 <title>addfastas-&gt;fastasgenbank</title>
-<path fill="none" stroke="black" d="M412.53,-900.11C410.73,-910.46 408.68,-923.94 407.78,-936 406.58,-951.96 406.73,-956.03 407.78,-972 408.3,-980 409.27,-988.62 410.32,-996.55"/>
-<polygon fill="black" stroke="black" points="406.84,-996.97 411.72,-1006.37 413.77,-995.98 406.84,-996.97"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M580.08,-972.46C567.31,-981.28 554,-993.27 547,-1008 540.14,-1022.45 539.98,-1029.62 547,-1044 552.58,-1055.43 561.95,-1065.11 571.98,-1072.95"/>
+<polygon fill="black" stroke="black" points="569.89,-1075.75 580.05,-1078.74 573.97,-1070.07 569.89,-1075.75"/>
 </g>
 <!-- addfastas&#45;&gt;fastasgenbankdl -->
-<g id="edge30" class="edge">
+<g id="edge27" class="edge">
 <title>addfastas-&gt;fastasgenbankdl</title>
-<path fill="none" stroke="black" d="M430.61,-900.3C437.58,-908.44 446.04,-918.31 453.75,-927.3"/>
-<polygon fill="black" stroke="black" points="450.96,-929.43 460.13,-934.75 456.28,-924.88 450.96,-929.43"/>
+<path fill="none" stroke="black" d="M612.74,-972.3C613.05,-979.59 613.43,-988.27 613.78,-996.46"/>
+<polygon fill="black" stroke="black" points="610.28,-996.54 614.2,-1006.38 617.27,-996.24 610.28,-996.54"/>
 </g>
 <!-- addfastas&#45;&gt;adddownloads -->
-<g id="edge27" class="edge">
+<g id="edge24" class="edge">
 <title>addfastas-&gt;adddownloads</title>
-<path fill="none" stroke="black" d="M388.55,-900.48C374.79,-909.32 357.91,-920.16 343.06,-929.7"/>
-<polygon fill="black" stroke="black" points="341.45,-926.57 334.93,-934.92 345.23,-932.46 341.45,-926.57"/>
+<path fill="none" stroke="black" d="M651.89,-971.24C675.25,-980.74 705.05,-992.87 730.44,-1003.2"/>
+<polygon fill="black" stroke="black" points="729.03,-1006.41 739.61,-1006.93 731.67,-999.92 729.03,-1006.41"/>
 </g>
 <!-- fillsize -->
 <g id="node21" class="node">
 <title>fillsize</title>
-<path fill="none" stroke="black" d="M675.27,-828C675.27,-828 634.28,-828 634.28,-828 628.28,-828 622.28,-822 622.28,-816 622.28,-816 622.28,-804 622.28,-804 622.28,-798 628.28,-792 634.28,-792 634.28,-792 675.27,-792 675.27,-792 681.27,-792 687.27,-798 687.27,-804 687.27,-804 687.27,-816 687.27,-816 687.27,-822 681.27,-828 675.27,-828"/>
-<text text-anchor="middle" x="654.78" y="-805.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:fillsize</text>
+<path fill="none" stroke="black" d="M532.49,-900C532.49,-900 491.51,-900 491.51,-900 485.51,-900 479.51,-894 479.51,-888 479.51,-888 479.51,-876 479.51,-876 479.51,-870 485.51,-864 491.51,-864 491.51,-864 532.49,-864 532.49,-864 538.49,-864 544.49,-870 544.49,-876 544.49,-876 544.49,-888 544.49,-888 544.49,-894 538.49,-900 532.49,-900"/>
+<text text-anchor="middle" x="512" y="-877.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:fillsize</text>
 </g>
 <!-- fillsize&#45;&gt;taxnodes -->
-<g id="edge32" class="edge">
+<g id="edge29" class="edge">
 <title>fillsize-&gt;taxnodes</title>
-<path fill="none" stroke="black" d="M644.2,-828.03C625.31,-858.06 583.95,-921.97 543.78,-972 516.41,-1006.08 511.91,-1018 476.78,-1044 410.92,-1092.73 323.09,-1130.6 269.04,-1151.35"/>
-<polygon fill="black" stroke="black" points="267.9,-1148.04 259.79,-1154.86 270.38,-1154.59 267.9,-1148.04"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M510.41,-900.42C508.44,-933.12 509.17,-1003.99 547,-1044 588.19,-1087.56 623.4,-1053.15 677,-1080 749.95,-1116.55 822.39,-1180.51 859.5,-1215.81"/>
+<polygon fill="black" stroke="black" points="857,-1218.26 866.63,-1222.67 861.85,-1213.22 857,-1218.26"/>
 </g>
 <!-- fillsize&#45;&gt;categories -->
-<g id="edge31" class="edge">
+<g id="edge28" class="edge">
 <title>fillsize-&gt;categories</title>
-<path fill="none" stroke="black" d="M651.54,-828.42C646.86,-855.13 638.78,-907.85 638.78,-953 638.78,-953 638.78,-953 638.78,-1099 638.78,-1156.57 615.93,-1167.52 604.78,-1224 598.53,-1255.64 597.78,-1263.81 595.78,-1296 594.78,-1311.97 594.43,-1316.06 595.78,-1332 596.45,-1340.03 597.7,-1348.67 599.05,-1356.6"/>
-<polygon fill="black" stroke="black" points="595.6,-1357.21 600.85,-1366.42 602.49,-1355.95 595.6,-1357.21"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M499.28,-900.38C481.66,-926.19 452,-976.83 452,-1025 452,-1025 452,-1025 452,-1243 452,-1283.97 451.01,-1298.11 428,-1332 420.3,-1343.33 409.37,-1353.2 398.38,-1361.24"/>
+<polygon fill="black" stroke="black" points="396.7,-1358.15 390.46,-1366.7 400.68,-1363.91 396.7,-1358.15"/>
 </g>
 <!-- fillsize&#45;&gt;refseqfna -->
-<g id="edge33" class="edge">
+<g id="edge30" class="edge">
 <title>fillsize-&gt;refseqfna</title>
-<path fill="none" stroke="black" d="M677.51,-828.49C706.46,-852.93 752.78,-900.28 752.78,-953 752.78,-953 752.78,-953 752.78,-1027 752.78,-1116.01 777.27,-1135.74 788.78,-1224 791.38,-1244.01 793.15,-1266.68 794.26,-1284.14"/>
-<polygon fill="black" stroke="black" points="790.76,-1284.26 794.84,-1294.04 797.74,-1283.85 790.76,-1284.26"/>
-</g>
-<!-- fillsize&#45;&gt;accmap -->
-<g id="edge34" class="edge">
-<title>fillsize-&gt;accmap</title>
-<path fill="none" stroke="black" d="M659.23,-828.35C665.66,-854.98 676.78,-907.6 676.78,-953 676.78,-953 676.78,-953 676.78,-1027 676.78,-1066.86 686.45,-1112.08 693.76,-1140.57"/>
-<polygon fill="black" stroke="black" points="690.38,-1141.46 696.33,-1150.22 697.14,-1139.66 690.38,-1141.46"/>
+<path fill="none" stroke="black" d="M479.25,-892.51C438.74,-904.28 369.33,-924.44 321.87,-938.23"/>
+<polygon fill="black" stroke="black" points="320.98,-934.84 312.35,-940.99 322.93,-941.56 320.98,-934.84"/>
 </g>
 <!-- fillsize&#45;&gt;addfastas -->
-<g id="edge35" class="edge">
+<g id="edge31" class="edge">
 <title>fillsize-&gt;addfastas</title>
-<path fill="none" stroke="black" d="M621.98,-823.51C617.56,-825.08 613.07,-826.62 608.78,-828 561.05,-843.34 505.83,-858.22 466.71,-868.29"/>
-<polygon fill="black" stroke="black" points="465.91,-864.88 457.09,-870.75 467.64,-871.66 465.91,-864.88"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M536.98,-900.48C549.36,-909.15 564.5,-919.75 577.93,-929.15"/>
+<polygon fill="black" stroke="black" points="575.9,-932 586.1,-934.87 579.92,-926.27 575.9,-932"/>
 </g>
 <!-- tempindex -->
 <g id="node22" class="node">
 <title>tempindex</title>
-<path fill="none" stroke="black" d="M672.77,-756C672.77,-756 610.78,-756 610.78,-756 604.78,-756 598.78,-750 598.78,-744 598.78,-744 598.78,-732 598.78,-732 598.78,-726 604.78,-720 610.78,-720 610.78,-720 672.77,-720 672.77,-720 678.77,-720 684.77,-726 684.77,-732 684.77,-732 684.77,-744 684.77,-744 684.77,-750 678.77,-756 672.77,-756"/>
-<text text-anchor="middle" x="641.78" y="-733.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:tempindex</text>
+<path fill="none" stroke="black" d="M545.99,-828C545.99,-828 484.01,-828 484.01,-828 478.01,-828 472.01,-822 472.01,-816 472.01,-816 472.01,-804 472.01,-804 472.01,-798 478.01,-792 484.01,-792 484.01,-792 545.99,-792 545.99,-792 551.99,-792 557.99,-798 557.99,-804 557.99,-804 557.99,-816 557.99,-816 557.99,-822 551.99,-828 545.99,-828"/>
+<text text-anchor="middle" x="515" y="-805.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:tempindex</text>
 </g>
 <!-- tempindex&#45;&gt;taxnodes -->
-<g id="edge36" class="edge">
+<g id="edge34" class="edge">
 <title>tempindex-&gt;taxnodes</title>
-<path fill="none" stroke="black" d="M598.33,-744.38C491.53,-758.82 224.78,-802.71 224.78,-881 224.78,-881 224.78,-881 224.78,-1027 224.78,-1066.28 222.84,-1111.64 221.38,-1140.32"/>
-<polygon fill="black" stroke="black" points="217.9,-1139.84 220.87,-1150.01 224.89,-1140.21 217.9,-1139.84"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M558.39,-819.05C652.3,-837.7 866,-887.35 866,-953 866,-953 866,-953 866,-1099 866,-1138.61 873.35,-1183.89 878.91,-1212.46"/>
+<polygon fill="black" stroke="black" points="875.45,-1213.02 880.86,-1222.13 882.31,-1211.63 875.45,-1213.02"/>
+</g>
+<!-- tempindex&#45;&gt;categories -->
+<g id="edge33" class="edge">
+<title>tempindex-&gt;categories</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M497.81,-828.46C488.88,-838.27 478.32,-851.11 471,-864 433.51,-930 414,-949.09 414,-1025 414,-1025 414,-1025 414,-1243 414,-1283.97 406.34,-1294.43 390,-1332 386.17,-1340.81 381.04,-1349.87 375.97,-1357.95"/>
+<polygon fill="black" stroke="black" points="373.05,-1356.02 370.5,-1366.3 378.9,-1359.85 373.05,-1356.02"/>
 </g>
 <!-- tempindex&#45;&gt;refseqfna -->
-<g id="edge37" class="edge">
+<g id="edge35" class="edge">
 <title>tempindex-&gt;refseqfna</title>
-<path fill="none" stroke="black" d="M682.1,-756.32C726.22,-778.32 790.78,-820.79 790.78,-881 790.78,-881 790.78,-881 790.78,-1027 790.78,-1130.74 813.49,-1156.62 804.78,-1260 804.1,-1268.03 802.86,-1276.67 801.5,-1284.6"/>
-<polygon fill="black" stroke="black" points="798.06,-1283.95 799.7,-1294.42 804.95,-1285.21 798.06,-1283.95"/>
-</g>
-<!-- tempindex&#45;&gt;accmap -->
-<g id="edge38" class="edge">
-<title>tempindex-&gt;accmap</title>
-<path fill="none" stroke="black" d="M664.88,-756.28C675.84,-765.68 688.18,-778.19 695.78,-792 715.26,-827.45 714.78,-840.55 714.78,-881 714.78,-881 714.78,-881 714.78,-1027 714.78,-1066.42 709.75,-1111.75 705.94,-1140.38"/>
-<polygon fill="black" stroke="black" points="702.51,-1139.68 704.61,-1150.06 709.44,-1140.63 702.51,-1139.68"/>
+<path fill="none" stroke="black" d="M485.08,-828.41C441.24,-853.92 359.48,-901.51 310.67,-929.91"/>
+<polygon fill="black" stroke="black" points="308.97,-926.85 302.09,-934.91 312.49,-932.9 308.97,-926.85"/>
 </g>
 <!-- tempindex&#45;&gt;addfastas -->
-<g id="edge40" class="edge">
+<g id="edge36" class="edge">
 <title>tempindex-&gt;addfastas</title>
-<path fill="none" stroke="black" d="M614.06,-756.41C573.63,-781.82 498.36,-829.11 453.09,-857.56"/>
-<polygon fill="black" stroke="black" points="451.25,-854.58 444.64,-862.86 454.97,-860.51 451.25,-854.58"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M527.48,-828.07C534.98,-838.41 544.64,-851.88 553,-864 567.39,-884.86 583.23,-908.82 594.87,-926.62"/>
+<polygon fill="black" stroke="black" points="591.65,-928.08 600.05,-934.55 597.51,-924.26 591.65,-928.08"/>
 </g>
 <!-- tempindex&#45;&gt;fillsize -->
-<g id="edge39" class="edge">
+<g id="edge32" class="edge">
 <title>tempindex-&gt;fillsize</title>
-<path fill="none" stroke="black" d="M644.99,-756.3C646.36,-763.68 647.99,-772.48 649.53,-780.75"/>
-<polygon fill="black" stroke="black" points="646.06,-781.21 651.32,-790.41 652.94,-779.94 646.06,-781.21"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M514.26,-828.3C513.95,-835.59 513.57,-844.27 513.22,-852.46"/>
+<polygon fill="black" stroke="black" points="509.73,-852.24 512.8,-862.38 516.72,-852.54 509.73,-852.24"/>
 </g>
 <!-- filldb -->
 <g id="node23" class="node">
 <title>filldb</title>
-<path fill="none" stroke="black" d="M530.39,-684C530.39,-684 497.17,-684 497.17,-684 491.17,-684 485.17,-678 485.17,-672 485.17,-672 485.17,-660 485.17,-660 485.17,-654 491.17,-648 497.17,-648 497.17,-648 530.39,-648 530.39,-648 536.39,-648 542.39,-654 542.39,-660 542.39,-660 542.39,-672 542.39,-672 542.39,-678 536.39,-684 530.39,-684"/>
-<text text-anchor="middle" x="513.78" y="-661.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:filldb</text>
-</g>
-<!-- filldb&#45;&gt;taxtree -->
-<g id="edge46" class="edge">
-<title>filldb-&gt;taxtree</title>
-<path fill="none" stroke="black" d="M484.84,-667.58C386.73,-671.21 72.78,-697.18 72.78,-881 72.78,-881 72.78,-881 72.78,-1099 72.78,-1149.08 116.25,-1191.88 149.03,-1217.03"/>
-<polygon fill="black" stroke="black" points="146.62,-1219.6 156.73,-1222.74 150.79,-1213.97 146.62,-1219.6"/>
+<path fill="none" stroke="black" d="M536.61,-756C536.61,-756 503.39,-756 503.39,-756 497.39,-756 491.39,-750 491.39,-744 491.39,-744 491.39,-732 491.39,-732 491.39,-726 497.39,-720 503.39,-720 503.39,-720 536.61,-720 536.61,-720 542.61,-720 548.61,-726 548.61,-732 548.61,-732 548.61,-744 548.61,-744 548.61,-750 542.61,-756 536.61,-756"/>
+<text text-anchor="middle" x="520" y="-733.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:filldb</text>
 </g>
 <!-- filldb&#45;&gt;taxnodes -->
-<g id="edge42" class="edge">
+<g id="edge39" class="edge">
 <title>filldb-&gt;taxnodes</title>
-<path fill="none" stroke="black" d="M484.89,-674.68C420.36,-693.71 266.56,-749.95 220.78,-864 182.55,-959.22 201.62,-1085.05 213.15,-1140.58"/>
-<polygon fill="black" stroke="black" points="209.69,-1141.12 215.22,-1150.15 216.53,-1139.64 209.69,-1141.12"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M548.86,-743.27C638.17,-757.27 904,-805.3 904,-881 904,-881 904,-881 904,-1099 904,-1138.61 896.65,-1183.89 891.09,-1212.46"/>
+<polygon fill="black" stroke="black" points="887.69,-1211.63 889.14,-1222.13 894.55,-1213.02 887.69,-1211.63"/>
 </g>
 <!-- filldb&#45;&gt;categories -->
-<g id="edge41" class="edge">
+<g id="edge38" class="edge">
 <title>filldb-&gt;categories</title>
-<path fill="none" stroke="black" d="M520.04,-684.32C536.19,-731.58 575.77,-866.33 543.78,-972 527.06,-1027.21 488.49,-1024.79 471.78,-1080 467.14,-1095.31 469.41,-1100.18 471.78,-1116 486.61,-1215.28 481.18,-1249.1 537.78,-1332 545.28,-1342.99 555.75,-1352.79 566.19,-1360.88"/>
-<polygon fill="black" stroke="black" points="563.93,-1363.55 574.06,-1366.64 568.06,-1357.91 563.93,-1363.55"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M491.21,-751.55C449.18,-772.04 376,-816.92 376,-881 376,-881 376,-881 376,-1243 376,-1282.61 368.65,-1327.89 363.09,-1356.46"/>
+<polygon fill="black" stroke="black" points="359.69,-1355.63 361.14,-1366.13 366.55,-1357.02 359.69,-1355.63"/>
 </g>
 <!-- filldb&#45;&gt;refseqfna -->
-<g id="edge43" class="edge">
+<g id="edge40" class="edge">
 <title>filldb-&gt;refseqfna</title>
-<path fill="none" stroke="black" d="M542.59,-669.14C608.51,-674.5 767.98,-690.25 811.78,-720 850.24,-746.13 866.78,-762.5 866.78,-809 866.78,-809 866.78,-809 866.78,-955 866.78,-1092.16 858.87,-1128.53 819.78,-1260 817.24,-1268.52 813.61,-1277.45 809.94,-1285.49"/>
-<polygon fill="black" stroke="black" points="806.83,-1283.9 805.67,-1294.43 813.14,-1286.92 806.83,-1283.9"/>
-</g>
-<!-- filldb&#45;&gt;accmap -->
-<g id="edge44" class="edge">
-<title>filldb-&gt;accmap</title>
-<path fill="none" stroke="black" d="M542.85,-666.94C620.83,-668.47 828.78,-684.23 828.78,-809 828.78,-809 828.78,-809 828.78,-1027 828.78,-1079.22 780.47,-1121.04 743.44,-1145.43"/>
-<polygon fill="black" stroke="black" points="741.66,-1142.41 735.1,-1150.73 745.42,-1148.32 741.66,-1142.41"/>
+<path fill="none" stroke="black" d="M491.03,-742.37C456.83,-747.67 399.82,-760.78 362,-792 318.88,-827.59 292.31,-889.27 279.73,-925.07"/>
+<polygon fill="black" stroke="black" points="276.51,-923.69 276.62,-934.28 283.14,-925.93 276.51,-923.69"/>
 </g>
 <!-- filldb&#45;&gt;addfastas -->
-<g id="edge47" class="edge">
+<g id="edge41" class="edge">
 <title>filldb-&gt;addfastas</title>
-<path fill="none" stroke="black" d="M505.92,-684.15C489.01,-721.09 449,-808.45 428.45,-853.33"/>
-<polygon fill="black" stroke="black" points="425.28,-851.84 424.3,-862.39 431.64,-854.76 425.28,-851.84"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M538.78,-756.06C548.45,-765.76 559.7,-778.61 567,-792 590.38,-834.9 602.47,-890.99 608.01,-924.38"/>
+<polygon fill="black" stroke="black" points="604.52,-924.75 609.53,-934.09 611.44,-923.67 604.52,-924.75"/>
 </g>
 <!-- filldb&#45;&gt;tempindex -->
-<g id="edge45" class="edge">
+<g id="edge37" class="edge">
 <title>filldb-&gt;tempindex</title>
-<path fill="none" stroke="black" d="M542.82,-682.88C559.75,-692.14 581.38,-703.97 600.1,-714.21"/>
-<polygon fill="black" stroke="black" points="598.37,-717.25 608.83,-718.98 601.73,-711.11 598.37,-717.25"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M518.76,-756.3C518.24,-763.59 517.62,-772.27 517.04,-780.46"/>
+<polygon fill="black" stroke="black" points="513.55,-780.16 516.33,-790.39 520.53,-780.66 513.55,-780.16"/>
 </g>
 <!-- tempdb -->
 <g id="node24" class="node">
 <title>tempdb</title>
-<path fill="none" stroke="black" d="M474.05,-612C474.05,-612 431.5,-612 431.5,-612 425.5,-612 419.5,-606 419.5,-600 419.5,-600 419.5,-588 419.5,-588 419.5,-582 425.5,-576 431.5,-576 431.5,-576 474.05,-576 474.05,-576 480.05,-576 486.05,-582 486.05,-588 486.05,-588 486.05,-600 486.05,-600 486.05,-606 480.05,-612 474.05,-612"/>
-<text text-anchor="middle" x="452.78" y="-589.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">f:tempdb</text>
+<path fill="none" stroke="black" d="M602.27,-684C602.27,-684 559.73,-684 559.73,-684 553.73,-684 547.73,-678 547.73,-672 547.73,-672 547.73,-660 547.73,-660 547.73,-654 553.73,-648 559.73,-648 559.73,-648 602.27,-648 602.27,-648 608.27,-648 614.27,-654 614.27,-660 614.27,-660 614.27,-672 614.27,-672 614.27,-678 608.27,-684 602.27,-684"/>
+<text text-anchor="middle" x="581" y="-661.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">f:tempdb</text>
 </g>
 <!-- tempdb&#45;&gt;filldb -->
-<g id="edge48" class="edge">
+<g id="edge42" class="edge">
 <title>tempdb-&gt;filldb</title>
-<path fill="none" stroke="black" d="M467.85,-612.3C474.95,-620.44 483.55,-630.31 491.38,-639.3"/>
-<polygon fill="black" stroke="black" points="488.67,-641.51 497.88,-646.75 493.95,-636.92 488.67,-641.51"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M565.92,-684.3C558.83,-692.44 550.23,-702.31 542.4,-711.3"/>
+<polygon fill="black" stroke="black" points="539.83,-708.92 535.9,-718.75 545.11,-713.51 539.83,-708.92"/>
 </g>
 <!-- loadtempdb -->
 <g id="node25" class="node">
 <title>loadtempdb</title>
-<path fill="none" stroke="black" d="M518.27,-540C518.27,-540 449.28,-540 449.28,-540 443.28,-540 437.28,-534 437.28,-528 437.28,-528 437.28,-516 437.28,-516 437.28,-510 443.28,-504 449.28,-504 449.28,-504 518.27,-504 518.27,-504 524.27,-504 530.27,-510 530.27,-516 530.27,-516 530.27,-528 530.27,-528 530.27,-534 524.27,-540 518.27,-540"/>
-<text text-anchor="middle" x="483.78" y="-517.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:loadtempdb</text>
+<path fill="none" stroke="black" d="M557.49,-612C557.49,-612 488.51,-612 488.51,-612 482.51,-612 476.51,-606 476.51,-600 476.51,-600 476.51,-588 476.51,-588 476.51,-582 482.51,-576 488.51,-576 488.51,-576 557.49,-576 557.49,-576 563.49,-576 569.49,-582 569.49,-588 569.49,-588 569.49,-600 569.49,-600 569.49,-606 563.49,-612 557.49,-612"/>
+<text text-anchor="middle" x="523" y="-589.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:loadtempdb</text>
 </g>
 <!-- loadtempdb&#45;&gt;filldb -->
-<g id="edge50" class="edge">
+<g id="edge44" class="edge">
 <title>loadtempdb-&gt;filldb</title>
-<path fill="none" stroke="black" stroke-dasharray="1,5" d="M487.45,-540.41C492.54,-564.5 501.79,-608.25 507.85,-636.97"/>
-<polygon fill="black" stroke="black" points="504.36,-637.35 509.85,-646.41 511.21,-635.9 504.36,-637.35"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M522.63,-612.41C522.13,-636.39 521.21,-679.86 520.6,-708.58"/>
+<polygon fill="black" stroke="black" points="517.11,-708.3 520.39,-718.38 524.1,-708.45 517.11,-708.3"/>
 </g>
 <!-- loadtempdb&#45;&gt;tempdb -->
-<g id="edge49" class="edge">
+<g id="edge43" class="edge">
 <title>loadtempdb-&gt;tempdb</title>
-<path fill="none" stroke="black" d="M476.11,-540.3C472.73,-547.93 468.68,-557.08 464.91,-565.6"/>
-<polygon fill="black" stroke="black" points="461.81,-563.95 460.96,-574.51 468.21,-566.79 461.81,-563.95"/>
+<path fill="none" stroke="black" d="M537.34,-612.3C544.08,-620.44 552.26,-630.31 559.7,-639.3"/>
+<polygon fill="black" stroke="black" points="556.79,-641.26 565.86,-646.73 562.18,-636.8 556.79,-641.26"/>
+</g>
+<!-- tempdbinfo -->
+<g id="node26" class="node">
+<title>tempdbinfo</title>
+<path fill="none" stroke="black" d="M568.55,-540C568.55,-540 503.45,-540 503.45,-540 497.45,-540 491.45,-534 491.45,-528 491.45,-528 491.45,-516 491.45,-516 491.45,-510 497.45,-504 503.45,-504 503.45,-504 568.55,-504 568.55,-504 574.55,-504 580.55,-510 580.55,-516 580.55,-516 580.55,-528 580.55,-528 580.55,-534 574.55,-540 568.55,-540"/>
+<text text-anchor="middle" x="536" y="-517.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">f:tempdbinfo</text>
+</g>
+<!-- tempdbinfo&#45;&gt;loadtempdb -->
+<g id="edge45" class="edge">
+<title>tempdbinfo-&gt;loadtempdb</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M532.79,-540.3C531.42,-547.68 529.78,-556.48 528.25,-564.75"/>
+<polygon fill="black" stroke="black" points="524.84,-563.94 526.45,-574.41 531.72,-565.21 524.84,-563.94"/>
 </g>
 <!-- updatedb -->
-<g id="node26" class="node">
+<g id="node27" class="node">
 <title>updatedb</title>
-<path fill="none" stroke="black" d="M510.88,-468C510.88,-468 456.67,-468 456.67,-468 450.67,-468 444.67,-462 444.67,-456 444.67,-456 444.67,-444 444.67,-444 444.67,-438 450.67,-432 456.67,-432 456.67,-432 510.88,-432 510.88,-432 516.88,-432 522.88,-438 522.88,-444 522.88,-444 522.88,-456 522.88,-456 522.88,-462 516.88,-468 510.88,-468"/>
-<text text-anchor="middle" x="483.78" y="-445.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:updatedb</text>
+<path fill="none" stroke="black" d="M489.1,-468C489.1,-468 434.9,-468 434.9,-468 428.9,-468 422.9,-462 422.9,-456 422.9,-456 422.9,-444 422.9,-444 422.9,-438 428.9,-432 434.9,-432 434.9,-432 489.1,-432 489.1,-432 495.1,-432 501.1,-438 501.1,-444 501.1,-444 501.1,-456 501.1,-456 501.1,-462 495.1,-468 489.1,-468"/>
+<text text-anchor="middle" x="462" y="-445.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:updatedb</text>
 </g>
 <!-- updatedb&#45;&gt;taxtree -->
-<g id="edge53" class="edge">
+<g id="edge47" class="edge">
 <title>updatedb-&gt;taxtree</title>
-<path fill="none" stroke="black" d="M444.32,-451.73C334.76,-456.03 34.78,-484.31 34.78,-665 34.78,-665 34.78,-665 34.78,-1099 34.78,-1144.37 52.3,-1156.31 84.78,-1188 100.91,-1203.75 122.68,-1216.03 141.78,-1224.78"/>
-<polygon fill="black" stroke="black" points="140.11,-1227.87 150.68,-1228.68 142.92,-1221.46 140.11,-1227.87"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M501.28,-453.48C589.64,-459.48 801.4,-476.37 867,-504 925.92,-528.81 980,-529.07 980,-593 980,-593 980,-593 980,-1027 980,-1132.73 1005.89,-1184.37 932,-1260 906.5,-1286.11 805.13,-1301.54 745.82,-1308.52"/>
+<polygon fill="black" stroke="black" points="745.6,-1305.02 736.06,-1309.63 746.39,-1311.98 745.6,-1305.02"/>
+</g>
+<!-- updatedb&#45;&gt;taxnodes -->
+<g id="edge51" class="edge">
+<title>updatedb-&gt;taxnodes</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M501.28,-454.12C615.92,-464.3 942,-501.32 942,-593 942,-593 942,-593 942,-1099 942,-1141.4 919.84,-1186.13 903.16,-1213.8"/>
+<polygon fill="black" stroke="black" points="900.21,-1211.91 897.89,-1222.24 906.15,-1215.61 900.21,-1211.91"/>
 </g>
 <!-- updatedb&#45;&gt;categories -->
-<g id="edge52" class="edge">
+<g id="edge50" class="edge">
 <title>updatedb-&gt;categories</title>
-<path fill="none" stroke="black" d="M523.32,-450.54C589.68,-451.17 726.47,-458.48 830.78,-504 889.05,-529.43 942.78,-529.42 942.78,-593 942.78,-593 942.78,-593 942.78,-1027 942.78,-1169.52 949.25,-1236.16 843.78,-1332 816.98,-1356.35 719.97,-1371.77 658.09,-1379.35"/>
-<polygon fill="black" stroke="black" points="657.99,-1375.84 648.47,-1380.5 658.81,-1382.79 657.99,-1375.84"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M422.78,-465.34C374.84,-485.71 300,-527.92 300,-593 300,-593 300,-593 300,-811 300,-907.6 338,-928.4 338,-1025 338,-1025 338,-1025 338,-1243 338,-1282.61 345.35,-1327.89 350.91,-1356.46"/>
+<polygon fill="black" stroke="black" points="347.45,-1357.02 352.86,-1366.13 354.31,-1355.63 347.45,-1357.02"/>
 </g>
 <!-- updatedb&#45;&gt;refseqfna -->
-<g id="edge54" class="edge">
+<g id="edge52" class="edge">
 <title>updatedb-&gt;refseqfna</title>
-<path fill="none" stroke="black" d="M523.21,-452.9C630.89,-458.43 924.1,-475.94 956.78,-504 987.86,-530.69 980.78,-552.03 980.78,-593 980.78,-593 980.78,-593 980.78,-1027 980.78,-1139.36 878.86,-1242.48 826.32,-1288.18"/>
-<polygon fill="black" stroke="black" points="824.2,-1285.39 818.87,-1294.54 828.75,-1290.71 824.2,-1285.39"/>
+<path fill="none" stroke="black" d="M422.55,-450.86C332.42,-451.36 115.08,-457.49 62,-504 31.19,-531 38,-552.03 38,-593 38,-593 38,-593 38,-811 38,-895.7 151.66,-931.35 220.21,-945.16"/>
+<polygon fill="black" stroke="black" points="219.24,-948.53 229.72,-946.98 220.56,-941.66 219.24,-948.53"/>
 </g>
 <!-- updatedb&#45;&gt;accmap -->
-<g id="edge55" class="edge">
+<g id="edge48" class="edge">
 <title>updatedb-&gt;accmap</title>
-<path fill="none" stroke="black" d="M523,-455.69C627.52,-469.28 904.78,-512.88 904.78,-593 904.78,-593 904.78,-593 904.78,-955 904.78,-1037.86 871.55,-1059.67 810.78,-1116 792.84,-1132.63 768.72,-1145.08 747.73,-1153.72"/>
-<polygon fill="black" stroke="black" points="746.52,-1150.44 738.49,-1157.35 749.08,-1156.95 746.52,-1150.44"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M422.51,-456.89C324.13,-472.67 76,-519.72 76,-593 76,-593 76,-593 76,-739 76,-839.93 0,-852.07 0,-953 0,-953 0,-953 0,-1099 0,-1170.13 86.76,-1210.15 142.4,-1228.5"/>
+<polygon fill="black" stroke="black" points="141.05,-1231.74 151.64,-1231.43 143.16,-1225.07 141.05,-1231.74"/>
 </g>
 <!-- updatedb&#45;&gt;addfastas -->
-<g id="edge51" class="edge">
+<g id="edge53" class="edge">
 <title>updatedb-&gt;addfastas</title>
-<path fill="none" stroke="black" d="M444.54,-459.85C386.05,-475.63 282.78,-514.6 282.78,-593 282.78,-593 282.78,-593 282.78,-739 282.78,-792.25 333.21,-833.76 371.96,-857.8"/>
-<polygon fill="black" stroke="black" points="369.85,-860.62 380.23,-862.76 373.45,-854.61 369.85,-860.62"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M461.27,-468.21C461.37,-487.88 464.53,-519.94 482,-540 511.93,-574.36 541.22,-549.1 578,-576 618.62,-605.71 648,-614.68 648,-665 648,-665 648,-665 648,-811 648,-851.68 633.94,-896.97 623.4,-925.22"/>
+<polygon fill="black" stroke="black" points="620.17,-923.87 619.83,-934.46 626.7,-926.39 620.17,-923.87"/>
 </g>
 <!-- updatedb&#45;&gt;loadtempdb -->
-<g id="edge56" class="edge">
+<g id="edge49" class="edge">
 <title>updatedb-&gt;loadtempdb</title>
-<path fill="none" stroke="black" d="M483.78,-468.3C483.78,-475.59 483.78,-484.27 483.78,-492.46"/>
-<polygon fill="black" stroke="black" points="480.28,-492.38 483.78,-502.38 487.28,-492.38 480.28,-492.38"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M453.64,-468.4C445.92,-487.1 437.3,-517.22 449,-540 455.03,-551.74 465.01,-561.46 475.71,-569.23"/>
+<polygon fill="black" stroke="black" points="473.69,-572.1 483.96,-574.72 477.57,-566.27 473.69,-572.1"/>
+</g>
+<!-- updatedb&#45;&gt;tempdbinfo -->
+<g id="edge46" class="edge">
+<title>updatedb-&gt;tempdbinfo</title>
+<path fill="none" stroke="black" d="M480.29,-468.3C489.1,-476.63 499.82,-486.78 509.5,-495.93"/>
+<polygon fill="black" stroke="black" points="506.89,-498.28 516.56,-502.61 511.7,-493.2 506.89,-498.28"/>
 </g>
 <!-- db -->
-<g id="node27" class="node">
+<g id="node28" class="node">
 <title>db</title>
-<polygon fill="none" stroke="black" stroke-width="2" points="455.78,-396 401.78,-396 401.78,-360 455.78,-360 455.78,-396"/>
-<text text-anchor="middle" x="428.78" y="-373.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">f:db</text>
+<polygon fill="none" stroke="black" stroke-width="2" points="547,-396 493,-396 493,-360 547,-360 547,-396"/>
+<text text-anchor="middle" x="520" y="-373.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">f:db</text>
 </g>
 <!-- db&#45;&gt;tempdb -->
-<g id="edge57" class="edge">
+<g id="edge54" class="edge">
 <title>db-&gt;tempdb</title>
-<path fill="none" stroke="black" d="M426.43,-396.17C422.89,-425.88 417.69,-488.63 428.78,-540 430.62,-548.55 433.97,-557.39 437.58,-565.33"/>
-<polygon fill="black" stroke="black" points="434.36,-566.71 441.91,-574.14 440.65,-563.62 434.36,-566.71"/>
+<path fill="none" stroke="black" d="M533.58,-396.37C550.66,-419.43 579.07,-462.12 590,-504 601.83,-549.36 594.34,-604.25 587.74,-636.81"/>
+<polygon fill="black" stroke="black" points="584.39,-635.74 585.7,-646.26 591.23,-637.22 584.39,-635.74"/>
+</g>
+<!-- db&#45;&gt;tempdbinfo -->
+<g id="edge55" class="edge">
+<title>db-&gt;tempdbinfo</title>
+<path fill="none" stroke="black" d="M521.96,-396.41C524.66,-420.39 529.56,-463.86 532.8,-492.58"/>
+<polygon fill="black" stroke="black" points="529.3,-492.84 533.9,-502.39 536.26,-492.06 529.3,-492.84"/>
 </g>
 <!-- db&#45;&gt;updatedb -->
-<g id="edge58" class="edge">
+<g id="edge56" class="edge">
 <title>db-&gt;updatedb</title>
-<path fill="none" stroke="black" d="M442.37,-396.3C448.7,-404.36 456.36,-414.11 463.36,-423.02"/>
-<polygon fill="black" stroke="black" points="460.47,-425 469.4,-430.71 465.98,-420.68 460.47,-425"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M505.66,-396.3C498.92,-404.44 490.74,-414.31 483.3,-423.3"/>
+<polygon fill="black" stroke="black" points="480.82,-420.8 477.14,-430.73 486.21,-425.26 480.82,-420.8"/>
 </g>
 <!-- loaddb -->
-<g id="node28" class="node">
+<g id="node29" class="node">
 <title>loaddb</title>
-<path fill="none" stroke="black" d="M476.27,-324C476.27,-324 435.28,-324 435.28,-324 429.28,-324 423.28,-318 423.28,-312 423.28,-312 423.28,-300 423.28,-300 423.28,-294 429.28,-288 435.28,-288 435.28,-288 476.27,-288 476.27,-288 482.27,-288 488.27,-294 488.27,-300 488.27,-300 488.27,-312 488.27,-312 488.27,-318 482.27,-324 476.27,-324"/>
-<text text-anchor="middle" x="455.78" y="-301.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:loaddb</text>
+<path fill="none" stroke="black" d="M471.5,-324C471.5,-324 430.5,-324 430.5,-324 424.5,-324 418.5,-318 418.5,-312 418.5,-312 418.5,-300 418.5,-300 418.5,-294 424.5,-288 430.5,-288 430.5,-288 471.5,-288 471.5,-288 477.5,-288 483.5,-294 483.5,-300 483.5,-300 483.5,-312 483.5,-312 483.5,-318 477.5,-324 471.5,-324"/>
+<text text-anchor="middle" x="451" y="-301.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:loaddb</text>
 </g>
 <!-- loaddb&#45;&gt;updatedb -->
-<g id="edge59" class="edge">
+<g id="edge57" class="edge">
 <title>loaddb-&gt;updatedb</title>
-<path fill="none" stroke="black" stroke-dasharray="1,5" d="M459.21,-324.41C463.96,-348.5 472.58,-392.25 478.25,-420.97"/>
-<polygon fill="black" stroke="black" points="474.74,-421.27 480.11,-430.4 481.61,-419.92 474.74,-421.27"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M452.35,-324.41C454.21,-348.39 457.57,-391.86 459.8,-420.58"/>
+<polygon fill="black" stroke="black" points="456.3,-420.68 460.56,-430.38 463.27,-420.14 456.3,-420.68"/>
 </g>
 <!-- loaddb&#45;&gt;db -->
-<g id="edge60" class="edge">
+<g id="edge58" class="edge">
 <title>loaddb-&gt;db</title>
-<path fill="none" stroke="black" d="M449.1,-324.3C446.19,-331.85 442.71,-340.88 439.45,-349.32"/>
-<polygon fill="black" stroke="black" points="436.25,-347.89 435.92,-358.48 442.78,-350.41 436.25,-347.89"/>
+<path fill="none" stroke="black" d="M468.06,-324.3C476.24,-332.61 486.21,-342.72 495.22,-351.86"/>
+<polygon fill="black" stroke="black" points="492.56,-354.15 502.08,-358.82 497.55,-349.24 492.56,-354.15"/>
 </g>
 <!-- fillindex -->
-<g id="node29" class="node">
+<g id="node30" class="node">
 <title>fillindex</title>
-<path fill="none" stroke="black" d="M428.94,-252C428.94,-252 378.61,-252 378.61,-252 372.61,-252 366.61,-246 366.61,-240 366.61,-240 366.61,-228 366.61,-228 366.61,-222 372.61,-216 378.61,-216 378.61,-216 428.94,-216 428.94,-216 434.94,-216 440.94,-222 440.94,-228 440.94,-228 440.94,-240 440.94,-240 440.94,-246 434.94,-252 428.94,-252"/>
-<text text-anchor="middle" x="403.78" y="-229.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:fillindex</text>
+<path fill="none" stroke="black" d="M474.16,-252C474.16,-252 423.84,-252 423.84,-252 417.84,-252 411.84,-246 411.84,-240 411.84,-240 411.84,-228 411.84,-228 411.84,-222 417.84,-216 423.84,-216 423.84,-216 474.16,-216 474.16,-216 480.16,-216 486.16,-222 486.16,-228 486.16,-228 486.16,-240 486.16,-240 486.16,-246 480.16,-252 474.16,-252"/>
+<text text-anchor="middle" x="449" y="-229.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:fillindex</text>
 </g>
 <!-- fillindex&#45;&gt;loaddb -->
-<g id="edge61" class="edge">
+<g id="edge59" class="edge">
 <title>fillindex-&gt;loaddb</title>
-<path fill="none" stroke="black" d="M416.63,-252.3C422.55,-260.27 429.7,-269.9 436.27,-278.74"/>
-<polygon fill="black" stroke="black" points="433.39,-280.74 442.17,-286.68 439.01,-276.57 433.39,-280.74"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M449.49,-252.3C449.7,-259.59 449.95,-268.27 450.18,-276.46"/>
+<polygon fill="black" stroke="black" points="446.68,-276.49 450.47,-286.38 453.68,-276.29 446.68,-276.49"/>
 </g>
 <!-- index -->
-<g id="node30" class="node">
+<g id="node31" class="node">
 <title>index</title>
-<polygon fill="none" stroke="black" stroke-width="2" points="439.6,-180 383.95,-180 383.95,-144 439.6,-144 439.6,-180"/>
-<text text-anchor="middle" x="411.78" y="-157.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">f:index</text>
+<polygon fill="none" stroke="black" stroke-width="2" points="442.83,-180 387.17,-180 387.17,-144 442.83,-144 442.83,-180"/>
+<text text-anchor="middle" x="415" y="-157.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">f:index</text>
 </g>
 <!-- index&#45;&gt;fillindex -->
-<g id="edge62" class="edge">
+<g id="edge60" class="edge">
 <title>index-&gt;fillindex</title>
-<path fill="none" stroke="black" d="M409.8,-180.3C408.97,-187.59 407.97,-196.27 407.04,-204.46"/>
-<polygon fill="black" stroke="black" points="403.56,-204.06 405.9,-214.39 410.52,-204.85 403.56,-204.06"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M423.4,-180.3C427.11,-187.93 431.56,-197.08 435.69,-205.6"/>
+<polygon fill="black" stroke="black" points="432.51,-207.07 440.03,-214.53 438.81,-204.01 432.51,-207.07"/>
 </g>
 <!-- loadindex -->
-<g id="node31" class="node">
+<g id="node32" class="node">
 <title>loadindex</title>
-<path fill="none" stroke="black" d="M384.82,-108C384.82,-108 326.73,-108 326.73,-108 320.73,-108 314.73,-102 314.73,-96 314.73,-96 314.73,-84 314.73,-84 314.73,-78 320.73,-72 326.73,-72 326.73,-72 384.82,-72 384.82,-72 390.82,-72 396.82,-78 396.82,-84 396.82,-84 396.82,-96 396.82,-96 396.82,-102 390.82,-108 384.82,-108"/>
-<text text-anchor="middle" x="355.78" y="-85.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:loadindex</text>
+<path fill="none" stroke="black" d="M474.05,-108C474.05,-108 415.95,-108 415.95,-108 409.95,-108 403.95,-102 403.95,-96 403.95,-96 403.95,-84 403.95,-84 403.95,-78 409.95,-72 415.95,-72 415.95,-72 474.05,-72 474.05,-72 480.05,-72 486.05,-78 486.05,-84 486.05,-84 486.05,-96 486.05,-96 486.05,-102 480.05,-108 474.05,-108"/>
+<text text-anchor="middle" x="445" y="-85.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:loadindex</text>
 </g>
 <!-- loadindex&#45;&gt;fillindex -->
-<g id="edge63" class="edge">
+<g id="edge61" class="edge">
 <title>loadindex-&gt;fillindex</title>
-<path fill="none" stroke="black" stroke-dasharray="1,5" d="M357.98,-108.48C360.63,-126.74 365.87,-156.01 374.78,-180 378.06,-188.85 382.62,-198.03 387.15,-206.21"/>
-<polygon fill="black" stroke="black" points="383.99,-207.73 392.02,-214.63 390.05,-204.22 383.99,-207.73"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M447.84,-108.13C449.42,-118.48 451.21,-131.96 452,-144 453.32,-164.08 452.52,-186.76 451.42,-204.19"/>
+<polygon fill="black" stroke="black" points="447.93,-203.86 450.71,-214.08 454.92,-204.35 447.93,-203.86"/>
 </g>
 <!-- loadindex&#45;&gt;index -->
-<g id="edge64" class="edge">
+<g id="edge62" class="edge">
 <title>loadindex-&gt;index</title>
-<path fill="none" stroke="black" d="M369.62,-108.3C376.06,-116.36 383.86,-126.11 390.99,-135.02"/>
-<polygon fill="black" stroke="black" points="388.17,-137.09 397.15,-142.71 393.63,-132.72 388.17,-137.09"/>
+<path fill="none" stroke="black" d="M437.58,-108.3C434.35,-115.85 430.48,-124.88 426.86,-133.32"/>
+<polygon fill="black" stroke="black" points="423.65,-131.93 422.93,-142.5 430.08,-134.69 423.65,-131.93"/>
 </g>
 <!-- dbinfo -->
-<g id="node32" class="node">
+<g id="node33" class="node">
 <title>dbinfo</title>
-<polygon fill="none" stroke="black" stroke-width="2" points="655.33,-180 594.22,-180 594.22,-144 655.33,-144 655.33,-180"/>
-<text text-anchor="middle" x="624.78" y="-157.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">f:dbinfo</text>
+<polygon fill="none" stroke="black" stroke-width="2" points="393.55,-252 332.45,-252 332.45,-216 393.55,-216 393.55,-252"/>
+<text text-anchor="middle" x="363" y="-229.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">f:dbinfo</text>
 </g>
 <!-- dbinfo&#45;&gt;loaddb -->
-<g id="edge65" class="edge">
+<g id="edge63" class="edge">
 <title>dbinfo-&gt;loaddb</title>
-<path fill="none" stroke="black" d="M627.68,-180.49C629.9,-200.13 630.23,-231.87 613.78,-252 586.19,-285.76 536.33,-298.14 499.98,-302.61"/>
-<polygon fill="black" stroke="black" points="499.79,-299.11 490.21,-303.64 500.52,-306.08 499.79,-299.11"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M384.75,-252.3C395.44,-260.8 408.49,-271.19 420.18,-280.49"/>
+<polygon fill="black" stroke="black" points="418,-283.22 428.01,-286.71 422.36,-277.75 418,-283.22"/>
 </g>
 <!-- genall -->
-<g id="node33" class="node">
+<g id="node34" class="node">
 <title>genall</title>
-<polygon fill="none" stroke="black" stroke-width="2" points="536.78,-108 482.78,-108 482.78,-72 536.78,-72 536.78,-108"/>
-<text text-anchor="middle" x="509.78" y="-85.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">genall</text>
+<polygon fill="none" stroke="black" stroke-width="2" points="386,-108 332,-108 332,-72 386,-72 386,-108"/>
+<text text-anchor="middle" x="359" y="-85.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">genall</text>
 </g>
 <!-- genall&#45;&gt;index -->
-<g id="edge67" class="edge">
+<g id="edge65" class="edge">
 <title>genall-&gt;index</title>
-<path fill="none" stroke="black" d="M485.3,-108.48C473.16,-117.15 458.33,-127.75 445.16,-137.15"/>
-<polygon fill="black" stroke="black" points="443.28,-134.2 437.17,-142.86 447.34,-139.9 443.28,-134.2"/>
+<path fill="none" stroke="black" d="M372.84,-108.3C379.29,-116.36 387.08,-126.11 394.21,-135.02"/>
+<polygon fill="black" stroke="black" points="391.39,-137.09 400.37,-142.71 396.86,-132.72 391.39,-137.09"/>
 </g>
 <!-- genall&#45;&gt;dbinfo -->
-<g id="edge66" class="edge">
+<g id="edge64" class="edge">
 <title>genall-&gt;dbinfo</title>
-<path fill="none" stroke="black" d="M537.03,-107.59C551.77,-116.56 570.22,-127.79 586.39,-137.64"/>
-<polygon fill="black" stroke="black" points="584.46,-140.56 594.82,-142.77 588.1,-134.58 584.46,-140.56"/>
+<path fill="none" stroke="black" d="M359.49,-108.41C360.17,-132.39 361.39,-175.86 362.2,-204.58"/>
+<polygon fill="black" stroke="black" points="358.7,-204.48 362.48,-214.38 365.69,-204.28 358.7,-204.48"/>
 </g>
 <!-- db2fastqtaxids -->
-<g id="node34" class="node">
+<g id="node35" class="node">
 <title>db2fastqtaxids</title>
-<path fill="none" stroke="black" d="M593.05,-252C593.05,-252 508.5,-252 508.5,-252 502.5,-252 496.5,-246 496.5,-240 496.5,-240 496.5,-228 496.5,-228 496.5,-222 502.5,-216 508.5,-216 508.5,-216 593.05,-216 593.05,-216 599.05,-216 605.05,-222 605.05,-228 605.05,-228 605.05,-240 605.05,-240 605.05,-246 599.05,-252 593.05,-252"/>
-<text text-anchor="middle" x="550.78" y="-229.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:db2fastqtaxids</text>
+<path fill="none" stroke="black" d="M302.27,-252C302.27,-252 217.73,-252 217.73,-252 211.73,-252 205.73,-246 205.73,-240 205.73,-240 205.73,-228 205.73,-228 205.73,-222 211.73,-216 217.73,-216 217.73,-216 302.27,-216 302.27,-216 308.27,-216 314.27,-222 314.27,-228 314.27,-228 314.27,-240 314.27,-240 314.27,-246 308.27,-252 302.27,-252"/>
+<text text-anchor="middle" x="260" y="-229.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:db2fastqtaxids</text>
 </g>
 <!-- db2fastqtaxids&#45;&gt;loaddb -->
-<g id="edge68" class="edge">
+<g id="edge66" class="edge">
 <title>db2fastqtaxids-&gt;loaddb</title>
-<path fill="none" stroke="black" d="M527.29,-252.3C515.53,-260.97 501.11,-271.6 488.3,-281.04"/>
-<polygon fill="black" stroke="black" points="486.51,-278.01 480.54,-286.76 490.66,-283.64 486.51,-278.01"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M307.7,-252.48C338.41,-263.74 377.99,-278.24 407.77,-289.16"/>
+<polygon fill="black" stroke="black" points="406.25,-292.33 416.85,-292.48 408.66,-285.76 406.25,-292.33"/>
 </g>
 <!-- db2fastq -->
-<g id="node35" class="node">
+<g id="node36" class="node">
 <title>db2fastq</title>
-<polygon fill="none" stroke="black" stroke-width="2" points="561.16,-180 488.39,-180 488.39,-144 561.16,-144 561.16,-180"/>
-<text text-anchor="middle" x="524.78" y="-157.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">f:db2fastq</text>
+<polygon fill="none" stroke="black" stroke-width="2" points="255.38,-180 182.62,-180 182.62,-144 255.38,-144 255.38,-180"/>
+<text text-anchor="middle" x="219" y="-157.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">f:db2fastq</text>
 </g>
 <!-- db2fastq&#45;&gt;loaddb -->
-<g id="edge70" class="edge">
+<g id="edge68" class="edge">
 <title>db2fastq-&gt;loaddb</title>
-<path fill="none" stroke="black" d="M510.87,-180.41C503.34,-190.41 494.27,-203.44 487.78,-216 477.69,-235.5 469.41,-258.91 463.8,-276.83"/>
-<polygon fill="black" stroke="black" points="460.49,-275.68 460.95,-286.26 467.19,-277.7 460.49,-275.68"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M206.79,-180.31C194.7,-199.78 180.23,-231.37 197,-252 223,-283.99 341.64,-297.33 407.17,-302.33"/>
+<polygon fill="black" stroke="black" points="406.63,-305.8 416.86,-303.04 407.14,-298.82 406.63,-305.8"/>
 </g>
 <!-- db2fastq&#45;&gt;db2fastqtaxids -->
-<g id="edge69" class="edge">
+<g id="edge67" class="edge">
 <title>db2fastq-&gt;db2fastqtaxids</title>
-<path fill="none" stroke="black" d="M531.2,-180.3C534.01,-187.85 537.36,-196.88 540.49,-205.32"/>
-<polygon fill="black" stroke="black" points="537.13,-206.32 543.9,-214.48 543.69,-203.88 537.13,-206.32"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M229.13,-180.3C233.7,-188.1 239.2,-197.49 244.29,-206.17"/>
+<polygon fill="black" stroke="black" points="241.14,-207.73 249.22,-214.59 247.18,-204.19 241.14,-207.73"/>
 </g>
 <!-- fastqmap -->
-<g id="node36" class="node">
+<g id="node37" class="node">
 <title>fastqmap</title>
-<path fill="none" stroke="black" d="M166.88,-468C166.88,-468 112.67,-468 112.67,-468 106.67,-468 100.67,-462 100.67,-456 100.67,-456 100.67,-444 100.67,-444 100.67,-438 106.67,-432 112.67,-432 112.67,-432 166.88,-432 166.88,-432 172.88,-432 178.88,-438 178.88,-444 178.88,-444 178.88,-456 178.88,-456 178.88,-462 172.88,-468 166.88,-468"/>
-<text text-anchor="middle" x="139.78" y="-445.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:fastqmap</text>
+<path fill="none" stroke="black" d="M804.1,-468C804.1,-468 749.9,-468 749.9,-468 743.9,-468 737.9,-462 737.9,-456 737.9,-456 737.9,-444 737.9,-444 737.9,-438 743.9,-432 749.9,-432 749.9,-432 804.1,-432 804.1,-432 810.1,-432 816.1,-438 816.1,-444 816.1,-444 816.1,-456 816.1,-456 816.1,-462 810.1,-468 804.1,-468"/>
+<text text-anchor="middle" x="777" y="-445.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:fastqmap</text>
 </g>
 <!-- fastqmaptransform -->
-<g id="node37" class="node">
+<g id="node38" class="node">
 <title>fastqmaptransform</title>
-<path fill="none" stroke="black" d="M273.09,-396C273.09,-396 164.46,-396 164.46,-396 158.46,-396 152.46,-390 152.46,-384 152.46,-384 152.46,-372 152.46,-372 152.46,-366 158.46,-360 164.46,-360 164.46,-360 273.09,-360 273.09,-360 279.09,-360 285.09,-366 285.09,-372 285.09,-372 285.09,-384 285.09,-384 285.09,-390 279.09,-396 273.09,-396"/>
-<text text-anchor="middle" x="218.78" y="-373.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:fastqmaptransform</text>
+<path fill="none" stroke="black" d="M784.32,-396C784.32,-396 675.68,-396 675.68,-396 669.68,-396 663.68,-390 663.68,-384 663.68,-384 663.68,-372 663.68,-372 663.68,-366 669.68,-360 675.68,-360 675.68,-360 784.32,-360 784.32,-360 790.32,-360 796.32,-366 796.32,-372 796.32,-372 796.32,-384 796.32,-384 796.32,-390 790.32,-396 784.32,-396"/>
+<text text-anchor="middle" x="730" y="-373.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:fastqmaptransform</text>
 </g>
 <!-- fastqmaptransform&#45;&gt;fastqmap -->
-<g id="edge71" class="edge">
+<g id="edge69" class="edge">
 <title>fastqmaptransform-&gt;fastqmap</title>
-<path fill="none" stroke="black" d="M199.25,-396.3C189.75,-404.72 178.17,-414.98 167.75,-424.21"/>
-<polygon fill="black" stroke="black" points="165.65,-421.4 160.49,-430.65 170.29,-426.64 165.65,-421.4"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M741.62,-396.3C746.91,-404.19 753.3,-413.7 759.18,-422.45"/>
+<polygon fill="black" stroke="black" points="756.19,-424.29 764.67,-430.64 762,-420.39 756.19,-424.29"/>
 </g>
 <!-- fastqdownload -->
-<g id="node38" class="node">
+<g id="node39" class="node">
 <title>fastqdownload</title>
-<path fill="none" stroke="black" d="M236.43,-324C236.43,-324 151.12,-324 151.12,-324 145.12,-324 139.12,-318 139.12,-312 139.12,-312 139.12,-300 139.12,-300 139.12,-294 145.12,-288 151.12,-288 151.12,-288 236.43,-288 236.43,-288 242.43,-288 248.43,-294 248.43,-300 248.43,-300 248.43,-312 248.43,-312 248.43,-318 242.43,-324 236.43,-324"/>
-<text text-anchor="middle" x="193.78" y="-301.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">d:fastqdownload</text>
+<path fill="none" stroke="black" d="M866.66,-324C866.66,-324 781.34,-324 781.34,-324 775.34,-324 769.34,-318 769.34,-312 769.34,-312 769.34,-300 769.34,-300 769.34,-294 775.34,-288 781.34,-288 781.34,-288 866.66,-288 866.66,-288 872.66,-288 878.66,-294 878.66,-300 878.66,-300 878.66,-312 878.66,-312 878.66,-318 872.66,-324 866.66,-324"/>
+<text text-anchor="middle" x="824" y="-301.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">d:fastqdownload</text>
 </g>
 <!-- fastqdownload&#45;&gt;fastqmap -->
-<g id="edge72" class="edge">
+<g id="edge70" class="edge">
 <title>fastqdownload-&gt;fastqmap</title>
-<path fill="none" stroke="black" d="M171.19,-324.38C160.86,-333.71 149.65,-346.14 143.78,-360 135.7,-379.07 134.98,-402.54 136.13,-420.59"/>
-<polygon fill="black" stroke="black" points="132.62,-420.67 136.99,-430.32 139.59,-420.05 132.62,-420.67"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M821.73,-324.45C819.02,-342.69 813.73,-371.94 805,-396 801.84,-404.71 797.49,-413.76 793.17,-421.88"/>
+<polygon fill="black" stroke="black" points="790.13,-420.13 788.33,-430.57 796.25,-423.53 790.13,-420.13"/>
 </g>
 <!-- fastqdownload&#45;&gt;fastqmaptransform -->
-<g id="edge73" class="edge">
+<g id="edge71" class="edge">
 <title>fastqdownload-&gt;fastqmaptransform</title>
-<path fill="none" stroke="black" d="M199.96,-324.3C202.65,-331.85 205.88,-340.88 208.89,-349.32"/>
-<polygon fill="black" stroke="black" points="205.5,-350.23 212.16,-358.47 212.09,-347.88 205.5,-350.23"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M800.76,-324.3C789.13,-332.97 774.85,-343.6 762.18,-353.04"/>
+<polygon fill="black" stroke="black" points="760.44,-349.97 754.51,-358.75 764.62,-355.58 760.44,-349.97"/>
 </g>
 <!-- filter -->
-<g id="node39" class="node">
+<g id="node40" class="node">
 <title>filter</title>
-<polygon fill="none" stroke="black" stroke-width="2" points="203.78,-36 149.78,-36 149.78,0 203.78,0 203.78,-36"/>
-<text text-anchor="middle" x="176.78" y="-13.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">f:filter</text>
+<polygon fill="none" stroke="black" stroke-width="2" points="541,-36 487,-36 487,0 541,0 541,-36"/>
+<text text-anchor="middle" x="514" y="-13.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">f:filter</text>
 </g>
 <!-- filter&#45;&gt;loadindex -->
-<g id="edge75" class="edge">
+<g id="edge73" class="edge">
 <title>filter-&gt;loadindex</title>
-<path fill="none" stroke="black" d="M204.18,-32.24C207.07,-33.55 209.97,-34.82 212.78,-36 242.62,-48.55 276.57,-61.2 303.91,-70.99"/>
-<polygon fill="black" stroke="black" points="302.4,-74.17 312.99,-74.23 304.75,-67.58 302.4,-74.17"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M496.94,-36.3C488.76,-44.61 478.79,-54.72 469.78,-63.86"/>
+<polygon fill="black" stroke="black" points="467.45,-61.24 462.92,-70.82 472.44,-66.15 467.45,-61.24"/>
 </g>
 <!-- filter&#45;&gt;fastqmaptransform -->
-<g id="edge76" class="edge">
+<g id="edge74" class="edge">
 <title>filter-&gt;fastqmaptransform</title>
-<path fill="none" stroke="black" d="M152.69,-36.32C112.17,-66.36 34.78,-128.05 34.78,-161 34.78,-161 34.78,-161 34.78,-235 34.78,-295.68 98.28,-334.07 150.67,-355.42"/>
-<polygon fill="black" stroke="black" points="149.32,-358.65 159.9,-359.04 151.87,-352.13 149.32,-358.65"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M514,-36.49C514,-63.29 514,-116.13 514,-161 514,-161 514,-161 514,-235 514,-303.37 590.5,-340.66 652.45,-359.64"/>
+<polygon fill="black" stroke="black" points="651.4,-362.98 661.98,-362.44 653.37,-356.26 651.4,-362.98"/>
 </g>
 <!-- filter&#45;&gt;fastqdownload -->
-<g id="edge74" class="edge">
+<g id="edge72" class="edge">
 <title>filter-&gt;fastqdownload</title>
-<path fill="none" stroke="black" d="M177.81,-36.46C180.65,-84.24 188.57,-217.49 192.08,-276.39"/>
-<polygon fill="black" stroke="black" points="188.57,-276.48 192.66,-286.26 195.56,-276.07 188.57,-276.48"/>
+<path fill="none" stroke="black" d="M541.15,-22.86C597.45,-32.38 727.08,-62.43 792,-144 822.4,-182.2 826.44,-241.36 825.79,-276.33"/>
+<polygon fill="black" stroke="black" points="822.3,-275.99 825.45,-286.11 829.3,-276.24 822.3,-275.99"/>
+</g>
+<!-- matchres -->
+<g id="node41" class="node">
+<title>matchres</title>
+<path fill="none" stroke="black" d="M749.71,-252C749.71,-252 696.29,-252 696.29,-252 690.29,-252 684.29,-246 684.29,-240 684.29,-240 684.29,-228 684.29,-228 684.29,-222 690.29,-216 696.29,-216 696.29,-216 749.71,-216 749.71,-216 755.71,-216 761.71,-222 761.71,-228 761.71,-228 761.71,-240 761.71,-240 761.71,-246 755.71,-252 749.71,-252"/>
+<text text-anchor="middle" x="723" y="-229.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:matchres</text>
+</g>
+<!-- matchres&#45;&gt;loaddb -->
+<g id="edge77" class="edge">
+<title>matchres-&gt;loaddb</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M684.03,-245.03C633.94,-257.92 547.21,-280.24 494.86,-293.71"/>
+<polygon fill="black" stroke="black" points="494.2,-290.27 485.39,-296.15 495.95,-297.05 494.2,-290.27"/>
+</g>
+<!-- matchres&#45;&gt;fastqmaptransform -->
+<g id="edge76" class="edge">
+<title>matchres-&gt;fastqmaptransform</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M723.72,-252.4C724.48,-270.34 725.74,-299.13 727,-324 727.4,-331.95 727.88,-340.56 728.33,-348.49"/>
+<polygon fill="black" stroke="black" points="724.82,-348.52 728.89,-358.31 731.81,-348.12 724.82,-348.52"/>
+</g>
+<!-- matchres&#45;&gt;fastqdownload -->
+<g id="edge75" class="edge">
+<title>matchres-&gt;fastqdownload</title>
+<path fill="none" stroke="black" d="M748.23,-252.48C760.85,-261.24 776.32,-271.96 789.98,-281.42"/>
+<polygon fill="black" stroke="black" points="787.64,-284.06 797.85,-286.88 791.63,-278.3 787.64,-284.06"/>
 </g>
 <!-- match -->
-<g id="node40" class="node">
+<g id="node42" class="node">
 <title>match</title>
-<polygon fill="none" stroke="black" stroke-width="2" points="263.16,-252 204.4,-252 204.4,-216 263.16,-216 263.16,-252"/>
-<text text-anchor="middle" x="233.78" y="-229.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">f:match</text>
-</g>
-<!-- match&#45;&gt;loaddb -->
-<g id="edge78" class="edge">
-<title>match-&gt;loaddb</title>
-<path fill="none" stroke="black" d="M263.48,-248.76C266.27,-249.91 269.06,-251.01 271.78,-252 318.89,-269.23 374.39,-284.56 412.02,-294.24"/>
-<polygon fill="black" stroke="black" points="411.07,-297.62 421.63,-296.69 412.8,-290.83 411.07,-297.62"/>
+<polygon fill="none" stroke="black" stroke-width="2" points="783.38,-180 724.62,-180 724.62,-144 783.38,-144 783.38,-180"/>
+<text text-anchor="middle" x="754" y="-157.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">f:match</text>
 </g>
 <!-- match&#45;&gt;fastqmaptransform -->
-<g id="edge79" class="edge">
+<g id="edge78" class="edge">
 <title>match-&gt;fastqmaptransform</title>
-<path fill="none" stroke="black" d="M244.38,-252.22C254.1,-270.27 265.86,-299.37 257.78,-324 254.65,-333.52 249.09,-342.73 243.13,-350.74"/>
-<polygon fill="black" stroke="black" points="240.56,-348.36 237.02,-358.34 246.01,-352.74 240.56,-348.36"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M761.07,-180.33C764.84,-190.53 769.09,-203.78 771,-216 773.47,-231.81 773.52,-236.2 771,-252 770.21,-256.93 751.33,-313.57 739.47,-348.89"/>
+<polygon fill="black" stroke="black" points="736.25,-347.49 736.38,-358.08 742.88,-349.72 736.25,-347.49"/>
 </g>
-<!-- match&#45;&gt;fastqdownload -->
-<g id="edge77" class="edge">
-<title>match-&gt;fastqdownload</title>
-<path fill="none" stroke="black" d="M223.89,-252.3C219.43,-260.1 214.07,-269.49 209.11,-278.17"/>
-<polygon fill="black" stroke="black" points="206.22,-276.16 204.3,-286.58 212.3,-279.64 206.22,-276.16"/>
+<!-- match&#45;&gt;matchres -->
+<g id="edge79" class="edge">
+<title>match-&gt;matchres</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M746.34,-180.3C742.96,-187.93 738.91,-197.08 735.13,-205.6"/>
+<polygon fill="black" stroke="black" points="732.04,-203.95 731.19,-214.51 738.44,-206.79 732.04,-203.95"/>
+</g>
+<!-- matchreslr -->
+<g id="node43" class="node">
+<title>matchreslr</title>
+<path fill="none" stroke="black" d="M615.99,-252C615.99,-252 554.01,-252 554.01,-252 548.01,-252 542.01,-246 542.01,-240 542.01,-240 542.01,-228 542.01,-228 542.01,-222 548.01,-216 554.01,-216 554.01,-216 615.99,-216 615.99,-216 621.99,-216 627.99,-222 627.99,-228 627.99,-228 627.99,-240 627.99,-240 627.99,-246 621.99,-252 615.99,-252"/>
+<text text-anchor="middle" x="585" y="-229.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:matchreslr</text>
+</g>
+<!-- matchreslr&#45;&gt;loaddb -->
+<g id="edge82" class="edge">
+<title>matchreslr-&gt;loaddb</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M551.53,-252.48C534,-261.64 512.35,-272.95 493.63,-282.73"/>
+<polygon fill="black" stroke="black" points="492.16,-279.55 484.92,-287.28 495.4,-285.75 492.16,-279.55"/>
+</g>
+<!-- matchreslr&#45;&gt;fastqmaptransform -->
+<g id="edge81" class="edge">
+<title>matchreslr-&gt;fastqmaptransform</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M593.09,-252.39C602.68,-271.64 620.17,-302.76 642,-324 654.05,-335.72 669.15,-346 683.43,-354.3"/>
+<polygon fill="black" stroke="black" points="681.38,-357.16 691.81,-358.99 684.8,-351.05 681.38,-357.16"/>
+</g>
+<!-- matchreslr&#45;&gt;fastqdownload -->
+<g id="edge80" class="edge">
+<title>matchreslr-&gt;fastqdownload</title>
+<path fill="none" stroke="black" d="M628.28,-247.68C664.46,-258.27 716.64,-273.56 758.02,-285.68"/>
+<polygon fill="black" stroke="black" points="756.81,-288.97 767.39,-288.42 758.78,-282.25 756.81,-288.97"/>
 </g>
 <!-- matchlr -->
-<g id="node41" class="node">
+<g id="node44" class="node">
 <title>matchlr</title>
-<polygon fill="none" stroke="black" stroke-width="2" points="348.43,-252 281.12,-252 281.12,-216 348.43,-216 348.43,-252"/>
-<text text-anchor="middle" x="314.78" y="-229.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">f:matchlr</text>
-</g>
-<!-- matchlr&#45;&gt;loaddb -->
-<g id="edge81" class="edge">
-<title>matchlr-&gt;loaddb</title>
-<path fill="none" stroke="black" d="M348.91,-251.95C368.15,-261.5 392.37,-273.52 412.89,-283.71"/>
-<polygon fill="black" stroke="black" points="411.06,-286.71 421.57,-288.02 414.17,-280.44 411.06,-286.71"/>
+<polygon fill="none" stroke="black" stroke-width="2" points="654.66,-180 587.34,-180 587.34,-144 654.66,-144 654.66,-180"/>
+<text text-anchor="middle" x="621" y="-157.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">f:matchlr</text>
 </g>
 <!-- matchlr&#45;&gt;fastqmaptransform -->
-<g id="edge82" class="edge">
+<g id="edge83" class="edge">
 <title>matchlr-&gt;fastqmaptransform</title>
-<path fill="none" stroke="black" d="M308.69,-252.37C301.68,-271.06 289.01,-301.16 272.78,-324 265.76,-333.88 256.78,-343.52 248.18,-351.81"/>
-<polygon fill="black" stroke="black" points="245.83,-349.21 240.89,-358.58 250.6,-354.34 245.83,-349.21"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M629.74,-180.15C648.59,-217.17 693.23,-304.82 716.05,-349.61"/>
+<polygon fill="black" stroke="black" points="712.88,-351.1 720.54,-358.42 719.12,-347.92 712.88,-351.1"/>
 </g>
-<!-- matchlr&#45;&gt;fastqdownload -->
-<g id="edge80" class="edge">
-<title>matchlr-&gt;fastqdownload</title>
-<path fill="none" stroke="black" d="M284.55,-252.48C268.99,-261.49 249.82,-272.58 233.12,-282.24"/>
-<polygon fill="black" stroke="black" points="231.83,-278.94 224.92,-286.98 235.33,-285 231.83,-278.94"/>
+<!-- matchlr&#45;&gt;matchreslr -->
+<g id="edge84" class="edge">
+<title>matchlr-&gt;matchreslr</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M612.1,-180.3C608.13,-188.02 603.37,-197.29 598.94,-205.89"/>
+<polygon fill="black" stroke="black" points="595.95,-204.06 594.49,-214.55 602.17,-207.26 595.95,-204.06"/>
+</g>
+<!-- fastamap -->
+<g id="node45" class="node">
+<title>fastamap</title>
+<path fill="none" stroke="black" d="M1186.71,-252C1186.71,-252 1133.29,-252 1133.29,-252 1127.29,-252 1121.29,-246 1121.29,-240 1121.29,-240 1121.29,-228 1121.29,-228 1121.29,-222 1127.29,-216 1133.29,-216 1133.29,-216 1186.71,-216 1186.71,-216 1192.71,-216 1198.71,-222 1198.71,-228 1198.71,-228 1198.71,-240 1198.71,-240 1198.71,-246 1192.71,-252 1186.71,-252"/>
+<text text-anchor="middle" x="1160" y="-229.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:fastamap</text>
+</g>
+<!-- fastamaptransform -->
+<g id="node46" class="node">
+<title>fastamaptransform</title>
+<path fill="none" stroke="black" d="M1138.92,-180C1138.92,-180 1031.08,-180 1031.08,-180 1025.08,-180 1019.08,-174 1019.08,-168 1019.08,-168 1019.08,-156 1019.08,-156 1019.08,-150 1025.08,-144 1031.08,-144 1031.08,-144 1138.92,-144 1138.92,-144 1144.92,-144 1150.92,-150 1150.92,-156 1150.92,-156 1150.92,-168 1150.92,-168 1150.92,-174 1144.92,-180 1138.92,-180"/>
+<text text-anchor="middle" x="1085" y="-157.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:fastamaptransform</text>
+</g>
+<!-- fastamaptransform&#45;&gt;fastamap -->
+<g id="edge85" class="edge">
+<title>fastamaptransform-&gt;fastamap</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M1103.54,-180.3C1112.46,-188.63 1123.33,-198.78 1133.14,-207.93"/>
+<polygon fill="black" stroke="black" points="1130.61,-210.36 1140.31,-214.62 1135.39,-205.24 1130.61,-210.36"/>
+</g>
+<!-- fastadownload -->
+<g id="node47" class="node">
+<title>fastadownload</title>
+<path fill="none" stroke="black" d="M1209.27,-108C1209.27,-108 1124.73,-108 1124.73,-108 1118.73,-108 1112.73,-102 1112.73,-96 1112.73,-96 1112.73,-84 1112.73,-84 1112.73,-78 1118.73,-72 1124.73,-72 1124.73,-72 1209.27,-72 1209.27,-72 1215.27,-72 1221.27,-78 1221.27,-84 1221.27,-84 1221.27,-96 1221.27,-96 1221.27,-102 1215.27,-108 1209.27,-108"/>
+<text text-anchor="middle" x="1167" y="-85.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">d:fastadownload</text>
+</g>
+<!-- fastadownload&#45;&gt;fastamap -->
+<g id="edge86" class="edge">
+<title>fastadownload-&gt;fastamap</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M1166.14,-108.41C1164.96,-132.39 1162.82,-175.86 1161.4,-204.58"/>
+<polygon fill="black" stroke="black" points="1157.91,-204.22 1160.92,-214.38 1164.91,-204.56 1157.91,-204.22"/>
+</g>
+<!-- fastadownload&#45;&gt;fastamaptransform -->
+<g id="edge87" class="edge">
+<title>fastadownload-&gt;fastamaptransform</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M1146.73,-108.3C1136.87,-116.72 1124.85,-126.98 1114.04,-136.21"/>
+<polygon fill="black" stroke="black" points="1111.81,-133.52 1106.47,-142.67 1116.35,-138.84 1111.81,-133.52"/>
+</g>
+<!-- fasta2fastq -->
+<g id="node48" class="node">
+<title>fasta2fastq</title>
+<path fill="none" stroke="black" d="M1156.6,-36C1156.6,-36 1095.4,-36 1095.4,-36 1089.4,-36 1083.4,-30 1083.4,-24 1083.4,-24 1083.4,-12 1083.4,-12 1083.4,-6 1089.4,0 1095.4,0 1095.4,0 1156.6,0 1156.6,0 1162.6,0 1168.6,-6 1168.6,-12 1168.6,-12 1168.6,-24 1168.6,-24 1168.6,-30 1162.6,-36 1156.6,-36"/>
+<text text-anchor="middle" x="1126" y="-13.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">f:fasta2fastq</text>
+</g>
+<!-- fasta2fastq&#45;&gt;fastamaptransform -->
+<g id="edge89" class="edge">
+<title>fasta2fastq-&gt;fastamaptransform</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M1117.84,-36.37C1113.29,-46.57 1107.79,-59.82 1104,-72 1097.82,-91.86 1092.97,-114.82 1089.72,-132.45"/>
+<polygon fill="black" stroke="black" points="1086.29,-131.75 1087.99,-142.21 1093.18,-132.97 1086.29,-131.75"/>
+</g>
+<!-- fasta2fastq&#45;&gt;fastadownload -->
+<g id="edge88" class="edge">
+<title>fasta2fastq-&gt;fastadownload</title>
+<path fill="none" stroke="black" d="M1136.13,-36.3C1140.7,-44.1 1146.2,-53.49 1151.29,-62.17"/>
+<polygon fill="black" stroke="black" points="1148.14,-63.73 1156.22,-70.59 1154.18,-60.19 1148.14,-63.73"/>
+</g>
+<!-- krakencount -->
+<g id="node49" class="node">
+<title>krakencount</title>
+<path fill="none" stroke="black" d="M1016.04,-252C1016.04,-252 943.96,-252 943.96,-252 937.96,-252 931.96,-246 931.96,-240 931.96,-240 931.96,-228 931.96,-228 931.96,-222 937.96,-216 943.96,-216 943.96,-216 1016.04,-216 1016.04,-216 1022.04,-216 1028.04,-222 1028.04,-228 1028.04,-228 1028.04,-240 1028.04,-240 1028.04,-246 1022.04,-252 1016.04,-252"/>
+<text text-anchor="middle" x="980" y="-229.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:krakencount</text>
+</g>
+<!-- krakencount&#45;&gt;taxnodes -->
+<g id="edge91" class="edge">
+<title>krakencount-&gt;taxnodes</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M987.69,-252.09C998.79,-278.38 1018,-330.55 1018,-377 1018,-377 1018,-377 1018,-1099 1018,-1152.25 967.57,-1193.76 928.81,-1217.8"/>
+<polygon fill="black" stroke="black" points="927.33,-1214.61 920.55,-1222.76 930.93,-1220.62 927.33,-1214.61"/>
+</g>
+<!-- krakencount&#45;&gt;fastqmaptransform -->
+<g id="edge92" class="edge">
+<title>krakencount-&gt;fastqmaptransform</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M972.97,-252.47C963.94,-272.7 946.35,-305.59 921,-324 888.07,-347.91 844.8,-361.04 807.77,-368.25"/>
+<polygon fill="black" stroke="black" points="807.2,-364.8 797.99,-370.03 808.46,-371.68 807.2,-364.8"/>
+</g>
+<!-- krakencount&#45;&gt;fastqdownload -->
+<g id="edge90" class="edge">
+<title>krakencount-&gt;fastqdownload</title>
+<path fill="none" stroke="black" d="M941.04,-252.48C920.48,-261.71 895.06,-273.11 873.17,-282.94"/>
+<polygon fill="black" stroke="black" points="871.81,-279.71 864.12,-287 874.67,-286.1 871.81,-279.71"/>
 </g>
 <!-- krakenres -->
-<g id="node42" class="node">
+<g id="node50" class="node">
 <title>krakenres</title>
-<path fill="none" stroke="black" d="M137.26,-252C137.26,-252 82.29,-252 82.29,-252 76.29,-252 70.29,-246 70.29,-240 70.29,-240 70.29,-228 70.29,-228 70.29,-222 76.29,-216 82.29,-216 82.29,-216 137.26,-216 137.26,-216 143.26,-216 149.26,-222 149.26,-228 149.26,-228 149.26,-240 149.26,-240 149.26,-246 143.26,-252 137.26,-252"/>
-<text text-anchor="middle" x="109.78" y="-229.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">f:krakenres</text>
+<path fill="none" stroke="black" d="M988.48,-180C988.48,-180 933.52,-180 933.52,-180 927.52,-180 921.52,-174 921.52,-168 921.52,-168 921.52,-156 921.52,-156 921.52,-150 927.52,-144 933.52,-144 933.52,-144 988.48,-144 988.48,-144 994.48,-144 1000.48,-150 1000.48,-156 1000.48,-156 1000.48,-168 1000.48,-168 1000.48,-174 994.48,-180 988.48,-180"/>
+<text text-anchor="middle" x="961" y="-157.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">f:krakenres</text>
 </g>
 <!-- krakenres&#45;&gt;taxnodes -->
-<g id="edge84" class="edge">
+<g id="edge94" class="edge">
 <title>krakenres-&gt;taxnodes</title>
-<path fill="none" stroke="black" d="M102.29,-252.11C91.48,-278.42 72.78,-330.63 72.78,-377 72.78,-377 72.78,-377 72.78,-667 72.78,-763.6 110.78,-784.4 110.78,-881 110.78,-881 110.78,-881 110.78,-1027 110.78,-1076.5 152.97,-1119.37 184.85,-1144.7"/>
-<polygon fill="black" stroke="black" points="182.68,-1147.45 192.74,-1150.76 186.94,-1141.9 182.68,-1147.45"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M997.02,-180.43C1011.52,-189.18 1027.12,-201.12 1037,-216 1059.37,-249.7 1056,-264.55 1056,-305 1056,-305 1056,-305 1056,-1099 1056,-1162.77 984.75,-1203.38 934.23,-1224.16"/>
+<polygon fill="black" stroke="black" points="933.22,-1220.8 925.21,-1227.73 935.8,-1227.3 933.22,-1220.8"/>
 </g>
 <!-- krakenres&#45;&gt;fastqmaptransform -->
-<g id="edge85" class="edge">
+<g id="edge96" class="edge">
 <title>krakenres-&gt;fastqmaptransform</title>
-<path fill="none" stroke="black" d="M109.73,-252.37C110.52,-271.61 114.34,-302.72 129.78,-324 138.69,-336.3 151.42,-346.25 164.46,-354.07"/>
-<polygon fill="black" stroke="black" points="162.68,-357.08 173.12,-358.89 166.09,-350.97 162.68,-357.08"/>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M946.53,-180.27C938.74,-190.23 929.43,-203.27 923,-216 900.25,-261.04 923.5,-288.14 888,-324 866.52,-345.7 835.91,-358.51 807.34,-366.08"/>
+<polygon fill="black" stroke="black" points="806.86,-362.6 797.98,-368.37 808.52,-369.39 806.86,-362.6"/>
 </g>
 <!-- krakenres&#45;&gt;fastqdownload -->
-<g id="edge83" class="edge">
+<g id="edge93" class="edge">
 <title>krakenres-&gt;fastqdownload</title>
-<path fill="none" stroke="black" d="M130.54,-252.3C140.74,-260.8 153.2,-271.19 164.36,-280.49"/>
-<polygon fill="black" stroke="black" points="161.87,-282.97 171.8,-286.68 166.36,-277.59 161.87,-282.97"/>
+<path fill="none" stroke="black" d="M933.9,-180.44C919.99,-190.05 903.25,-202.71 890,-216 871.09,-234.97 853.23,-259.63 840.87,-278.18"/>
+<polygon fill="black" stroke="black" points="837.96,-276.23 835.42,-286.51 843.82,-280.05 837.96,-276.23"/>
+</g>
+<!-- krakenres&#45;&gt;krakencount -->
+<g id="edge95" class="edge">
+<title>krakenres-&gt;krakencount</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M965.7,-180.3C967.72,-187.76 970.14,-196.68 972.41,-205.03"/>
+<polygon fill="black" stroke="black" points="968.96,-205.7 974.96,-214.43 975.72,-203.87 968.96,-205.7"/>
 </g>
 </g>
 </svg>

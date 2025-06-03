@@ -397,3 +397,75 @@ keywords = {storage layout, storage efficiency, searching, scatter storage, retr
 	year = {2024},
 	bdsk-url-1 = {https://doi.org/10.1186/s13059-024-03236-4}}
 
+
+@article{Breitwieser:2019aa,
+	abstract = {Contaminant sequences that appear in published genomes can cause numerous problems for downstream analyses, particularly for evolutionary studies and metagenomics projects. Our large-scale scan of complete and draft bacterial and archaeal genomes in the NCBI RefSeq database reveals that 2250 genomes are contaminated by human sequence. The contaminant sequences derive primarily from high-copy human repeat regions, which themselves are not adequately represented in the current human reference genome, GRCh38. The absence of the sequences from the human assembly offers a likely explanation for their presence in bacterial assemblies. In some cases, the contaminating contigs have been erroneously annotated as containing protein-coding sequences, which over time have propagated to create spurious protein "families" across multiple prokaryotic and eukaryotic genomes. As a result, 3437 spurious protein entries are currently present in the widely used nr and TrEMBL protein databases. We report here an extensive list of contaminant sequences in bacterial genome assemblies and the proteins associated with them. We found that nearly all contaminants occurred in small contigs in draft genomes, which suggests that filtering out small contigs from draft genome assemblies may mitigate the issue of contamination while still keeping nearly all of the genuine genomic sequences.},
+	address = {Center for Computational Biology, McKusick-Nathans Institute of Genetic Medicine, Johns Hopkins School of Medicine, Baltimore, Maryland 21205, USA.; Center for Computational Biology, McKusick-Nathans Institute of Genetic Medicine, Johns Hopkins School of Medicine, Baltimore, Maryland 21205, USA.; Department of Computer Science, Whiting School of Engineering, Johns Hopkins University, Baltimore, Maryland 21218, USA.; Center for Computational Biology, McKusick-Nathans Institute of Genetic Medicine, Johns Hopkins School of Medicine, Baltimore, Maryland 21205, USA.; Department of Biomedical Engineering, Johns Hopkins University, Baltimore, Maryland 21218, USA.; Center for Computational Biology, McKusick-Nathans Institute of Genetic Medicine, Johns Hopkins School of Medicine, Baltimore, Maryland 21205, USA.; Department of Computer Science, Whiting School of Engineering, Johns Hopkins University, Baltimore, Maryland 21218, USA.; Department of Biomedical Engineering, Johns Hopkins University, Baltimore, Maryland 21218, USA.; Department of Biostatistics, Bloomberg School of Public Health, Johns Hopkins University, Baltimore, Maryland 21205, USA.},
+	auid = {ORCID: 0000-0001-6192-0853; ORCID: 0000-0003-0762-8637; ORCID: 0000-0001-5091-3092; ORCID: 0000-0002-8859-7432},
+	author = {Breitwieser, Florian P and Pertea, Mihaela and Zimin, Aleksey V and Salzberg, Steven L},
+	copyright = {{\copyright}2019 Breitwieser et al.; Published by Cold Spring Harbor Laboratory Press.},
+	crdt = {2019/05/09 06:00},
+	date = {2019 Jun},
+	date-added = {2025-06-03 20:58:10 +0200},
+	date-modified = {2025-06-03 20:58:10 +0200},
+	dcom = {20200102},
+	dep = {20190507},
+	doi = {10.1101/gr.245373.118},
+	edat = {2019/05/09 06:00},
+	gr = {R01 GM083873/GM/NIGMS NIH HHS/United States; R01 HG006677/HG/NHGRI NIH HHS/United States; R35 GM130151/GM/NIGMS NIH HHS/United States},
+	issn = {1549-5469 (Electronic); 1088-9051 (Print); 1088-9051 (Linking)},
+	jid = {9518021},
+	journal = {Genome Res},
+	jt = {Genome research},
+	language = {eng},
+	lid = {10.1101/gr.245373.118 {$[$}doi{$]$}},
+	lr = {20200226},
+	mh = {*DNA Contamination; Databases, Genetic; Genetic Variation; Genome, Archaeal; *Genome, Bacterial; *Genome, Human; *Genomics/methods/standards; High-Throughput Nucleotide Sequencing; Humans; Open Reading Frames; Repetitive Sequences, Nucleic Acid},
+	mhda = {2020/01/03 06:00},
+	month = {Jun},
+	number = {6},
+	own = {NLM},
+	pages = {954--960},
+	phst = {2018/10/24 00:00 {$[$}received{$]$}; 2019/05/03 00:00 {$[$}accepted{$]$}; 2019/05/09 06:00 {$[$}pubmed{$]$}; 2020/01/03 06:00 {$[$}medline{$]$}; 2019/05/09 06:00 {$[$}entrez{$]$}; 2019/12/01 00:00 {$[$}pmc-release{$]$}},
+	pii = {gr.245373.118},
+	pl = {United States},
+	pmc = {PMC6581058},
+	pmcr = {2019/12/01},
+	pmid = {31064768},
+	pst = {ppublish},
+	pt = {Journal Article; Research Support, N.I.H., Extramural; Research Support, U.S. Gov't, Non-P.H.S.},
+	sb = {IM},
+	status = {MEDLINE},
+	title = {Human contamination in bacterial genomes has created thousands of spurious proteins.},
+	volume = {29},
+	year = {2019},
+	bdsk-url-1 = {https://doi.org/10.1101/gr.245373.118}}
+
+@article{doi:10.1089/cmb.2006.13.1028,
+author = {Morgulis, Aleksandr and Gertz, E. Michael and Sch\"{a}ffer, Alejandro A. and Agarwala, Richa},
+title = {A Fast and Symmetric DUST Implementation to Mask Low-Complexity DNA Sequences},
+journal = {Journal of Computational Biology},
+volume = {13},
+number = {5},
+pages = {1028-1040},
+year = {2006},
+doi = {10.1089/cmb.2006.13.1028},
+    note ={PMID: 16796549},
+
+URL = { 
+    
+        https://doi.org/10.1089/cmb.2006.13.1028
+    
+    
+
+},
+eprint = { 
+    
+        https://doi.org/10.1089/cmb.2006.13.1028
+    
+    
+
+}
+,
+    abstract = { The DUST module has been used within BLAST for many years to mask low-complexity sequences. In this paper, we present a new implementation of the DUST module that uses the same function to assign a complexity score to a sequence, but uses a different rule by which high-scoring sequences are masked. The new rule masks every nucleotide masked by the old rule and occasionally masks more. The new masking rule corrects two related deficiencies with the old rule. First, the new rule is symmetric with respect to reversing the sequence. Second, the new rule is not context sensitive; the decision to mask a subsequence does not depend on what sequences flank it. The new implementation is at least four times faster than the old on the human genome. We show that both the percentage of additional bases masked and the effect on MegaBLAST outputs are very small. }
+}
