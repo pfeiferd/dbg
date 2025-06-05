@@ -71,7 +71,7 @@ In recognition of this problem, KrakenUniq has been extended for database proces
 
 Despite the fact that these databases may not cover organisms of interest at the necessary genomic depth, users tend to apply them because otherwise, creating even larger databases would require even more main memory. So, although a much richer set of genomes for organisms interest may be available in principle -- e.g. via Genbank \citep{genbank} -- these genomes cannot easily be leveraged for metagenomic analysis.
 
-Although Kraken 2 delivers more memory efficient databases, it is not a suitable alternative in fields such as medical diagnostics where read classification accuracy is paramount \citep{lowmemkraken}. Kraken 2 produces smaller databases than KrakenUniq but it compresses stored $k$-mers under loss of information, therefore enabling false positive $k$-mer counts \citep{kraken2, lowmemkraken}. 
+Although Kraken 2 delivers more memory efficient databases, it is not a suitable alternative in fields such as medical diagnostics where read classification accuracy is paramount \citep{lowmemkraken}. In comparison, Kraken 2 produces smaller databases than KrakenUniq but it compresses stored $k$-mers under loss of information, therefore enabling false positive $k$-mer counts \citep{kraken2, lowmemkraken}. 
 
 If only a smaller group of a few 100 species or strains is under consideration, then it seems promising to simply \emph{generate a smaller database that contains just the $k$-mers from respective genomes in depth}. \emph{However, this very likely leads to many false positives}: The reason for this is that due to the evolutionary relationship of organisms, \emph{a large fraction of $k$-mers that belong to the genome of a species are unspecific} in a sense that they can as well be found in the genome other species not considered for analysis. Thus, when using too small a database, a read may be falsely assigned to a species because it consists of $k$-mers that \emph{also} belong to another species' genome that was not included in the database.
   
@@ -81,7 +81,7 @@ Genestrip employs a \emph{two-phase} database generation process: During the \em
 
 Based on this approach, Genestrip achieves low memory footprint during database creation as well as at read analysis time. Moreover, it offers reasonable $k$-mer matching and read classification performance. Together, these qualities empower users to create and use respective databases on machines with regular main memory size. Genestrip's $k$-mer counting results are similar to those of KrakenUniq \citep{krakenUniq} with regard to the selected organisms. Genestrip also supports unique $k$-mer counting with exact counts and with low memory overhead. 
 
-Genestrip is based on Java, has a small code base and supports command-line-based as well as API-based usage. It can be executed on all modern operating systems.
+Genestrip is based on Java, has a small code base and supports command-line-based as well as API-based usage. It can be executed on most modern operating systems.
 
 \section{Methods}\label{methods}
 
@@ -130,6 +130,8 @@ Table \ref{goals} describes the most relevant goals for database generation in t
  \verb|updatedb| & This \emph{update phase} updates the populated database to account for common $k$-mers between organisms.
  \emph{All} genomes from the RefSeq belonging to a set of pre-configurable taxonomic (super-)kingdoms will be considered. This step ensures that a $k$-mer from a selected organism obtains the correct \taxon\ as the $k$-mer may also occur in the genome of another organism (which might be represented in database or not). Concerning the finished database, the respective $k$-mer will be associated with the lowest common taxonomic ancestor of all organisms whose genomes contain the $k$-mer.\\
 \end{tabular}
+\caption{Genestrip's most relevant goals for database generation}\label{goals}
+\end{table}
 
 Additional genomes can manually be added either to create deeper databases or else, to filter out contaminating sequences that mistakenly have been included in the genome of an organism of interest. E.g. \cite{Breitwieser:2019aa} report that human DNA fragments often  contaminate bacterial genomes for various reasons.
 
@@ -138,9 +140,6 @@ Besides $k$-mer matching and read classification, Genestrip supports filtering o
 Regarding database and Bloom filter generation, $k$-mers from contaminating sequences can be identified during the update phase: E.g., the human genome can be included via configuration in the update phase and so, a $k$-mer from the human genome that is also found in the contaminated genome will be pushed to the lowest common taxonomic ancestor of both species. Still, if the human genome is employed during the update phase only, a resulting database does not include respective $k$-mers (other than the one from contaminating sequences). This may ensure a small-sized database.
 
 Of note, Genestrip supports the filtering of $k$-mers with low complexity known as genomic dust \citep{doi:10.1089/cmb.2006.13.1028}: As part of the entry phase, each $k$-mers's repetitiveness in terms of base pairs is measured via a fibonacci-based function. If the corresponding value exceeds a configurable threshold then the $k$-mer is dropped.
-
-\caption{Genestrip's most relevant goals for database generation}\label{goals}
-\end{table}
 
 \subsection{Read Classification}
 
