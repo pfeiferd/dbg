@@ -59,7 +59,7 @@ The consumption of main memory resources is a significant burden in modern metag
 
 \end{titlepage}
 
-\section{Background}\label{background}
+\section{Introduction}\label{background}
 
 With the availability of low cost and small-scale sequencing devices, metagenomic analysis will likely replace many established technologies for the detection and surveillance of specific groups of microorganisms. Related applications may affect various areas such as farming, ecology, food processing and medicine. While sequencing devices have become ready for ubiquitous use, software tools for metagenomics still tend to be resource intensive and too hard to use for end users.
 
@@ -69,7 +69,8 @@ In order to avoid false positive classifications of reads or mismatches of $k$-m
 
 In recognition of this problem, KrakenUniq has been extended for database processing in chunks at read analysis time \citep{lowmemkraken}. However, database creation still mandates a very large main memory: E.g., a "standard database" for KrakenUniq that just covers the standard genomes of archaea, bacteria, viruses and the human genome from the RefSeq \citep{refseq} requires over 370 GB of main memory to be produced \citep{lowmemkraken}. Still related organisms are often not covered below the species rank, whereby genomes below the quality level "complete genome" are not even included. 
 
-Despite the fact that these databases may not cover organisms of interest at the necessary genomic depth, users tend to apply them because otherwise, creating even larger databases would require even more main memory. So, although a much richer set of genomes for organisms interest may be available in principle -- e.g. via Genbank \citep{genbank} -- these genomes cannot easily be leveraged for metagenomic analysis.
+Despite the fact that these databases may not cover organisms of interest at the necessary genomic depth, users tend to apply them because otherwise, creating even larger databases would require even more main memory. So, although a much richer set of genomes for organisms interest may be available in principle -- e.g. via Genbank \citep{genbank} -- these genomes cannot easily be leveraged for metagenomic analysis 
+\citep{Cuesta-Zuluaga:2020aa,Youngblut:2021aa}.
 
 Although Kraken 2 delivers more memory efficient databases, it is not a suitable alternative in fields such as medical diagnostics where read classification accuracy is paramount \citep{lowmemkraken}. In comparison, Kraken 2 produces smaller databases than KrakenUniq but it compresses stored $k$-mers under loss of information, therefore enabling false positive $k$-mer counts \citep{kraken2, lowmemkraken}. 
 
@@ -93,11 +94,11 @@ Genestrip generates a database for a selected group of organisms primarily via
 genomes from the RefSeq \citep{refseq} but genomes from Genbank and additional genomic files may be included on top or instead.
 To better handle the complexity of the generation process, it employs a goal-oriented approach in similarity to Make \citep{feldman1979make}: Upon access, each goal returns a file or an object in main memory. A goal is only executed if its result is not yet available. Goal execution may involve the access of other goals which turn, may trigger their execution. Respective goal dependencies are explicitly specified in terms of a directed acyclic graph. 
 
-Figure \ref{f:goalgraph} depicts Genestrip's goal dependency graph: Several goals (prefixed with \verb|d:|) revolve around downloading files from the RefSeq, Genbank and other data from the NCBI. Several object goals (prefixed with \verb|o:|) load files and represent them as data structures in main memory for further processing. Most file goals (prefixed with \verb|f:|) write computational results to files.
+Figure \ref{f:goalgraph} depicts Genestrip's goal dependency graph: Several goals (prefixed with \verb|d:|) revolve around automatically downloading all necessary files of the RefSeq, Genbank and other data from the NCBI's Web site \citep{Sayers:2025aa}. Several object goals (prefixed with \verb|o:|) load files and represent them as data structures in main memory for further processing. Most file goals (prefixed with \verb|f:|) write computational results to files.
 Boxes with edged corners depict goals that are meant to be executed directly via the command line. E.g., 
 the goals \verb|match| and \verb|matchlr| are for fastq file analysis but they would trigger a respective database generation goal if the corresponding database file was missing.
 
-Solid edges symbolize "eager" dependencies where the existence of a dependency's result is ensured prior to the execution of the depending goal. In contrast, dotted edges symbolize "lazy" dependencies where the existence of a dependency's result is ensured just when first accessed at the execution of the depending goal.
+Solid edges symbolize "eager" dependencies where the existence of a dependency's result is ensured prior to the execution of the depending goal. In contrast, dotted edges symbolize "lazy" dependencies where the existence of a dependency's result is ensured when first accessed during the execution of the depending goal.
 
 \begin{figure}[h]%
 \centering
@@ -157,7 +158,7 @@ Genestrip implements a multi-threading enabled classification procedure followin
 
 Genestrip produces analysis reports in CSV file format with a broad set of statistical values. We use the following notation to describe them: Let $k_{t,f,d}$ be the number of $k$-mers for \taxon\ $t$ found in fastq file $f$ with respect to database $d$ and $u_{t,f,d}$ be the corresponding number of unique $k$-mers. Similarly $u_{t,d}$ is the number of (unique) $k$-mers for $t$ stored in $d$.
 
-Table \ref{csvcolumns} describes the most important reported columns. Additional columns exist to  accumulate $k$-mer counts and read counts etc. upwards to ancestores in the taxonomy. We also track standard deviations of \verb|avg. contig length|, \verb|avg. read length|, \verb|mean class error| and other columns whereever suitable. 
+Table \ref{csvcolumns} describes the most important reported columns. Additional columns exist to  accumulate $k$-mer counts and read counts etc. upwards to ancestores in the taxonomy. We also track standard deviations of \verb|avg. contig length|, \verb|avg. read length|, \verb|mean class error| and other columns whereever suitable. Moreover, normalized values derived from original values by dividing by $u_{t,d}$ are included where suitable. Normalized values aim to reduce a counting bias due to a high or low representation of a \taxon\ $t$ in terms of its stored $k$-mers $u_{t,d}$.
 
 \begin{table}[h]
 \centering
@@ -170,29 +171,25 @@ Column Name & Description  \\
 \verb|kmers| & $k_{t,f,d}$\\ %, i.e. \emph{all} $k$-mers which are specific to the $t$'s genome (according to $d$) \\
 \verb|unique kmers| & $u_{t,d}$\\ %, i.e. \emph{all} unique $k$-mers, which are specific to $t$'s genome(s) (according to $d$) \\
 \verb|avg. contig length| & The average length of contiguous sequences of $k$-mers that are specific to $t$'s genome(s) as represented in $d$ \\
-\verb|max contig length| & The maximum length of all contiguous sequences of $k$-mers that are specific to the $t$'s genome(s)  \\
+\verb|max contig length| & The maximum length of all contiguous sequences of $k$-mers that are specific to $t$'s genome(s)  \\
 \verb|avg. read length| & The avg. length of reads for $t$ in base pairs \\
 \verb|db coverage| & $u_{t,f} / u_{t,d}$ \\
 \verb|exp. unique kmers| & $E(k_{t,f,d},u_{t,d})$ (see text below) \\
 \verb|unique kmers / exp.| & The $k$-mer consistency ratio $r(k_{t,f,d}, u_{t,f,d})$ (see text below) \\
 \verb|mean class error| & The mean ratio of $k$-mers from a read $r$ for $t$, where those $k$-mers are not consistent with $t$ per $r$'s total number of $k$-mers \\
 \end{tabular}
-\caption{Extract of columns from Genestrip's read analysis reports \textbf{TODO: Add normalized kmers and reads here}}\label{csvcolumns}
+\caption{Extract of columns from Genestrip's read analysis reports}\label{csvcolumns}
 \end{table}
 
- Genestrip introduces a novel, derived statistical measure -- the \emph{$k$-mer consistency ratio} -- as explained in the following: Given $k_{t,f,d}$, the a-priori probability $p(t\ |\ k_{t,f,d})$ of a unique $k$-mer from $d$ belonging to $t$ to occur \emph{at least once} in $f$\ is approximately:\footnote{The approximation is based on the simplifying assumption that all $k$-mers in $d$ belonging to $t$ are equally likely to be found in $f$ (such as reported in \citep{ticks}). Still, this may be countered by special DNA library preparation protocols like 16S amplification \citep{?}.}
+ Genestrip introduces a novel, derived statistical measure -- the \emph{$k$-mer consistency ratio} -- as explained in the following: Given $k_{t,f,d}$, the a-priori probability $p(t\ |\ k_{t,f,d})$ of a unique $k$-mer from $d$ belonging to $t$ to occur \emph{at least once} in $f$\ is approximately:\footnote{The approximation is based on the assumption that all $k$-mers in $d$ belonging to $t$ are equally likely to be found in $f$ (such as reported in \cite{nanoporeticks}). However, this assumption does not hold when special DNA library preparation protocols like 16S or 18S amplification were used \citep{Wensel:2022aa,16srrnause}.}
 \[ p(t\ |\ k_{t,f,d}) = 1 - (1 - 1/u_{t,d})^{k_{t,f,d}}\] 
-
-The corresponding \emph{expected number of unique $k$-mers} $E$ is:
+The corresponding \emph{expected number of unique $k$-mers} is:
 \[ E(k_{t,f,d},u_{t,d}) = u_{t,d} \cdot p(t\ |\ k_{t,f,d})\]
-It is useful to compare $E$ with the actual count $u_{t,f,d}$: If these quantities divert too much from each other, then the consistency of the $k$-mer counting results for $t$ in $f$ should be questioned. If, on the other hand, these quantities are close, then this supports the consistency of the counting results. This justifies the following ratio as the \emph{$k$-mer consistency score}, which ideally is close to $1$:\footnote{A mathematically sounder approach is to consider the probability distribution 
-$q(u_{t,f,d}\ |\ k_{t,f,d})$, i.e. the probability to obtain exactly $u_{t,f,d}$ unique $k$-mers for a given (non-unique) $k$-mer count of $k_{t,f,d}$ with  sampling with replacement as the underlying random process.
-Interestingly, this distribution is non-trivial and has been investigated in \citep{Mendelson2016WhatIT}. The authors have shown that the distribution can be approximated by a normal distribution under most practically relevant conditions. Moreover, they confirm the expectation $E$ from above and give a formula for the variance $\sigma^2_q$ which in our case depends on $k_{t,f,d}$ and $u_{t,d}$. 
-So, as an alternative consistency score one could set $r'(k_{t,f,d}, u_{t,f,d}) := f(u_{t,f,d}) / f(E)$,
-where $f$ is the density of the normal distribution $\mathcal{N}(E,\sigma^2_q)$.
-This relative density $r'$ ranges between $0$ and $1$ where $1$ is best and implies $u_{t,f,d} = E$.
-Although mathematically sound, $r'$ did not appear useful with respect to $k$-mer counts because $\mathcal{N}(E,\sigma^2_q)$ tends to be extremely peaked and so, even small deviations from $E$ result in a $r' \approx 0$.}
 
+It is useful to compare $E(k_{t,f,d},u_{t,d})$ with the actual count $u_{t,f,d}$: If these quantities divert too much from each other, then the consistency of the $k$-mer counting results for $t$ in $f$ should be questioned. If, on the other hand, these quantities are close, then this supports the consistency of the counting results. This justifies the following ratio as the \emph{$k$-mer consistency score}, which ideally is close to $1$:\footnote{A mathematically sounder approach is to consider the probability distribution 
+$q(u_{t,f,d}\ |\ k_{t,f,d})$, i.e. the probability to obtain exactly $u_{t,f,d}$ unique $k$-mers for a given (non-unique) $k$-mer count of $k_{t,f,d}$ via sampling with replacement as the underlying random process.
+Interestingly, this distribution is non-trivial and has been investigated in \cite{Mendelson2016WhatIT}. The authors have shown that the distribution can be approximated by a normal distribution $\mathcal{N}(E(k_{t,f,d},u_{t,d}),\sigma^2_q)$ under most practically relevant conditions. Moreover, they confirm the expectation $E(k_{t,f,d},u_{t,d})$ from above and give a formula for the variance $\sigma^2_q$ which in our case depends on $k_{t,f,d}$ and $u_{t,d}$. 
+Although mathematically sound, the approach did not prove useful with respect to $k$-mer counts because $\mathcal{N}$ tends to be extremely peaked and so, even small deviations from $E(k_{t,f,d},u_{t,d})$ result in a $q(u_{t,f,d}\ |\ k_{t,f,d}) \approx 0$.}
 %Expectation accounting for duplicate kmers in DB:
 %Let $k_{t,d}(i)$ be the number of times a unique kmer $i$ occurs in the genome of $t$ with $1 \leq i \leq u_{t,d}$ and $\vec{k}_{t,d}$ the corresponding vector:
 %\[ E_q(k_{t,f,d},\vec{k}_{t,d}) = \sum_{i = 1}^{u_{t,d}} k_{t,d}(i) \cdot (1 - (1 - 1/k_{t,d}(i))^{k_{t,f,d}}) \]
@@ -216,7 +213,7 @@ $t$ & $u_{t,d}$ & $k_{t,f,d}$ & $u_{t,f,d}$ & $E(k_{t,f,d},u_{t,d})$ & $r(k_{t,f
 \subsection{Correctness}
 \label{correctness}
 
-To assess Genestrips's correctness with regard to $k$-mer counting and read classification, we compared its databases and respective analysis results with those from KrakenUniq. We consulted KrakenUniq because Genestrip aims to provide a similar $k$-mer based functionality while also enabling small databases without loss of accuracy. Moreover, KrakenUniq is trusted by a large user base in bioinformatics and therefore applied in highly regarded research publications \citep{??}.
+To assess Genestrips's correctness with regard to $k$-mer counting and read classification, we compared its databases and respective analysis results with those from KrakenUniq. We consulted KrakenUniq because Genestrip aims to provide a similar $k$-mer based functionality while also enabling small databases without loss of accuracy. Moreover, KrakenUniq is trusted by a large user base in bioinformatics \citep{Lu:2022aa}.
 
 As part of our test procedure, we created database contents under both systems that were as identical as possible in terms of their genomic basis and their stored $k$-mers. 
 We then applied the created databases to suitable fastq files in order to compare the results between both systems. Highly similar results from this check mutually solidify the correctness of both systems since they had been developed completely independently. Besides, Genestrip's correctness is also supported via extensive functional tests with high test coverage.
