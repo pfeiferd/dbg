@@ -613,13 +613,19 @@ As shown in Table \ref{errorscvhv}, the error rates for $k$-mer counts are zero 
 \caption{Mean absolute percentage error of $k$-mer counts and read counts for five "human saliva" fastq files between the complete viral database $cv$ and the "human virus only" database $hv$ where $cv$ and $hv$ both belong to KrakenUniq or Genestrip, respectively. Standard deviations for the errors are included in parentheses.}\label{errorscvhv}
 \end{table}
 
-\subsection{Example: "Tick-Borne Bacterial Infections"}
+\subsection{Example: Tick-Borne Bacterial Infections}
 
 This section presents the detection of tick-related bacterial pathogens as an example application of Genestrip. We compare the large standard database \texttt{MicrobialDB} available for KrakenUniq\footnote{See "MicrobialDB" under \url{https://benlangmead.github.io/aws-indexes/k2}} against a relatively small Genestrip database \texttt{tb} with high genomic coverage regarding the organisms of interest. We aim to show that a small but genomically deeper database like \texttt{tb} can lead to higher recall than KrakenUniq's standard database while maintaining high precision.
 
 An envisioned use case is tick surveillance using metagenomics according to \cite{nanoporeticks}, where the authors applied Nanopore technology to check eight field-collected ticks but back then relied on Kraken 2 to identify corresponding organisms.
 
-The database \texttt{tb} covers all of the RefSeq genomes from the bacterial genuses Yersinia, Bartonella, Rickettsia, Anaplasma, Ehrlichia, Borrelia, Borreliella, Chlamydia, Mycoplasma, Malacoplasma, Mycoplasmoides, Metamycoplasma and Francisella as many included species are pathogenic to humans and known or assumed to potentially occur in ticks \citep{JOHNSON20181499, Janecek:2012aa, Thomas:1990aa, 10.3389/fvets.2025.1522904}.
+The database \texttt{tb} covers all of the RefSeq Release 230 genomes from the bacterial genuses Yersinia, Bartonella, Rickettsia, Anaplasma, Ehrlichia, Borrelia, Borreliella, Chlamydia, Mycoplasma, Malacoplasma, Mycoplasmoides, Metamycoplasma and Francisella as many included species are pathogenic to humans and known or assumed to occur in ticks \citep{JOHNSON20181499, Janecek:2012aa, Thomas:1990aa, 10.3389/fvets.2025.1522904}. To avoid contaminants from human DNA and the black-legged tick's DNA, we added corresponding genomes to Genestrip's update phase as explained at the end of Section \ref{database}. We also activated the genomic dust filter at high sensitivity: E.g. the $k$-mer \texttt{AGAGACACCCCCCTCAAAAAAAAAAAAATGT} would already be dropped because of its repetitiveness is just above the set threshold.
+
+The database \texttt{tb} contains 489,967,453 $k$-mers and has a disk size of just 6.32 GB including the accompanied Bloom filter and the matching extract of NCBI taxonomy tree. \texttt{tb} has 1.96 times as many $k$-mers stored under the selected genuses and below when compared to   \texttt{MicrobialDB}. The macro average in increase across the chosen genuses is by factor 1.83 with a maximum factor of 3.25 for Bartonella and a minimum factor of 1.29 for Clamydia. The reason behind the increase is the general growth of the RefSeq that happened between the generation of \texttt{MicrobialDB} from 2023 and the generation of \texttt{tb} from 2025 \cite{}.\footnote{The additional growth of the RefSeq is also likely reason why \texttt{MicrobialDB} had not been updated since -- as ultra large main memory and compute power would be required according to \citet{}.}
+
+The genomes of the selected genuses where highly redundant in the RefSeq: On average each stored $k$-mer appeared 11.2 times in these genomes as found by the \texttt{tempindex} goal during \texttt{tb}'s generation (see Section \ref{database}). Only 0.037 \% of all $k$-mers considered for storing had been dropped as "dust". 
+
+The update phase pushed 26.3 \% of the stored $k$-mers to ranks above genus. Only 0.027 \% of the stored $k$-mers had been pushed to the taxon of "cellular organisms" due to tick DNA and human DNA included on purpose during the update phase for the sake for contaminant detection. Finally, 2.891 $k$-mers landed on the taxonomic root because of plasmids included in the bacterial part of RefSeq the were overlapping with the selected genomes.
 
 \begin{figure}[h]%
 \centering
@@ -720,9 +726,9 @@ corresponding analysis runs using KrakenUniq and Kraken2.
 
 \section{Data Availability}
 The code base for Genestrip is available under\\ 
-\url{https://github.com/pfeiferd/genestrip}\\
+\url{https://github.com/pfeiferd/genestrip/releases/tag/v2.0}\\
 The code base to generate all of the results from this publication is available under\\
-\url{https://github.com/pfeiferd/genestrip-db-exp}\\
+\url{https://github.com/pfeiferd/genestrip-db-exp/tag/v??}\\
 Following \cite{Samson:2020aa}, the human saliva fastq files were acquired from the Sequence Read Archive (SRA) under the entries: ERX1462737, ERX1462740, SRX2830683, SRX2830684, and SRX2830689.
 Following \cite{nanoporeticks}, the tick-related fastq files were acquired from the Sequence Read Archive (SRA) under the entries SRX13458610, SRX13458622, SRX13458624, SRX13458626, SRX13458627, SRX13458628, SRX13458611 and SRX13458612.
 
