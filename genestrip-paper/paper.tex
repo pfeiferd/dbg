@@ -613,23 +613,48 @@ As shown in Table \ref{errorscvhv}, the error rates for $k$-mer counts are zero 
 \caption{Mean absolute percentage error of $k$-mer counts and read counts for five "human saliva" fastq files between the complete viral database $cv$ and the "human virus only" database $hv$ where $cv$ and $hv$ both belong to KrakenUniq or Genestrip, respectively. Standard deviations for the errors are included in parentheses.}\label{errorscvhv}
 \end{table}
 
-\subsection{Example: Tick-Borne Bacterial Infections}
+\subsection{Example: Tick-Borne Bacterial Pathogens}
 
 This section presents the detection of tick-related bacterial pathogens as an example application of Genestrip. We compared the very large standard database \texttt{MicrobialDB} available for KrakenUniq\footnote{See "MicrobialDB" under \url{https://benlangmead.github.io/aws-indexes/k2}} against a relatively small Genestrip database \texttt{tb} with high genomic coverage regarding the organisms of interest. The results aim to show that a small but genomically deeper database like \texttt{tb} can lead to higher recall than KrakenUniq's standard database while also maintaining high precision.
 
-An envisioned use case is tick surveillance using metagenomics according to \cite{nanoporeticks}, where the authors applied Nanopore technology to check eight field-collected ticks but back then relied on Kraken 2 to identify corresponding organisms. TODO: Application in diagnostics...
+An envisioned use case is tick surveillance using metagenomics according to \cite{nanoporeticks}, where the authors applied Nanopore technology to check eight field-collected ticks but back then relied on Kraken 2 to identify corresponding organisms. \textbf{TODO: Application in diagnostics...}
 
-The database \texttt{tb} is based on RefSeq Release 230 and covers all of the  genomes from the bacterial genuses Yersinia, Bartonella, Rickettsia, Anaplasma, Ehrlichia, Borrelia, Borreliella, Chlamydia, Mycoplasma, Malacoplasma, Mycoplasmoides, Metamycoplasma and Francisella as many included species are pathogenic to humans and known or assumed to occur in ticks \citep{JOHNSON20181499, Janecek:2012aa, Thomas:1990aa, 10.3389/fvets.2025.1522904}. To avoid contaminants from human DNA and the black-legged tick's DNA, we added corresponding genomes to Genestrip's update phase as explained at the end of Section \ref{database}. We also activated the genomic dust filter at high sensitivity: E.g. the $k$-mer \texttt{AGAGACACCCCCCTCAAAAAAAAAAAAATGT} would already be dropped because of its repetitiveness is just above the set threshold.
+The database \texttt{tb} is based on RefSeq Release 230 and covers all of the  genomes from the twelve bacterial genuses Yersinia, Bartonella, Rickettsia, Anaplasma, Ehrlichia, Borrelia, Borreliella, Chlamydia, Mycoplasma, Malacoplasma, Mycoplasmoides, Metamycoplasma and Francisella as many included species are pathogenic to humans and known or assumed to occur in ticks \citep{Eisen:2018aa, JOHNSON20181499, Janecek:2012aa, Thomas:1990aa, 10.3389/fvets.2025.1522904}. To avoid contaminants from human DNA and the black-legged tick's DNA, we added corresponding genomes to Genestrip's update phase as explained at the end of Section \ref{database}. We also activated the genomic dust filter at high sensitivity: E.g. the $k$-mer \texttt{AGAGACACCCCCCTCAAAAAAAAAAAAATGT} would already be dropped because of its repetitiveness is just above the set threshold.
 
 The database \texttt{tb} contains 489,967,453 $k$-mers and has a disk size of just 6.32 GB including the accompanied Bloom filter and the matching extract of NCBI taxonomy tree. \texttt{tb} has 1.96 times as many $k$-mers stored under the selected genuses and below when compared to   \texttt{MicrobialDB}. The macro average in increase across the chosen genuses is by factor 1.83 with a maximum factor of 3.25 for Bartonella and a minimum factor of 1.29 for Clamydia. One reason behind this increase is the total growth of the RefSeq's number of prokaryotic genomes by a factor of over 1.39 between the generation of \texttt{MicrobialDB} in mid 2023 and the generation of \texttt{tb} \citep{10.1093/nar/gkae1038}.\footnote{The additional growth of the RefSeq is also a likely reason why \texttt{MicrobialDB} has not been updated since then because ultra large main memory and extreme high compute power would be required as stated in \cite{Nasko:2018aa}.}
 
 \texttt{MicrobialDB} for KrakenUniq aims at the diagnosis of infectious diseases using metagenomics and contains 97.68 times as many $k$-mers as \texttt{tb}. It has a disk size of 574.31 GB excluding the taxonomy tree and additional mapping files. It covers a broad set of microbials including archaea, bacteria, viral genomes, the human genome and pathogenic eukaryotes with contaminants removed \citep{Lu:2018aa}.
 
-The generation of \texttt{tb} revealed that its included genomes from the RefSeq have a high overlap: On average each stored $k$-mer occurred 11.2 times in these genomes as found by the \texttt{tempindex} goal during \texttt{tb}'s generation (see Section \ref{database}). Only 0.037 \% of all $k$-mers considered for storing had been dropped as "dust". 
+The generation of \texttt{tb} revealed that its included genomes from the RefSeq have a high overlap: On average each stored $k$-mer occurred 11.2 times in these genomes as found by the \texttt{tempindex} goal (see Section \ref{database}). Only 0.037 \% of all $k$-mers considered for storing had been dropped as "dust". The update phase pushed 26.3 \% of the stored $k$-mers to ranks above genus. Only 0.027 \% of the stored $k$-mers had been pushed to the taxon of "cellular organisms" due to tick DNA and human DNA included on purpose during the update phase for the sake for contaminant detection. 
+%Finally, 2.891 $k$-mers landed on the taxonomic root because of plasmids included in the bacterial part of RefSeq that overlap with the genomes of the selected genuses.
 
-The update phase pushed 26.3 \% of the stored $k$-mers to ranks above genus. Only 0.027 \% of the stored $k$-mers had been pushed to the taxon of "cellular organisms" due to tick DNA and human DNA included on purpose during the update phase for the sake for contaminant detection. Finally, 2.891 $k$-mers landed on the taxonomic root because of plasmids included in the bacterial part of RefSeq that overlap with the genomes of the selected genuses.
+We applied \texttt{MicrobialDB} and \texttt{tb} to the eight fastq files from \cite{nanoporeticks} mentioned above. The fastq files contain long reads from sequencing homogenized field-collected ticks using Nanopore technology. Four of the files had been produced using an enrichment technology that drops reads that are likely from the host during base calling \citep{nanoporeticks}.
 
+Figure \ref{tick3} shows the ?? most frequent $k$-mers counts and reads for "Tick 3" accumulated on the genus rank from both KrakenUniq and Genestrip. In comparison, the Genestrip counts for the genus ?? are ?? times higher than those achieved with KrakenUniq. Since we established the accuracy of Genestrip's results in Section \ref{}, the increase can be confidently attributed to the quality of database \texttt{tb} which is deeper than \texttt{MicrobialDB} for the considered genuses as described above. The $k$-mer consistency ratio of ?? (see Section \ref{}) also suggests that the additionally counted $k$-mers for ?? are no false positives. We observed similar improvements in terms of $k$-mers and reads for all ticks 8, wherever the genus ?? ... were highly present under KrakenUniq (not depicted).
 
+\begin{figure}[h]%
+\centering
+\begin{tikzpicture}
+  \begin{axis}[title  = Keyword popularity in Google trends,
+    ybar,
+    bar width=2mm,
+    x tick label style =
+      {/pgf/number format/set thousands separator={}},
+  legend pos=north west,
+  legend cell align=left]
+  \addplot coordinates { (2007,16) (2008,19) (2009,30) (2010,36)
+    (2011,42) (2012,48) (2013,55)};
+  \addplot coordinates { (2007,39) (2008,28) (2009,24) (2010,19)
+    (2011,15) (2012,12) (2013,8)};
+  \addplot coordinates { (2007,22) (2008,13) (2009,11) (2010,8)
+    (2011,6) (2012,4) (2013,4)};
+  \legend{tikz, pstricks, metapost}
+  \end{axis}
+\end{tikzpicture}
+\caption{bla}\label{tick3}
+\end{figure}
+
+Figure ?? highlights the ?? most frequent counts for all taxons under the genus ?? for Tick 3 including the genus itself. Interestingly... 
 
 \begin{figure}[h]%
 \centering
@@ -663,61 +688,6 @@ table[col sep=semicolon, header=true, x = {kmers 2}, y = {kmers 1} , meta=rank] 
 \caption{bla}\label{cronicb}
 \end{figure}
 
-We used the fastq files from \cite{nanoporeticks}...
-
-Dust example with dust value 241: \texttt{AGAGACACCCCCCTCAAAAAAAAAAAAATGT}
-
-Set max Mem to 16GB for low memory use...
-
-\begin{table}[h]
-\centering
-\begin{tabular}{c|p{2cm}|p{6cm}|r|r}
-Type & Name & Description & Disk Size &$k$-mers\\
-  \hline
-G & Tick Borne & Genomes of a selection ??? species from the genuses Yersinia, Bartonella, Rickettsia, Anaplasma, Ehrlichia, Borrelia, Borreliella, Chlamydia, Mycoplasma, Malacoplasma, Mycoplasmoides and Metamycoplasma from the RefSeq (see taxlist for details)& 3 GB & 228 Mio. \\
-K & Standard & From \url{https://benlangmead.github.io/aws-indexes/k2} (6/16/2022) & 377 GB & ?? \\
-K & Tick Borne K & Same as for \enquote{Tick Borne} & ?? GB & ?? \\
-\end{tabular}
-\caption{Databases used for accuracy and performance comparisons (\enquote{G} means Genestrip, \enquote{K} means KrakenUniq)}\label{dbs}
-\end{table}
-
-\begin{table}[h]
-\centering
-\begin{tabular}{p{1.5cm}|p{1.5cm}|R{1.3cm}|R{1.3cm}|R{1.5cm}|r|R{1.5cm}|R{1.5cm}}
-Database Name & (Super-)Kingdom & Genuses With at Least One Species & Species & Strains & $k$-mers & ($\bullet$) \newline \% of $k$-mers moved up &  ($\circ$) \newline \% of $k$-mers moved up \\
-  \hline
-  \hline
- Tick Borne & Bacteria & 13 & 95 & 574 & 226765827 & 43.27 & 17.39 \\
-  \hline
- Grape Vine Fungus & Fungal & 9 & 10 & 6 & 376771718 & 20.33 & 4.46 \\
- \hline
- Human Virus & Viral & N/A  & N/A & 686 genomes & 6789616 & 13.54 & 4.04 \\
-  \hline
- Human Pathogenic Protozoa & Protozoa & 16 & 62 & 21 & 1398497017 & 10.46 & 0.15 \\
-  
-\end{tabular}
-\caption{Change of \taxon s for $k$-mers in Genestrip databases due to the update phase: The comparison of database variants is between \\
-($\bullet$) \ref{noupdate} versus \ref{minupdate}, i.e. \emph{no} update phase (but just the entry phase) versus an update phase based \emph{exclusively} on the genomes from the entry phase or else, \\
-($\circ$)	\ref{minupdate} versus \ref{completeupdate}, i.e. an update phase based \emph{exclusively} on the genomes from the entry phase versus \emph{all} of the genomes of the corresponding taxonomic (super-)kingdom from the RefSeq.}
-\label{updaterelevance}
-\end{table}
-
-%\begin{table}[h]
-%\small
-%\centering
-%\begin{tabular}{C{2.1cm}|c|R{1.6cm}|R{1.6cm}|R{1.5cm}|R{1.5cm}|R{1.5cm}}
-%Name & Tax. Id. & Unique $k$-mers under Variant \ref{minupdate} & Resulting Rank under Variant \ref{minupdate} & Unique $k$-mers under Variant \ref{completeupdate} & Resulting Rank under Variant \ref{completeupdate} & Unique $k$-mer Change from \ref{minupdate} to  \ref{completeupdate} in \% \\
-%\hline
-%\hline
-%\textbf{Tick 3} \\
-%\hline
-%\csvreader[separator=semicolon]{\csvpath results/chronicb/tick3_kmer_changes.csv}{}{\csvcoliii & \csvcolii & \csvcolv & \csvcoliv & \csvcolvi & \csvcolvii & \csvcolviii \\   \hline }
-%\textbf{Tick 6} \\
-%\hline
-%\csvreader[separator=semicolon]{\csvpath results/chronicb/tick6_kmer_changes.csv}{}{\csvcoliii & \csvcolii & \csvcoliv & \csvcolv & \csvcolvi & \csvcolvii & \csvcolviii \\   \hline }
-%\end{tabular}
-%\caption{Change of unique $k$-mer counts for top ten hits of Tick 3 and Tick 6 from \cite{nanoporeticks} using Genestrip and the variants \ref{minupdate} versus \ref{completeupdate} of the \enquote{Tick Borne} database}\label{topresultsticks}
-%\end{table}
 
 \subsection{Performance}
 
