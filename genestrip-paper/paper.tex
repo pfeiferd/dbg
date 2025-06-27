@@ -644,6 +644,7 @@ height = 0.5\textwidth,
 	symbolic x coords={138,943,768,64895,780},
 	xtick=data, ymin=0,
 	xlabel=Taxon,
+	scaled ticks=false,
   legend pos=north west,
   legend cell align=left]
   \addplot coordinates { (138,294) (943,27208)
@@ -661,14 +662,13 @@ height = 0.5\textwidth,
     bar width=2mm,
 	symbolic x coords={138,943,768,64895,780},
 	xtick=data, ymin=0,
-	xlabel=Taxon (Rank),
+	xlabel=Taxon,	
   legend pos=north west,
   legend cell align=left]
   \addplot coordinates { (138,2) (943,166)
   (768,776) (64895,2003) (780,2653) };
   \addplot coordinates { (138,9) (943,193)
   (768,946) (64895,2046) (780,3806) };
-  \legend{\texttt{MicrobialDB}, \texttt{tb}}
   \end{axis}
 \end{tikzpicture}
 \caption{Comparison of $k$-mers counts and classified read counts between the database \texttt{MicrobialDB} (based on KrakenUniq) and \texttt{tb} (based on Genestrip). The counts are  aggregated up to rank genus for the long read fastq file of "Tick 6" from \cite{nanoporeticks} and restricted to the genuses included in \texttt{tb} with only the five most frequent genuses in terms of $k$-mer counts shown.}
@@ -685,14 +685,16 @@ width = 0.5\textwidth,
 height = 0.5\textwidth,
     ybar,
     bar width=2mm,
-	symbolic x coords={943 (genus),106178 (sp. group),779,302409,944,269484,945,35795,1359167,1423892,391036,1242993},
+	symbolic x coords={\textbf{943} (genus),106178 (sp. group),779,302409,944,269484,945,35795,1359167,1423892,391036,1242993},
 	xtick=data, ymin=0,
+	scaled ticks=false,
 	xticklabel style={rotate=-90},
 	xlabel=Taxon,
+	xlabel style={yshift=-1.2cm},
   legend pos=north east,
   legend cell align=left]
   \addplot coordinates { 
-(943 (genus),7831)
+(\textbf{943} (genus),7831)
 (106178 (sp. group),668)
 (779,29)
 (302409,7)
@@ -705,7 +707,7 @@ height = 0.5\textwidth,
 (391036,2726)
 (1242993,0) };
   \addplot coordinates { 
-(943 (genus),57023)
+(\textbf{943} (genus),57023)
 (106178 (sp. group),864)
 (779,9)
 (302409,0)
@@ -726,13 +728,39 @@ width = 0.5\textwidth,
 height = 0.5\textwidth,
     ybar,
     bar width=2mm,
-	symbolic x coords={943,106178,779,302409,944,269484,945,35795,1359167,1423892,391036,1242993},
+	symbolic x coords={\textbf{943} (genus),106178 (sp. group),779,302409,944,269484,945,35795,1359167,1423892,391036,1242993},
 	xtick=data, ymin=0,
+	xticklabel style={rotate=-90},
+	xlabel=Taxon,
+	xlabel style={yshift=-1.2cm},
   legend pos=north east,
   legend cell align=left]
-  \addplot coordinates {  };
-  \addplot coordinates {  };
-  \legend{\texttt{MicrobialDB}, \texttt{tb}}
+  \addplot coordinates { 
+(\textbf{943}  (genus),5)
+(106178 (sp. group),0)
+(779,0)
+(302409,0)
+(944,0)
+(269484,0)
+(945,0)
+(35795,0)
+(1359167,0)
+(1423892,144)
+(391036,17)
+(1242993,0) };
+  \addplot coordinates { 
+(\textbf{943} (genus),151)
+(106178 (sp. group),4)
+(779,7)
+(302409,0)
+(944,2)
+(269484,0)
+(945,4)
+(35795,6)
+(1359167,12)
+(1423892,1)
+(391036,4)
+(1242993,2) };
   \end{axis}
 \end{tikzpicture}
 \caption{Comparison of $k$-mers counts and classified read counts between the database \texttt{MicrobialDB} (based on KrakenUniq) and \texttt{tb} (based on Genestrip) for all taxons under the genus "943" (Ehrlichia) including the genus itself. The counts belong to the long read fastq file of "Tick 6" from \cite{nanoporeticks} -- the same file as used in Figure \ref{genusestick6}.}
