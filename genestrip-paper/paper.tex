@@ -686,7 +686,7 @@ As another example, Figure \ref{ehrlichiatick6} details the results for Tick 6 w
 Interestingly, Genestrip assigns most of the found $k$-mers right under the genus rank whereas KrakenUniq produces a peak under the strain "1423892" (Ehrlichia muris AS145). The difference originates in the deeper database \texttt{tb} where more common $k$-mers where found between different genomes under the genus Ehrlichia than for \texttt{MicrobialDB}. Indeed the ratio of stored $k$-mers between \texttt{tb} and \texttt{MicrobialDB} is 4.54 for the taxon "943" but only 0.24 for "1423892". The high $k$-mer consistency ratios also shown \ref{ehrlichiatick6} also suggest that the respective $k$-mers counts are no false positives.
 
 Again, we observed similar results in particular with respect to Ehrlichia, Rickettsia and partly to Anaplasma in all of the eight ticks' fastq files where corresponding organisms showed presence in the first place.
-These findings form a general trend when $k$-mer databases become deeper as first discovered and studied in \cite{Nasko:2018aa}. Note that this is a beneficial effect as this way, deeper $k$-mer databases tend to protect read classification from potentially falsely assigning a too low ranked taxon.
+These findings form a general trend when $k$-mer databases with a lowest common ancestor representation become deeper. The effect was first discovered and studied in \cite{Nasko:2018aa}. Note that this is beneficial since such deeper $k$-mer databases tend to protect read classification from potentially falsely assigning a too low ranked taxon.
 
 \begin{figure}[h]%
 \centering
