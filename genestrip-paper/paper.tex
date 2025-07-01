@@ -96,7 +96,7 @@ genomes from the RefSeq \citep{refseq} but genomes from Genbank and additional g
 To better handle the complexity of the generation process, it employs a goal-oriented approach in similarity to Make \citep{feldman1979make}: Upon access, each goal returns a file or an object in main memory. A goal is only executed if its result is not yet available. Goal execution may involve the access of other goals which turn, may trigger their execution. Respective goal dependencies are explicitly specified in terms of a directed acyclic graph. 
 
 Figure \ref{f:goalgraph} depicts Genestrip's goal dependency graph: Several goals (prefixed with \verb|d:|) revolve around automatically downloading all necessary files of the RefSeq, Genbank and other data from the NCBI's Web site \citep{Sayers:2025aa}.
-\textbf{TODO: RefSeq files as zip, current RefSeq size, MD5 check...}
+When required for database generation Genestrip downloads the RefSeq genomes of a requested super-kingdom as a collection of zip files. The collection forms a standard offered by the NCBI. Genestrip performs an MD5 fingerprint check after each zip file download to ensure data integrity and reattempts the download if the respective zip files appears as corrupted. 
  
  Several object goals (prefixed with \verb|o:|) load files and create data structures or compute results in main memory for further processing. Most file goals (prefixed with \verb|f:|) write computational results to files.
 Boxes with edged corners depict goals that are meant to be executed directly via the command line. E.g., 
@@ -418,7 +418,7 @@ table[col sep=semicolon, header=true, x = {reads 2}, y = {reads 1} , meta=rank] 
 \caption{Scatter plots of $k$-mers (a) and classified reads (b) for a real-world fastq file from sequencing a human saliva sample analyzed with KrakenUniq and Genestrip using the viral databases from Figure \ref{viraldbscatter} (based on a logarithmic scale with 1 added to each value in order to enable the representation of zero-counts).}\label{viralscatter}
 \end{figure}
 
-\subsection{Error in the Context of Smaller Databases}
+\subsection{Accuracy in the Context of Smaller Databases}
 
 The following results highlight the importance of the update phase according to Section \ref{background} in the context of smaller databases.
 
@@ -640,7 +640,7 @@ The generation of \texttt{tb} revealed that its included genomes from the RefSeq
 We applied \texttt{MicrobialDB} and \texttt{tb} to the eight fastq files from \cite{nanoporeticks} mentioned above. The fastq files contain long reads from sequencing homogenized field-collected ticks using Nanopore technology. 
 %Four of the files had been produced using an enrichment %technology that drops reads during base calling if they %are likely from the host \citep{nanoporeticks}.
 
-As an example result, Figure \ref{genusestick6} shows the five most frequent $k$-mers counts and classified reads for "Tick 6" accumulated up to the genus rank. In all cases but "138" (Borrelia), the aggregated counts for the genuses under \texttt{tb} are mildly to considerably higher than those achieved with \texttt{MicrobialDB} . Since we established the accuracy of Genestrip's results in Section \ref{correctness}, this increase may be attributed with high confidence to the quality of database \texttt{tb} which is deeper than \texttt{MicrobialDB} for its included genuses as described above.
+As an example result, Figure \ref{genusestick6} shows the five most frequent $k$-mers counts and classified reads for "Tick 6" accumulated up to the genus rank. In all cases but "138" (Borrelia), the aggregated counts for the genuses under \texttt{tb} are mildly to considerably higher than those achieved with \texttt{MicrobialDB}. Since we established the accuracy of Genestrip's results in Section \ref{correctness}, this increase may be attributed with high confidence to the quality of the database \texttt{tb} which is deeper than \texttt{MicrobialDB} for its included genuses as described above.
  We observed similar improvements in terms of $k$-mers and reads with respect to Ehrlichia, Rickettsia and partly to Anaplasma in all of the eight ticks' fastq files where corresponding organisms showed presence in the first place.
 
 \begin{figure}[h]%
@@ -689,8 +689,8 @@ height = 0.45\textwidth,
 \label{genusestick6}
 \end{figure}
 
-As another example, Figure \ref{ehrlichiatick6} details the results for Tick 6 with respect to "943" (Ehrlichia):
-Interestingly, Genestrip assigns most of the found $k$-mers right to the genus whereas KrakenUniq produces a peak under the strain "1423892" (Ehrlichia muris AS145). The difference originates in the deeper database \texttt{tb} where, in comparison to \texttt{MicrobialDB},  more common $k$-mers where found between different genomes under the genus Ehrlichia. Indeed the ratio of stored $k$-mers between \texttt{tb} and \texttt{MicrobialDB} is 4.54 for the taxon "943" but only 0.24 for "1423892". The high $k$-mer consistency ratios shown in Figure \ref{ehrlichiatick6} also suggest that the respective $k$-mers counts are no false positives.
+Figure \ref{ehrlichiatick6} details the results for Tick 6 with respect to "943" (Ehrlichia):
+Interestingly, Genestrip assigns most of the found $k$-mers right to the genus whereas KrakenUniq produces a peak under the strain "1423892" (Ehrlichia muris AS145). The difference originates in the deeper database \texttt{tb} where, in comparison to \texttt{MicrobialDB}, more common $k$-mers were found in a broader set genomes under the genus Ehrlichia. In turn, Genestrip's update phase pushed these $k$-mers to the genus rank as the lowest common ancestor. Indeed the ratio of stored $k$-mers between \texttt{tb} and \texttt{MicrobialDB} is 4.54 for the taxon "943" but only 0.24 for "1423892". The high $k$-mer consistency ratios shown in Figure \ref{ehrlichiatick6} also suggest that the respective $k$-mers counts for Tick 6 are no false positives.
 
 Again, we observed similar results in particular with respect to Ehrlichia, Rickettsia and partly to Anaplasma in all of the eight ticks' fastq files where corresponding organisms showed presence in the first place.
 These findings form a general trend when $k$-mer databases with a lowest common ancestor representation become deeper. The effect was first discovered and studied in \cite{Nasko:2018aa}. Note that this is beneficial since such deeper $k$-mer databases tend to protect read classification from potentially falsely assigning a too low ranked taxon.
