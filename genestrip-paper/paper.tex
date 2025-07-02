@@ -830,13 +830,13 @@ height = 0.45\textwidth,
 
 \subsection{Performance}
 
-As mentioned in Section \ref{background} Genestrip's focus is on generating and using potentially smaller but also deeper $k$-mer databases for accurate metagenomic analysis of selected organisms interest. This implies that users must be empowered to flexibly create new databases ideally on their own devices. We therefore put focus on the performance of database generation as well as read classification.
+As mentioned in Section \ref{background} Genestrip's focus is on generating and using potentially small but also deeper $k$-mer databases for accurate metagenomic analysis of selected organisms interest. This implies that users must be empowered to flexibly create new databases -- ideally on their own devices. We therefore put focus on the performance of database generation as well as of read classification.
 
-The following experiments were all performed on a single, modern desktop computer with 32GB RAM, 10 CPU cores and a 2TB solid state disk. We ensured that as few competing processes as possible where running during the experiments. \footnote{Hardware: MacBook Pro, Apple M1 Pro Chip and macOS Version 15.5, Java Virtual Machine: JSE Oracle 17.0.7 (arm64)}
+The following experiments were all performed on a single, modern desktop computer with 32GB RAM, 10 CPU cores and a 2TB solid state disk. We ensured that as few competing processes as possible where running during the experiments.\footnote{Hardware: MacBook Pro, Apple M1 Pro Chip and macOS Version 15.5, Java Virtual Machine: JSE Oracle 17.0.7 (arm64)}
 
 \subsection{Database Generation}
 
-Table \ref{dbperf} describes six databases used for assessing database generation performance. They refer to several super-kingdoms or categories and were designed with a potential use in medicine \citep{Mehlhorn} or agriculture \citep{Rebschutz} in mind. Table \ref{dbperf} reports execution statistics for the generation of those databases. As can be seen, the required memory and execution times remained moderate in all of the cases. 
+Table \ref{dbperf} describes six Genestrip databases used for assessing database generation performance. They refer to several super-kingdoms or categories and were designed with a potential use in medicine \citep{Mehlhorn} or agriculture \citep{Rebschutz} in mind. Table \ref{dbperf} reports execution statistics for the generation of those databases from scratch via the goal \texttt{db} from Figure \ref{goals}. (Times for downloading any of the necessary RefSeq files from the NCBI are not included.) As can be seen, the required memory and execution times remained moderate in all of the cases. 
 \begin{table}[h]
 \centering
 \footnotesize
@@ -866,7 +866,7 @@ DB Name & Stored $k$-mers & Disk-Size (GB) & Exec. Time (h) & Max. RAM (MB) \\
 \texttt{vineyard} & & & & \\
 \texttt{parasites} & & & & \\
 \end{tabular}
-\caption{Execution statistics for generating six Genestrip databases with 9 threads. Times for downloading necessary RefSeq files from the NCBI's sites are not included.}\label{dbperf}
+\caption{Execution statistics for generating six Genestrip databases using 9 threads.}\label{dbperf}
 \end{table}
 
 \subsection{Read Classification}
