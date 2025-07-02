@@ -419,6 +419,7 @@ table[col sep=semicolon, header=true, x = {reads 2}, y = {reads 1} , meta=rank] 
 \end{figure}
 
 \subsection{Accuracy in the Context of Smaller Databases}
+\label{accuracy}
 
 The following results highlight the importance of the update phase according to Section \ref{background} in the context of smaller databases.
 
@@ -625,7 +626,7 @@ This section presents the detection of tick-related bacterial pathogens as an ex
 An envisioned application is tick surveillance using metagenomics according to \cite{nanoporeticks}, where the authors applied Nanopore technology to check eight field-collected ticks but back then relied on Kraken 2 to identify corresponding organisms. Due to \cite{HUGGINS2024100839}, \cite{Miao:2024aa} and \cite{Huggins:2024aa} we also see a potential use case when screening for tick-borne pathogens in vertebrates including humans.
 
 \subsubsection{The Databases \texttt{MicrobialDB} and \texttt{tb}}
-
+\label{mdbtb}
 \texttt{MicrobialDB} for KrakenUniq aims at the diagnosis of infectious diseases using metagenomics and contains 97.68 times as many $k$-mers as \texttt{tb}. It has a disk size of 574.31 GB excluding the taxonomy tree and additional mapping files. It covers a broad set of microbials including archaea, bacteria, viral genomes, the human genome and pathogenic eukaryotes with contaminants removed \citep{Lu:2018aa}.
 
 The database \texttt{tb} for Genestrip is based on the RefSeq Release 230 and covers all of the  genomes from the twelve bacterial genuses Bartonella, Rickettsia, Anaplasma, Ehrlichia, Borrelia, Borreliella, Chlamydia, Mycoplasma, Malacoplasma, Mycoplasmoides, Metamycoplasma and Francisella as many included species are pathogenic to humans and known or assumed to occur in ticks \citep{Eisen:2018aa, JOHNSON20181499, Janecek:2012aa, Thomas:1990aa, 10.3389/fvets.2025.1522904}. To avoid contaminants from human DNA and the black-legged tick's DNA, we added corresponding genomes to Genestrip's update phase as explained at the end of Section \ref{database}. We also activated the genomic dust filter at high sensitivity: E.g. the $k$-mer \texttt{AGAGACACCCCCCTCAAAAAAAAAAAAATGT} would already be dropped because its repetitiveness is just above the set threshold.
@@ -829,10 +830,33 @@ height = 0.45\textwidth,
 
 \subsection{Performance}
 
-To assess Genestrips's performance for $k$-mer counting, we compared its analysis time and memory use with 
-corresponding analysis runs using KrakenUniq and Kraken2.
+As mentioned in Section \ref{background} Genestrip's focus is on generating and using potentially smaller but also deeper $k$-mer databases for accurate metagenomic analysis of selected organisms interest. This implies that users must be empowered to flexibly create new databases ideally on their own devices. We therefore put focus on the performance of database generation as well as read classification.
 
-...
+The following experiments were all performed on a single, modern desktop computer with 32GB RAM, 10 processor cores and a solid state disk.\footnote{Hardware: MacBook Pro, Apple M1 Pro Chip and macOS Version 15.5, Java Virtual Machine: JSE Oracle 17.0.7 (arm64)}
+
+\subsection{Database Generation}
+
+\begin{table}[h]
+\centering
+\footnotesize
+\begin{tabular}{c|p{1.3cm}|p{4cm}|r|r|r|r|r}
+DB Name & Super-Kingdom & Description & Genomes & $k$-mers & Disk-Size (GB) & Gen. Time (h) & Max. RAM \\
+\hline
+\texttt{cv\_g} & Viral & See Section \ref{correctness} & & & & \\
+\texttt{hv\_g} & Viral & See Section \ref{accuracy} & & & & \\
+\texttt{tb} & Bacterial & See Section \ref{mdbtb} & & & & \\
+\texttt{protozoa} & Protozoa & Protozoans from the RefSeq which are pathogenic for humans & & & & \\
+\texttt{vineyard} & Fungi & Fungal infections of grapevine taken from the RefSeq & & & & \\
+\texttt{parasites} & Invertebrate & Parasitic invertebrates from the RefSeq which are pathogenic for humans & & & & \\
+\end{tabular}
+\caption{}\label{dbperf}
+\end{table}
+
+
+\subsection{Read Classification}
+
+To assess Genestrips's performance for $k$-mer counting, we compared its analysis time and memory use with 
+corresponding analysis runs using KrakenUniq.
 
 \section{Conclusion}\label{discussion}
 
