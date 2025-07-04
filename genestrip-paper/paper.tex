@@ -45,7 +45,7 @@
 \thanks{IT Faculty, Heilbronn University, Max-Planck-Str. 39, Heilbronn, 74081, Baden-Württemberg, Germany}}
 
 % Enter date:
-\date{June 2025}   
+\date{July 2025}   
 
 % Enter permanent URL (can be commented out):
 %\available{https://github.com/pmichaillat/latex-paper}
@@ -232,7 +232,7 @@ To assess Genestrips's correctness with regard to $k$-mer counting and read clas
 As part of our test procedure, we created database contents under both systems that were as identical as possible in terms of their genomic basis and their stored $k$-mers. 
 We then applied the created databases to suitable fastq files in order to compare the results between both systems. Highly similar results from this check mutually solidify the correctness of both systems since they had been developed completely independently. Besides, Genestrip's correctness is also supported via extensive automated functional tests with high test coverage.
 
-To create the databases, we chose all RefSeq genomes from the viral super-kingdom on the assembly level "complete genome". Figure \ref{viraldbscatter} compares the structure of the two databases produced with KrakenUniq (with 373,250,262 $k$-mers in total) and Genestrip (with 373,989,857 $k$-mers in total). The databases are nearly identical with regard to the number of $k$-mers stored per \taxon\ with 15 genomes and respective \taxon s occurring in KrakenUniq but not in Genestrip and 33 genomes vice versa.\footnote{The differences between the sets of selected genomes are caused by different approaches on how the genomes are preselected and downloaded by KrakenUniq and Genestrip, respectively. They do not constitute erroneous behavior of either system.} The slightly differing sets of genomes result in 158 differences in $k$-mers stored per \taxon . A large part of the differences is a consequence of the necessary lowest common ancestor update on stored $k$-mers (see Section \ref{background}). In the following, we name the two databases \texttt{cv\_ku} and \texttt{cv\_g} with regard to KrakenUniq and Genestrip, respectively.
+To create the databases, we chose all RefSeq genomes from the viral super-kingdom on the assembly level "complete genome". Figure \ref{viraldbscatter} compares the structure of the two databases produced with KrakenUniq (with 373,250,262 $k$-mers in total) and Genestrip (with 374,412,041 $k$-mers in total). The databases are nearly identical with regard to the number of $k$-mers stored per \taxon\ with 15 genomes and respective \taxon s occurring in KrakenUniq but not in Genestrip and 33 genomes vice versa.\footnote{The differences between the sets of selected genomes are caused by different approaches on how the genomes are preselected and downloaded by KrakenUniq and Genestrip, respectively. They do not constitute erroneous behavior of either system.} The slightly differing sets of genomes result in 158 differences in $k$-mers stored per \taxon . A large part of the differences is a consequence of the necessary lowest common ancestor update on stored $k$-mers (see Section \ref{background}). In the following, we name the two databases \texttt{cv\_ku} and \texttt{cv\_g} with regard to KrakenUniq and Genestrip, respectively.
 
 \begin{figure}[h]%
 \centering
@@ -426,14 +426,14 @@ The following results highlight the importance of the update phase according to 
 As a first example, we created two small viral databases based on the RefSeq covering \emph{human viruses only}\footnote{The list of human viruses originates from \url{https://viralzone.expasy.org/678}. Some human viruses known to be missing were manually added. All \taxon s were chosen on the species rank.} -- again under both KrakenUniq and Genestrip.  In the following, we name the two databases \texttt{hv\_ku} and \texttt{hv\_g} with regard to KrakenUniq and Genestrip, respectively. We again assured that the databases were as identical as possible in terms of their genomic basis and their stored $k$-mers.
 Figure \ref{viraldbscomp} compares the viral database contents for the databases from Section \ref{correctness} with the respective "human virus only" database for (a) Genestrip and (b) KrakenUniq. The plots depict entries of the 407 \taxon s referenced in both databases.
 
-Regarding Genestrip's databases from Figure \ref{viraldbscomp} (a), all $k$-mer counts on the species rank and below are identical per \taxon\ as an effect of the update phase (as discussed in Section \ref{background}). This is an important precondition met by Genestrip's \texttt{hv\_g} database to avoid false positives at read classification time. Nevertheless, data points from higher taxonomic ranks scatter because the complete viral database  \texttt{cv\_g} contains $k$-mers from many more non-human viruses, and these $k$-mers were pushed to higher ranks due to the lowest common ancestor update. Obviously, these additional $k$-mers are not required to accurately classify reads with respect to human viruses. The database \texttt{hv\_g} contains only 4,175,715 $k$-mers with a disk size of just about 60 MB, whereas \texttt{cv\_g} has as disk size of 5.4 GB with almost 90 times as many $k$-mers.
+Regarding Genestrip's databases from Figure \ref{viraldbscomp} (a), all $k$-mer counts on the species rank and below are identical per \taxon\ as an effect of the update phase (as discussed in Section \ref{background}). This is an important precondition met by Genestrip's \texttt{hv\_g} database to avoid false positives at read classification time. Nevertheless, data points from higher taxonomic ranks scatter because the complete viral database  \texttt{cv\_g} contains $k$-mers from many more non-human viruses, and these $k$-mers were pushed to higher ranks due to the lowest common ancestor update. Obviously, these additional $k$-mers are not required to accurately classify reads with respect to human viruses. The database \texttt{hv\_g} contains only 3,865,987 $k$-mers with a disk size of just about 53 MB, whereas \texttt{cv\_g} has as disk size of 5.4 GB with almost 97 times as many $k$-mers.
 
 KrakenUniq's corresponding $k$-mer counts from Figure \ref{viraldbscomp} (b) are not identical on the species rank and below. Although visually not well obvious in (b), this accounts for 158 scattering data points on the species rank and below. These differences offer potential for higher error and in particular false positives at read classification time as will be exemplified next.
 
 \begin{figure}[h]%
 \centering
 \ifscatter
-\textbf{$k$-mers in Database}\\
+$k$-mers in Database\\
 \begin{tikzpicture}
 \begin{axis}[
 title=(a) Genestrip,
@@ -488,7 +488,9 @@ table[col sep=semicolon, header=true, x = {kmers 1}, y = {kmers 2} , meta=rank] 
 \caption{Scatter plots of $k$-mers per \taxon\ in a complete viral database versus a "human virus only" database both from the RefSeq created via (a) KrakenUniq and (b) Genestrip (based on a logarithmic scale with 1 added to each value in order to enable the representation of zero-counts).}\label{viraldbscomp}
 \end{figure}
 
-Figure \ref{genestripsalivascatter} (a) shows the scatter plots of $k$-mer counts and read counts from Genestrip on a logarithmic scale for the \texttt{cv\_g} database versus \texttt{hv\_g} when applied to the human saliva fastq file \# ?? from Section \ref{correctness}. 
+Figure \ref{salivascatter} (a,b) shows the scatter plots of $k$-mer counts and read counts from KrakenUniq on a logarithmic scale for the database \texttt{cv\_ku} versus \texttt{hv\_ku} when applied to the human saliva fastq file \# ?? from Section \ref{correctness}. 
+Figure \ref{salivascatter} (c,d) shows the same with respect to the Genestrip databases \texttt{cv\_g} versus \texttt{hv\_g}.
+\textbf{TODO: Briefly comment on the results, wich are favorable for Genestrip...} 
 
 \begin{figure}[h]%
 \centering
@@ -589,7 +591,7 @@ table[col sep=semicolon, header=true, x = {reads 1}, y = {reads 2} , meta=rank] 
 \ref{legend5}
 
 \fi
-\caption{Scatter plots of $k$-mers (a, c) and classified reads (b, d) for the human saliva fastq file \# ?? from Section \ref{correctness} analyzed with KrakenUniq (a, b) and Genestrip (c, d) using the complete viral databases versus the "human virus only" databases both as in Figure \ref{viraldbscomp} (based on a logarithmic scale with 1 added to each value in order to enable the representation of zero-counts).}\label{krakenuniqsalivascatter}
+\caption{Scatter plots of $k$-mers (a, c) and classified reads (b, d) for the human saliva fastq file \# ?? from Section \ref{correctness} analyzed with KrakenUniq (a, b) and Genestrip (c, d) using the complete viral databases versus the "human virus only" databases both as in Figure \ref{viraldbscomp} (based on a logarithmic scale with 1 added to each value in order to enable the representation of zero-counts).}\label{salivascatter}
 \end{figure}
 
  
@@ -648,7 +650,7 @@ As an example result, Figure \ref{genusestick6} shows the five most frequent $k$
 \centering
 \footnotesize
 \begin{tikzpicture}
-  \begin{axis}[title  = $k$-mer Counts (a),
+  \begin{axis}[title  = (a) $k$-mer Counts,
 width = 0.45\textwidth,
 height = 0.45\textwidth,
     ybar,
@@ -670,7 +672,7 @@ legend image code/.code={
 \end{tikzpicture}
 \hspace{0.5cm}
 \begin{tikzpicture}
-  \begin{axis}[title  = Classified Read Counts (b),
+  \begin{axis}[title  = (b) Counts of Classified Reads,
 width = 0.45\textwidth,
 height = 0.45\textwidth,
     ybar,
@@ -731,7 +733,7 @@ height = 0.45\textwidth,
 (1242993,1.000001284) };
 \addlegendentry{$k$-mer Cons. Ratio}
   \end{axis}
-  \begin{axis}[title  = $k$-mer Counts (a),
+  \begin{axis}[title  = (a) $k$-mer Counts,
   axis y line=left,
   axis line style={-},
   ymax=70000,
@@ -784,7 +786,7 @@ legend image code/.code={
 \end{tikzpicture}
 \hspace{0.5cm}
 \begin{tikzpicture}
-  \begin{axis}[title  = Classified Read Counts (b),
+  \begin{axis}[title  = (b)  Counts of Classified Read,
 width = 0.45\textwidth,
 height = 0.45\textwidth,
     ybar,
@@ -832,26 +834,26 @@ height = 0.45\textwidth,
 
 As mentioned in Section \ref{background} Genestrip's focus is on generating and using potentially small but also deeper $k$-mer databases for accurate metagenomic analysis of selected organisms interest. This implies that users must be empowered to flexibly create new databases -- ideally on their own devices. We therefore put focus on the performance of database generation as well as of read classification.
 
-The following experiments were all performed on a single, modern desktop computer with 32GB RAM, 10 CPU cores and a 2TB solid state disk. We ensured that as few competing processes as possible where running during the experiments.\footnote{Hardware: MacBook Pro, Apple M1 Pro Chip and macOS Version 15.5, Java Virtual Machine: JSE Oracle 17.0.7 (arm64)}
+The following experiments were all performed on a single, modern desktop computer with 32GB RAM, 10 CPU cores and a 2TB solid state disk. We ensured that as few competing processes as possible where running during the experiments.\footnote{Hardware: MacBook Pro, Apple M1 Pro Chip and macOS Version 15.5, Java Virtual Machine: JSE Oracle 17.0.7 (arm64) configured with max. allowed heap size of 24GB}
 
 \subsection{Database Generation}
 
-Table \ref{dbperf} describes six Genestrip databases used for assessing database generation performance. They refer to several super-kingdoms or categories and were designed with a potential use in medicine \citep{mehlhorn2012parasiten} or agriculture \citep{hillebrand1998rebschutz} in mind. Table \ref{dbperf} reports execution statistics for the generation of those databases from scratch via the goal \texttt{db} from Figure \ref{goals}. (Times for downloading any of the necessary RefSeq files from the NCBI are not included.) As can be seen, the execution times and required memory are moderate in all of the cases.
+Table \ref{dbperf} describes six Genestrip databases used for assessing database generation performance. They refer to several super-kingdoms or categories and were designed with a potential use in medicine \citep{mehlhorn2012parasiten} or agriculture \citep{hillebrand1998rebschutz} in mind. Table \ref{dbperf} reports execution statistics for the generation of those databases from scratch via the goal \texttt{db} from Figure \ref{goals}. (Times for downloading any of the necessary RefSeq or Genbank files from the NCBI are not included.) As can be seen, the execution times and required memory are moderate in all of the cases.
 
 Average duration of phases...
 Average speed in $k$-mers / hour...
 
 \begin{table}[h]
 \centering
-\begin{tabular}{c|p{1.6cm}|p{6.5cm}|r|r}
-DB Name & Category & Description & Species & Strains \\
+\begin{tabular}{c|p{1.6cm}|p{6.5cm}|r}
+DB Name & Category & Description & Species and below \\
 \hline
-\texttt{cv\_g} & Viral & See Section \ref{correctness} & &  \\
-\texttt{hv\_g} & Viral & See Section \ref{accuracy} & &  \\
-\texttt{tb} & Bacterial & See Section \ref{mdbtb} & &  \\
-\texttt{protozoa} & Protozoa & Comprehensive collection of protozoans from the RefSeq which are pathogenic to humans \citep{mehlhorn2012parasiten} & &  \\
-\texttt{vineyard} & Fungi & Fungal infections from the RefSeq threatening grapevine plants \citep{hillebrand1998rebschutz} & &  \\
-\texttt{parasites} & Invertebrate & Comprehensive collection of parasitic invertebrates from the RefSeq which are pathogenic to humans \citep{mehlhorn2012parasiten} & &  \\
+\texttt{cv\_g} & Viral & See Section \ref{correctness} & 25.739 \\
+\texttt{hv\_g} & Viral & See Section \ref{accuracy} & 225  \\
+\texttt{tb} & Bacterial & See Section \ref{mdbtb} &  \\
+\texttt{protozoa} & Protozoa & Comprehensive collection of protozoans from the RefSeq which are pathogenic to humans \citep{mehlhorn2012parasiten} & \\
+\texttt{vineyard} & Fungi & Fungal infections from the RefSeq and Genbank threatening grapevine plants \citep{hillebrand1998rebschutz} & \\
+\texttt{parasites} & Invertebrate & Comprehensive collection of parasitic invertebrates from the RefSeq which are pathogenic to humans \citep{mehlhorn2012parasiten} & \\
 \end{tabular}
 
 \caption{Background on Genestrip databases used for assessing database generation performance.}\label{dbdesc}
@@ -860,10 +862,10 @@ DB Name & Category & Description & Species & Strains \\
 \begin{table}[h]
 \centering
 \begin{tabular}{c|r|r|r|r}
-DB Name & Stored $k$-mers & Disk-Size (GB) & Exec. Time (h) & Max. RAM (MB) \\
+DB Name & Stored $k$-mers & Disk-Size (MB) & Exec. Time (min) & Max. RAM (MB) \\
 \hline
-\texttt{cv\_g} & & & & \\
-\texttt{hv\_g} & & & & \\
+\texttt{cv\_g} & 374,412,041 & 5,370 & 35 & 7,341 \\
+\texttt{hv\_g} &   3,865,987 & 53 & 4 & 1,407 \\
 \texttt{tb} & & & & \\
 \texttt{protozoa} & & & & \\
 \texttt{vineyard} & & & & \\
