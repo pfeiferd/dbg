@@ -79,7 +79,7 @@ If only a smaller group of a few dozen genuses or a few 100 species is under con
   
 In order to enable a smaller database with no false positives emerging from this problem, we introduce Genestrip, as new metagenomic software tool supporting (unique) $k$-mer counting, read classification and read filtering.
 
-Genestrip employs a \emph{two-phase} database generation process: During the \emph{entry phase}, all $k$-mers of genomes from selected organisms are entered into the database on the basis of the RefSeq \citep{refseq} and optionally GenBank \citep{genbank} and additional sources. During the \emph{update phase}, all stored $k$-mers from the database are checked against the genomes of \emph{all} other organisms from the RefSeq belonging to the same super-kingdom or category. So, if a stored $k$-mer also occurs in another organism which is not part of the database, the $k$-mer's \taxon\ still gets updated in the database and the lowest common ancestor's \taxon\ (known as LCA) is entered instead \citep{Nasko:2018aa}. This prevents a $k$-mer from being falsely associated with one of selected organisms given it is too unspecific.
+Genestrip employs a \emph{two-phase} database generation process: During the \emph{entry phase}, all $k$-mers of genomes from selected organisms are entered into the database on the basis of the RefSeq \citep{refseq} and optionally GenBank \citep{genbank} and additional sources. During the \emph{update phase}, all stored $k$-mers from the database are checked against the genomes of \emph{all} other organisms from the RefSeq belonging to the same \emph{category}.\footnote{The RefSeq is structurally divided into 14 categories including "Bacteria", "Fungi", "Invertebrate", "Protozoa", "Viral" and others.} So, if a stored $k$-mer also occurs in another organism which is not part of the database, the $k$-mer's \taxon\ still gets updated in the database and the lowest common ancestor's \taxon\ (known as LCA) is entered instead \citep{Nasko:2018aa}. This prevents a $k$-mer from being falsely associated with one of selected organisms given it is too unspecific.
 
 Based on this approach, Genestrip achieves low memory footprint during database creation as well as at read analysis time. Moreover, it offers reasonable to favorable runtimes for $k$-mer matching and read classification. Together, these qualities empower users to create and use respective databases on machines with regular main memory size. Genestrip's $k$-mer counting results are similar to those of KrakenUniq \citep{krakenUniq} with regard to the selected organisms. Genestrip also supports unique $k$-mer counting with exact counts and with low memory overhead. 
 
@@ -96,7 +96,7 @@ genomes from the RefSeq \citep{refseq} but genomes from Genbank and additional g
 To better handle the complexity of the generation process, it employs a goal-oriented approach in similarity to Make \citep{feldman1979make}: Upon access, each goal returns a file or an object in main memory. A goal is only executed if its result is not yet available. Goal execution may involve the access of other goals which turn, may trigger their execution. Respective goal dependencies are explicitly specified in terms of a directed acyclic graph. 
 
 Figure \ref{f:goalgraph} depicts Genestrip's goal dependency graph: Several goals (prefixed with \verb|d:|) revolve around automatically downloading all necessary files of the RefSeq, Genbank and other data from the NCBI's Web site \citep{Sayers:2025aa}.
-When required for database generation, the goal \verb|refseqfna| downloads the RefSeq genomes belonging to a matching super-kingdom as a collection of zip files. The collection is one of NCBI's  standard offerings. By consulting the goal \verb|checksummap|, \verb|refseqfna| also performs an MD5 fingerprint check after each zip file download to ensure data integrity and reattempts the download in case the initial file appears to be corrupted. 
+When required for database generation, the goal \verb|refseqfna| downloads the RefSeq genomes belonging to a matching category as a collection of zip files. The collection is one of NCBI's  standard offerings. By consulting the goal \verb|checksummap|, \verb|refseqfna| also performs an MD5 fingerprint check after each zip file download to ensure data integrity and reattempts the download in case the initial file appears to be corrupted. 
  
  Several object goals (prefixed with \verb|o:|) load files and create data structures or compute results in main memory for further processing. Most file goals (prefixed with \verb|f:|) write computational results to files.
 Boxes with edged corners depict goals that are meant to be executed directly via the command line. E.g., 
@@ -107,7 +107,7 @@ Solid edges symbolize "eager" dependencies where the existence of a dependency's
 \begin{figure}[h]%
 \centering
 \includegraphics[width=15cm]{GoalGraph.eps}
-\caption{Dependency Graph of Goals in Genestrip}\label{f:goalgraph}
+\caption{Dependency Graph of Goals in Genestrip}\label{goalgraph}
 \end{figure}
 \clearpage
 
@@ -133,7 +133,7 @@ Table \ref{goals} describes the most relevant goals for database generation in t
  \verb|filldb| & This \emph{entry phase} populates the database with all $k$-mers of genomes from selected organisms. The appropriate size of the database is a close but conservative estimate based on \verb|tempindex|.
   Duplicate $k$-mer entries are avoided via a Boom filter that tracks the already stored $k$-mers. Finally, the stored $k$-mers are sorted in order to enable binary search at analysis time but also for the goal \verb|updatedb| from below.\\
  \verb|updatedb| & This \emph{update phase} updates the populated database to account for common $k$-mers between organisms.
- \emph{All} genomes from the RefSeq belonging to a set of pre-configurable taxonomic (super-)kingdoms are considered during this phase. This ensures that a $k$-mer from a selected organism obtains the correct \taxon\ as the $k$-mer may also occur in the genome of another organism (which might be represented in database or not). Concerning the finished database, the respective $k$-mer will be associated with the lowest common ancestor taxon as computed via all considered genomes that contain the $k$-mer.\\
+ \emph{All} genomes from the RefSeq belonging to a set of pre-configurable taxonomic categories are considered during this phase. This ensures that a $k$-mer from a selected organism obtains the correct \taxon\ as the $k$-mer may also occur in the genome of another organism (which might be represented in database or not). Concerning the finished database, the respective $k$-mer will be associated with the lowest common ancestor taxon as computed via all considered genomes that contain the $k$-mer.\\
 \end{tabular}
 \caption{Genestrip's most relevant goals for database generation}\label{goals}
 \end{table}
@@ -232,7 +232,7 @@ To assess Genestrips's correctness with regard to $k$-mer counting and read clas
 As part of our test procedure, we created database contents under both systems that were as identical as possible in terms of their genomic basis and their stored $k$-mers. 
 We then applied the created databases to suitable fastq files in order to compare the results between both systems. Highly similar results from this check mutually solidify the correctness of both systems since they had been developed completely independently. Besides, Genestrip's correctness is also supported via extensive automated functional tests with high test coverage.
 
-To create the databases, we chose all RefSeq genomes from the viral super-kingdom on the assembly level "complete genome". Figure \ref{viraldbscatter} compares the structure of the two databases produced with KrakenUniq (with 373,250,262 $k$-mers in total) and Genestrip (with 374,412,041 $k$-mers in total). The databases are nearly identical with regard to the number of $k$-mers stored per \taxon\ with 15 genomes and respective \taxon s occurring in KrakenUniq but not in Genestrip and 33 genomes vice versa.\footnote{The differences between the sets of selected genomes are caused by different approaches on how the genomes are preselected and downloaded by KrakenUniq and Genestrip, respectively. They do not constitute erroneous behavior of either system.} The slightly differing sets of genomes result in 158 differences in $k$-mers stored per \taxon . A large part of the differences is a consequence of the necessary lowest common ancestor update on stored $k$-mers (see Section \ref{background}). In the following, we name the two databases \texttt{cv\_ku} and \texttt{cv\_g} with regard to KrakenUniq and Genestrip, respectively.
+To create the databases, we chose all RefSeq genomes from the category "Viral" on the assembly level "complete genome". Figure \ref{viraldbscatter} compares the structure of the two databases produced with KrakenUniq (with 373,250,262 $k$-mers in total) and Genestrip (with 374,412,041 $k$-mers in total). The databases are nearly identical with regard to the number of $k$-mers stored per \taxon\ with 15 genomes and respective \taxon s occurring in KrakenUniq but not in Genestrip and 33 genomes vice versa.\footnote{The differences between the sets of selected genomes are caused by different approaches on how the genomes are preselected and downloaded by KrakenUniq and Genestrip, respectively. They do not constitute erroneous behavior of either system.} The slightly differing sets of genomes result in 158 differences in $k$-mers stored per \taxon . A large part of the differences is a consequence of the necessary lowest common ancestor update on stored $k$-mers (see Section \ref{background}). In the following, we name the two databases \texttt{cv\_ku} and \texttt{cv\_g} with regard to KrakenUniq and Genestrip, respectively.
 
 \begin{figure}[h]%
 \centering
@@ -266,7 +266,7 @@ table[col sep=semicolon, header=true, x = {kmers 2}, y = {kmers 1} , meta=rank] 
 \ref{legend1}
 
 \fi
-\caption{Scatter plot of $k$-mer counts for the RefSeq databases \texttt{cv\_ku} from KrakenUniq and \texttt{cv\_ku} from Genestrip covering the entire viral super-kingdom (based on a logarithmic scale with 1 added to each value in order to enable the representation of zero-counts). The 16,087 depicted entries cover all of the \taxon s present in both databases.}\label{viraldbscatter}
+\caption{Scatter plot of $k$-mer counts for the RefSeq databases \texttt{cv\_ku} from KrakenUniq and \texttt{cv\_ku} from Genestrip covering the entire category "Viral" (based on a logarithmic scale with 1 added to each value in order to enable the representation of zero-counts). The 16,087 depicted entries cover all of the \taxon s present in both databases.}\label{viraldbscatter}
 \end{figure}
 
 We applied the two databases to a simulated fastq file extracted from \cite{Wu:2024aa} where the file's reads were used to benchmark metagenomic pipelines aiming at the discovery of new viruses. As the ground truth is known, this allowed for a similarity comparison but also for checking classification accuracy. The file contains 61,550 long reads extracted from 6,155 viral standard genomes from the RefSeq \citep{Wu:2024aa}.
@@ -832,27 +832,27 @@ height = 0.45\textwidth,
 
 \subsection{Performance}
 
-As mentioned in Section \ref{background} Genestrip's focus is on generating and using potentially small but also deeper $k$-mer databases for accurate metagenomic analysis of selected organisms interest. This implies that users must be empowered to flexibly create new databases -- ideally on their own devices. We therefore put focus on the performance of database generation as well as of read classification.
+As mentioned in Section \ref{background}, Genestrip's focus is on generating and using potentially small but also deeper $k$-mer databases for accurate metagenomic analysis of selected organisms interest. This implies that users must be empowered to flexibly create new databases -- ideally on their own devices. We therefore put focus on the performance of database generation as well as of read classification.
 
 The following experiments were all performed on a single, modern desktop computer with 32GB RAM, 10 CPU cores and a 2TB solid state disk. We ensured that as few competing processes as possible where running during the experiments.\footnote{Hardware: MacBook Pro, Apple M1 Pro Chip and macOS Version 15.5, Java Virtual Machine: JSE Oracle 17.0.7 (arm64) configured with max. allowed heap size of 24GB}
 
 \subsection{Database Generation}
 
-Table \ref{dbperf} describes six Genestrip databases used for assessing database generation performance. They refer to several super-kingdoms or categories and were designed with a potential use in medicine \citep{mehlhorn2012parasiten} or agriculture \citep{hillebrand1998rebschutz} in mind. Table \ref{dbperf} reports execution statistics for the generation of those databases from scratch via the goal \texttt{db} from Figure \ref{goals}. (Times for downloading any of the necessary RefSeq or Genbank files from the NCBI are not included.) As can be seen, the execution times and required memory are moderate in all of the cases.
+Table \ref{dbperf} describes six Genestrip databases used for assessing database generation performance. They refer to several categories and were designed with a potential use in medicine \citep{mehlhorn2012parasiten} or agriculture \citep{hillebrand1998rebschutz} in mind. Table \ref{dbperf} reports execution statistics for the generation of those databases from scratch via the goal \texttt{db} from Figure \ref{goalgraph}. As can be seen, the execution times and the maximum RAM remain moderate in all of the cases. (Times for downloading any of the necessary RefSeq or Genbank files from the NCBI are not included. Related files were downloaded upfront via the goals \texttt{refseqfna} and \texttt{fastasgenbankdl} from Figure \ref{goalgraph.) 
 
-Average duration of phases...
-Average speed in $k$-mers / hour...
+The varying executions times in Table \ref{dbperf} are rooted in the size of the database itself but also by the RefSeq category, whereby "Bacteria" is the largest of the five ones used with genomes in over 2800 zip files with a total disk size of over 550 GB (in Release 230). 
+The zip files must all be screened during each goal from Table \ref{goals} but the update phase, i.e. the goal \texttt{updatedb}, dominates the execution time.
 
 \begin{table}[h]
 \centering
 \begin{tabular}{c|p{1.6cm}|p{6.5cm}|r}
 DB Name & Category & Description & Species and below \\
 \hline
-\texttt{cv\_g} & Viral & See Section \ref{correctness} & 25.739 \\
+\texttt{cv\_g} & Viral & See Section \ref{correctness} & 25,739 \\
 \texttt{hv\_g} & Viral & See Section \ref{accuracy} & 225  \\
-\texttt{tb} & Bacterial & See Section \ref{mdbtb} &  \\
-\texttt{protozoa} & Protozoa & Comprehensive collection of protozoans from the RefSeq which are pathogenic to humans \citep{mehlhorn2012parasiten} & \\
-\texttt{vineyard} & Fungi & Fungal infections from the RefSeq and Genbank threatening grapevine plants \citep{hillebrand1998rebschutz} & \\
+\texttt{tb} & Bacterial & See Section \ref{mdbtb} &  1,119\\
+\texttt{protozoa} & Protozoa & Comprehensive collection of protozoans from the RefSeq which are pathogenic to humans \citep{mehlhorn2012parasiten} & 108 \\
+\texttt{vineyard} & Fungi & Fungal infections from the RefSeq and Genbank threatening grapevine plants \citep{hillebrand1998rebschutz} & 11 \\
 \texttt{parasites} & Invertebrate & Comprehensive collection of parasitic invertebrates from the RefSeq which are pathogenic to humans \citep{mehlhorn2012parasiten} & \\
 \end{tabular}
 
@@ -866,9 +866,9 @@ DB Name & Stored $k$-mers & Disk-Size (MB) & Exec. Time (min) & Max. RAM (MB) \\
 \hline
 \texttt{cv\_g} & 374,412,041 & 5,370 & 35 & 7,341 \\
 \texttt{hv\_g} &   3,865,987 & 53 & 4 & 1,407 \\
-\texttt{tb} & & & & \\
-\texttt{protozoa} & & & & \\
-\texttt{vineyard} & & & & \\
+\texttt{tb} & 487,834,649 & 6,008 & 644 & 17,321 \\
+\texttt{protozoa} & 1,279,065,780 & 15915 & 88 & 20,353 \\
+\texttt{vineyard} & 267,898,449 & 3,430 & 24 & 6,019 \\
 \texttt{parasites} & & & & \\
 \end{tabular}
 \caption{Execution statistics for generating the six Genestrip databases from \label{dbdesc} using 9 threads.}\label{dbperf}
