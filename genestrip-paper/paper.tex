@@ -66,24 +66,24 @@ With the availability of low cost and small-scale sequencing devices, metagenomi
 
 To analyze large sets of reads, software tools based on $k$-mer matching and counting such as Kraken 1 \citep{kraken}, Kraken 2 \citep{kraken2} or KrakenUniq \citep{krakenUniq} are at hand. With regard to pathogen detection, KrakenUniq is particularly suited because of its very low false positive rate but also because its efficiency and high sensitivity \citep{krakenUniq}.
 
-In order to avoid false positive classifications of reads or mismatches of $k$-mers, all of these tools resort to very large databases, containing millions of encoded $k$-mers along with their respective \taxon. A database is usually loaded entirely into main memory and consumes tens of gigabytes of space.\footnote{See \url{https://benlangmead.github.io/aws-indexes/k2} for related Databases.} This requirement mandates specialized and expensive compute servers with very large main memory.
+In order to avoid false positive classifications of reads or mismatches of $k$-mers, all of these tools resort to very large databases, containing millions of encoded $k$-mers along with their respective \taxon. A database is usually loaded entirely into main memory and consumes tens of gigabytes of space. This requirement mandates specialized and expensive compute servers with very large main memory.
 
 In recognition of this problem, KrakenUniq has been extended for database processing in chunks at read analysis time \citep{lowmemkraken}. However, database creation still mandates ultra large main memory: E.g., in 2018 the production of a database for Kraken 1 and equivalently KrakenUniq that just covers the bacterial genomes from the RefSeq \citep{refseq} "required ca. 2.5 TB of RAM and ca. 11 days" on a suitable computer \citep{Nasko:2018aa}. But since then, the RefSeq's number of prokaryotic genomes alone has gone up by a factor of 4.5 to over 38 Mio. \citep{10.1093/nar/gkae1038}.  
-Therefore related organisms are often not covered below the species rank and also genomes below the quality level "complete genome" are usually not included.
+Therefore, related organisms are often not covered below the species rank and also genomes below the quality level "complete genome" are usually not included.
 
 Despite the fact that these databases may not cover organisms of interest at the necessary genomic depth, users tend to apply them because otherwise, creating even larger databases would require even more main memory \citep{Nasko:2018aa}. So, although a much richer set of genomes for organisms interest may be available in principle -- e.g. via recent versions of the RefSeq or in addition via Genbank \citep{genbank} -- these genomes cannot easily be leveraged for metagenomic analysis \citep{Cuesta-Zuluaga:2020aa,Youngblut:2021aa}.
 
 Although Kraken 2 offers more memory efficient $k$-mer databases, it is not a suitable alternative in fields such as medical diagnostics where precision of read classification is paramount \citep{lowmemkraken}. In comparison to Kraken 1 and KrakenUniq, Kraken 2 produces smaller databases but it compresses stored $k$-mers under loss of information, therefore facilitating false positive $k$-mer counts \citep{kraken2, lowmemkraken}. 
 
-If only a smaller group of a few dozen genuses or a few 100 species is under consideration, then it seems promising to simply \emph{generate a smaller database that contains just the $k$-mers from respective genomes in depth}. \emph{However, this very likely leads to many false positives}: The reason for this is that due to the evolutionary relationship of organisms, \emph{a large fraction of $k$-mers that belong to the genome of a species are unspecific} in a sense that they can as well be found in the genome other species or genuses not considered for analysis. Thus, when using too small a database, a read may be falsely assigned to a species because it consists of $k$-mers that \emph{also} belong to another species' genome that was not included in the database.
+If only a smaller group of a few dozen genuses or a few 100 species is under consideration, then it seems promising to simply \emph{generate a smaller database that contains just the $k$-mers from respective genomes in depth}. \emph{However without additional measures, this very likely leads to many false positives}: The reason for this is that due to the evolutionary relationship of organisms, \emph{a large fraction of $k$-mers that belong to the genome of a species are unspecific} in a sense that they can as well be found in the genome other species or genuses not considered for analysis. Thus, when using too small a database, a read may be falsely assigned to a species because it consists of $k$-mers that \emph{also} belong to another species' genome that was not included in the database.
   
 In order to enable a smaller database with no false positives emerging from this problem, we introduce Genestrip, as new metagenomic software tool supporting (unique) $k$-mer counting, read classification and read filtering.
 
-Genestrip employs a \emph{two-phase} database generation process: During the \emph{entry phase}, all $k$-mers of genomes from selected organisms are entered into the database on the basis of the RefSeq \citep{refseq} and optionally GenBank \citep{genbank} and additional sources. During the \emph{update phase}, all stored $k$-mers from the database are checked against the genomes of \emph{all} other organisms from the RefSeq belonging to the same \emph{category}.\footnote{The RefSeq is structurally divided into 14 categories including "Bacteria", "Fungi", "Invertebrate", "Protozoa", "Viral" and others.} So, if a stored $k$-mer also occurs in another organism which is not part of the database, the $k$-mer's \taxon\ still gets updated in the database and the lowest common ancestor's \taxon\ (known as LCA) is entered instead \citep{Nasko:2018aa}. This prevents a $k$-mer from being falsely associated with one of selected organisms given it is too unspecific.
+In principle, Genestrip employs a \emph{two-phase} database generation process: During the \emph{entry phase}, all $k$-mers of genomes from selected organisms are entered into the database on the basis of the RefSeq \citep{refseq} and optionally GenBank \citep{genbank} and additional sources. During the \emph{update phase}, all stored $k$-mers from the database are checked against the genomes of \emph{all} other organisms from the RefSeq belonging to the same \emph{category}\footnote{By standard, the RefSeq is structurally divided into 14 categories including "Bacteria", "Fungi", "Invertebrate", "Protozoa", "Viral" and others.}. So, if a stored $k$-mer also occurs in another organism which is not part of the database, the $k$-mer's \taxon\ still gets updated in the database and the lowest common ancestor's \taxon\ (known as LCA) is entered instead \citep{Nasko:2018aa}. This prevents a $k$-mer from being falsely associated with one of selected organisms given it is too unspecific.
 
 Based on this approach, Genestrip achieves low memory footprint during database creation as well as at read analysis time. Moreover, it offers reasonable to favorable runtimes for $k$-mer matching and read classification. Together, these qualities empower users to create and use respective databases on machines with regular main memory size. Genestrip's $k$-mer counting results are similar to those of KrakenUniq \citep{krakenUniq} with regard to the selected organisms. Genestrip also supports unique $k$-mer counting with exact counts and with low memory overhead. 
 
-Genestrip is written in Java, has a small code base and supports command-line-based as well as API-based usage. Based on the Java Virtual Machine it can be executed on many modern operating systems including Linux, Windows and iOS.
+Genestrip is written in Java, has a small code base and supports command-line-based as well as API-based usage. Based on the Java Virtual Machine it can be executed on  modern operating systems including Linux, Windows and iOS.
 
 \section{Methods}\label{methods}
 
@@ -95,7 +95,7 @@ Genestrip generates a database for a selected group of organisms primarily via
 genomes from the RefSeq \citep{refseq} but genomes from Genbank and additional genomic files may be included on top or instead.
 To better handle the complexity of the generation process, it employs a goal-oriented approach in similarity to Make \citep{feldman1979make}: Upon access, each goal returns a file or an object in main memory. A goal is only executed if its result is not yet available. Goal execution may involve the access of other goals which turn, may trigger their execution. Respective goal dependencies are explicitly specified in terms of a directed acyclic graph. 
 
-Figure \ref{f:goalgraph} depicts Genestrip's goal dependency graph: Several goals (prefixed with \verb|d:|) revolve around automatically downloading all necessary files of the RefSeq, Genbank and other data from the NCBI's Web site \citep{Sayers:2025aa}.
+Figure \ref{goalgraph} depicts Genestrip's goal dependency graph: Several goals (prefixed with \verb|d:|) revolve around automatically downloading all necessary files of the RefSeq, Genbank and other data from the NCBI's Web site \citep{Sayers:2025aa}.
 When required for database generation, the goal \verb|refseqfna| downloads the RefSeq genomes belonging to a matching category as a collection of zip files. The collection is one of NCBI's  standard offerings. By consulting the goal \verb|checksummap|, \verb|refseqfna| also performs an MD5 fingerprint check after each zip file download to ensure data integrity and reattempts the download in case the initial file appears to be corrupted. 
  
  Several object goals (prefixed with \verb|o:|) load files and create data structures or compute results in main memory for further processing. Most file goals (prefixed with \verb|f:|) write computational results to files.
@@ -834,13 +834,13 @@ height = 0.45\textwidth,
 
 As mentioned in Section \ref{background}, Genestrip's focus is on generating and using potentially small but also deeper $k$-mer databases for accurate metagenomic analysis of selected organisms interest. This implies that users must be empowered to flexibly create new databases -- ideally on their own devices. We therefore put focus on the performance of database generation as well as of read classification.
 
-The following experiments were all performed on a single, modern desktop computer with 32GB RAM, 10 CPU cores and a 2TB solid state disk. We ensured that as few competing processes as possible where running during the experiments.\footnote{Hardware: MacBook Pro, Apple M1 Pro Chip and macOS Version 15.5, Java Virtual Machine: JSE Oracle 17.0.7 (arm64) configured with max. allowed heap size of 24GB}
+The following experiments were all performed on a single, modern desktop computer with 32GB RAM, 10 CPU cores and a 2TB solid state disk. We ensured that as few competing processes as possible where running during the experiments.\footnote{Hardware: MacBook Pro, Apple M1 Pro Chip and macOS Version 15.5, Java Virtual Machine: JSE Oracle 17.0.7 (arm64).}
 
 \subsection{Database Generation}
 
 Table \ref{dbperf} describes six Genestrip databases used for assessing database generation performance. They refer to several categories and were designed with a potential use in medicine \citep{mehlhorn2012parasiten} or agriculture \citep{hillebrand1998rebschutz} in mind. Table \ref{dbperf} reports execution statistics for the generation of those databases from scratch via the goal \texttt{db} from Figure \ref{goalgraph}. As can be seen, the execution times and the maximum RAM remain moderate in all of the cases. (Times for downloading any of the necessary RefSeq or Genbank files from the NCBI are not included. Related files were downloaded upfront via the goals \texttt{refseqfna} and \texttt{fastasgenbankdl} from Figure \ref{goalgraph.) 
 
-The varying executions times in Table \ref{dbperf} are rooted in the size of the database itself but also by the RefSeq category, whereby "Bacteria" is the largest of the five ones used with genomes in over 2800 zip files with a total disk size of over 550 GB (in Release 230). 
+The varying executions times in Table \ref{dbperf} are rooted in the size of the database itself but also by the RefSeq category, whereby "Bacteria" is the largest of the five ones used with genomes in over 2,800 zip files with a total disk size of over 550 GB (in RefSeq Release 230). 
 The zip files must all be screened during each goal from Table \ref{goals} but the update phase, i.e. the goal \texttt{updatedb}, dominates the execution time.
 
 \begin{table}[h]
@@ -853,7 +853,7 @@ DB Name & Category & Description & Species and below \\
 \texttt{tb} & Bacterial & See Section \ref{mdbtb} &  1,119\\
 \texttt{protozoa} & Protozoa & Comprehensive collection of protozoans from the RefSeq which are pathogenic to humans \citep{mehlhorn2012parasiten} & 108 \\
 \texttt{vineyard} & Fungi & Fungal infections from the RefSeq and Genbank threatening grapevine plants \citep{hillebrand1998rebschutz} & 11 \\
-\texttt{parasites} & Invertebrate & Comprehensive collection of parasitic invertebrates from the RefSeq which are pathogenic to humans \citep{mehlhorn2012parasiten} & \\
+\texttt{parasites} & Invertebrate & Comprehensive collection of parasitic invertebrates from the RefSeq which are pathogenic to humans \citep{mehlhorn2012parasiten} & 77 \\
 \end{tabular}
 
 \caption{Background on Genestrip databases used for assessing database generation performance.}\label{dbdesc}
@@ -867,11 +867,11 @@ DB Name & Stored $k$-mers & Disk-Size (MB) & Exec. Time (min) & Max. RAM (MB) \\
 \texttt{cv\_g} & 374,412,041 & 5,370 & 35 & 7,341 \\
 \texttt{hv\_g} &   3,865,987 & 53 & 4 & 1,407 \\
 \texttt{tb} & 487,834,649 & 6,008 & 644 & 17,321 \\
-\texttt{protozoa} & 1,279,065,780 & 15915 & 88 & 20,353 \\
+\texttt{protozoa} & 1,279,065,780 & 15,915 & 88 & 20,353 \\
 \texttt{vineyard} & 267,898,449 & 3,430 & 24 & 6,019 \\
-\texttt{parasites} & & & & \\
+\texttt{parasites} & 1,629,142,488 & 19,761 & 451 & 25,848 \\
 \end{tabular}
-\caption{Execution statistics for generating the six Genestrip databases from \label{dbdesc} using 9 threads.}\label{dbperf}
+\caption{Execution statistics for generating the six Genestrip databases from \label{dbdesc} using 9 threads and a maximum allowed heap size of 28GB.}\label{dbperf}
 \end{table}
 
 \subsection{Read Classification}
