@@ -332,9 +332,7 @@ table[col sep=semicolon, header=true, x = {reads 2}, y = {reads 1} , meta=rank] 
 \end{figure}
 
 As real-world examples, we applied the two databases to short-read fastq files from DNA-sequencing human saliva of five different donors. 
-Table \ref{errorsviral} shows basic statistics of the fastq files and states the number of datapoints -- i.e. the taxons for which at least one $k$-mer was counted or read was classified via either KrakenUniq or Genestrip. The last two columns indicate where results for datapoints differed by at least one between KrakenUniq and Genestrip. 
-
-We analyzed the cause of five of the differences for each fastq file: In all of these cases the differences originated from differences in to the underlying databases. The reason for the differing databases has been mentioned above. In summary these results mutually solidify the correctness of both KrakenUniq's and Genestrip's analysis procedure. 
+Table \ref{errorsviral} shows basic statistics of the fastq files and states the number of datapoints -- i.e. the taxons for which at least one $k$-mer was counted or read was classified via either KrakenUniq or Genestrip. The last two columns indicate where results for datapoints differed by at least one between KrakenUniq and Genestrip. As can be seen, the very most of the datapoints are identical.\footnote{We also analyzed the cause of five randomly selected differences for each fastq file: In all of these cases they could be traced back to the numbers of $k$-mers stored per taxon in the underlying databases. (The cause of the differing databases has already been explained in the context of Figure \ref{viraldbscatter}.)} These results mutually solidify the correctness of both KrakenUniq's and Genestrip's read analysis procedure. 
 
 \begin{table}[h]
 \centering
@@ -351,7 +349,7 @@ We analyzed the cause of five of the differences for each fastq file: In all of 
 %{ \csvcoli & \csvcoliii & \csvcoliv & \csvcolvi & (\csvcolvii) & \csvcolviii & (\csvcolix) }
 %
 \end{tabular}
-\caption{Number of differences for $k$-mer counts and classified reads for real-world fastq files from DNA-sequencing five human saliva samples analyzed using the KrakenUniq viral database $\texttt{cv\_ku}$ and the Genestrip viral database $\texttt{cv\_g}$ as in Figure \ref{viraldbscatter}.}\label{errorsviral}
+\caption{Number of differences per number of datapoints for $k$-mer counts and classified reads based on real-world fastq files from DNA-sequencing five human saliva samples analyzed using the KrakenUniq viral database $\texttt{cv\_ku}$ and the Genestrip viral database $\texttt{cv\_g}$ as in Figure \ref{viraldbscatter}. A datapoint corresponds to a taxon for which at least one $k$-mer was counted or one read was classified via either KrakenUniq or Genestrip.}\label{errorsviral}
 \end{table}
 
 Figure \ref{viralscatter} shows scatter plots of $k$-mer counts and read counts from KrakenUniq and Genestrip on a logarithmic scale for a fastq file 6. As can be seen, the results are completely identical.
@@ -607,18 +605,18 @@ As shown in Table \ref{errorscvhv}, the error rates for $k$-mer counts are zero 
 \begin{table}[h]
 \centering
 \footnotesize
-\begin{tabular}{r|rr|rr|rr|rr}
+\begin{tabular}{r|r|rr|rr|rr|rr}
 
-\multicolumn{1}{c|}{\# $f$} &
+\multicolumn{1}{c|}{\# $f$} & \multicolumn{1}{c|}{Data-} &
 \multicolumn{4}{c|}{$err_{f,\texttt{cv\_ku}}(\texttt{hv\_ku})$ for} &
 \multicolumn{4}{c}{$err_{f,\texttt{cv\_g}}(\texttt{hv\_g})$ for}\\
-    & $k$-mers & (Std. Dev.) & Cl. Reads & (Std. Dev.) & 
+ & points & $k$-mers & (Std. Dev.) & Cl. Reads & (Std. Dev.) & 
       $k$-mers & (Std. Dev.) & Cl. Reads & (Std. Dev.)
 %no; key; reads; gs read len;
 %gs errs; gs kmer err; gs kmer err std dev; gs read err; gs read err std dev;
 %%ku errs; ku kmer err; ku kmer err std dev; ku read err; ku read err std dev;
 \csvreader[separator=semicolon,before filter=\\\hline]{\csvpath results/viral_human_virus_errors_gs_ku_comp.csv}{}
-{ \csvcoli & \csvcolxi & (\csvcolxii) & \csvcolxiii & (\csvcolxiv) & \csvcolvi & (\csvcolvii)  & \csvcolviii & (\csvcolix)}
+{ \csvcoli & & \csvcolxi & (\csvcolxii) & \csvcolxiii & (\csvcolxiv) & \csvcolvi & (\csvcolvii)  & \csvcolviii & (\csvcolix)}
 \end{tabular}
 \caption{Mean absolute percentage error of $k$-mer counts and read counts for five "human saliva" fastq files between the complete viral database $cv$ and the "human virus only" database $hv$ where $cv$ and $hv$ both belong to KrakenUniq or Genestrip, respectively. Standard deviations for the errors are included in parentheses.}\label{errorscvhv}
 \end{table}
