@@ -331,32 +331,27 @@ table[col sep=semicolon, header=true, x = {reads 2}, y = {reads 1} , meta=rank] 
 \caption{Scatter plots of $k$-mers (a) and classified reads (b) for a simulated viral fastq file from \cite{Wu:2024aa} analyzed with KrakenUniq and Genestrip using the viral databases  \texttt{cv\_ku} and  \texttt{cv\_g} from Figure \ref{viraldbscatter} (based on a logarithmic scale with 1 added to each value in order to enable the representation of zero-counts).}\label{viralscatter}
 \end{figure}
 
-As real-world examples, we applied the two databases to short-read fastq files from DNA-sequencing human saliva of five different donors. We measured the mean absolute percentage error of $k$-mer counts for these "human saliva" fastq files according to the following error criterion: 
-Let $S_d$ be the list of all \taxon s in a database $d$.
-The mean absolute percentage error $err_{f,d}(e)$ for a database $e$ with respect to fastq file $f$ and database $d$ is\footnote{The term "$k_{t,f,d} + 1$" in the formula includes a Laplace correction to avoid a potential division by zero.}
-\begin{equation}
-\label{err}
-err_{f,d}(e) := 100 / | S_{d} \cap S_{e} | \cdot \sum_{t \in S_{d} \cap S_{e}} |k_{t,f,d} - k_{t,f,e}| / (k_{t,f,d} + 1)	
-\end{equation}
-Analogously, we also measured the error with regard to the counts of classified reads.
+As real-world examples, we applied the two databases to short-read fastq files from DNA-sequencing human saliva of five different donors. 
+Table \ref{errorsviral} shows basic statistics of the fastq files and states the number of datapoints -- i.e. the taxons for which at least one $k$-mer was counted or read was classified via either KrakenUniq or Genestrip. The last two columns indicate where results for datapoints differed by at least one between KrakenUniq and Genestrip. 
 
-As shown in Table \ref{errorsviral} the error rates are .... These results mutually solidify the correctness analysis results from KrakenUniq and Genestrip.
+We analyzed the cause of five of the differences for each fastq file: In all of these cases the differences originated from differences in to the underlying databases. The reason for the differing databases has been mentioned above. In summary these results mutually solidify the correctness of both KrakenUniq's and Genestrip's analysis procedure. 
 
 \begin{table}[h]
 \centering
 \small
-\begin{tabular}{r|r|r|rr|rr}
+\begin{tabular}{r|r|r|rr|rr|rr}
 \multicolumn{1}{c|}{\# $f$ } & \multicolumn{1}{c|}{Reads} & \multicolumn{1}{c|}{Avg. BPs} &
-\multicolumn{2}{c|}{$err_{f,\texttt{cv\_ku}}(\texttt{cv\_g})$ (Std. Dev.)} &
-\multicolumn{2}{c}{$err_{f,\texttt{cv\_ku}}(\texttt{cv\_g})$ (Std Dev.)} \\
-\multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{/ Read} &
-\multicolumn{2}{c|}{for $k$-mers} &
-\multicolumn{2}{c}{for Class. Reads}
-\csvreader[separator=semicolon,before filter=\\\hline]{\csvpath results/viral_viral_db_errors_gs_ku_comp.csv}{}
-{ \csvcoli & \csvcoliii & \csvcoliv & \csvcolvi & (\csvcolvii) & \csvcolviii & (\csvcolix) }
-
+\multicolumn{2}{c|}{Datapoints} &
+\multicolumn{2}{c|}{Differing $k$-mers Counts (\%)} &
+\multicolumn{2}{c}{Differing Cl. Read Counts (\%)} \\
+%\multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{/ Read} &
+%\multicolumn{2}{c|}{for $k$-mers} &
+%\multicolumn{2}{c}{for Class. Reads}
+%\csvreader[separator=semicolon,before filter=\\\hline]{\csvpath results/viral_viral_db_errors_gs_ku_comp.csv}{}
+%{ \csvcoli & \csvcoliii & \csvcoliv & \csvcolvi & (\csvcolvii) & \csvcolviii & (\csvcolix) }
+%
 \end{tabular}
-\caption{Mean absolute percentage error of $k$-mer counts and read counts for real-world fastq files from DNA-sequencing five human saliva samples analyzed using the KrakenUniq viral database $\texttt{cv\_ku}$ and the Genestrip viral database $\texttt{cv\_g}$ as in Figure \ref{viraldbscatter}. Standard deviations for the errors are included in parentheses.}\label{errorsviral}
+\caption{Number of differences for $k$-mer counts and classified reads for real-world fastq files from DNA-sequencing five human saliva samples analyzed using the KrakenUniq viral database $\texttt{cv\_ku}$ and the Genestrip viral database $\texttt{cv\_g}$ as in Figure \ref{viraldbscatter}.}\label{errorsviral}
 \end{table}
 
 Figure \ref{viralscatter} shows scatter plots of $k$-mer counts and read counts from KrakenUniq and Genestrip on a logarithmic scale for a fastq file 6. As can be seen, the results are completely identical.
@@ -597,7 +592,14 @@ table[col sep=semicolon, header=true, x = {reads 1}, y = {reads 2} , meta=rank] 
  
 In addition to the results from Figure \ref{krakenuniqsalivascatter}, we measured the mean absolute percentage error of $k$-mer counts for the five "human saliva" fastq files from Section \ref{correctness} between the complete viral database and the "human virus only" database in a variant where both databases belong to KrakenUniq and another variant where they both belong to Genestrip.
 
-More precisely, we used the mean absolute percentage error $err_{f,d}(e)$ from Equation \ref{err}).  However, this time we let $S_d$ be the list of all \taxon s \emph{on the rank species or below in a respective database $d$} because, as discussed in the context of Figure \ref{viraldbscomp} and \ref{krakenuniqsalivascatter} we cannot expect $k$-mer counts and classified reads to be close between $d$ and a corresponding smaller database $e$ on higher taxonomic ranks.
+More precisely, we used the following error measure:
+Let $S_d$ be the list of all \taxon s \emph{on the rank species or below} in a database $d$.
+The mean absolute percentage error $err_{f,d}(e)$ for a database $e$ with respect to fastq file $f$ and "ground truth" database $d$ is\footnote{The term "$k_{t,f,d} + 1$" in the formula includes a Laplace correction to avoid a potential division by zero.}
+\begin{equation}
+\label{err}
+err_{f,d}(e) := 100 / | S_{d} \cap S_{e} | \cdot \sum_{t \in S_{d} \cap S_{e}} |k_{t,f,d} - k_{t,f,e}| / (k_{t,f,d} + 1)	
+\end{equation}
+ Note that we limit the taxons to the rank species or below because, as discussed in the context of Figure \ref{viraldbscomp} and \ref{salivascatter} we cannot expect $k$-mer counts and classified reads to be close between $d$ and a corresponding smaller database $e$ on higher taxonomic ranks.
 Analogously, we also measured the error with regard to the counts of classified reads. 
 
 As shown in Table \ref{errorscvhv}, the error rates for $k$-mer counts are zero under Genestrip, and for read counts, they are considerably lower than under KrakenUniq across all examples. These results solidify the usefullness of Genestrip analysis results in the context of smaller databases.
@@ -838,7 +840,7 @@ The following experiments were all performed on a single, modern desktop compute
 
 \subsection{Database Generation}
 
-Table \ref{dbperf} describes six Genestrip databases used for assessing database generation performance. They refer to several categories and were designed with a potential use in medicine \citep{mehlhorn2012parasiten} or agriculture \citep{hillebrand1998rebschutz} in mind. Table \ref{dbperf} reports execution statistics for the generation of those databases from scratch via the goal \texttt{db} from Figure \ref{goalgraph}. As can be seen, the execution times and the maximum RAM remain moderate in all of the cases. (Times for downloading any of the necessary RefSeq or Genbank files from the NCBI are not included. Related files were downloaded upfront via the goals \texttt{refseqfna} and \texttt{fastasgenbankdl} from Figure \ref{goalgraph.) 
+Table \ref{dbperf} describes six Genestrip databases used for assessing database generation performance. They refer to several categories and were designed with a potential use in medicine \citep{mehlhorn2012parasiten} or agriculture \citep{hillebrand1998rebschutz} in mind. Table \ref{dbperf} reports execution statistics for the generation of those databases from scratch via the goal \texttt{db} from Figure \ref{goalgraph}. As can be seen, the execution times and the maximum RAM remain moderate in all of the cases. (Times for downloading any of the necessary RefSeq or Genbank files from the NCBI are not included. Related files were downloaded upfront via the goals \texttt{refseqfna} and \texttt{fastasgenbankdl} from Figure \ref{goalgraph}.) 
 
 The varying executions times in Table \ref{dbperf} are rooted in the size of the database itself but also by the RefSeq category, whereby "Bacteria" is the largest of the five ones used with genomes in over 2,800 zip files with a total disk size of over 550 GB (in RefSeq Release 230). 
 The zip files must all be screened during each goal from Table \ref{goals} whereby the update phase, i.e. the goal \texttt{updatedb}, dominates the execution time.
