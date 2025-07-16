@@ -193,7 +193,7 @@ Column Name & Description  \\
 \caption{Extract of columns from Genestrip's read analysis reports}\label{csvcolumns}
 \end{table}
 
- Genestrip introduces a novel, derived statistical measure -- the \emph{$k$-mer consistency ratio} -- as explained in the following: Given $k_{t,f,d}$, the a-priori probability $p(t\ |\ k_{t,f,d})$ of a unique $k$-mer from $d$ belonging to $t$ to occur \emph{at least once} in $f$\ is approximately:\footnote{The approximation is based on the assumption that all $k$-mers in $d$ belonging to $t$ are equally likely to be found in $f$ (such as reported in \cite{nanoporeticks}). However, this assumption does not hold when special DNA library preparation protocols like 16S or 18S amplification were used \citep{Wensel:2022aa,16srrnause}.}
+ Genestrip introduces a novel, derived statistical measure -- the \emph{$k$-mer consistency ratio} -- as explained in the following: Given $k_{t,f,d}$, the a-priori probability $p(t\ |\ k_{t,f,d})$ of a unique $k$-mer from $d$ belonging to $t$ to occur \emph{at least once} in $f$\ is approximately:\footnote{The approximation is based on the assumption that all $k$-mers in $d$ belonging to $t$ are equally likely to be found in $f$ (such as reported in \cite{nanoporeticks}). However, this assumption does not hold when special DNA library preparation protocols like 16S or 18S amplification were used \citep{Wensel:2022aa,16srrnause}. In such cases the $k$-mer consistency ratio must therefore be disregarded.}
 \begin{equation}
 \label{ptk}
 p(t\ |\ k_{t,f,d}) = 1 - (1 - 1/u_{t,d})^{k_{t,f,d}}
@@ -628,6 +628,7 @@ As shown in Table \ref{errorscvhv}, the error rates for $k$-mer counts are zero 
 \end{table}
 
 \subsection{Example: Tick-Borne Bacterial Pathogens}
+\label{tickborne}
 
 This section presents the detection of tick-related bacterial pathogens as an example application of Genestrip. We compare the very large standard database \texttt{MicrobialDB} available for KrakenUniq\footnote{See "MicrobialDB" under \url{https://benlangmead.github.io/aws-indexes/k2}} against a relatively small Genestrip database \texttt{tb} with high genomic coverage regarding the organisms of interest. The results aim to show that a small but genomically deeper database like \texttt{tb} can lead to higher recall than KrakenUniq's standard database while also improving precision.
 
@@ -645,7 +646,7 @@ The generation of \texttt{tb} revealed that its included genomes from the RefSeq
 %Finally, 2.891 $k$-mers landed on the taxonomic root because of plasmids included in the bacterial part of RefSeq that overlap with the genomes of the selected genuses.
 
 \subsubsection{Tick Analysis}
-
+\label{tickanalysis}
 We applied \texttt{MicrobialDB} and \texttt{tb} to the eight fastq files from \cite{nanoporeticks} mentioned above. The fastq files contain long reads from sequencing homogenized field-collected ticks using Nanopore technology. 
 %Four of the files had been produced using an enrichment %technology that drops reads during base calling if they %are likely from the host \citep{nanoporeticks}.
 
@@ -837,12 +838,14 @@ height = 0.45\textwidth,
 \end{figure}
 
 \subsection{Performance}
+\label{performance}
 
 As mentioned in Section \ref{background}, Genestrip's focus is on generating and using potentially small but also deep $k$-mer databases for accurate metagenomic analysis of selected organisms interest. This implies that users must be empowered to flexibly create new databases -- ideally on their own devices. We therefore put focus on the performance of database generation as well as on the performance of read classification.
 
 The following experiments were all performed on a single, modern desktop computer with 32GB RAM, 10 CPU cores and a 2TB solid state disk. We ensured that as few competing processes as possible where running during the experiments.\footnote{Platform details: MacBook Pro, Apple M1 Pro Chip and macOS Version 15.5, Java Virtual Machine: JSE Oracle 17.0.7 (arm64).}
 
 \subsection{Database Generation}
+\label{genperformance}
 
 Table \ref{dbperf} describes six Genestrip databases used for assessing database generation performance. They refer to several categories and were designed with a potential use in medicine or agriculture in mind. Table \ref{dbperf} reports execution statistics for the generation of those databases from scratch via the goal \texttt{db} from Figure \ref{goalgraph}. As can be seen, the execution times and the maximum RAM remain moderate in all of the cases. (Times for downloading any of the necessary RefSeq or Genbank files from the NCBI are not included. Related files were downloaded upfront via the goals \texttt{refseqfna} and \texttt{fastasgenbankdl} from Figure \ref{goalgraph}.) 
 
@@ -885,22 +888,38 @@ DB Name & Stored $k$-mers & Disk-Size (MB) & Exec. Time (min) & Max. RAM (MB) \\
 To assess Genestrips's performance for $k$-mer counting, we compared its analysis time and memory use with 
 corresponding analysis runs using KrakenUniq.
 
-\section{Conclusion}\label{discussion}
+\section{Summary and Discussion}\label{discussion}
 
-\subsection{Summary}
+%\subsection{Summary}
 
-\subsection{Discussion}
+We have presented Genestrip - a bio informatics tool for (unique) $k$-mer counting, read classification and fastq file filtering. A major improvement over existing systems is the low memory consumption at data base generation time and at read analysis time while still maintaining very high accuracy. To achieve this, Genestrip facilitates and suggests the generation of small databases that cover the genomes of a collection of organisms of interest. The update phase during database generation ensures that the correct lowest common ancestors for $k$-mer are computed by \emph{also considering genomes of organisms whose $k$-mers are not to be stored in the database}. Normally, Genestrip considers all genomes from a corresponding category of the RefSeq for this purpose.
 
-Advantages of goal-oriented approach versus the well-established pipelines concept in bio informatics:
-\begin{enumerate}
-  \item A goal-based approach implicitly the structures the code of bio informatics tool a via light-wight framework which helps to break down complexity and separates computational tasks.
-  \item Goals form software component that enable or ease API-based reuse. I.e., new goal graphs can be flexibly put together to fulfill new computational purposes.
-  \item As opposed to pipelines, goal graphs do not have to be linear and enable computational degrees of freedom such as an automated parallel execution of sub-goals such as with possible with Gradle \citep{gradle}.
-  \item The dependency analysis at run time automatically determines an efficient execution order of goals. This also implies that just the necessary goals to attain a final result will be executed. This frees a bio informatics developer from fixing large computational steps manually.
-  \item Object goals foster in memory transfer and use of intermediate computational results without having to write them to files or having to establish a related file format.
-  \item A goal dependency graph can be created at system setup and is self-documenting: E.g. the graph from Figure \ref{} was generated fully automatically via Genestrip's code.
-  \item A single command line interface can be used to run different goals via name which avoids a multitude of potentially incoherent scripts.
-\end{enumerate}
+The results from Section \ref{correctness indicate that Genestrip attains the same type of correctness as KrakenUniq in terms of database structure, $k$-mer counting and read classification given that the databases of both system are filled with same set genomes. But more importantly Section \ref{accuracy} highlights that Genestrip sustains its level accuracy when changing from a comprehensive database to small database, where only a subset of the genomes from corresponding RefSeq category were included. In contrast, a KrakenUniq database fails to achieve this accuracy for a small database because KrakenUniq's lowest common ancestor computation does not ever consider genomes outside of a database.
+
+Section \ref{tickborne} exemplifies the usefulness of Genestrip's "small databases" in the context of tick surveillance where ticks are screened for a collection of well-known bacterial pathogens. The resulting database \texttt{tb} has disk size less than 6 GB and can be used for analysis on any modern PC. Still, Genestrip offers the exactness of KrakenUniq in terms of $k$-mer counting and unique $k$-mer analysis and read classification for the chosen genuses. As opposed to Kraken 2, for example, it also eliminates the potential for false positive $k$-mer counts because Genestrip does not compress $k$-mers under loss of information. This renders our tool suitable in fields such as medical diagnostics where precision of $k$-mer counting and read classification is paramount.
+
+The deliberate focus on a particular set of genuses or species allows for more genomes to be included for related organisms while the resulting database may still remain small. E.g., the tick-related database \texttt{tb} from Section \ref{mdbtb} contains 1.83 times more genomes for the chosen genuses than the latest publicly available large database \texttt{MicrobialDB} for KrakenUniq. As \texttt{tb} is deeper than \texttt{MicrobialDB} in this respect, it also tends to achieve better recall when analyzing tick related fastq files without loss of precision. We have presented and discussed corresponding results as part of Section \ref{tickanalysis}.
+
+Regarding performance we have examined both database generation and its use: Section \ref{genperformance} has shown that Genestrip empowers users to flexibly create new databases on regular machines in just a few hours. As described in Table \ref{dbdesc} we created databases with different applications in mind where the generation of \texttt{tb} took the longest with less than 11 hours while main memory consumption remained below 30 GB in all cases. 
+
+Let us contrast Genestrip's database generation performance with the corresponding resources required under KrakenUniq: \cite{Nasko:2018aa} state that already in 2018 generating a full bacterial database for Kraken 1 and equivalently KrakenUniq from the RefSeq "required ca. 2.5 TB of RAM and ca. 11 days" on a suitable computer. But since then, the RefSeq's number of prokaryotic genomes alone has gone up by a factor of 4.5 to over 38 Mio. \citep{10.1093/nar/gkae1038}. The additional growth of the RefSeq is also a likely reason why \texttt{MicrobialDB} has not been updated anymore since 2023 because ultra large main memory and extremely high compute power would be required for this. All in all this suggests that $k$-mer databases with very comprehensive coverage (such as by including all of the RefSeq category "Bacteria") have approached a "dead-end" -- at least when lossless $k$-mer storing is mandated.
+
+\textbf{TODO: Runtime performance}
+
+\textbf{TODO: Future work}
+
+%\subsection{Discussion}
+%
+%Advantages of goal-oriented approach versus the well-established pipelines concept in bio informatics:
+%\begin{enumerate}
+%  \item A goal-based approach implicitly the structures the code of bio informatics tool a via light-wight framework which helps to break down complexity and separates computational tasks.
+%  \item Goals form software component that enable or ease API-based reuse. I.e., new goal graphs can be flexibly put together to fulfill new computational purposes.
+%  \item As opposed to pipelines, goal graphs do not have to be linear and enable computational degrees of freedom such as an automated parallel execution of sub-goals such as with possible with Gradle \citep{gradle}.
+%  \item The dependency analysis at run time automatically determines an efficient execution order of goals. This also implies that just the necessary goals to attain a final result will be executed. This frees a bio informatics developer from fixing large computational steps manually.
+%  \item Object goals foster in memory transfer and use of intermediate computational results without having to write them to files or having to establish a related file format.
+%  \item A goal dependency graph can be created at system setup and is self-documenting: E.g. the graph from Figure \ref{} was generated fully automatically via Genestrip's code.
+%  \item A single command line interface can be used to run different goals via name which avoids a multitude of potentially incoherent scripts.
+%\end{enumerate}
 
 \subsection{Future Work}
 
