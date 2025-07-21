@@ -240,7 +240,7 @@ To assess Genestrips's correctness with regard to $k$-mer counting and read clas
 As part of our test procedure, we created database contents under both systems that were as identical as possible in terms of their genomic basis and their stored $k$-mers. 
 We then applied the created databases to suitable fastq files in order to compare the results between both systems. Highly similar results from this check mutually solidify the correctness of both systems since they had been developed completely independently. (But besides, Genestrip's correctness is also supported via extensive automated functional tests with high test coverage as part of its code base.)
 
-To create the databases, we chose all RefSeq genomes from the category "Viral" on the assembly level "complete genome". Figure \ref{viraldbscatter} compares the structure of the two databases produced with KrakenUniq (with 373,250,262 $k$-mers in total) and Genestrip (with 374,412,041 $k$-mers in total). The databases are nearly identical with regard to the number of $k$-mers stored per \taxon\ with 15 genomes and respective \taxon s occurring in KrakenUniq but not in Genestrip and 33 genomes vice versa.\footnote{The differences between the sets of selected genomes are caused by different approaches on how the genomes are preselected and downloaded by KrakenUniq and Genestrip, respectively. They do not constitute erroneous behavior of either system.} The slightly differing sets of genomes result in 158 differences in $k$-mers stored per \taxon . A large part of the differences is a consequence of the necessary lowest common ancestor update on stored $k$-mers (see Section \ref{background}). In the following, we name the two databases \texttt{cv\_ku} and \texttt{cv\_g} with regard to KrakenUniq and Genestrip, respectively.
+To create the databases, we chose all RefSeq genomes from the category "Viral". Figure \ref{viraldbscatter} compares the structure of the two databases produced with KrakenUniq (with 373,250,262 $k$-mers in total) and Genestrip (with 374,412,041 $k$-mers in total). The databases are nearly identical with regard to the number of $k$-mers stored per \taxon\ with 15 genomes and respective \taxon s occurring in KrakenUniq but not in Genestrip and 33 genomes vice versa.\footnote{The differences between the sets of selected genomes are caused by different approaches on how the genomes are preselected and downloaded by KrakenUniq and Genestrip, respectively. They do not constitute erroneous behavior of either system.} The slightly differing sets of genomes result in 158 differences in $k$-mers stored per \taxon . A large part of the differences is a consequence of the necessary lowest common ancestor update on stored $k$-mers (see Section \ref{background}). In the following, we name the two databases \texttt{cv\_ku} and \texttt{cv\_g} with regard to KrakenUniq and Genestrip, respectively.
 
 \begin{figure}[h]%
 \centering
@@ -340,23 +340,24 @@ table[col sep=semicolon, header=true, x = {reads 2}, y = {reads 1} , meta=rank] 
 \end{figure}
 
 As real-world examples, we applied the two databases to short-read fastq files from DNA-sequencing human saliva of five different donors. 
-Table \ref{errorsviral} shows statistics of the fastq files and states the number of data points -- i.e. the taxons for which at least one $k$-mer was counted or read was classified via either KrakenUniq or Genestrip. The last two columns indicate where results for a taxon differed by at least one between KrakenUniq and Genestrip. As can be seen, the counts of the very most $k$-mers are identical. The read counts differ more frequently: This is partly an effect of underlying differing $k$-er counts and partly due to subtle differences in the read classification algorithms. 
+Table \ref{errorsviral} shows statistics of the fastq files and states the number of data points -- i.e. the taxons for which at least one $k$-mer was counted or read was classified via either KrakenUniq or Genestrip. The last two columns indicate where results for a taxon differed by at least one between KrakenUniq and Genestrip. As can be seen, the counts of the very most $k$-mers are identical. The read counts differ more frequently: This is an effect of underlying differing $k$-er counts that impacts the read classification. 
 %\footnote{We also analyzed the cause of five randomly selected differences for each fastq file: In all of the cases the differences could be traced back to differing numbers of $k$-mers stored per corresponding taxon in the underlying databases. (The cause of the differing databases has already been explained in the context of Figure \ref{viraldbscatter}.)}
 
 \begin{table}[h]
 \centering
 \small
-\begin{tabular}{r|r|r|rr|rr|rr}
+\begin{tabular}{r|r|r|r|rr|rr}
 \multicolumn{1}{c|}{\# $f$ } & \multicolumn{1}{c|}{Reads} & \multicolumn{1}{c|}{Avg. BPs} &
-\multicolumn{2}{c|}{Data Points} &
-\multicolumn{2}{c|}{Differing $k$-mers Counts (\%)} &
-\multicolumn{2}{c}{Differing Read Counts (\%)} \\
-%\multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{/ Read} &
-%\multicolumn{2}{c|}{for $k$-mers} &
-%\multicolumn{2}{c}{for Class. Reads}
-%\csvreader[separator=semicolon,before filter=\\\hline]{\csvpath results/viral_viral_db_errors_gs_ku_comp.csv}{}
-%{ \csvcoli & \csvcoliii & \csvcoliv & \csvcolvi & (\csvcolvii) & \csvcolviii & (\csvcolix) }
-%
+\multicolumn{1}{c|}{Data} &
+\multicolumn{2}{c|}{Differing} &
+\multicolumn{2}{c}{Differing} \\
+\multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} &
+\multicolumn{1}{c|}{Points} &
+\multicolumn{2}{c|}{$k$-mers Counts (\%)} &
+\multicolumn{2}{c}{Read Counts (\%)} 
+\csvreader[separator=semicolon,before filter=\\\hline]{\csvpath results/viral_viral_db_errors_gs_ku_comp.csv}{}
+{ \csvcoli & \csvcoliii & \csvcoliv & \csvcolv & \csvcolx & (\csvcolxii) & \csvcolxi & (\csvcolxiii) 
+}\\
 \end{tabular}
 \caption{Number of differences per number of data points for $k$-mer counts and read counts based on real-world fastq files from DNA-sequencing five human saliva samples analyzed using the KrakenUniq viral database $\texttt{cv\_ku}$ and the Genestrip viral database $\texttt{cv\_g}$ as in Figure \ref{viraldbscatter}. A data point corresponds to a taxon for which at least one $k$-mer was counted or one read was classified via either KrakenUniq or Genestrip.}\label{errorsviral}
 \end{table}
@@ -879,7 +880,7 @@ DB Name & Stored $k$-mers & Disk-Size (MB) & Exec. Time (min) & Max. RAM (MB) \\
 \texttt{hv\_g} &   3,865,987 & 53 & 4 & 1,407 \\
 \texttt{tb} & 487,834,649 & 6,008 & 644 & 17,321 \\
 \texttt{protozoa} & 1,279,065,780 & 15,915 & 88 & 20,353 \\
-\texttt{vineyard} & 267,898,449 & 3,430 & 24 & 6,019 \\
+\texttt{vineyard} & 663,541,745 & 7,973 & 24 & ?? \\
 \texttt{parasites} & 1,629,142,488 & 19,761 & 451 & 25,848 \\
 \end{tabular}
 \caption{Execution statistics for generating the six Genestrip databases from \ref{dbdesc} using 10 threads and a maximum allowed heap size of 28GB.}\label{dbperf}
