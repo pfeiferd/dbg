@@ -23,7 +23,7 @@
 % Workaround for faster compile without scatter plots:
 %
 \newif\ifscatter
-%\scattertrue
+\scattertrue
 
 % Enter paper title to populate PDF metadata:
 %\hypersetup{pdftitle={MGenestrip: Efficient read classification, filtering and $k$-mer counting for selected groups of species}}
@@ -148,7 +148,7 @@ Table \ref{goals} describes the most relevant goals for database generation in t
 
 Additional genomes can manually be added either to create deeper databases or else, to filter out contaminating sequences that are mistakenly included in the genome of an organism of interest. E.g. \cite{Breitwieser:2019aa} report that human DNA fragments often  contaminate bacterial genomes for various reasons whereas \cite{Lu:2018aa} discuss a pipeline to remove contaminants from genomes of eukaryotic pathogens.
 
-Regarding database ageneration, $k$-mers from contaminating sequences can be identified during the update phase: E.g., the human genome can be included via configuration in the update phase only and so, a $k$-mer from the human genome that is also found in the contaminated genome will be pushed to the lowest common ancestor taxon of both species. Still, as the human genome is employed during the update phase only, a resulting database does not include $k$-mers from the human genome (other than the ones from contaminating sequences). This ensures a small-sized database.
+Regarding database generation, $k$-mers from contaminating sequences can be identified during the update phase: E.g., the human genome can be included via configuration in the update phase only and so, a $k$-mer from the human genome that is also found in the contaminated genome will be pushed to the lowest common ancestor taxon of both species. Still, as the human genome is employed during the update phase only, a resulting database does not include $k$-mers from the human genome (other than the ones from contaminating sequences). This ensures a small-sized database.
 
 Besides $k$-mer matching and read classification, Genestrip supports filtering of fastq files via a Bloom filter in similarity to \citep{biobloom}. When generated via the goal \verb|index|, the Bloom filter gets stored in a separate file. The goal \verb|filter| loads the filter and processes fastq files accordingly. The standard configuration of the filtering rewrites a read to the output if the read contains at least one $k$-mer that is recognized by the filter since because of it, the read may belong to a selected organism of interest.
 
@@ -156,7 +156,7 @@ Of note, Genestrip allows for the exclusion of $k$-mers with low complexity know
 
 \subsection{Read Classification}
 
-The principal read classification algorithm is similar to the one from  Kraken 1 \citep{kraken}. When iterating over a read's $k$-mers, each $k$-mer is encoded as a long -- once by considering its regular order and once via its reverse complement order. For efficiency, only the larger of the two encoded values is looked up in the database. This is sufficient since, if at all, then only just the larger of two values got stored in the first place during database generation (see Section \ref{database}). 
+The principal read classification algorithm is similar to the one from  Kraken 1 \citep{kraken} and equivalently KrakenUniq. When iterating over a read's $k$-mers, each $k$-mer is encoded as a long -- once by considering its regular order and once via its reverse complement order. For efficiency, only the larger of the two encoded values is looked up in the database. This is sufficient since, if at all, then only just the larger of two values got stored in the first place during database generation (see Section \ref{database}). 
 
 Genestrip implements a multi-threading enabled classification procedure following a producer consumer pattern, where a producer thread reads a fastq file and puts reads into an in-memory queue while consumer threads pick reads from the queue in order to classify them.
 
@@ -165,7 +165,7 @@ Two types of error thresholds can be configured for read classification:
   \item The ratio or number of $k$-mers per read that must at least be found in the database and
   \item the ratio or number of $k$-mers per read that must be consistent the read's designated class taxon. A $k$-mer is consistent with a read's class taxon if the $k$-mer's taxon as stored in the database is the same or if it is a taxonomic ancestor of the class taxon.
 \end{enumerate}
-For all experiments throughout this paper both thresholds remained on the default of 1 $k$-mer which is the lowest and most sensitive level.
+The thresholds allow for playing off recall against precision in the light of potentially high error rates of a sequencing device \citep{Delahaye:2021aa,Liu-Wei:2024aa}. For all experiments throughout this paper both thresholds sticked to the default of one $k$-mer which is the most sensitive level.
 
 \subsection{Read Analysis Reports} \label{measures}
 
@@ -391,7 +391,7 @@ point meta=explicit symbolic,
             null={mark=triangle*,red} %  <-- don't add comma
         }
 ]
-table[col sep=semicolon, header=true, x = {kmers 2}, y = {kmers 1} , meta=rank] {\csvpath results/viral_saliva6_gs_ku_comp.csv};
+table[col sep=semicolon, header=true, x = {kmers 2}, y = {kmers 1} , meta=rank] {\csvpath results/viral_saliva5_gs_ku_comp.csv};
 \end{axis}
 \end{tikzpicture}
 \begin{tikzpicture}
