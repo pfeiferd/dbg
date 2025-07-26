@@ -23,7 +23,7 @@
 % Workaround for faster compile without scatter plots:
 %
 \newif\ifscatter
-\scattertrue
+%\scattertrue
 
 % Enter paper title to populate PDF metadata:
 %\hypersetup{pdftitle={MGenestrip: Efficient read classification, filtering and $k$-mer counting for selected groups of species}}
@@ -217,18 +217,7 @@ Although mathematically sound, the approach did not prove useful with respect to
 r(k_{t,f,d}, u_{t,f,d}) := u_{t,f,d} / E(k_{t,f,d},u_{t,d})
 \end{equation}
 
-
-Table \ref{ebv} gives a real-world example where the $k$-mer consistency score proves to be useful.
-
-\begin{table}[h]
-\centering
-\begin{tabular}{c|c|c|c|c|c|c}
-$t$ & $u_{t,d}$ & $k_{t,f,d}$ & $u_{t,f,d}$ & $E(k_{t,f,d},u_{t,d})$ & $r(k_{t,f,d}, u_{t,f,d})$ & $u_{t,f,d} / u_{t,d}$  \\
-  \hline
-  10376 & $139,502$ & $4,151,610$ & $120,419$ & $139,514$ & $0.8631$ & $0.8632$
-\end{tabular}
-\caption{Real extract of Genestrip analysis results for Human Gammaherpesvirus 4 from sequencing a human saliva sample: The $k$-mer count is over 34 times higher than the unique $k$-mer count but due to the short viral genome this is still close to the expectation as indicated by the $k$-mer consistency score of $0.8631$. \textbf{TODO: More examples here from saliva fast files from below}}\label{ebv}
-\end{table}
+Section \ref{consistencyratio} presents results associated with the $k$-mer consistency ratio.
 
 \section{Results}\label{results}
 
@@ -391,7 +380,7 @@ point meta=explicit symbolic,
             null={mark=triangle*,red} %  <-- don't add comma
         }
 ]
-table[col sep=semicolon, header=true, x = {kmers 2}, y = {kmers 1} , meta=rank] {\csvpath results/viral_saliva5_gs_ku_comp.csv};
+table[col sep=semicolon, header=true, x = {kmers 2}, y = {kmers 1} , meta=rank] {\csvpath results/viral_saliva3_gs_ku_comp.csv};
 \end{axis}
 \end{tikzpicture}
 \begin{tikzpicture}
@@ -412,7 +401,7 @@ point meta=explicit symbolic,
             null={mark=triangle*,red} %  <-- don't add comma
         }
 ]
-table[col sep=semicolon, header=true, x = {reads 2}, y = {reads 1} , meta=rank] {\csvpath results/viral_saliva1_gs_ku_comp.csv};
+table[col sep=semicolon, header=true, x = {reads 2}, y = {reads 1} , meta=rank] {\csvpath results/viral_saliva3_gs_ku_comp.csv};
 ]
 \end{axis}
 \end{tikzpicture}
@@ -421,7 +410,7 @@ table[col sep=semicolon, header=true, x = {reads 2}, y = {reads 1} , meta=rank] 
 \ref{legend3}
 
 \fi
-\caption{Scatter plots of $k$-mer counts (a) and read counts (b) for a fastq file \# 4 from Table \ref{errorsviral} using the viral databases from Figure \ref{viraldbscatter} (based on a logarithmic scale with 1 added to each value in order to enable the representation of zero-counts).}\label{viralscatter}
+\caption{Scatter plots of $k$-mer counts (a) and read counts (b) for a fastq file \# 3 from Table \ref{errorsviral} using the viral databases from Figure \ref{viraldbscatter} (based on a logarithmic scale with 1 added to each value in order to enable the representation of zero-counts).}\label{viralscatter}
 \end{figure}
 
 \subsection{Accuracy in the Context of Small Databases}
@@ -494,9 +483,8 @@ table[col sep=semicolon, header=true, x = {kmers 1}, y = {kmers 2} , meta=rank] 
 \caption{Scatter plots of $k$-mers per \taxon\ in a complete viral database versus a "human virus only" database both from the RefSeq created via (a) KrakenUniq and (b) Genestrip (based on a logarithmic scale with 1 added to each value in order to enable the representation of zero-counts).}\label{viraldbscomp}
 \end{figure}
 
-Figure \ref{salivascatter} (a,b) shows the scatter plots of $k$-mer counts and read counts from KrakenUniq on a logarithmic scale for the database \texttt{cv\_ku} versus \texttt{hv\_ku} when applied to the human saliva fastq file \# ?? from Section \ref{correctness}. 
-Figure \ref{salivascatter} (c,d) shows the same with respect to the Genestrip databases \texttt{cv\_g} versus \texttt{hv\_g}.
-\textbf{TODO: Briefly comment on the results, which are favorable for Genestrip...} 
+Figure \ref{salivascatter} (a,b) shows the scatter plots of $k$-mer counts and read counts from KrakenUniq on a logarithmic scale for the database \texttt{cv\_ku} versus \texttt{hv\_ku} when applied to the human saliva fastq file \# 3 from Section \ref{correctness}. 
+Figure \ref{salivascatter} (c,d) shows the same with respect to the Genestrip databases \texttt{cv\_g} versus \texttt{hv\_g}: While the small database under KrakenUniq led to massive overcounts of $k$-mers on the rank species and below, this did not happen under Genestrip. Moreover, KrakenUniq's overcounting of $k$-mers strongly influenced the counts of classified reads. Regarding Genestrip, the read counts on the species level and below are affected only by differing $k$-mer counts that occurred on the rank genus and above, however the impact remains moderate. Impressions of the other human saliva fastq files are similar (not shown). 
 
 \begin{figure}[h]%
 \centering
@@ -523,7 +511,7 @@ point meta=explicit symbolic,
             null={mark=triangle*,red} %  <-- don't add comma
         }
 ]
-table[col sep=semicolon, header=true, x = {kmers 1}, y = {kmers 2} , meta={rank}] {\csvpath results/viral_human_virus_saliva2_ku_ku_comp.csv};
+table[col sep=semicolon, header=true, x = {kmers 1}, y = {kmers 2} , meta={rank}] {\csvpath results/viral_human_virus_saliva3_ku_ku_comp.csv};
 ]
 \end{axis}
 \end{tikzpicture}
@@ -544,7 +532,7 @@ point meta=explicit symbolic,
             null={mark=triangle*,red} %  <-- don't add comma
         }
 ]
-table[col sep=semicolon, header=true, x = {reads 1}, y = {reads 2} , meta=rank] {\csvpath results/viral_human_virus_saliva2_ku_ku_comp.csv};
+table[col sep=semicolon, header=true, x = {reads 1}, y = {reads 2} , meta=rank] {\csvpath results/viral_human_virus_saliva3_ku_ku_comp.csv};
 \end{axis}
 \end{tikzpicture}
 \\
@@ -567,7 +555,7 @@ point meta=explicit symbolic,
             null={mark=triangle*,red} %  <-- don't add comma
         }
 ]
-table[col sep=semicolon, header=true, x = {kmers 1}, y = {kmers 2} , meta={rank}] {\csvpath results/viral_human_virus_saliva2_gs_gs_comp.csv};
+table[col sep=semicolon, header=true, x = {kmers 1}, y = {kmers 2} , meta={rank}] {\csvpath results/viral_human_virus_saliva3_gs_gs_comp.csv};
 ] 
 \end{axis}
 \end{tikzpicture}
@@ -589,7 +577,7 @@ point meta=explicit symbolic,
             null={mark=triangle*,red} %  <-- don't add comma
         }
 ]
-table[col sep=semicolon, header=true, x = {reads 1}, y = {reads 2} , meta=rank] {\csvpath results/viral_human_virus_saliva2_gs_gs_comp.csv};
+table[col sep=semicolon, header=true, x = {reads 1}, y = {reads 2} , meta=rank] {\csvpath results/viral_human_virus_saliva3_gs_gs_comp.csv};
 \end{axis}
 \end{tikzpicture}
 \\
@@ -597,11 +585,11 @@ table[col sep=semicolon, header=true, x = {reads 1}, y = {reads 2} , meta=rank] 
 \ref{legend5}
 
 \fi
-\caption{Scatter plots of $k$-mer counts (a, c) and read counts (b, d) for the human saliva fastq file \# ?? from Section \ref{correctness} analyzed with KrakenUniq (a, b) and Genestrip (c, d) using the complete viral databases versus the "human virus only" databases both as in Figure \ref{viraldbscomp} (based on a logarithmic scale with 1 added to each value in order to enable the representation of zero-counts).}\label{salivascatter}
+\caption{Scatter plots of $k$-mer counts (a, c) and read counts (b, d) for the human saliva fastq file \# 3 from Table \ref{errorsviral} analyzed with KrakenUniq (a, b) and Genestrip (c, d) using the complete viral databases versus the "human virus only" databases both as in Figure \ref{viraldbscomp} (based on a logarithmic scale with 1 added to each value in order to enable the representation of zero-counts).}\label{salivascatter}
 \end{figure}
 
  
-In addition to the results from Figure \ref{krakenuniqsalivascatter}, we measured the mean absolute percentage error of $k$-mer counts for all of the five "human saliva" fastq files from Section \ref{correctness} between the complete viral database and the "human virus only" database in a variant where both databases belong to KrakenUniq and another variant where they both belong to Genestrip.
+In addition to the results from Figure \ref{salivascatter}, we measured the mean absolute percentage error of $k$-mer counts for all of the five "human saliva" fastq files from Section \ref{correctness} between the complete viral database and the "human virus only" database in a variant where both databases belong to KrakenUniq and another variant where they both belong to Genestrip.
 
 More precisely, we used the following error measure:
 Let $S_d$ be the list of all \taxon s \emph{on the rank species or below} in a database $d$.
@@ -612,23 +600,24 @@ err_{f,d}(e) := 100 / | S_{d} \cap S_{e} | \cdot \sum_{t \in S_{d} \cap S_{e}} |
  Note that we limit the taxons to the rank species or below because, as discussed in the context of Figure \ref{viraldbscomp} and \ref{salivascatter} we cannot expect $k$-mer counts and read counts to be close between $d$ and a corresponding smaller database $e$ on higher taxonomic ranks.
 Analogously, we also measured the error with regard to the counts of classified reads. 
 
-As shown in Table \ref{errorscvhv}, the error rates for $k$-mer counts are zero under Genestrip, and for read counts, they are considerably lower than under KrakenUniq across all examples. These results solidify the usefullness of Genestrip analysis results in the context of smaller databases.
+As shown in Table \ref{errorscvhv}, the error rates for $k$-mer counts are zero under Genestrip, and for read counts, they are considerably lower than under KrakenUniq across all examples. These results solidify the usefulness of Genestrip analysis results in the context of smaller databases.
 
 \begin{table}[h]
 \centering
 \footnotesize
 \begin{tabular}{r|r|rr|rr|rr|rr}
 
-\multicolumn{1}{c|}{\# $f$} & \multicolumn{1}{c|}{Data-} &
+%\multicolumn{1}{c|}{\# $f$} & \multicolumn{1}{c|}{Data-} &
 \multicolumn{4}{c|}{$err_{f,\texttt{cv\_ku}}(\texttt{hv\_ku})$ for} &
 \multicolumn{4}{c}{$err_{f,\texttt{cv\_g}}(\texttt{hv\_g})$ for}\\
- & points & $k$-mers & (Std. Dev.) & Cl. Reads & (Std. Dev.) & 
+ %& points 
+ & $k$-mers & (Std. Dev.) & Cl. Reads & (Std. Dev.) & 
       $k$-mers & (Std. Dev.) & Cl. Reads & (Std. Dev.)
 %no; key; reads; gs read len;
 %gs errs; gs kmer err; gs kmer err std dev; gs read err; gs read err std dev;
 %%ku errs; ku kmer err; ku kmer err std dev; ku read err; ku read err std dev;
 \csvreader[separator=semicolon,before filter=\\\hline]{\csvpath results/viral_human_virus_errors_gs_ku_comp.csv}{}
-{ \csvcoli & & \csvcolxi & (\csvcolxii) & \csvcolxiii & (\csvcolxiv) & \csvcolvi & (\csvcolvii)  & \csvcolviii & (\csvcolix)}
+{ \csvcoli & \csvcolxi & (\csvcolxii) & \csvcolxiii & (\csvcolxiv) & \csvcolvi & (\csvcolvii)  & \csvcolviii & (\csvcolix)}
 \end{tabular}
 \caption{Mean absolute percentage error of $k$-mer counts and read counts for five "human saliva" fastq files between the complete viral database $cv$ and the "human virus only" database $hv$ where $cv$ and $hv$ both belong to KrakenUniq or Genestrip, respectively. Standard deviations for the errors are included in parentheses.}\label{errorscvhv}
 \end{table}
@@ -842,6 +831,35 @@ height = 0.45\textwidth,
 \caption{Comparison of $k$-mers counts (a) and read counts (b) between the database \texttt{MicrobialDB} (based on KrakenUniq) and \texttt{tb} (based on Genestrip) for all taxons under the genus "943" (Ehrlichia) including the genus itself. Where applicable, the black dots in (a) indicate the taxon's $k$-mer consistency ratio according to Section \ref{measures}. The counts belong to the long read fastq file of "Tick 6" from \cite{nanoporeticks} -- the same file as in Figure \ref{genusestick6}.}
 \label{ehrlichiatick6}
 \end{figure}
+
+\subsection{$k$-mer Consistency Ratio}
+\label{consistencyratio}
+
+Based on the previously introduced Genestrip databases we give anectodotal evidence of the usefulness of the $k$-mer constistency ratio as introduced in Section \ref{measures}.
+
+Table \ref{ratiosamples} shows the five hits with the highest unique $k$-mer counts $u_{t,f,d}$ for the human saliva fast file \# 2 from Table \ref{} analyzed via the databases \texttt{tb} and \texttt{cv\_g}. 
+
+The results show that the unique $k$-mer alone may be inconclusive. However, since $r()$ relates the parameters $k$, $u$ and $u$ accordingly, it tends to be aligned with bio medical expectations for true and false hits across a broad range of genome sizes as represented in the database.
+
+Respective results for the other human saliva from Table \ref{} were similar in nature (not reported here).
+
+\begin{table}[h]
+\small
+\centering
+\begin{tabular}{c|c|c|c|c|c|c|c}
+\# $f$ & $t$ & $u_{t,d}$ & $k_{t,f,d}$ & $u_{t,f,d}$ & $E(k_{t,f,d},u_{t,d})$ & $r(k_{t,f,d}, u_{t,f,d})$ & $u_{t,f,d} / u_{t,d}$  \\
+  \hline
+ ? & 10376 & 139,502 & 4,151,610 & 120,419 & 139,514 & 0.8631 & 0.8632 \\
+ 1 & 166122 & 8,597 & 4,361,634 &7,973 &  8,597 & 0.9274 & 0.9274 \\
+ 1 & 2886930 \\
+ 2 & 10372 \\
+ 3 & 10372 \\
+ 4 & 10372 \\
+ 4 & 12509 \\
+\end{tabular}
+\caption{Example extracts of Genestrip analysis results for different viruses from sequencing human saliva samples (the same files as in Table \ref{errorsviral}). The $k$-mer counts are much higher than the unique $k$-mer count but due to short viral genomes this is still close to the expectation as indicated by $k$-mer consistency scores close to 1.}
+\label{ratiosamples}
+\end{table}
 
 \subsection{Performance}
 \label{performance}
