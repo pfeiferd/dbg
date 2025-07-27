@@ -214,7 +214,7 @@ Although mathematically sound, the approach did not prove useful with respect to
 %\[ E_q(k_{t,f,d},\vec{k}_{t,d}) = \sum_{i = 1}^{u_{t,d}} k_{t,d}(i) \cdot (1 - (1 - 1/k_{t,d}(i))^{k_{t,f,d}}) \]
 \begin{equation}
 \label{r}
-r(k_{t,f,d}, u_{t,f,d}) := u_{t,f,d} / E(k_{t,f,d},u_{t,d})
+r_{t,f,d} := u_{t,f,d} / E(k_{t,f,d},u_{t,d})
 \end{equation}
 
 Section \ref{consistencyratio} presents results associated with the $k$-mer consistency ratio.
@@ -835,29 +835,18 @@ height = 0.45\textwidth,
 \subsection{$k$-mer Consistency Ratio}
 \label{consistencyratio}
 
-Based on the previously introduced Genestrip databases we give anectodotal evidence of the usefulness of the $k$-mer constistency ratio as introduced in Section \ref{measures}.
+Based on the previously introduced human saliva fastq files and the Genestrip database \texttt{tb} we give anecdotal evidence of the usefulness of the $k$-mer consistency ratio $r_{t,f,d}$ as introduced in Section \ref{measures}. 
 
-Table \ref{ratiosamples} shows the five hits with the highest unique $k$-mer counts $u_{t,f,d}$ for the human saliva fast file \# 2 from Table \ref{} analyzed via the databases \texttt{tb} and \texttt{cv\_g}. 
-
-The results show that the unique $k$-mer alone may be inconclusive. However, since $r()$ relates the parameters $k$, $u$ and $u$ accordingly, it tends to be aligned with bio medical expectations for true and false hits across a broad range of genome sizes as represented in the database.
-
-Respective results for the other human saliva from Table \ref{} were similar in nature (not reported here).
+Table \ref{ratiosamples} reports the five hits with the highest unique $k$-mer counts $u_{t,f,d}$ on the ranks species or below for the human saliva fast files \# 1, \# 3 and \# 5 from Table \ref{errorsviral} analyzed via \texttt{tb} from Section \ref{}. Since $r_{t,f,d}$ relates the parameters $k_{t,f,d}$, $u_{t,f,d}$ and $u_{t,d}$ accordingly, it tends to be aligned with bio medical expectations for true and false hits. E.g. species like "" (Metamycoplasma salivarium) under the genus "" (Metamycoplasma) are also included in \texttt{tb} and typically occur in the oral microbiome \citep{}. In contrast, the hits "" (Francisella tularensis) and "" (Borreliella garinii) are implausible and also have a low $k$-mer Consistency ratio. Note that the unique $k$-mer count, the $k$-mer count or the classified read count alone occur to be inconclusive. Results for the other two human saliva fastq file from Table \ref{errorsviral} are similar in nature (not reported).
 
 \begin{table}[h]
-\small
 \centering
 \begin{tabular}{c|c|c|c|c|c|c|c}
-\# $f$ & $t$ & $u_{t,d}$ & $k_{t,f,d}$ & $u_{t,f,d}$ & $E(k_{t,f,d},u_{t,d})$ & $r(k_{t,f,d}, u_{t,f,d})$ & $u_{t,f,d} / u_{t,d}$  \\
+\# $f$ & $t$ & $u_{t,f,d}$ & $k_{t,f,d}$ & Read  & $u_{t,f,d} / u_{t,d}$ & $r_{t,f,d}$ & Bio Medically \\
+ &  &  &  & Count &  &  & Plausible \\
   \hline
- ? & 10376 & 139,502 & 4,151,610 & 120,419 & 139,514 & 0.8631 & 0.8632 \\
- 1 & 166122 & 8,597 & 4,361,634 &7,973 &  8,597 & 0.9274 & 0.9274 \\
- 1 & 2886930 \\
- 2 & 10372 \\
- 3 & 10372 \\
- 4 & 10372 \\
- 4 & 12509 \\
 \end{tabular}
-\caption{Example extracts of Genestrip analysis results for different viruses from sequencing human saliva samples (the same files as in Table \ref{errorsviral}). The $k$-mer counts are much higher than the unique $k$-mer count but due to short viral genomes this is still close to the expectation as indicated by $k$-mer consistency scores close to 1.}
+\caption{Analysis results for the five hits with the highest unique $k$-mer counts $u_{t,f,d}$ on the ranks species or below for the human saliva fast files \# 1, \# 3 and \# 5 from Table \ref{errorsviral} analyzed via the Genestrip database \texttt{tb} from Section \ref{}.}
 \label{ratiosamples}
 \end{table}
 
