@@ -40,7 +40,7 @@
 
 % Enter authors:
 \author{Daniel Pfeifer (daniel.pfeifer@hs-heilbronn.de) and \\
-Clas Rurik (crurik@spectratic.de)
+Clas Rurik (cru@codeclap.cc)
 %
 % Enter affiliations and acknowledgements:
 \thanks{IT Faculty, Heilbronn University, Max-Planck-Str. 39, Heilbronn, 74081, Baden-W\"urttemberg, Germany}}
@@ -65,113 +65,113 @@ The consumption of main memory resources is a significant burden in $k$-mer-base
 
 \subsection{Introduction}
 
-With the availability of low cost and small-scale sequencing devices, metagenomic analysis will likely replace many established technologies for the detection and surveillance of specific groups of microorganisms. Related applications may affect various areas such as farming, ecology, food processing and medicine. While sequencing devices have become ready for ubiquitous use, software tools for metagenomics still tend to be resource intensive and too hard to use for end users.
+With the availability of low-cost and small-scale sequencing devices, metagenomic analysis will likely replace many established technologies for the detection and surveillance of specific groups of microorganisms. Related applications may affect various areas such as farming, ecology, food processing and medicine. While sequencing devices have become ready for ubiquitous use, software tools for metagenomics still tend to be resource intensive and too hard to use for end users.
 
-To analyze large sets of reads, software tools based on $k$-mer matching and counting such as Kraken 1 \citep{kraken}, Kraken 2 \citep{kraken2} or KrakenUniq \citep{krakenUniq} are at hand. With regard to pathogen detection, KrakenUniq is particularly suited because of its very low false positive rate but also because its efficiency and high sensitivity \citep{krakenUniq}.
+To analyze large sets of reads, software tools based on $k$-mer matching and counting such as Kraken 1 \citep{kraken}, Kraken 2 \citep{kraken2} or KrakenUniq \citep{krakenUniq} are at hand. With regard to pathogen detection, KrakenUniq is particularly suited because of its very low false positive rate but also because of its efficiency and high sensitivity \citep{krakenUniq}.
 
 \subsection{Problem Statement}
 \label{problem}
 
-In order to avoid false positive classifications of reads, $k$-mer counting tools resort to very large databases, containing millions of encoded $k$-mers along with their respective \taxon. A database is usually loaded entirely into main memory and often consumes tens of gigabytes of space. This requirement mandates specialized and expensive compute servers with very large main memory.
+In order to avoid false positive classifications of reads, $k$-mer counting tools resort to very large databases, containing millions of encoded $k$-mers along with their respective taxa. A database is usually loaded entirely into main memory and often consumes tens of gigabytes of space. This requirement mandates specialized and expensive compute servers with very large main memory.
 
-In recognition of this problem, KrakenUniq has been extended for database processing in chunks at read analysis time \citep{lowmemkraken}. However, database creation still mandates ultra large main memory: E.g., in 2018 the production of a database for Kraken 1 and so equivalently KrakenUniq that just covers the bacterial genomes from the RefSeq \citep{refseq} "required ca. 2.5 TB of RAM and ca. 11 days" on a suitable computer \citep{Nasko:2018aa}. But since then, the RefSeq's number of prokaryotic genomes alone has gone up by a factor of 4.5 to over 38 Mio. \citep{10.1093/nar/gkae1038}.  
+In recognition of this problem, KrakenUniq has been extended for database processing in chunks at read analysis time \citep{lowmemkraken}. However, database creation still mandates ultralarge main memory: For example, in 2018 the production of a database for Kraken 1 and, equivalently, KrakenUniq that just covers the bacterial genomes from the RefSeq \citep{refs} "required ca. 2.5 TB of RAM and ca. 11 days" on a suitable computer \citep{Nasko:2018aa}. However, since then, the RefSeq's number of prokaryotic genomes alone has increased by a factor of 4.5 to over 38 Mio. \citep{10.1093/nar/gkae1038}.  
 Therefore, related organisms are often not covered below the species rank and also genomes below the quality level "complete genome" are usually not included.
 
-Despite the fact that these databases may not cover organisms of interest at the necessary genomic depth, users tend to apply them because otherwise, creating even larger databases would require even more main memory \citep{Nasko:2018aa}. So, although a much richer set of genomes for organisms interest may be available in principle -- e.g. via recent versions of the RefSeq or in addition via Genbank \citep{genbank} -- these genomes cannot easily be leveraged for metagenomic analysis \citep{Cuesta-Zuluaga:2020aa,Youngblut:2021aa}.
+Despite the fact that these databases may not cover organisms of interest at the necessary genomic depth, users tend to apply them because otherwise, creating even larger databases would require even more main memory \citep{Nasko:2018aa}. So, although a much richer set of genomes for organisms of interest may be available in principle -- for example via recent versions of the RefSeq or in addition via Genbank \citep{genbank} -- these genomes cannot easily be leveraged for metagenomic analysis \citep{Cuesta-Zuluaga:2020aa,Youngblut:2021aa}.
 
-Although Kraken 2 offers more memory efficient $k$-mer databases, \emph{it is not a suitable alternative in fields such as medical diagnostics where precision of read classification is paramount} \citep{lowmemkraken}. This is because in comparison to Kraken 1 and KrakenUniq, Kraken 2 produces smaller databases but it compresses stored $k$-mers under loss of information, therefore facilitating false positive $k$-mer counts \citep{kraken2, lowmemkraken}. 
+Even though Kraken 2 offers more memory efficient $k$-mer databases, \emph{it is not a suitable alternative in fields such as medical diagnostics where precision of read classification is paramount} \citep{lowmemkraken}. This is because in comparison with Kraken 1 and KrakenUniq, Kraken 2 produces smaller databases but it compresses stored $k$-mers under loss of information, therefore facilitating false positive $k$-mer counts \citep{kraken2, lowmemkraken}. 
 
 \subsection{Approach}
 
-If only a smaller group of a few dozen genuses or a few 100 species is under consideration, then it seems promising to simply \emph{generate a smaller database that contains just the $k$-mers from respective genomes in depth}. \emph{However without additional measures, this very likely leads to many false positives}: The reason for this is that due to the evolutionary relationship of organisms, \emph{a large fraction of $k$-mers that belong to the genome of a species are unspecific} in a sense that they can as well be found in the genome other species or genuses not considered for analysis. Thus, when using too small a database, a read may be falsely assigned to a species because it consists of $k$-mers that \emph{also} belong to another species' genome that was not included in the database.
+If only a smaller group of a few dozen genuses or a few 100 species is under consideration, then it seems promising to simply \emph{generate a smaller database that contains just the $k$-mers from respective genomes}. \emph{However, without additional measures, this very likely leads to many false positives}: The reason for this is that owing to the evolutionary relationship of organisms, \emph{a large fraction of $k$-mers that belong to the genome of a species are unspecific} in the sense that they can as well be found in the genomes other species or genuses not considered for analysis. Thus, when using too small a database, a read may be falsely assigned to a species because it consists of $k$-mers that \emph{also} belong to another species' genome that was not included in the database.
   
 In order to enable a smaller database with no false positives emerging from this problem, we introduce Genestrip, as new metagenomic software tool supporting (unique) $k$-mer counting, read classification and read filtering.
 
-In principle, Genestrip employs a \emph{two-phase} database generation process: During the \emph{entry phase}, all $k$-mers of genomes from selected organisms are entered into the database on the basis of the RefSeq \citep{refseq} and optionally GenBank \citep{genbank} and additional sources. During the \emph{update phase}, all stored $k$-mers from the database are checked against the genomes of \emph{all} other organisms from the RefSeq belonging to the same \emph{category}\footnote{By standard, the RefSeq is structurally divided into 14 categories including "Bacteria", "Fungi", "Invertebrate", "Protozoa", "Viral" and others.}. So, if a stored $k$-mer also occurs in another organism which is not part of the database, the $k$-mer's \taxon\ still gets updated in the database and the lowest common ancestor's \taxon\ (known as LCA) is entered instead \citep{Nasko:2018aa}. This prevents a $k$-mer from being falsely associated with one of the selected organisms given it is too unspecific.
+In principle, Genestrip employs a \emph{two-phase} database generation process: During the \emph{entry phase}, all $k$-mers of genomes from selected organisms are entered into the database on the basis of the RefSeq \citep{refseq} and optionally GenBank \citep{genbank} and additional sources. During the \emph{update phase}, all stored $k$-mers from the database are checked against the genomes of \emph{all} other organisms from the RefSeq belonging to the same \emph{category}\footnote{By standard, the RefSeq is structurally divided into 14 categories including "Bacteria", "Fungi", "Invertebrate", "Protozoa", "Viral" and others.}. So, if a stored $k$-mer also occurs in another organism which is not part of the database, the $k$-mer's \taxon\ still gets updated in the database and the lowest common ancestor's \taxon\ (known as LCA) is entered instead \citep{Nasko:2018aa}. This prevents a $k$-mer from being falsely associated with one of the selected organisms given that it is too unspecific.
 
-Based on this approach, Genestrip achieves low memory footprint during database creation as well as at read analysis time. Moreover, it offers reasonable to favorable runtimes for $k$-mer matching and read classification. Together, these qualities empower users to create and use respective databases on machines with regular main memory size. Genestrip's $k$-mer counting results are similar to those of KrakenUniq \citep{krakenUniq} with regard to the selected organisms. Genestrip also supports unique $k$-mer counting with exact counts and with low memory overhead. 
+Based on this approach, Genestrip achieves a low memory footprint during database creation as well as at read analysis time. Moreover, it offers reasonable to favorable runtimes for $k$-mer matching and read classification. Together, these qualities empower users to create and use respective databases on machines with regular main memory size. Genestrip's $k$-mer counting results are similar to those of KrakenUniq \citep{krakenUniq} with respect to the selected organisms. Genestrip also supports unique $k$-mer counting with exact counts and with low memory overhead. 
 
-Genestrip is entirely written in Java, has a small code base and supports command-line-based as well as API-based usage. Based on the Java Virtual Machine it can be executed on  modern operating systems including Linux, Windows and macOS.
+Genestrip is written in Java, has a small code base and supports command-line-based as well as API-based usage. Based on the Java Virtual Machine, it can be executed on  modern operating systems including Linux, Windows and macOS.
 
 \section{Methods}\label{methods}
 
 \subsection{System Structure}
 
-Genestrip's database generation mandates the setting of groups of organisms whose genomes will be exclusively represented in a resulting database. Users choose desired genuses, species or strains via a configuration file by listing respective \taxon s. If higher ranked \taxon s are entered, then by default, \emph{all} of the descending \taxon s will be included and $k$-mers of their genomes will be added to the database accordingly. 
+Genestrip's database generation mandates the setting of groups of organisms whose genomes will be exclusively represented in a resulting database. Users choose the desired genuses, species or strains via a configuration file by listing the corresponding taxa. If higher ranked taxa are entered, then by default, \emph{all} of the descending taxa will be included and $k$-mers of their genomes will be added to the database accordingly. 
 
 Genestrip generates a database for a selected group of organisms primarily via 
 genomes from the RefSeq \citep{refseq} but genomes from Genbank and additional genomic files may be included on top or instead.
-To better handle the complexity of the generation process, it employs a goal-oriented approach in similarity to Make \citep{feldman1979make}: Upon access, each goal returns a file or an object in main memory. A goal is only executed if its result is not yet available. Goal execution may involve the access of other goals which in turn, may trigger their execution. Respective goal dependencies are explicitly specified in terms of a directed acyclic graph. 
+To better handle the complexity of the generation process, it employs a goal-oriented approach similar to Make \citep{feldman1979make}: Upon access, each goal returns a file or an object in main memory. A goal is executed only if its result is not yet available. Goal execution may involve the access of other goals which in turn, may trigger their execution. Respective goal dependencies are explicitly specified in terms of a directed acyclic graph. 
 
 Figure \ref{goalgraph} depicts an extract of Genestrip's goal dependency graph: Several goals (prefixed with \verb|d:|) revolve around automatically downloading all necessary files of the RefSeq, Genbank and other data from the NCBI's Web site \citep{Sayers:2025aa}.
 When required for database generation, the goal \verb|refseqfna| downloads the RefSeq genomes belonging to a matching category as a collection of zip files. The collection is one of NCBI's  standard offerings. By consulting the goal \verb|checksummap|, \verb|refseqfna| also performs an MD5 fingerprint check after each zip file download to ensure data integrity and reattempts the download in case the initial file appears to be corrupted. 
  
  Several object goals (prefixed with \verb|o:|) load files and create data structures or compute results in main memory for further processing. Most file goals (prefixed with \verb|f:|) write computational results to files.
-Boxes with edged corners depict goals that are meant to be executed directly via the command line. E.g., 
+Boxes with edged corners depict goals that are meant to be executed directly via the command line. For example, 
 the goal \verb|match| is for fastq file analysis but it would trigger a respective database generation goal if the corresponding database file was missing.
 
-Solid edges symbolize "eager" dependencies where the existence of a dependency's result is ensured prior to the execution of the depending goal. In contrast, dotted edges symbolize "lazy" dependencies where the existence of a dependency's result is ensured when first accessed during the execution of the depending goal.
+Solid edges symbolize "eager" dependencies where the existence of a dependency's result is ensured prior to the execution of the dependent goal. In contrast, dotted edges symbolize "lazy" dependencies where the existence of a dependency's result is ensured when first accessed during the execution of the dependent goal.
 
 \begin{figure}[h]%
 \centering
 \includegraphics[width=15cm]{GoalGraphExtract.eps}
-\caption{Extract of Genestrip's Goal Dependency Graph}\label{goalgraph}
+\caption{Extract of Genestrip's goal dependency graph}\label{goalgraph}
 \end{figure}
 \clearpage
 
 \subsection{Database and Filter Generation}
 \label{database}
 
-Genestrip stores a database primarily as a large array \verb|S| of sorted long values. Each long value encodes a $k$-mer from a genome of a selected organism. The default for $k$ is $31$ but smaller values and $k=32$ are possible. 
-In order to handle reverse complements of reads later at read analysis time, stored $k$-mers are standardized in the following way: Each $k$-mer is encoded twice as a long value -- once in its regular version and once via its reverse complement -- but only the larger of the two encoded values is stored in the database. 
+Genestrip stores a database primarily as a large array \verb|S| of sorted long values. Each long value encodes a $k$-mer from the genome of a selected organism. The default for $k$ is $31$ but smaller values and $k=32$ are possible. 
+In order to handle reverse complements of reads later at read analysis time, stored $k$-mers are standardized in the following way: Each $k$-mer is encoded twice as a long value --- once in its regular version and once via its reverse complement --- but only the larger of the two encoded values is stored in the database. 
 
-A second array of the same size as \verb|S| encodes \taxon s for each $k$-mer in \verb|S|. At read analysis time, lookups in \verb|S| are performed via a binary search. However, an additional Bloom filter \citep{bloomfilter} also contains all stored $k$-mers. By default, it is consulted upfront to check whether a certain $k$-mer might be in \verb|S|. A negative result avoids a more expensive binary search in \verb|S| and therefore saves overall execution cost.
+A second array of the same size as \verb|S| encodes taxa for each $k$-mer in \verb|S|. At read analysis time, lookups in \verb|S| are performed via a binary search. However, an additional Bloom filter \citep{bloomfilter} also contains all stored $k$-mers. By default, it is consulted upfront to check whether a certain $k$-mer might be in \verb|S|. A negative result avoids a more expensive binary search in \verb|S| and therefore saves overall execution cost.
  
-Moreover, all parts of the NCBI taxonomy tree \citep{taxonomy} which are required at analysis time are also included in  the database. The taxonomy extract comprises entries for the selected organisms and all of its ancestors. At analysis time, a bit vector with same size as \verb|S| indicates which $k$-mers from \verb|S| were found at least once. This is sufficient for exact unique $k$-mer counting and is space-efficient, as it requires only about 1.6\% of additional main memory with respect to \verb|S|.
+Moreover, all parts of the NCBI taxonomy tree \citep{taxonomy} required at analysis time are also included in  the database. The taxonomy extract comprises entries for the selected organisms and all of their ancestors. At analysis time, a bit vector with the same size as \verb|S| indicates which $k$-mers from \verb|S| were found at least once. This is sufficient for exact unique $k$-mer counting and is space-efficient, as it requires only about 1.6\% of additional main memory with respect to \verb|S|.
 
-Table \ref{goals} describes the most relevant goals for database generation in their typical execution order. All of these goals are multi-threading enabled for faster database generation.
+Table \ref{goals} describes the most relevant goals for database generation in their typical execution order. All of these goals are multithreading enabled for faster database generation.
 
 \begin{table}[h]
 \centering
 \begin{tabular}{l|p{12cm}}
  Goal Name & Description \\
   \hline
- \verb|fillsize| & Determines the maximum size of the database in number of $k$-mers by reading respective reference genome files and including genomes of selected organisms. It results in a conservative estimate as duplicates are double counted. \\
- \verb|tempindex| & Creates a Bloom filter filled with all $k$-mers of genomes of selected organisms. The Bloom filter's size is initially set via the result from \verb|fillsize|. As the Bloom filter avoids double counting, its final number of entries can serve as a more exact basis for the actual database size.\\
+ \verb|fillsize| & Determines the maximum size of the database in terms of number of $k$-mers by reading the respective reference genome files and including the genomes of selected organisms. This results in a conservative estimate where duplicates are double counted. \\
+ \verb|tempindex| & Creates a Bloom filter filled with all $k$-mers of the genomes of selected organisms. The Bloom filter's size is initially set via the result from \verb|fillsize|. As the Bloom filter avoids double counting, its final number of entries serves as a more exact basis for the actual database size.\\
  \verb|filldb| & This \emph{entry phase} populates the database with all $k$-mers of genomes from selected organisms. The appropriate size of the database is a close but conservative estimate based on \verb|tempindex|.
   Duplicate $k$-mer entries are avoided via a Boom filter that tracks the already stored $k$-mers. Finally, the stored $k$-mers are sorted in order to enable binary search at analysis time but also for the goal \verb|updatedb| from below.\\
  \verb|updatedb| & This \emph{update phase} updates the populated database to account for common $k$-mers between organisms.
- \emph{All} genomes from the RefSeq belonging to a set of pre-configurable taxonomic categories are considered during this phase. This ensures that a $k$-mer from a selected organism obtains the correct \taxon\ as the $k$-mer may also occur in the genome of another organism (which might be represented in database or not). Concerning the finished database, the respective $k$-mer will be associated with the lowest common ancestor taxon as computed via all considered genomes that contain the $k$-mer.\\
+ \emph{All} genomes from the RefSeq belonging to a set of preconfigurable taxonomic categories are considered during this phase. This ensures that a $k$-mer from a selected organism obtains the correct \taxon\ as the $k$-mer may also occur in the genome of another organism (which might be represented in the database or not). In the finished database, the respective $k$-mer is associated with the lowest common ancestor taxon as computed via all considered genomes that contain the $k$-mer.\\
 \end{tabular}
 \caption{Genestrip's most relevant goals for database generation}\label{goals}
 \end{table}
 
-Additional genomes can manually be added either to create deeper databases or else, to filter out contaminating sequences that are mistakenly included in the genome of an organism of interest. E.g. \cite{Breitwieser:2019aa} report that human DNA fragments often  contaminate bacterial genomes for various reasons whereas \cite{Lu:2018aa} discuss a pipeline to remove contaminants from genomes of eukaryotic pathogens.
+Additional genomes can be manually added either to create deeper databases or, else, to filter out contaminating sequences that are mistakenly included in the genome of an organism of interest. For example, \cite{Breitwieser:2019aa} reported that human DNA fragments often  contaminate bacterial genomes for various reasons whereas \cite{Lu:2018aa} discussed a pipeline to remove contaminants from genomes of eukaryotic pathogens.
 
-Regarding database generation, $k$-mers from contaminating sequences can be identified during the update phase: E.g., the human genome can be included via configuration in the update phase only and so, a $k$-mer from the human genome that is also found in the contaminated genome will be pushed to the lowest common ancestor taxon of both species. Still, as the human genome is employed during the update phase only, a resulting database does not include $k$-mers from the human genome (other than the ones from contaminating sequences). This ensures a small-sized database.
+Regarding database generation, $k$-mers from contaminating sequences can be identified during the update phase: For example, the human genome can be included via configuration in the update phase only; thus, a $k$-mer from the human genome that is also found in the contaminated genome will be pushed to the lowest common ancestor taxon of both species. Still, as the human genome is employed during the update phase only, a resulting database does not include $k$-mers from the human genome (other than those from contaminating sequences). This ensures a small-sized database.
 
-Besides $k$-mer matching and read classification, Genestrip supports filtering of fastq files via a Bloom filter in similarity to \citep{biobloom}. When generated via the goal \verb|index|, the Bloom filter gets stored in a separate file. The goal \verb|filter| loads the filter and processes fastq files accordingly. The standard configuration of the filtering rewrites a read to the output if the read contains at least one $k$-mer that is recognized by the filter since because of it, the read may belong to a selected organism of interest.
+Besides $k$-mer matching and read classification, Genestrip supports filtering of fastq files via a Bloom filter in similarity to \citep{biobloom}. When generated via the goal \verb|index|, the Bloom filter gets stored in a separate file. The goal \verb|filter| loads the filter and processes fastq files accordingly. The standard configuration of the filtering process rewrites a read to the output if the read contains at least one $k$-mer that is recognized by the filter since because of this, the read may belong to a selected organism of interest.
 
 Of note, Genestrip allows for the exclusion of $k$-mers with low complexity known as genomic dust \citep{doi:10.1089/cmb.2006.13.1028}: As part of the entry phase, each $k$-mers's repetitiveness in terms of base pairs is measured via a fibonacci-based function. If the corresponding value exceeds a configurable threshold then the $k$-mer is dropped.
 
 \subsection{Read Classification}
 
-The principal read classification algorithm is similar to the one from  Kraken 1 \citep{kraken} and equivalently KrakenUniq. When iterating over a read's $k$-mers, each $k$-mer is encoded as a long -- once by considering its regular order and once via its reverse complement order. For efficiency, only the larger of the two encoded values is looked up in the database. This is sufficient since, if at all, then only just the larger of two values got stored in the first place during database generation (see Section \ref{database}). 
+The principal read classification algorithm is similar to that from  Kraken 1 \citep{kraken} and equivalently KrakenUniq. When iterating over a read's $k$-mers, each $k$-mer is encoded as a long -- once by considering its regular order and once via its reverse complement order. For efficiency, only the larger of the two encoded values is looked up in the database. This is sufficient since, if at all, then only just the larger of two values got stored in the first place during database generation (see Section \ref{database}). 
 
-Genestrip implements a multi-threading enabled classification procedure following a producer consumer pattern, where a producer thread reads a fastq file and puts reads into an in-memory queue while consumer threads pick reads from the queue in order to classify them.
+Genestrip implements a multithreading enabled classification procedure following a producer consumer pattern, where a producer thread reads a fastq file and puts reads into an in-memory queue while consumer threads pick reads from the queue in order to classify them.
 
 Two types of error thresholds can be configured for read classification:
 \begin{enumerate}
   \item The ratio or number of $k$-mers per read that must at least be found in the database and
-  \item the ratio or number of $k$-mers per read that must be consistent the read's designated class taxon. A $k$-mer is consistent with a read's class taxon if the $k$-mer's taxon as stored in the database is the same or if it is a taxonomic ancestor of the class taxon.
+  \item the ratio or number of $k$-mers per read that must be consistent with the read's designated class taxon. A $k$-mer is consistent with a read's class taxon if the $k$-mer's taxon as stored in the database is the same or if it is a taxonomic ancestor of the class taxon.
 \end{enumerate}
-The thresholds allow for playing off recall against precision in the light of potentially high error rates of a sequencing device \citep{Delahaye:2021aa,Liu-Wei:2024aa}. For all experiments throughout this paper both thresholds sticked to the default of one $k$-mer which is the most sensitive level.
+The thresholds allow for playing off recall against precision in light of potentially high error rates of a sequencing device \citep{Delahaye:2021aa,Liu-Wei:2024aa}. For all the experiments throughout this paper, both thresholds stick to the default of one $k$-mer which is the most sensitive level.
 
 \subsection{Read Analysis Reports} \label{measures}
 
-Genestrip produces analysis reports in CSV file format with a comprehensive set of statistical values. We use the following notation to describe them: Let $k_{t,f,d}$ be the number of $k$-mers for \taxon\ $t$ found in fastq file $f$ with respect to database $d$ and $u_{t,f,d}$ be the corresponding number of unique $k$-mers. Similarly $u_{t,d}$ is the number of (unique) $k$-mers for $t$ stored in $d$.
+Genestrip produces analysis reports in CSV file format with a comprehensive set of statistical values. We use the following notation to describe them: let $k_{t,f,d}$ be the number of $k$-mers for \taxon\ $t$ found in fastq file $f$ with respect to database $d$ and let $u_{t,f,d}$ be the corresponding number of unique $k$-mers. Similarly, let $u_{t,d}$ be the number of (unique) $k$-mers for $t$ stored in $d$.
 
-Table \ref{csvcolumns} describes the most important reported columns. Additional columns exist to  accumulate $k$-mer counts and read counts etc. upwards to ancestores in the taxonomy. We also track standard deviations of \verb|avg. contig length|, \verb|avg. read length|, \verb|mean class error| and other columns whereever suitable. Moreover, normalized values derived from original values by dividing by $u_{t,d}$ are included where suitable. Normalized values aim to reduce a counting bias due to a high or low representation of a \taxon\ $t$ in terms of its stored $k$-mers $u_{t,d}$.
+Table \ref{csvcolumns} describes the most important reported columns. Additional columns exist to  accumulate $k$-mer counts and read counts etc. upward to ancestors in the taxonomy. We also track the standard deviations of \verb|avg. contig length|, \verb|avg. read length|, \verb|mean class error| and other columns wherever suitable. Moreover, normalized values derived from the original values by dividing by $u_{t,d}$ are included where suitable. Normalized values aim to reduce counting bias due to a high or low representation of a \taxon\ $t$ in terms of its stored $k$-mers $u_{t,d}$.
 
 \begin{table}[h]
 \centering
@@ -180,33 +180,33 @@ Column Name & Description  \\
   \hline
 \verb|taxid| & The class \taxon\ $t$ \\
 \verb|reads| & The number of reads classified with respect to $t$\\
-\verb|kmers from reads| & The number of $k$-mers from reads for $t$ which are consistent with $t$ \\
+\verb|kmers from reads| & The number of $k$-mers from reads for $t$ that are consistent with $t$ \\
 \verb|kmers| & $k_{t,f,d}$\\ %, i.e. \emph{all} $k$-mers which are specific to the $t$'s genome (according to $d$) \\
 \verb|unique kmers| & $u_{t,d}$\\ %, i.e. \emph{all} unique $k$-mers, which are specific to $t$'s genome(s) (according to $d$) \\
 \verb|avg. contig length| & The average length of contiguous sequences of $k$-mers that are specific to $t$'s genome(s) as represented in $d$ \\
 \verb|max contig length| & The maximum length of all contiguous sequences of $k$-mers that are specific to $t$'s genome(s)  \\
-\verb|avg. read length| & The avg. length of reads for $t$ in base pairs \\
+\verb|avg. read length| & The average length of reads for $t$ in base pairs \\
 \verb|db coverage| & $u_{t,f} / u_{t,d}$ \\
 \verb|exp. unique kmers| & $E(k_{t,f,d},u_{t,d})$ (see Equation \ref{E}) \\
-\verb|unique kmers / exp.| & The $k$-mer consistency ratio $r(k_{t,f,d}, u_{t,f,d})$ (see Equation \ref{r}) \\
+\verb|unique kmers / exp.| & The $k$-mer consistency ratio $r_{t,f,d}$ (see Equation \ref{r}) \\
 \verb|mean class error| & The mean ratio of $k$-mers from a read $r$ for $t$, where those $k$-mers are not consistent with $t$ per $r$'s total number of $k$-mers \\
 \end{tabular}
 \caption{Extract of columns from Genestrip's read analysis reports}\label{csvcolumns}
 \end{table}
 
- Genestrip introduces a novel, derived statistical measure -- the \emph{$k$-mer consistency ratio} -- as explained in the following: Given $k_{t,f,d}$, the a-priori probability $p(t\ |\ k_{t,f,d})$ of a unique $k$-mer from $d$ belonging to $t$ to occur \emph{at least once} in $f$\ is approximately:\footnote{The approximation is based on the assumption that all $k$-mers in $d$ belonging to $t$ are equally likely to be found in $f$ (such as reported for results in \cite{nanoporeticks}). However, this assumption does not hold when special DNA library preparation protocols like 16S or 18S amplification were used \citep{Wensel:2022aa,16srrnause}. In such cases the $k$-mer consistency ratio must therefore be disregarded.}
+ Genestrip introduces a novel, derived statistical measure --- the \emph{$k$-mer consistency ratio} --- as explained in the following: Given $k_{t,f,d}$, the apriori probability $p(t\ |\ k_{t,f,d})$ of a unique $k$-mer from $d$ belonging to $t$ to occur \emph{at least once} in $f$\ is approximately:\footnote{The approximation is based on the assumption that all $k$-mers in $d$ belonging to $t$ are equally likely to be found in $f$ (such as reported for the results in \cite{nanoporeticks}). However, this assumption does not hold when special DNA library preparation protocols such as 16S or 18S amplification are used \citep{Wensel:2022aa,16srrnause}. In such cases the $k$-mer consistency ratio must therefore be disregarded.}
 \begin{equation}
 \label{ptk}
 p(t\ |\ k_{t,f,d}) = 1 - (1 - 1/u_{t,d})^{k_{t,f,d}}
 \end{equation}
-The corresponding \emph{expected number of unique $k$-mers} is:
+The corresponding \emph{expected number of unique $k$-mers} is as follows:
 \begin{equation}
 \label{E}
 E(k_{t,f,d},u_{t,d}) = u_{t,d} \cdot p(t\ |\ k_{t,f,d})
 \end{equation}
 
 It is useful to compare $E(k_{t,f,d},u_{t,d})$ with the actual count $u_{t,f,d}$: If these quantities divert too much from each other, then the consistency of the $k$-mer counting results for $t$ in $f$ should be questioned. If, on the other hand, these quantities are close, then this supports the consistency of the counting results. This justifies the \emph{$k$-mer consistency ratio}, which ideally is close to $1$:\footnote{A mathematically sounder approach is to consider the probability distribution 
-$q(u_{t,f,d}\ |\ k_{t,f,d})$, i.e. the probability to obtain exactly $u_{t,f,d}$ unique $k$-mers for a given (non-unique) $k$-mer count of $k_{t,f,d}$ via sampling with replacement as the underlying random process.
+$q(u_{t,f,d}\ |\ k_{t,f,d})$, i.e., the probability of obtaining exactly $u_{t,f,d}$ unique $k$-mers for a given (nonunique) $k$-mer count of $k_{t,f,d}$ by sampling with replacement as the underlying random process.
 Interestingly, this distribution is non-trivial and has been investigated in \cite{Mendelson2016WhatIT}. The authors have shown that the distribution can be approximated by a normal distribution $\mathcal{N}(E(k_{t,f,d},u_{t,d}),\sigma^2_q)$ under most practically relevant conditions. Moreover, they confirm the expectation $E(k_{t,f,d},u_{t,d})$ from above and give a formula for the variance $\sigma^2_q$ which in our case depends on $k_{t,f,d}$ and $u_{t,d}$. 
 Although mathematically sound, the approach did not prove useful with respect to $k$-mer counts because $\mathcal{N}$ tends to be extremely peaked and so, even small deviations from $E(k_{t,f,d},u_{t,d})$ result in a $q(u_{t,f,d}\ |\ k_{t,f,d}) \approx 0$.}
 %Expectation accounting for duplicate kmers in DB:
@@ -217,19 +217,19 @@ Although mathematically sound, the approach did not prove useful with respect to
 r_{t,f,d} := u_{t,f,d} / E(k_{t,f,d},u_{t,d})
 \end{equation}
 
-Section \ref{consistencyratio} presents results associated with the $k$-mer consistency ratio.
+Section \ref{consistencyratio} presents the results associated with the $k$-mer consistency ratio.
 
 \section{Results}\label{results}
 
 \subsection{Correctness}
 \label{correctness}
 
-To assess Genestrips's correctness with regard to $k$-mer counting and read classification, we compared example databases and respective analysis results directly and in detail with those from KrakenUniq. We consulted KrakenUniq because Genestrip aims to provide a similar $k$-mer based functionality while also enabling small databases without loss of precision and recall. Moreover, KrakenUniq and related tools are trusted by a large user base in bioinformatics \citep{Lu:2022aa}.
+To assess Genestrip's correctness with regard to $k$-mer counting and read classification, we compared example databases and respective analysis results directly and in detail with those from KrakenUniq. We consulted KrakenUniq because Genestrip aims to provide a similar $k$-mer based functionality while also enabling small databases without loss of precision and recall. Moreover, KrakenUniq and related tools are trusted by a large user base in bioinformatics \citep{Lu:2022aa}.
 
 As part of our test procedure, we created database contents under both systems that were as identical as possible in terms of their genomic basis and their stored $k$-mers. 
-We then applied the created databases to suitable fastq files in order to compare the results between both systems. Highly similar results from this check mutually solidify the correctness of both systems since they had been developed completely independently. (But besides, Genestrip's correctness is also supported via extensive automated functional tests with high test coverage as part of its code base.)
+We then applied the created databases to suitable fastq files in order to compare the results between both systems. Highly similar results from this check mutually solidify the correctness of both systems since they had been developed completely independently. (In addition, Genestrip's correctness is also supported via extensive automated functional tests with high test coverage as part of its code base.)
 
-To create the databases, we chose all RefSeq genomes from the category "Viral". Figure \ref{viraldbscatter} compares the structure of the two databases produced with KrakenUniq (with 373,250,262 $k$-mers in total) and Genestrip (with 374,412,041 $k$-mers in total). The databases are nearly identical with regard to the number of $k$-mers stored per \taxon\ with 15 genomes and respective \taxon s occurring in KrakenUniq but not in Genestrip and 33 genomes vice versa.\footnote{The differences between the sets of selected genomes are caused by different approaches on how the genomes are preselected and downloaded by KrakenUniq and Genestrip, respectively. They do not constitute erroneous behavior of either system.} The slightly differing sets of genomes result in 158 differences in $k$-mers stored per \taxon . A large part of the differences is a consequence of the necessary lowest common ancestor update on stored $k$-mers (see Section \ref{background}). In the following, we name the two databases \texttt{cv\_ku} and \texttt{cv\_g} with regard to KrakenUniq and Genestrip, respectively.
+To create the databases, we chose all RefSeq genomes from the category "Viral". Figure \ref{viraldbscatter} compares the structure of the two databases produced with KrakenUniq (with 373,250,262 $k$-mers in total) and Genestrip (with 374,412,041 $k$-mers in total). The databases are nearly identical with regard to the number of $k$-mers stored per \taxon\ with 15 genomes and respective taxa occurring in KrakenUniq but not in Genestrip and 33 genomes vice versa.\footnote{The differences between the sets of selected genomes are caused by different approaches on how the genomes are preselected and downloaded by KrakenUniq and Genestrip, respectively. They do not constitute erroneous behavior of either system.} The slightly different sets of genomes resulted in 158 differences in $k$-mers stored per \taxon . A large part of the differences is a consequence of the necessary lowest common ancestor update on stored $k$-mers (see Section \ref{background}). In the following, we name the two databases \texttt{cv\_ku} and \texttt{cv\_g} with regard to KrakenUniq and Genestrip, respectively.
 
 \begin{figure}[h]%
 \centering
@@ -263,13 +263,13 @@ table[col sep=semicolon, header=true, x = {kmers 2}, y = {kmers 1} , meta=rank] 
 \ref{legend1}
 
 \fi
-\caption{Scatter plot of $k$-mer counts for the RefSeq databases \texttt{cv\_ku} from KrakenUniq and \texttt{cv\_ku} from Genestrip covering the entire category "Viral" (based on a logarithmic scale with 1 added to each value in order to enable the representation of zero-counts). The 16,087 depicted entries cover all of the \taxon s present in both databases.}\label{viraldbscatter}
+\caption{Scatter plot of $k$-mer counts for the RefSeq databases \texttt{cv\_ku} from KrakenUniq and \texttt{cv\_ku} from Genestrip covering the entire category "Viral" (based on a logarithmic scale with 1 added to each value in order to enable the representation of zero-counts). The 16,087 depicted entries cover all of the taxa present in both databases.}\label{viraldbscatter}
 \end{figure}
 
-We applied the two databases to a simulated fastq file extracted from \cite{Wu:2024aa} where the file's reads were used to benchmark metagenomic pipelines aiming at the discovery of new viruses. As the ground truth is known, this allowed for a similarity comparison but also for checking classification accuracy. The file contains 61,550 long reads extracted from 6,155 viral standard genomes from the RefSeq \citep{Wu:2024aa}.
+We applied the two databases to a simulated fastq file extracted from \cite{Wu:2024aa} where the file's reads were used to benchmark metagenomic pipelines aimed at the discovery of new viruses. As the ground truth is known, this allowed for a similarity comparison but also for checking classification accuracy. The file contains 61,550 long reads extracted from 6,155 viral standard genomes from the RefSeq \citep{Wu:2024aa}.
 
-Figure \ref{viralscatter} shows scatter plots for $k$-mer counts and read counts from both tools on a logarithmic scale. Each data point represents a non-zero count from KrakenUniq or Genestrip with respect to a \taxon . As can been seen in (a), the $k$-mer counts are almost identical and only differ in 58 out of a total of 6,248 data points. The differences are rooted in the slightly differing database contents as mentioned above. The classified read counts in (b) nearly identical too with only ?? difference out of ?? data points. As stated before, this high agreement mutually solidifies the correctness of both systems, but obviously, it does not yet highlight the advantages of Genestrip when creating and using small databases for selected groups of organisms.
-Both tools scored a read classification accuracy of 99.4\% on the genus rank and 95.2\% on the species rank.
+Figure \ref{viralscatter} shows scatter plots for $k$-mer counts and read counts from both tools on a logarithmic scale. Each data point represents a nonzero count from KrakenUniq or Genestrip with respect to a \taxon . As shown in (a), the $k$-mer counts are almost identical and only differ in 58 out of a total of 6,248 data points. The differences are rooted in the slightly different database contents as mentioned above. The classified read counts in (b) are also nearly identical with only ?? difference out of ?? data points. As stated before, this high agreement mutually solidifies the correctness of both systems, but obviously, it does not yet highlight the advantages of Genestrip when creating and using small databases for selected groups of organisms.
+Both tools scored a read classification accuracy of 99.4\% for the genus rank and 95.2\% for the species rank.
 
 \begin{figure}[h]%
 \centering
@@ -633,7 +633,7 @@ An envisioned application is tick surveillance using metagenomics according to \
 \label{mdbtb}
 \texttt{MicrobialDB} for KrakenUniq aims at the diagnosis of infectious diseases using metagenomics and contains 97.68 times as many $k$-mers as \texttt{tb}. It has a disk size of 574.31 GB excluding the taxonomy tree and additional mapping files. It covers a broad set of microbials including archaea, bacteria, viral genomes, the human genome and pathogenic eukaryotes with contaminants removed \citep{Lu:2018aa}.
 
-The database \texttt{tb} for Genestrip is based on the RefSeq Release 230 and covers all RefSeq  genomes under the twelve bacterial genuses Bartonella, Rickettsia, Anaplasma, Ehrlichia, Borrelia, Borreliella, Chlamydia, Mycoplasma, Malacoplasma, Mycoplasmoides, Metamycoplasma and Francisella as many included species are pathogenic to humans and known or assumed to occur in ticks \citep{Eisen:2018aa, JOHNSON20181499, Janecek:2012aa, Thomas:1990aa, 10.3389/fvets.2025.1522904}. To avoid contaminants from human DNA and the black-legged tick's DNA, we added corresponding genomes to Genestrip's update phase as explained at the end of Section \ref{database}. We also activated the genomic dust filter at high sensitivity: E.g. the $k$-mer \texttt{ATACGGCGCGCGCGCGCGCGCATATATATTC} would be dropped because its repetitiveness is just above the set threshold.
+The database \texttt{tb} for Genestrip is based on the RefSeq Release 230 and covers all RefSeq  genomes under the twelve bacterial genuses Bartonella, Rickettsia, Anaplasma, Ehrlichia, Borrelia, Borreliella, Chlamydia, Mycoplasma, Malacoplasma, Mycoplasmoides, Metamycoplasma and Francisella as many included species are pathogenic to humans and known or assumed to occur in ticks \citep{Eisen:2018aa, JOHNSON20181499, Janecek:2012aa, Thomas:1990aa, 10.3389/fvets.2025.1522904}. To avoid contaminants from human DNA and the black-legged tick's DNA, we added corresponding genomes to Genestrip's update phase as explained at the end of Section \ref{database}. We also activated the genomic dust filter at high sensitivity: For example, the $k$-mer \texttt{ATACGGCGCGCGCGCGCGCGCATATATATTC} would be dropped because its repetitiveness is just above the set threshold.
 
 \texttt{tb} contains 487,834,649 $k$-mers and has a disk size of just 5.87 GB including the accompanied Bloom filter and the matching extract of the NCBI taxonomy tree. \texttt{tb} has 1.96 times as many $k$-mers stored under the selected genuses and below as \texttt{MicrobialDB}. The macro average in increase across the chosen genuses is by factor 1.83 with a maximum factor of 3.25 for Bartonella and a minimum factor of 1.29 for Clamydia. One reason behind this increase is the total growth of the RefSeq's number of prokaryotic genomes by a factor of over 1.39 between the generation of \texttt{MicrobialDB} in mid 2023 and the generation of \texttt{tb} \citep{10.1093/nar/gkae1038}.
 
@@ -835,9 +835,9 @@ height = 0.45\textwidth,
 \subsection{$k$-mer Consistency Ratio}
 \label{consistencyratio}
 
-Based on the previously introduced human saliva fastq files and the Genestrip database \texttt{tb} we give anecdotal evidence of the usefulness of the $k$-mer consistency ratio $r_{t,f,d}$ as introduced in Section \ref{measures}. 
+Based on the previously used fastq files and the Genestrip database \texttt{tb} we give anecdotal evidence of the usefulness of the $k$-mer consistency ratio $r_{t,f,d}$ as introduced in Section \ref{measures}. 
 
-Table \ref{ratiosamples} reports the five hits with the highest unique $k$-mer counts $u_{t,f,d}$ on the ranks species or below for the human saliva fast files \# 1, \# 3 and \# 5 from Table \ref{errorsviral} analyzed via \texttt{tb} from Section \ref{}. Since $r_{t,f,d}$ relates the parameters $k_{t,f,d}$, $u_{t,f,d}$ and $u_{t,d}$ accordingly, it tends to be aligned with bio medical expectations for true and false hits. E.g. species like "" (Metamycoplasma salivarium) under the genus "" (Metamycoplasma) are also included in \texttt{tb} and typically occur in the oral microbiome \citep{}. In contrast, the hits "" (Francisella tularensis) and "" (Borreliella garinii) are implausible and also have a low $k$-mer Consistency ratio. Note that the unique $k$-mer count, the $k$-mer count or the classified read count alone occur to be inconclusive. Results for the other two human saliva fastq file from Table \ref{errorsviral} are similar in nature (not reported).
+Table \ref{ratiosamples} reports the five hits with the highest unique $k$-mer counts $u_{t,f,d}$ on the ranks species or below for the human saliva fast files \# 1, \# 3 and \# 5 from Table \ref{errorsviral} analyzed via \texttt{tb} from Section \ref{}: Since $r_{t,f,d}$ relates the parameters $k_{t,f,d}$, $u_{t,f,d}$ and $u_{t,d}$ accordingly, it tends to be aligned with bio medical expectations for true and false hits. For example, species like "" (Metamycoplasma salivarium) under the genus "" (Metamycoplasma) are also included in \texttt{tb} and typically occur in the oral microbiome \citep{}. In contrast, the hits "" (Francisella tularensis) and "" (Borreliella garinii) are implausible and also have a low $k$-mer Consistency ratio. Note that the unique $k$-mer count, the $k$-mer count or the classified read count alone occur to be inconclusive. Results for the other three human saliva fastq files from Table \ref{errorsviral} are similar in nature (not reported).
 
 \begin{table}[h]
 \centering
@@ -853,9 +853,9 @@ Table \ref{ratiosamples} reports the five hits with the highest unique $k$-mer c
 \subsection{Performance}
 \label{performance}
 
-As mentioned in Section \ref{background}, Genestrip's focus is on generating and using potentially small but also deep $k$-mer databases for accurate metagenomic analysis of selected organisms interest. This implies that users must be empowered to flexibly create new databases -- ideally on their own devices. We therefore put focus on the performance of database generation as well as on the performance of read classification.
+As mentioned in Section \ref{background}, Genestrip's focus is on generating and using potentially small but also deep $k$-mer databases for accurate metagenomic analysis of selected organisms of interest. This implies that users must be empowered to flexibly create new databases -- ideally on their own devices. We therefore put focus on the performance of database generation as well as on the performance of read classification.
 
-The following experiments were all performed on a single, modern desktop computer with 32GB RAM, 10 CPU cores and a 2TB solid state disk. We ensured that as few competing processes as possible where running during the experiments.\footnote{Platform details: MacBook Pro, Apple M1 Pro Chip and macOS Version 15.5, Java Virtual Machine: JSE Oracle 17.0.7 (arm64).}
+The following experiments were all performed on a single, modern desktop computer with 32GB RAM, 10 CPU cores and a 2TB solid state disk. We ensured that as few competing processes as possible were running during the experiments.\footnote{Platform details: MacBook Pro, Apple M1 Pro Chip and macOS Version 15.5, Java Virtual Machine: JSE Oracle 17.0.7 (arm64).}
 
 \subsection{Database Generation}
 \label{genperformance}
@@ -913,7 +913,7 @@ Section \ref{tickborne} has exemplified the usefulness of Genestrip's "small dat
 
 As opposed to Kraken 2, for example, it also eliminates the potential for false positive $k$-mer counts because Genestrip does not compress $k$-mers under loss of information. This renders our tool suitable in fields such as medical diagnostics where precision of $k$-mer counting and read classification is paramount -- which also was a motive for evolving Kraken 1 into KrakenUniq \citep{lowmemkraken} after the same research group had already authored Kraken 2 \citep{kraken2}.
 
-The deliberate focus on a particular set of genuses or species allows for more genomes to be included for the organisms of interest while the resulting Genestrip database may still remain small. E.g., the tick-related database \texttt{tb} from Section \ref{mdbtb} contains 1.83 times more $k$-mers from the chosen genuses than the latest publicly available large database \texttt{MicrobialDB} for KrakenUniq. As \texttt{tb} is deeper than \texttt{MicrobialDB} in this respect, it also tends to achieve better recall when analyzing tick related fastq files without loss of precision. We have presented and discussed corresponding results as part of Section \ref{tickanalysis}.
+The deliberate focus on a particular set of genuses or species allows for more genomes to be included for the organisms of interest while the resulting Genestrip database may still remain small. For example, the tick-related database \texttt{tb} from Section \ref{mdbtb} contains 1.83 times more $k$-mers from the chosen genuses than the latest publicly available large database \texttt{MicrobialDB} for KrakenUniq. As \texttt{tb} is deeper than \texttt{MicrobialDB} in this respect, it also tends to achieve better recall when analyzing tick related fastq files without loss of precision. We have presented and discussed corresponding results as part of Section \ref{tickanalysis}.
 
 Regarding performance we have examined \emph{database generation as well as fastq file analysis}: Section \ref{genperformance} has shown that Genestrip empowers users to flexibly create new databases on regular machines in just a few hours. As summarized in Table \ref{dbdesc} and \ref{dbperf} we created databases with different applications in mind where the generation of \texttt{tb} took the longest with still less than 11 hours while main memory consumption remained below 30 GB in all cases. 
 
