@@ -4,6 +4,7 @@
 \usepackage{csquotes}
 \usepackage{pgfplots}
 \usepackage[l3]{csvsimple}
+\usepackage{multirow}
 \pgfplotsset{compat=1.5}
 \bibliographystyle{bibliography}
 %\usepgfplotslibrary{external}
@@ -855,7 +856,7 @@ Table \ref{ratiosamples} reports the five hits with the highest unique $k$-mer c
 
 As mentioned in Section \ref{background}, Genestrip's focus is on generating and using potentially small but also deep $k$-mer databases for accurate metagenomic analysis of selected organisms of interest. This implies that users must be empowered to flexibly create new databases -- ideally on their own devices. We therefore put focus on the performance of database generation as well as on the performance of read classification.
 
-The following experiments were all performed on a modern PC with 32 GB of RAM, 8 CPU cores and a 2 TB solid state disk.\footnote{We ensured that as few competing processes as possible were running during the experiments and OS disk swapping was disabled. Platform details: AMD Ryzen 7 Chip, Linux 6.12.37, JSE Oracle 17.0.7 as JVM.}
+The following experiments were all performed on a modern PC with 32 GB of RAM, 8 CPU cores and a 2 TB solid state disk.\footnote{We ensured that as few competing processes as possible were running during the experiments and OS disk swapping was disabled. Platform details: AMD Ryzen 7 Chip, Linux 6.12.37, OpenJDK 21.0.7 64-Bit Server VM.}
 
 \subsection{Database Generation}
 \label{genperformance}
@@ -898,8 +899,36 @@ DB Name & Stored $k$-mers & Disk-Size (MB) & Exec. Time (min) & Max. RAM (MB) \\
 
 \subsection{Read Classification}
 
-To assess Genestrip's performance for $k$-mer counting, we compared its analysis time and memory use with 
-corresponding analysis runs under KrakenUniq.
+To assess Genestrip's performance for $k$-mer counting, we compared its analysis time and memory use with corresponding analysis runs under KrakenUniq.
+
+For the first comparison we applied the almost equally structured databases \texttt{cv\_ku} for KrakenUniq and \texttt{cv\_g} for Genestrip from Section \ref{correctness} to the human saliva fastq files from Table \ref{errorsviral}. The first section of Table \ref{analysisperf} summarizes the analysis performance across all five fastq files.
+
+The second comparison, shown in Table \ref{analysisperf}, uses the database \texttt{MicrobialDB} vs. \texttt{tb} from Section \ref{mdbtb} to analyze the eight tick-related fastq files from Section \ref{tickanalysis}. Since \texttt{MicrobialDB} is so large, we had to make use of KrakenUniq's database processing in chunks which broke down each run into 34 rounds. The chunk processing cause considerably longer run times. On the one hand this tool comparison may be considered "unfair" because of such unequally sized database sizes. On the other hand, there is no alternative to employing a very large KakenUniq database for the purpose of finding tick-related bacterial pathogens because a too small KrakenUniq database bares the high risk of many false positive as examined in Section \ref{accuracy}.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{c|c|r|r|r}
+Databases & Parameter & KrakenUniq & Genestrip & Rel. Gain \\
+\hline
+\multirow{6}{3.5cm}{\texttt{cv\_ku} vs. \texttt{cv\_g} from Section \ref{correctness} on the five human saliva fastq files from Table \ref{errorsviral}} & Avg. fastq file size (MB) & \multicolumn{2}{c|}{1234} &\\
+  & Avg. reads per fastq file & \multicolumn{2}{c|}{1234} &\\
+  & Avg. BPs per read & \multicolumn{2}{c|}{1234} &\\
+  & Max. RAM (MB) & 16 & 16 & \\
+ &  Avg. Wall Time (min) & 16 & 16 & \\
+ &  Analysis Speed (reads / s) & 16 & 16 & \\
+\hline
+\multirow{6}{3.4cm}{\texttt{MicrobialDB} vs. \texttt{tb} from Section \ref{mdbtb} on the eight tick-related fastq files from Section \ref{tickanalysis}} & Avg. fastq file size (MB) & \multicolumn{2}{c|}{1234} & \\
+  & Avg. reads per fastq file & \multicolumn{2}{c|}{1234} & \\
+  & Avg. BPs per read & \multicolumn{2}{c|}{1234} & \\
+  & Max. RAM (MB) & 16 GB & 16 GB & \\
+ &  Avg. Wall Time & 16 GB & 16 GB & \\
+ &  Analysis Speed (reads / s) & 16 GB & 16 GB & \\
+
+\end{tabular}
+\caption{Read analysis performance comparison between KrakenUniq and Genestrip for 10 threads under both tools. For \texttt{MicrobialDB} we set the parameter \texttt{--preload-size 24G} to limit KrakenUniq's main memory according to \cite{lowmemkraken} (otherwise the analysis with KrakenUniq would have not been possible on the given PC).}\label{analysisperf}
+\end{table}
+ 
 
 \section{Summary and Discussion}\label{discussion}
 
