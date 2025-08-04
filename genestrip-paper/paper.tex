@@ -40,7 +40,7 @@
 % Workaround for faster compile without scatter plots:
 %
 \newif\ifscatter
-%\scattertrue
+\scattertrue
 
 % Enter paper title to populate PDF metadata:
 %\hypersetup{pdftitle={MGenestrip: Efficient read classification, filtering and $k$-mer counting for selected groups of species}}
@@ -186,7 +186,7 @@
 
     \subsection{Analysis reports} \label{measures}
 
-    Genestrip produces analysis reports in CSV file format with a comprehensive set of statistical values. We use the following notation to describe them: let $k_{t,f,d}$ be the number of $k$-mers for \taxon\ $t$ found in fastq file $f$ with respect to database $d$ and let $u_{t,f,d}$ be the corresponding number of unique $k$-mers. Similarly, let $u_{t,d}$ be the number of (unique) $k$-mers for $t$ stored in $d$.
+    Genestrip produces analysis reports in CSV file format with a comprehensive set of statistical values. We use the following notation to describe them: Let $k_{t,f,d}$ be the number of $k$-mers for \taxon\ $t$ found in fastq file $f$ with respect to database $d$ and let $u_{t,f,d}$ be the corresponding number of unique $k$-mers. Similarly, let $u_{t,d}$ be the number of (unique) $k$-mers for $t$ stored in $d$.
 
     Table \ref{csvcolumns} describes the most important reported columns. Additional columns exist to  accumulate $k$-mer counts and read counts etc. upward to ancestors in the taxonomy. We also track the standard deviations of \verb|avg. contig length|, \verb|avg. read length|, \verb|mean class error| and other columns wherever suitable. Moreover, normalized values derived from the original values by dividing by $u_{t,d}$ are included where suitable. Normalized values aim to reduce counting bias due to a high or low representation of a \taxon\ $t$ in terms of its stored $k$-mers $u_{t,d}$.
 
@@ -261,15 +261,16 @@
                 width = 0.4\textwidth,
                 height = 0.4\textwidth,
                 legend columns=-1,
-                legend entries={{Species or Below},{Genus},{Above Genus}},
+                legend style={font=\small},
+                legend entries={{Species or below},{Genus},{Above genus}},
                 legend to name=legend1
             ]
                 \addplot+ [scatter, only marks,mark size=1pt,
                 point meta=explicit symbolic,
                 scatter/classes={
                         {species or below}={mark=*,blue},
-                    genus={mark=square*,green},
-                    null={mark=triangle*,red} %  <-- don't add comma
+                    genus={mark=square,green},
+                    null={mark=triangle,red} %  <-- don't add comma
                 }
                 ]
                 table[col sep=semicolon, header=true, x = {kmers 2}, y = {kmers 1} , meta=rank] {\csvpath results/viral_gs_ku_dbcomp.csv};
@@ -301,15 +302,16 @@
                 width = 0.4\textwidth,
                 height = 0.4\textwidth,
                 legend columns=-1,
-                legend entries={{Species or Below},{Genus},{Above Genus}},
+                legend style={font=\small},
+                legend entries={{Species or below},{Genus},{Above genus}},
                 legend to name=legend2
             ]
                 \addplot+ [scatter, only marks,mark size=1pt,
                 point meta=explicit symbolic,
                 scatter/classes={
                         {species or below}={mark=*,blue},
-                    genus={mark=square*,green},
-                    null={mark=triangle*,red} %  <-- don't add comma
+                    genus={mark=square,green},
+                    null={mark=triangle,red} %  <-- don't add comma
                 }
                 ]
                 table[col sep=semicolon, header=true, x = {kmers 2}, y = {kmers 1} , meta=rank] {\csvpath results/viral_fastq1_gs_ku_comp.csv};
@@ -329,8 +331,8 @@
                 point meta=explicit symbolic,
                 scatter/classes={
                         {species or below}={mark=*,blue},
-                    genus={mark=square*,green},
-                    null={mark=triangle*,red} %  <-- don't add comma
+                    genus={mark=square,green},
+                    null={mark=triangle,red} %  <-- don't add comma
                 }
                 ]
                 table[col sep=semicolon, header=true, x = {reads 2}, y = {reads 1} , meta=rank] {\csvpath results/viral_fastq1_gs_ku_comp.csv};
@@ -356,7 +358,7 @@
         \begin{tabular}{r|r|r|r|rr
 %|rr
         }
-            \multicolumn{1}{c|}{\# } & \multicolumn{1}{c|}{Reads} & \multicolumn{1}{c|}{Avg. BPs} &
+            \multicolumn{1}{c|}{\# } & \multicolumn{1}{c|}{Reads} & \multicolumn{1}{c|}{Avg. BPs per read} &
             \multicolumn{1}{c|}{Data points} &
             \multicolumn{2}{c}{Differing $k$-mers counts (\%)}
 %\multicolumn{2}{c}{Differing} \\
@@ -386,15 +388,16 @@
                 width = 0.4\textwidth,
                 height = 0.4\textwidth,
                 legend columns=-1,
-                legend entries={{Species or Below},{Genus},{Above Genus}},
+                legend style={font=\small},
+                legend entries={{Species or below},{Genus},{Above genus}},
                 legend to name=legend3
             ]
                 \addplot+ [scatter, only marks,mark size=1pt,
                 point meta=explicit symbolic,
                 scatter/classes={
                         {species or below}={mark=*,blue},
-                    genus={mark=square*,green},
-                    null={mark=triangle*,red} %  <-- don't add comma
+                    genus={mark=square,green},
+                    null={mark=triangle,red} %  <-- don't add comma
                 }
                 ]
                 table[col sep=semicolon, header=true, x = {kmers 2}, y = {kmers 1} , meta=rank] {\csvpath results/viral_saliva3_gs_ku_comp.csv};
@@ -414,8 +417,8 @@
                 point meta=explicit symbolic,
                 scatter/classes={
                         {species or below}={mark=*,blue},
-                    genus={mark=square*,green},
-                    null={mark=triangle*,red} %  <-- don't add comma
+                    genus={mark=square,green},
+                    null={mark=triangle,red} %  <-- don't add comma
                 }
                 ]
                 table[col sep=semicolon, header=true, x = {reads 2}, y = {reads 1} , meta=rank] {\csvpath results/viral_saliva3_gs_ku_comp.csv};
@@ -456,6 +459,7 @@
                 width = 0.4\textwidth,
                 height = 0.4\textwidth,
                 legend columns=-1,
+                legend style={font=\small},
                 legend entries={{Species or below},{Genus},{Above Genus}},
                 legend to name=legend4
             ]
@@ -463,8 +467,8 @@
                 point meta=explicit symbolic,
                 scatter/classes={
                         {species or below}={mark=*,blue},
-                    genus={mark=square*,green},
-                    null={mark=triangle*,red} %  <-- don't add comma
+                    genus={mark=square,green},
+                    null={mark=triangle,red} %  <-- don't add comma
                 }
                 ]
                 table[col sep=semicolon, header=true, x = {kmers 1}, y = {kmers 2} , meta={rank}] {\csvpath results/viral_human_virus_gs_gs_dbcomp.csv};
@@ -485,8 +489,8 @@
                 point meta=explicit symbolic,
                 scatter/classes={
                         {species or below}={mark=*,blue},
-                    genus={mark=square*,green},
-                    null={mark=triangle*,red} %  <-- don't add comma
+                    genus={mark=square,green},
+                    null={mark=triangle,red} %  <-- don't add comma
                 }
                 ]
                 table[col sep=semicolon, header=true, x = {kmers 1}, y = {kmers 2} , meta=rank] {\csvpath results/viral_db_human_virus_db_ku_ku_dbcomp.csv};
@@ -517,15 +521,16 @@
                 width = 0.4\textwidth,
                 height = 0.4\textwidth,
                 legend columns=-1,
-                legend entries={{Species or below},{Genus},{Above Genus}},
+                legend style={font=\small},
+                legend entries={{Species or below},{Genus},{Above genus}},
                 legend to name=legend5
             ]
                 \addplot+ [scatter, only marks,mark size=1pt,
                 point meta=explicit symbolic,
                 scatter/classes={
                         {species or below}={mark=*,blue},
-                    genus={mark=square*,green},
-                    null={mark=triangle*,red} %  <-- don't add comma
+                    genus={mark=square,green},
+                    null={mark=triangle,red} %  <-- don't add comma
                 }
                 ]
                 table[col sep=semicolon, header=true, x = {kmers 1}, y = {kmers 2} , meta={rank}] {\csvpath results/viral_human_virus_saliva3_ku_ku_comp.csv};
@@ -545,8 +550,8 @@
                 point meta=explicit symbolic,
                 scatter/classes={
                         {species or below}={mark=*,blue},
-                    genus={mark=square*,green},
-                    null={mark=triangle*,red} %  <-- don't add comma
+                    genus={mark=square,green},
+                    null={mark=triangle,red} %  <-- don't add comma
                 }
                 ]
                 table[col sep=semicolon, header=true, x = {reads 1}, y = {reads 2} , meta=rank] {\csvpath results/viral_human_virus_saliva3_ku_ku_comp.csv};
@@ -568,8 +573,8 @@
                 point meta=explicit symbolic,
                 scatter/classes={
                         {species or below}={mark=*,blue},
-                    genus={mark=square*,green},
-                    null={mark=triangle*,red} %  <-- don't add comma
+                    genus={mark=square,green},
+                    null={mark=triangle,red} %  <-- don't add comma
                 }
                 ]
                 table[col sep=semicolon, header=true, x = {kmers 1}, y = {kmers 2} , meta={rank}] {\csvpath results/viral_human_virus_saliva3_gs_gs_comp.csv};
@@ -590,8 +595,8 @@
                 point meta=explicit symbolic,
                 scatter/classes={
                         {species or below}={mark=*,blue},
-                    genus={mark=square*,green},
-                    null={mark=triangle*,red} %  <-- don't add comma
+                    genus={mark=square,green},
+                    null={mark=triangle,red} %  <-- don't add comma
                 }
                 ]
                 table[col sep=semicolon, header=true, x = {reads 1}, y = {reads 2} , meta=rank] {\csvpath results/viral_human_virus_saliva3_gs_gs_comp.csv};
@@ -854,7 +859,7 @@
 
     Based on the previously used fastq files and the Genestrip database \texttt{tb}, we provide anecdotal evidence of the usefulness of the $k$-mer consistency ratio $r_{t,f,d}$ as introduced in Section \ref{measures}.
 
-    Table \ref{ratiosamples} reports the five hits with the highest unique $k$-mer counts $u_{t,f,d}$ on the ranks species or below for the human saliva fast files \#1, \#3 and \#5 from Table \ref{errorsviral} analyzed via \texttt{tb} from Section \ref{mdbtb}: Since $r_{t,f,d}$ relates the parameters $k_{t,f,d}$, $u_{t,f,d}$ and $u_{t,d}$ accordingly, it tends to be aligned with bio medical expectations for true and false hits. For example, species like ``" (Metamycoplasma salivarium) under the genus ``" (Metamycoplasma) are also included in \texttt{tb} and typically occur in the oral microbiome \citep{}. In contrast, the hits ``" (Francisella tularensis) and ``" (Borreliella garinii) are implausible and also have a low $k$-mer Consistency ratio. Note that the unique $k$-mer count, the $k$-mer count or the classified read count alone occur to be inconclusive. Results for the other three human saliva fastq files from Table \ref{errorsviral} are similar in nature (not reported).
+    Table \ref{ratiosamples} reports the five hits with the highest unique $k$-mer counts $u_{t,f,d}$ on the ranks species or below for the human saliva fast files \#1, \#3 and \#5 from Table \ref{errorsviral} analyzed via \texttt{tb} from Section \ref{mdbtb}: Since $r_{t,f,d}$ relates the parameters $k_{t,f,d}$, $u_{t,f,d}$ and $u_{t,d}$ accordingly, it tends to be aligned with biomedical expectations for true and false hits. For example, species like ``" (Metamycoplasma salivarium) under the genus ``" (Metamycoplasma) are also included in \texttt{tb} and typically occur in the oral microbiome \citep{}. In contrast, the hits ``" (Francisella tularensis) and ``" (Borreliella garinii) are implausible and also have a low $k$-mer Consistency ratio. Note that the unique $k$-mer count, the $k$-mer count or the classified read count alone occur to be inconclusive. Results for the other three human saliva fastq files from Table \ref{errorsviral} are similar in nature (not reported).
 
     \begin{table}[h]
         \centering
@@ -885,7 +890,7 @@
     \begin{table}[h]
         \centering
         \begin{tabular}{c|p{1.6cm}|p{6cm}|r}
-            DB Name & Category & Description & Species and below \\
+            DB name & Category & Description & Species and below \\
             \hline
             \texttt{cv\_g} & Viral & See Section \ref{correctness} & 25,739 \\
             \texttt{hv\_g} & Viral & See Section \ref{accuracy} & 225  \\
@@ -993,16 +998,39 @@
 \textbf{Project home page:} \url{https://github.com/pfeiferd/genestrip}\\
 \textbf{Operating system(s):} Platform independent\\
 \textbf{Programming language:} Java\\
-\textbf{Other requirements:} execution: JRE 11 or higher; building: JDK 11 or higher and Maven 2 or 3\\
+\textbf{Execution requirements:} JRE 11 or higher \\
+\textbf{Build requirements:} JDK 11 or higher and Maven 2 or 3\\
 \textbf{License:} Apache 2.0 subject to the Commons Clause License Condition v1.0 \\
 \textbf{Any restrictions to use by non-academics:} License needed for commercial use\\
+
+\section{List of abbreviations}
+
+\begin{tabular}{lp{10cm}}
+$t$ & Placeholder for taxon \\
+$f$ & Placeholder for fastq file \\
+$d$ & Placeholder for $k$-mer database \\
+$k_{t,f,d}$& Number of $k$-mers found for taxon $t$ in fastq file $f$ via database $d$\\
+$u_{t,f,d}$& Number of unique $k$-mers found for taxon $t$ in fastq file $f$  via database $d$\\
+$u_{t,d}$& Number of $k$-mers stored under taxon $t$ in database $d$ \\
+$r_{t,f,d}$ &$k$-mer consistency ratio for $k$-mers found for taxon $t$ in fastq file $f$ with respect to database $d$ \\
+\texttt{cv\_ku} & Complete viral database for KrakenUniq \\
+\texttt{cv\_g} & Complete viral database for Genestrip \\
+BPs & Base pairs \\
+\texttt{hv\_ku} & Human virus database for KrakenUniq \\
+\texttt{hv\_g} & Human virus database for Genestrip \\
+$S_d$ & Set of taxons in database $d$ for the rank species or below \\
+$err_{f,d}(e)$ & Mean absolute percentage error for the analysis of fastq file $f$ via database $e$ where corresponding results based on database $d$ are the ground truth \\
+\texttt{MicrobialDB} & Large, comprehensive microbial database for KrakenUniq \\
+\texttt{tb} & Tick-borne bacterial pathogens database for Genestrip \\
+DB & Database
+\end{tabular}
 
 \section{Declarations}
 
 \subsection{Availability of data and materials}
 
 The exact code base for this publication is available under:\\
-\url{https://github.com/pfeiferd/genestrip/releases/tag/v2.0}\\
+\url{https://github.com/pfeiferd/genestrip/releases/tag/v2.?}\\
 The code base used to generate all of the results from this publication is available under:\\
 \url{https://github.com/pfeiferd/genestrip-db-exp/tag/v??}\\
 Following \cite{Samson:2020aa}, the human saliva fastq files were acquired from the Sequence Read Archive (SRA) under the entries: ERX1462737, ERX1462740, SRX2830683, SRX2830684, and SRX2830689.
@@ -1018,11 +1046,11 @@ The work behind this publication was not funded.
 
 \subsection{Authors' contributions}
 
-DP developed the software and designed the evaluation. CR conducted the performance experiments and compiled the respective results.
+DP developed the software, designed the evaluation and wrote the manuscript. CR conducted the performance experiments and compiled the respective results.
 
 \subsection{Acknowledgements}
 
-We thank Richard Zowalla and Simon Schweizer for providing a server-based environment enabling the development and testing of Genestrip.
+We thank Dr. Richard Zowalla, Simon Schweizer and Jochen Sch\"afer for providing server-based environments enabling the development and testing of Genestrip. We thank Dr. Robert Friedrich and Lennart Elze for their feedback when initially applying the software.
 
     \clearpage
     \bibliography{sn-bibliography}
