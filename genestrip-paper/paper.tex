@@ -928,25 +928,25 @@
         \begin{tabular}{p{2.6cm}|c|r|r}
             Databases & Parameter & KrakenUniq & Genestrip  \\
             \hline
-            \multirow{7}{2.6cm}{\texttt{cv\_ku} vs. \texttt{cv\_g} from Section \ref{correctness} on the five human saliva fastq files from Table \ref{errorsviral}} & Max. reads per fastq file & \multicolumn{2}{c}{??} \\
-            & Avg. reads per fastq file & \multicolumn{2}{c}{??} \\
-            & Avg. BPs per read & \multicolumn{2}{c}{??} \\
+            \multirow{7}{2.6cm}{\texttt{cv\_ku} vs. \texttt{cv\_g} from Section \ref{correctness} on the five human saliva fastq files from Table \ref{errorsviral}} & Max. reads per fastq file & \multicolumn{2}{c}{980,879,835} \\
+            & Avg. reads per fastq file & \multicolumn{2}{c}{824,743,085} \\
+            & Avg. BPs per read & \multicolumn{2}{c}{101} \\
             & Avg. RAM (MB) & 10.600 & 6.301  \\
             &  Max. wall time (min) & 28 & 41 \\
             &  Avg. wall time (min) & 23 & 34  \\
-            &  Avg. speed (reads / s) & ?? & ??  \\
+            &  Avg. speed (reads / s) & 597,639 & 404,285  \\
             \hline
             \multirow{7}{2.6cm}{\texttt{MicrobialDB} vs. \texttt{tb} from Section \ref{mdbtb} on the eight tick-related fastq files from Section \ref{tickanalysis}} 
             & Max. reads per fastq file & \multicolumn{2}{c}{2,233,967} \\
             & Avg. reads per fastq file & \multicolumn{2}{c}{1,255,973}  \\
             & Avg. BPs per read & \multicolumn{2}{c}{365} \\
             & Avg. RAM (MB) & 31,136 & 8,355  \\
-            &  Max. wall time (min) & 16 & 0.88  \\
-            &  Avg. wall time (min) & 14  & 0.76  \\
+            &  Max. wall time (min) & 16 & 1  \\
+            &  Avg. wall time (min) & 14  & 1  \\
             &  Avg. speed (reads / s) & 1,495 & 27,010  \\
 
         \end{tabular}
-        \caption{Read analysis performance comparison between KrakenUniq and Genestrip using both tools with 10 threads. For \texttt{MicrobialDB} we set the parameter \texttt{--preload-size 24G} to limit KrakenUniq's main memory according to \cite{lowmemkraken} (otherwise the analysis with KrakenUniq would have not been possible on the given PC).}\label{analysisperf}
+        \caption{Read analysis performance comparison between KrakenUniq and Genestrip using both tools with 10 threads. For \texttt{MicrobialDB} we set the parameter \texttt{--preload-size 24G} to limit KrakenUniq's main memory according to \cite{lowmemkraken}. (Otherwise, the analysis with KrakenUniq would have not been possible on the given PC.)}\label{analysisperf}
     \end{table}
 
 
