@@ -918,7 +918,7 @@
 
     The second comparison, shown in Table \ref{analysisperf}, uses the database \texttt{MicrobialDB} vs. \texttt{tb} from Section \ref{mdbtb} to analyze the eight tick-related fastq files from Section \ref{tickanalysis}. Since \texttt{MicrobialDB} is so large, we had to make use of KrakenUniq's database processing in chunks which broke down each run into 23 rounds. The chunk processing caused considerably longer run times. On the one hand, comparing the tools this way may be considered ``unfair" because of unequally sized database sizes. On the other hand, there is no alternative to employing a very large KakenUniq database for the purpose (of detecting tick-related bacterial pathogens) because, as examined in Section \ref{accuracy}, a small KrakenUniq database bares the high risk of many false positives.
 
-    Regarding main memory, Genestrip analysis performance is dominated by the size of the database itself... \textbf{TODO}.
+    Regarding main memory, KrakenUniq's and Genestrip's analysis performance are dominated by the size of the database. In both cases, the required memory did not vary much across runs when the same database was used. Since \texttt{MicrobialDB} did not fit into memory, we set KrakenUniq's preload size such that in total, it allocated most of the available memory. In case of the viral database, KrakenUniq still needs more RAM than Genestrip. We suspect this is because KrakenUniq loads the entire NCBI taxonomy tree whereas Genestrip represents only those parts of the tree in main memory that are needed for the analysis.
 
     Overall, the results from both comparisons suggest that depending on the use case, Genestrip  and its small databases offer competitive to highly favorable analysis performance.
 
@@ -931,7 +931,7 @@
             \multirow{7}{2.6cm}{\texttt{cv\_ku} vs. \texttt{cv\_g} from Section \ref{correctness} on the five human saliva fastq files from Table \ref{errorsviral}} & Max. reads per fastq file & \multicolumn{2}{c}{980,879,835} \\
             & Avg. reads per fastq file & \multicolumn{2}{c}{824,743,085} \\
             & Avg. BPs per read & \multicolumn{2}{c}{101} \\
-            & Avg. RAM (MB) & 10.600 & 6.301  \\
+            & Avg. RAM (MB) & 10,600 & 6,301  \\
             &  Max. wall time (min) & 28 & 41 \\
             &  Avg. wall time (min) & 23 & 34  \\
             &  Avg. speed (reads / s) & 597,639 & 404,285  \\
@@ -1041,7 +1041,7 @@ DP developed the software, designed the evaluation and wrote the manuscript. CR 
 
 \subsection{Acknowledgements}
 
-We thank Dr. Richard Zowalla, Simon Schweizer and Jochen Sch\"afer for providing server-based environments enabling the development and testing of Genestrip. We thank Dr. Robert Friedrich and Lennart Elze for their feedback when initially applying the software.
+We thank Dr. Richard Zowalla, Simon Schweizer and Jochen Sch\"afer for providing server-based environments enabling the development and testing of Genestrip. We thank Dr. Robert Friedrich and Lennart Elze for their feedback when initially applying the software. Many thanks also to Dr. Markus Graf for proofreading the manuscript and for his valuable suggestions.
 
     \clearpage
     \bibliography{sn-bibliography}
