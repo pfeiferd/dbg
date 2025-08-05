@@ -202,7 +202,7 @@
         \caption{Extract of columns from Genestrip's read analysis reports}\label{csvcolumns}
     \end{table}
 
-    Genestrip introduces a novel, derived statistical measure --- the \emph{$k$-mer consistency ratio} --- as explained in the following: Given $k_{t,f,d}$, the apriori probability $p(t\ |\ k_{t,f,d})$ of a unique $k$-mer from $d$ belonging to $t$ to occur \emph{at least once} in $f$\ is approximately:\footnote{The approximation is based on the assumption that all $k$-mers in $d$ belonging to $t$ are equally likely to be found in $f$ (such as reported for the results in \cite{nanoporeticks}). However, this assumption does not hold when special DNA library preparation protocols such as 16S or 18S amplification are used \citep{Wensel:2022aa,16srrnause}. In such cases the $k$-mer consistency ratio must therefore be disregarded.}
+    Genestrip introduces a novel, derived statistical measure --- the \emph{$k$-mer consistency ratio} --- as explained in the following: Given $k_{t,f,d}$, the apriori probability $p(t\ |\ k_{t,f,d})$ of a unique $k$-mer from $d$ belonging to $t$ to occur \emph{at least once} in $f$\ is approximately:\footnote{The approximation is based on the assumption that all $k$-mers in $d$ belonging to $t$ are equally likely to be found in $f$ (such as reported for the results in \cite[Fig. 3]{nanoporeticks}). However, this assumption does not hold when special DNA library preparation protocols such as 16S or 18S amplification are used \citep{Wensel:2022aa,16srrnause}. In such cases the $k$-mer consistency ratio must therefore be disregarded.}
     \begin{equation}
         \label{ptk}
         p(t\ |\ k_{t,f,d}) = 1 - (1 - 1/u_{t,d})^{k_{t,f,d}}
@@ -914,11 +914,15 @@
 
     To assess Genestrip's performance regarding $k$-mer counting and read classification, we compared its analysis runs with corresponding runs under KrakenUniq.
 
-    For the first comparison we applied the almost equally structured databases \texttt{cv\_ku} for KrakenUniq and \texttt{cv\_g} for Genestrip from Section \ref{correctness} to the human saliva fastq files from Table \ref{errorsviral}. The first section of Table \ref{analysisperf} summarizes the analysis performance across all five fastq files.
+    For the first comparison we applied the almost equally structured databases \texttt{cv\_ku} for KrakenUniq and \texttt{cv\_g} for Genestrip from Section \ref{correctness} to the human saliva fastq files from Table \ref{errorsviral}. Scenario (a) of Table \ref{analysisperf} summarizes the analysis performance across all five fastq files. Here, KrakenUniq offered about 33\% better runtimes.
 
-    The second comparison, shown in Table \ref{analysisperf}, uses the database \texttt{MicrobialDB} vs. \texttt{tb} from Section \ref{mdbtb} to analyze the eight tick-related fastq files from Section \ref{tickanalysis}. Since \texttt{MicrobialDB} is so large, we had to make use of KrakenUniq's database processing in chunks which broke down each run into 23 rounds. The chunk processing caused considerably longer run times. On the one hand, comparing the tools this way may be considered ``unfair" because of unequally sized database sizes. On the other hand, there is no alternative to employing a very large KakenUniq database for the purpose (of detecting tick-related bacterial pathogens) because, as examined in Section \ref{accuracy}, a small KrakenUniq database bares the high risk of many false positives.
+     In scenario (b) of Table \ref{analysisperf} we used the databases \texttt{MicrobialDB} vs. \texttt{tb} from Section \ref{mdbtb} to analyze the eight tick-related fastq files from Section \ref{tickanalysis}. Since \texttt{MicrobialDB} is so large, we had to make use of KrakenUniq's database processing in chunks which broke down each run into 23 rounds. The chunk processing caused considerably longer run times. On the one hand, comparing the tools this way may be considered ``unfair" because of unequally sized database sizes. On the other hand, there is no alternative to employing a very large KrakenUniq database for the purpose (of detecting tick-related bacterial pathogens) because, as examined in Section \ref{accuracy}, a small KrakenUniq database bares the high risk of many false positives.
+     
+     In scenario (c) we had the fastq files from (b) jointly analyzed. In this case, Genestrip performed even better because the database had to be loaded only once whereas in scenario (b), it got loaded once for each fastq file. In contrast, KrakenUniq did not benefit from the joint analysis because its chunk processing had to be done all over again for each fastq file.
 
-    Regarding main memory, KrakenUniq's and Genestrip's analysis performance are dominated by the size of the database. In both cases, the required memory did not vary much across runs when the same database was used. Since \texttt{MicrobialDB} did not fit into memory, we set KrakenUniq's preload size such that in total, it allocated most of the available memory. In case of the viral database, KrakenUniq still needs more RAM than Genestrip. We suspect this is because KrakenUniq loads the entire NCBI taxonomy tree whereas Genestrip represents only those parts of the tree in main memory that are needed for the analysis.
+    Regarding main memory, KrakenUniq's and Genestrip's analysis performance are dominated by the size of the database. In both cases, the required memory did not vary much across runs when the same database was used. Since \texttt{MicrobialDB} did not fit into memory, we set KrakenUniq's preload size such that in total, it allocated most of the available memory. In case of the viral database, KrakenUniq still needs more RAM than Genestrip. 
+ %   
+    %We suspect this is because KrakenUniq loads the entire NCBI taxonomy tree whereas Genestrip represents only those parts of the tree in main memory that are needed for the analysis.
 
     Overall, the results from both comparisons suggest that depending on the use case, Genestrip  and its small databases offer competitive to highly favorable analysis performance.
 
@@ -926,24 +930,32 @@
         \centering
         \small
         \begin{tabular}{p{2.6cm}|c|r|r}
-            Databases & Parameter & KrakenUniq & Genestrip  \\
+            Scenario & Parameter & KrakenUniq & Genestrip  \\
             \hline
-            \multirow{7}{2.6cm}{\texttt{cv\_ku} vs. \texttt{cv\_g} from Section \ref{correctness} on the five human saliva fastq files from Table \ref{errorsviral}} & Max. reads per fastq file & \multicolumn{2}{c}{980,879,835} \\
-            & Avg. reads per fastq file & \multicolumn{2}{c}{824,743,085} \\
-            & Avg. BPs per read & \multicolumn{2}{c}{101} \\
+            \multirow{6}{2.6cm}{(a) \texttt{cv\_ku} vs. \texttt{cv\_g} from Section \ref{correctness} on the five human saliva fastq files from Table \ref{errorsviral}} 
+            & Avg. reads per fastq file & \multicolumn{2}{r}{824,743,085\parbox{1cm}{\ }} \\
+            & Avg. BPs per read & \multicolumn{2}{r}{101\parbox{1cm}{\ }} \\
             & Avg. RAM (MB) & 10,600 & 6,301  \\
             &  Max. wall time (min) & 28 & 41 \\
             &  Avg. wall time (min) & 23 & 34  \\
             &  Avg. speed (reads / s) & 597,639 & 404,285  \\
             \hline
-            \multirow{7}{2.6cm}{\texttt{MicrobialDB} vs. \texttt{tb} from Section \ref{mdbtb} on the eight tick-related fastq files from Section \ref{tickanalysis}} 
-            & Max. reads per fastq file & \multicolumn{2}{c}{2,233,967} \\
-            & Avg. reads per fastq file & \multicolumn{2}{c}{1,255,973}  \\
-            & Avg. BPs per read & \multicolumn{2}{c}{365} \\
+            \multirow{8}{2.6cm}{(b) \texttt{MicrobialDB} vs. \texttt{tb} from Section \ref{mdbtb} on the eight tick-related fastq files from Section \ref{tickanalysis}} 
+            & Min. reads per fastq file & \multicolumn{2}{r}{644,767\parbox{1cm}{\ }} \\
+            & Max. reads per fastq file & \multicolumn{2}{r}{2,233,967\parbox{1cm}{\ }} \\
+            & Avg. reads per fastq file & \multicolumn{2}{r}{1,255,973\parbox{1cm}{\ }}  \\
+            & Avg. BPs per read & \multicolumn{2}{r}{365\parbox{1cm}{\ }} \\
             & Avg. RAM (MB) & 31,136 & 8,355  \\
             &  Max. wall time (min) & 16 & 1  \\
             &  Avg. wall time (min) & 14  & 1  \\
             &  Avg. speed (reads / s) & 1,495 & 27,010  \\
+            \hline
+            \multirow{5}{2.6cm}{(d) \texttt{MicrobialDB} vs. \texttt{tb}  on the eight tick-related fastq files \emph{jointly analyzed} } 
+            & & & \\
+            &  RAM (MB) & 31,133 & 8,404  \\
+            &  Wall time (min) & 114 & 2  \\
+            &  Speed (reads / s) & 1,473 & 114,179  \\
+            & & & \\
 
         \end{tabular}
         \caption{Read analysis performance comparison between KrakenUniq and Genestrip using both tools with 10 threads. For \texttt{MicrobialDB} we set the parameter \texttt{--preload-size 24G} to limit KrakenUniq's main memory according to \cite{lowmemkraken}. (Otherwise, the analysis with KrakenUniq would have not been possible on the given PC.)}\label{analysisperf}
@@ -966,9 +978,10 @@
 
     Let us contrast Genestrip's database generation performance with the corresponding resources required under KrakenUniq: As mentioned in Section \ref{problem}, \cite{Nasko:2018aa} stated that generating a full bacterial database for Kraken 1 and so equivalently for KrakenUniq from the RefSeq ``required ca. 2.5 TB of RAM and ca. 11 days" on a suitable computer. However, since then, the RefSeq's number of prokaryotic genomes alone has increased up by a factor of 4.5 to over 38 Mio. \citep{10.1093/nar/gkae1038}. The additional growth of the RefSeq is also a likely reason why \texttt{MicrobialDB} has not been updated anymore since 2023 because ultralarge main memory and extremely high computational power would be required for this. Overall, this development suggests that $k$-mer databases with very broad and comprehensive coverage (such as by including \emph{all} genomes from the RefSeq category ``Bacteria") have reached a ``dead-end" -- at least when a lossless storing of $k$-mers is desired.
 
-    In Section \ref{runtimeperf} we examined Genestrip's analysis performance: When the database structure under KrakenUniq and Genestrip was similar then the performance was similar too with KrakenUniq offering about 33\% better runtimes. However, when the use case for Genestrip's small databases was met, then the database size played off with regard to the analysis time: E.g., when analyzing tick-borne bacterial pathogens via the database \texttt{tb}, Genestrip was more than ten times faster than KrakenUniq because on a regular PC, KrakenUniq's large database \texttt{MicrobialDB} has to be processed in chunks over several iterations. Regarding main memory, Genestrip analysis performance is dominated by the size of the database itself. E.g, it remained below 9 GB of RAM under the database \texttt{tb}.
+    In Section \ref{runtimeperf} we examined Genestrip's analysis performance: When the database structure under KrakenUniq and Genestrip was similar then the performance was similar too with KrakenUniq offering about 33\% better runtimes.
+     However, when the use case for Genestrip's small databases was met, then the database size played off with regard to the analysis time: E.g., when analyzing tick-borne bacterial pathogens via the database \texttt{tb}, Genestrip was more than ten times faster than KrakenUniq because on a regular PC, KrakenUniq's large database \texttt{MicrobialDB} has to be processed in chunks over several iterations. In a similar scenario where eight fastq files were jointly analyzed, Genestrip was over seventy times faster than KrakenUniq because Genestrip spared reloading the database for each fastq file. Regarding main memory, Genestrip analysis performance is dominated by the size of the database itself. E.g, it remained below 9 GB of RAM under the database \texttt{tb}.
 
-    In use cases where metagenomics is meant to be performed with very few restrictions on what organisms to look out for, then Genestrip is not the right choice. Although it is certainly possible to create large databases under Genestrip, one would end up with similar problems as with KrakenUniq (see above). However, if exactness of results is required in addition to broad coverage, then a two-stage analysis procedure might prove useful: In stage one, a tool such as Kraken 2 with a compressed database for broad coverage may be applied to identify candidate organisms of interest. In stage two, Genestrip might be used to confirm and ``drill down" the initial findings by potentially first generating and then using a dedicated database.
+    In use cases where metagenomics is meant to be performed with very few restrictions on what organisms to look out for, then Genestrip may not the right choice. Although it is certainly possible to create large databases under Genestrip, one would end up with similar challenges as with KrakenUniq (see above). However, if exactness of results is required in addition to broad coverage, then a two-stage analysis procedure might prove useful: In stage one, a tool such as Kraken 2 with a compressed database for broad coverage may be applied to identify candidate organisms of interest. In stage two, Genestrip might be used to confirm and ``drill down" the initial findings by potentially first generating and then using a dedicated database.
 
 %\subsection{Discussion}
 %
