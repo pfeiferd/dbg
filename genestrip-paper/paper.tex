@@ -40,7 +40,7 @@
 % Workaround for faster compile without scatter plots:
 %
 \newif\ifscatter
-\scattertrue
+%\scattertrue
 
 \newcommand{\taxon}{taxon}
 
@@ -99,7 +99,7 @@
 
     Based on this approach, Genestrip achieves a low memory footprint during database creation as well as at read analysis time. Moreover, it offers competitive to highly favorable runtimes for $k$-mer matching and read classification. Together, these qualities empower users to create and use respective databases on machines with regular main memory size. Genestrip's $k$-mer counting results are similar to those of KrakenUniq \citep{krakenUniq} with respect to the selected organisms. Genestrip also supports unique $k$-mer counting with exact counts and with low memory overhead.
     
-    In the results section of this paper, we demonstrate the usefulness of our approach by introducing a small Genestrip database that covers tick-borne bacterial pathogens with high genomic coverage for the organisms or interest. An envisioned application is tick surveillance via genomics as reported in \citep{nanoporeticks}. Based on our contribution, a related analysis can be performed on a regular PC in just a few minutes. As part of our performance experiments, we briefly present further small databases that may prove useful in agriculture or infectious disease diagnostics.
+    In the results section of this paper, we demonstrate the usefulness of our approach by introducing a small Genestrip database for tick-borne bacterial pathogens. An envisioned application is tick surveillance via metagenomics as reported in \citep{nanoporeticks}. We performed analyses of tick-related fastq files on a regular PC in less than a minute. Thanks to the small database's high genomic coverage for the organisms of interest, we achieved considerably better recall than with a large standard database under KrakenUniq. This means we found more $k$-mers and matching reads for such organisms while also sustaining high precision. As part of our performance experiments, we briefly present further small databases that may prove useful in agriculture and infectious disease diagnostics.
 
     Genestrip is written in Java, has a small code base and supports command-line-based as well as API-based usage. Based on the Java Virtual Machine, it can be executed on  modern operating systems including Linux, Windows and macOS.
 
@@ -129,13 +129,13 @@
     \end{figure}
     \clearpage
 
-    \subsection{Database and filter generation}
+    \subsection{Database generation}
     \label{database}
 
     Genestrip stores a database primarily as a large array \verb|S| of sorted long values. Each long value encodes a $k$-mer from the genome of a selected organism. The default for $k$ is $31$ but smaller values and $k=32$ are possible.
     In order to handle reverse complements of reads later at read analysis time, stored $k$-mers are standardized in the following way: Each $k$-mer is encoded twice as a long value --- once in its regular version and once via its reverse complement --- but only the larger of the two encoded values is stored in the database.
 
-    A second array of the same size as \verb|S| encodes taxa for each $k$-mer in \verb|S|. At read analysis time, lookups in \verb|S| are performed via a binary search. However, an additional Bloom filter \citep{bloomfilter} also contains all stored $k$-mers. By default, it is consulted upfront to check whether a certain $k$-mer might be in \verb|S|. A negative result avoids a more expensive binary search in \verb|S| and therefore saves overall execution cost.
+    A second array of the same size as \verb|S| encodes taxa for each $k$-mer in \verb|S|. At read analysis time, lookups in \verb|S| are performed via a binary search. However, an additional Bloom filter \citep{bloomfilter} also contains all stored $k$-mers. By default, it is consulted upfront to check whether a certain $k$-mer might be in \verb|S|. A negative result avoids a more expensive binary search in \verb|S| and therefore saves overall execution cost. Section \ref{bloom} explains this type of filter in more detail.
     
     Moreover, all parts of the NCBI taxonomy tree \citep{taxonomy} required at analysis time are also included in  the database. The taxonomy extract comprises entries for the selected organisms and all of their ancestors. At analysis time, a bit vector with the same size as \verb|S| indicates which $k$-mers from \verb|S| were found at least once. This is sufficient for exact unique $k$-mer counting and is space-efficient, as it requires only about 1.6\% of additional main memory with respect to \verb|S|.
 
@@ -160,16 +160,20 @@
 
     Regarding database generation, $k$-mers from contaminating sequences can be identified during the update phase: For example, the human genome can be included via configuration in the update phase only; thus, a $k$-mer from the human genome that is also found in the contaminated genome will be pushed to the lowest common ancestor taxon of both species. Still, as the human genome is employed during the update phase only, a resulting database does not include $k$-mers from the human genome (other than those from contaminating sequences). This ensures a small-sized database.
 
+    Of note, Genestrip allows for the exclusion of $k$-mers with low complexity known as genomic dust \citep{doi:10.1089/cmb.2006.13.1028}: As part of the entry phase, each $k$-mers's repetitiveness in terms of base pairs is measured via a fibonacci-based function. If the corresponding value exceeds a configurable threshold then the $k$-mer is dropped.
+    
+  \subsection{Bloom filter generation}
+\label{bloom}
+
     Besides $k$-mer matching and read classification, Genestrip supports filtering of fastq files via a Bloom filter in similarity to \citep{biobloom}. When generated via the goal \verb|index|, the Bloom filter gets stored in a separate file. The goal \verb|filter| loads the filter and processes fastq files accordingly. The standard configuration of the filtering process rewrites a read to the output if the read contains at least one $k$-mer that is recognized by the filter since because of this, the read may belong to a selected organism of interest.
 
- A Bloom filter is a probabilistic data structure: It generally depends on a variable number $n$ of hash functions $h_1, \ldots, h_n$ that ideally return values which are statistically independent from each other. In our case the input to each hash function is a $k$-mer encoded as a long value $l$ and its output is an index of a bit in a large bit vector $b$ where $b$ forms the core of the Bloom filter. The bits indexed via $h_1(l),\ldots,h_n(l)$ are set when $l$ gets stored. To test whether $l$ is contained in the filter, one simply checks for $b(h_1(l)) \wedge \ldots \wedge b(h_n(l))$. False positives from this check may occur as the storing of values other than $l$ may have caused the corresponding bits to be set. There are theoretical guarantees for the corresponding false positive rate that depend on the size $b$ but also demand the independence of the $h_i$ \citep{bloomfilter}.
+ A Bloom filter is a probabilistic data structure to efficiently test whether or not a data object got stored. It generally depends on $n$  hash functions $h_1, \ldots, h_n$ that ideally return values which should be statistically independent from each other. In our case, the input to each hash function is a $k$-mer encoded as a long value $l$ and its output is an index of a bit in a large bit vector $b$ which forms the Bloom filter's storage. When $l$ gets stored, the bits $b[h_1(l)],\ldots,b[h_n(l)]$ are set but any other bits in $b$ remain untouched. To test whether $l$ is contained in the filter, one simply checks whether $b[h_1(l)] \wedge \ldots \wedge b[h_n(l)]$ is true. False positives from this check may occur since the storing of values other than $l$ may have caused the corresponding bits to be set. If the number of data objects to be stored is known, then the false positive rate can be optimized via $n$ and the size of $b$ but this also demands the independence of the $h_i$ \citep{bloomfilter}.
     
-    A typical challenge for Bloom filters is to determine a generator for the $h_i$ such that for practical concerns, the filter's false positive rate does not suffer too much, eventhough the $h_i$ may not be truly independent. In addition, the $h_i$ should be very efficient to compute. Regarding the storing of $k$-mers we found by trial and error that the simple generator
+    A typical challenge is to determine a generator for the $h_1, \ldots, h_n$ which is needed since $n$ may vary: On the one hand, the computation $h_i(l)$ should be very efficient but also, the Bloom filter's false positive rate must not suffer too much, if true independence of the $h_i$ cannot be achieved. Regarding the storing of $k$-mers we found by trial and error that the simple generator
     \[h_i(l) = ((l\ xor\ s_i) \mod |b|) + 1\] 
-    works very well where for each $i$, $s_i$ is a randomly generated long-valued salt and $|b|$ is the size of $b$. Genestrip benefits from the efficiency of the related hash functions when filtering fastq files but also when classifying reads.
+    works well in practice. Hereby, $s_1, \ldots, s_n$ are randomly initialized long-valued salts and $|b|$ is the size of $b$. Genestrip benefits from the efficiency of the resulting hash functions when filtering fastq files but also when classifying reads.
     
-    Of note, Genestrip allows for the exclusion of $k$-mers with low complexity known as genomic dust \citep{doi:10.1089/cmb.2006.13.1028}: As part of the entry phase, each $k$-mers's repetitiveness in terms of base pairs is measured via a fibonacci-based function. If the corresponding value exceeds a configurable threshold then the $k$-mer is dropped.
-
+  
     \subsection{Read classification}
 
     The principal read classification algorithm is similar to that from  Kraken 1 \citep{kraken} and equivalently KrakenUniq. When iterating over a read's $k$-mers, each $k$-mer is encoded as a long -- once by considering its regular order and once via its reverse complement order. For efficiency, only the larger of the two encoded values is looked up in the database. This is sufficient since, if at all, then only just the larger of two values got stored in the first place during database generation (see Section \ref{database}).
