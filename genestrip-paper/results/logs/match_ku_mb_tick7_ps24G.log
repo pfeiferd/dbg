@@ -1,0 +1,14 @@
+712929 sequences (186.49 Mbp) processed in 729.222s (58.7 Kseq/m, 15.34 Mbp/m).
+  33212 sequences classified (4.66%)
+  679717 sequences unclassified (95.34%)
+Writing report file to ./data/fastq/ku_tick7_ps24G.tsv  ..
+Reading genome sizes from ./ku/microbial_db/database.kdb.counts ... done
+Setting values in the taxonomy tree ... done
+Printing classification report ...  done
+Report finished in 0.034 seconds.
+Finishing up ...
+user: 393.876 s
+sys:  159.537 s
+wall: 733.253 s
+child_RSS_high:   31879428 KiB
+group_mem_high:   32093752 KiB

@@ -1,0 +1,14 @@
+980879835 sequences (99068.86 Mbp) processed in 1579.288s (37265.4 Kseq/m, 3763.80 Mbp/m).
+  21918342 sequences classified (2.23%)
+  958961493 sequences unclassified (97.77%)
+Writing report file to ./data/fastq/ku_SRR5571991.tsv  ..
+Reading genome sizes from ./ku/viral_db/database.kdb.counts ... done
+Setting values in the taxonomy tree ... done
+Printing classification report ...  done
+Report finished in 0.092 seconds.
+Finishing up ...
+user: 11663.682 s
+sys:   26.023 s
+wall: 1582.504 s
+child_RSS_high:   10787188 KiB
+group_mem_high:   21139100 KiB
