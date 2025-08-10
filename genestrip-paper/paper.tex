@@ -40,7 +40,7 @@
 % Workaround for faster compile without scatter plots:
 %
 \newif\ifscatter
-%\scattertrue
+\scattertrue
 
 \newcommand{\taxon}{taxon}
 
@@ -176,9 +176,12 @@
 
  A Bloom filter is a probabilistic data structure to efficiently test whether or not a data object got stored. It generally depends on $n$  hash functions $h_1, \ldots, h_n$ that ideally should be statistically independent from each other. In our case, the input to each hash function is a $k$-mer encoded as a long value $l$ and its output is an index of a bit in a large bit vector $b$ which forms the Bloom filter's store. When the value $l$ gets stored, the bits $b[h_1(l)],\ldots,b[h_n(l)]$ are set but any other bits in $b$ remain untouched. To test whether $l$ is contained in the filter, one simply checks whether $b[h_1(l)] \wedge \ldots \wedge b[h_n(l)]$ is true. False positives from this check may occur since the storing of values other than $l$ may have caused the corresponding bits to be set. If the number of data objects to be stored is known, then the false positive rate can be optimized via $n$ and the size of $b$, but this also demands the independence of the $h_i$ \citep{bloomfilter}.
     
-    A typical challenge is to determine a generator for the $h_1, \ldots, h_n$ which is needed since $n$ may vary: On the one hand, the computation of $h_i(l)$ should be very efficient but also, the Bloom filter's false positive rate must not suffer too much, if true independence cannot be guaranteed for the $h_i$. Regarding the storing of $k$-mers we found by trial and error that the simple generator
+    A typical challenge is to determine a method that generates an arbitrary number of $h_i$ which is needed since $n$ may vary: On the one hand, the computation of $h_i(l)$ should be very efficient but also, the Bloom filter's false positive rate must not suffer too much, if true independence cannot be guaranteed for the $h_i$. Regarding the storing of $k$-mers we found by trial and error that the simple generator method
     \[h_i(l) = ((l \oplus s_i)\mod |b|) + 1\] 
-    works well in practice. Hereby, $\oplus$ is the bitwise xor-operator, $s_1, \ldots, s_n$ are randomly initialized long-valued salts and $|b|$ is the size of $b$. Functional testing showed that the generator indeed keeps the false positive rate close to its theoretical expectation.  Genestrip benefits from the efficiency of the resulting hash functions when filtering fastq files but also when classifying reads.
+    works well in practice. Hereby, $\oplus$ is the bitwise xor-operator, $s_1, \ldots, s_n$ are randomly initialized long-valued salts and $|b|$ is the size of $b$. Functional testing showed that this method indeed keeps the false positive rate close to its theoretical expectation.  
+    
+    Genestrip benefits from the efficiency of the resulting 
+    Bloom filters when filtering fastq files but also during database generation and when classifying reads. It populates such filters as part of the goals \texttt{tempindex}, \texttt{filldb} and \texttt{index} from Table \ref{goals} and Figure \ref{goalgraph}, respectively.
     
   
     \subsection{Read classification}
@@ -449,11 +452,11 @@
     The following results highlight the importance of the update phase according to Section \ref{background} in the context of small databases.
 
     As a first example, we created two small viral databases based on the RefSeq covering \emph{human viruses only}\footnote{The list of human viruses originates from \cite{viralzone}. Some human viruses known to be missing were manually added. All \taxon s were chosen on the species rank.}, again under both KrakenUniq and Genestrip.  In the following, we name the two databases \texttt{hv\_ku} and \texttt{hv\_g} with regard to KrakenUniq and Genestrip, respectively. We again assured that the databases were as identical as possible in terms of their genomic basis and their stored $k$-mers.
-    Figure \ref{viraldbscomp} compares the viral database contents for the databases from Section \ref{correctness} with the respective ``human virus only" database for (a) Genestrip and (b) KrakenUniq. The plots depict data points of the 407 taxa referenced in both databases.
+    Figure \ref{viraldbscomp} compares the viral database contents for the databases from Section \ref{correctness} with the respective ``human virus only" database for (a) KrakenUniq and (b) Genestrip. The plots depict data points of the 407 taxa referenced in both databases.
 
-    Regarding Genestrip's databases from Figure \ref{viraldbscomp} (a), all $k$-mer counts on the species rank and below are identical per \taxon\ as an effect of the update phase (as discussed in Section \ref{background}). This is an important precondition met by Genestrip's \texttt{hv\_g} database to avoid false positives at read classification time. Nevertheless, data points from higher taxonomic ranks scatter because the complete viral database  \texttt{cv\_g} contains $k$-mers from many more nonhuman viruses, and these $k$-mers were pushed to higher ranks due to the lowest common ancestor update. Obviously, these additional $k$-mers are not required to classify reads accurately with respect to human viruses. The database \texttt{hv\_g} contains only 3,865,987 $k$-mers with a disk size of approximately 53 MB, whereas \texttt{cv\_g} has as disk size of 5.4 GB with almost 97 times as many $k$-mers.
+    Regarding Genestrip's databases from Figure \ref{viraldbscomp} (b), all $k$-mer counts on the species rank and below are identical per \taxon\ as an effect of the update phase (as discussed in Section \ref{background}). This is an important precondition met by Genestrip's \texttt{hv\_g} database to avoid false positives at read classification time. Nevertheless, data points from higher taxonomic ranks scatter because the complete viral database  \texttt{cv\_g} contains $k$-mers from many more nonhuman viruses, and these $k$-mers were pushed to higher ranks due to the lowest common ancestor update. Obviously, these additional $k$-mers are not required to classify reads accurately with respect to human viruses. The database \texttt{hv\_g} contains only 3,865,987 $k$-mers with a disk size of approximately 53 MB, whereas \texttt{cv\_g} has as disk size of 5.4 GB with almost 97 times as many $k$-mers.
 
-    KrakenUniq's corresponding $k$-mer counts from Figure \ref{viraldbscomp} (b) are not identical for the species rank and below. Although visually not well obvious in (b), this accounts for 158 scattering data points on the species rank and below. These differences offer the potential for more error and in particular false positives at read classification time as will be exemplified next.
+    KrakenUniq's corresponding $k$-mer counts from Figure \ref{viraldbscomp} (a) are not identical for the species rank and below. Although visually not well obvious in (a), this accounts for 158 scattering data points on the species rank and below. These differences offer the potential for more error and in particular false positives at read classification time as will be exemplified next.
 
     \begin{figure}[h]%
         \centering
@@ -461,7 +464,28 @@
         $k$-mers in Database\\
         \begin{tikzpicture}
             \begin{axis}[
-                title=(a) Genestrip,
+                title=(a) KrakenUniq,
+                xlabel={\texttt{cv\_ku}},
+                ylabel={\texttt{hv\_ku}},
+                xmode=log,
+                ymode=log,
+                width = 0.45\textwidth,
+                height = 0.45\textwidth,
+            ]
+                \addplot+ [scatter, only marks,mark size=1pt,
+                point meta=explicit symbolic,
+                scatter/classes={
+                        {species or below}={mark=*,blue},
+                    genus={mark=square,green},
+                    null={mark=triangle,red} %  <-- don't add comma
+                }
+                ]
+                table[col sep=semicolon, header=true, x = {kmers 1}, y = {kmers 2} , meta=rank] {\csvpath results/viral_db_human_virus_db_ku_ku_dbcomp.csv};
+            \end{axis}
+        \end{tikzpicture}
+        \begin{tikzpicture}
+            \begin{axis}[
+                title=(b) Genestrip,
                 xlabel={\texttt{cv\_g}},
                 ylabel={\texttt{hv\_g}},
                 xmode=log,
@@ -483,27 +507,6 @@
                 ]
                 table[col sep=semicolon, header=true, x = {kmers 1}, y = {kmers 2} , meta={rank}] {\csvpath results/viral_human_virus_gs_gs_dbcomp.csv};
                 ]
-            \end{axis}
-        \end{tikzpicture}
-        \begin{tikzpicture}
-            \begin{axis}[
-                title=(b) KrakenUniq,
-                xlabel={\texttt{cv\_ku}},
-                ylabel={\texttt{hv\_ku}},
-                xmode=log,
-                ymode=log,
-                width = 0.45\textwidth,
-                height = 0.45\textwidth,
-            ]
-                \addplot+ [scatter, only marks,mark size=1pt,
-                point meta=explicit symbolic,
-                scatter/classes={
-                        {species or below}={mark=*,blue},
-                    genus={mark=square,green},
-                    null={mark=triangle,red} %  <-- don't add comma
-                }
-                ]
-                table[col sep=semicolon, header=true, x = {kmers 1}, y = {kmers 2} , meta=rank] {\csvpath results/viral_db_human_virus_db_ku_ku_dbcomp.csv};
             \end{axis}
         \end{tikzpicture}
         \\
@@ -937,7 +940,7 @@
 
      In scenario (b) of Table \ref{analysisperf} we used the databases \texttt{MicrobialDB} vs. \texttt{tb} from Section \ref{mdbtb} to analyze the eight tick-related fastq files from Section \ref{tickanalysis}. Since \texttt{MicrobialDB} is so large, we had to make use of KrakenUniq's database processing in chunks which broke down each run into 23 rounds. The chunk processing caused considerably longer run times. On the one hand, comparing the tools this way may be considered ``unfair" because of unequally sized database sizes. On the other hand, there is no good alternative to employing a very large KrakenUniq database for the purpose (of detecting tick-related bacterial pathogens) because, as examined in Section \ref{accuracy}, a small KrakenUniq database bares the high risk of many false positives.
      
-     In scenario (c) we had the fastq files from (b) jointly analyzed. In this case, Genestrip performed even better because the database had to be loaded only once, whereas in scenario (b), it got loaded separately per fastq file. In contrast, KrakenUniq did not benefit from the joint analysis because its chunk processing had to be done all over again for each fastq file.
+     In scenario (c) we had the fastq files from (b) jointly analyzed. In this case, Genestrip performed even better because the database had to be loaded only once, whereas in scenario (b), it got loaded separately for each fastq file. In contrast, KrakenUniq did not benefit from the joint analysis because its chunk processing had to be done all over again for each fastq file.
 
     Regarding main memory, KrakenUniq's and Genestrip's analysis performance are dominated by the size of the database. In both cases, the required memory did not vary much across runs when the same database was used. Since \texttt{MicrobialDB} did not fit into memory, we set KrakenUniq's preload size such that in total, it allocated most of the available memory. In case of the viral database, KrakenUniq still needs more RAM than Genestrip. 
  %   
@@ -993,7 +996,7 @@
 
     The deliberate focus on a particular set of genera or species allows for more genomes to be included for the organisms of interest while the resulting Genestrip database may still remain small. For example, the tick-related database \texttt{tb} from Section \ref{mdbtb} contains 1.83 times more $k$-mers from the chosen genera than the latest publicly available large database \texttt{MicrobialDB} for KrakenUniq. As \texttt{tb} is deeper than \texttt{MicrobialDB} in this respect, it also tends to achieve better recall when analyzing tick related fastq files without loss of precision. We have presented and discussed the corresponding results as part of Section \ref{tickanalysis}.
 
-    Regarding performance, we have examined \emph{database generation as well as fastq file analysis}: Section \ref{genperformance} has shown that Genestrip empowers users to flexibly create new databases on regular machines in just a few hours. As summarized in Tables \ref{dbdesc} and \ref{dbperf}, we created databases with different applications in mind where the generation of \texttt{tb} took the longest with still less than 14 hours while main memory consumption remained below 30 GB in all the cases.
+    Regarding performance, we have examined \emph{database generation as well as fastq file analysis}: Section \ref{genperformance} has shown that Genestrip empowers users to flexibly create new databases on regular PCs in just a few hours. As summarized in Tables \ref{dbdesc} and \ref{dbperf}, we created databases with different applications in mind where the generation of \texttt{tb} took the longest with still less than 14 hours while main memory consumption remained below 30 GB in all the cases.
 
     Let us contrast Genestrip's database generation performance with the corresponding resources required under KrakenUniq: As mentioned in Section \ref{problem}, \cite{Nasko:2018aa} stated that generating a full bacterial database for Kraken 1 and so equivalently for KrakenUniq from the RefSeq ``required ca. 2.5 TB of RAM and ca. 11 days" on a suitable computer. However, since then, the RefSeq's number of prokaryotic genomes alone has increased up by a factor of 4.5 to over 38 Mio. \citep{10.1093/nar/gkae1038}. The additional growth of the RefSeq is also a likely reason why \texttt{MicrobialDB} has not been updated anymore since 2023 because ultralarge main memory and extremely high computational power would be required for this. Overall, this development suggests that $k$-mer databases with very broad and comprehensive coverage (such as by including \emph{all} genomes from the RefSeq category ``Bacteria") have reached a ``dead-end" --- at least when a lossless storing of $k$-mers is desired.
 
