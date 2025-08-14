@@ -34,13 +34,13 @@
 %
 % Workaround for local / relative path problems in conjunction with reading csv file.
 %
-\newcommand{\csvpath}{./}
+%\newcommand{\csvpath}{}
 
 %
 % Workaround for faster compile without scatter plots:
 %
 \newif\ifscatter
-\scattertrue
+%\scattertrue
 
 \newcommand{\taxon}{taxon}
 
@@ -287,7 +287,7 @@ The goal \verb|match| loads a database and performs the read classification on f
                     null={mark=triangle,red} %  <-- don't add comma
                 }
                 ]
-                table[col sep=semicolon, header=true, x = {kmers 2}, y = {kmers 1} , meta=rank] {\csvpath results/viral_gs_ku_dbcomp.csv};
+                table[col sep=semicolon, header=true, x = {kmers 2}, y = {kmers 1} , meta=rank] {results/viral_gs_ku_dbcomp.csv};
             \end{axis}
         \end{tikzpicture}
         \\
@@ -295,6 +295,7 @@ The goal \verb|match| loads a database and performs the read classification on f
         \ref{legend1}
 
         \fi
+        \includegraphics{fig2.pdf}
         \caption{Scatter plot of $k$-mer counts for the RefSeq databases \texttt{cv\_ku} from KrakenUniq and \texttt{cv\_ku} from Genestrip covering the entire category ``Viral" (based on a logarithmic scale with 1 added to each value in order to enable the representation of zero-counts). The 16,087 depicted entries cover all of the taxa present in both databases.}\label{viraldbscatter}
     \end{figure}
 
@@ -328,7 +329,7 @@ The goal \verb|match| loads a database and performs the read classification on f
                     null={mark=triangle,red} %  <-- don't add comma
                 }
                 ]
-                table[col sep=semicolon, header=true, x = {kmers 2}, y = {kmers 1} , meta=rank] {\csvpath results/viral_fastq1_gs_ku_comp.csv};
+                table[col sep=semicolon, header=true, x = {kmers 2}, y = {kmers 1} , meta=rank] {results/viral_fastq1_gs_ku_comp.csv};
             \end{axis}
         \end{tikzpicture}
         \begin{tikzpicture}
@@ -349,15 +350,15 @@ The goal \verb|match| loads a database and performs the read classification on f
                     null={mark=triangle,red} %  <-- don't add comma
                 }
                 ]
-                table[col sep=semicolon, header=true, x = {reads 2}, y = {reads 1} , meta=rank] {\csvpath results/viral_fastq1_gs_ku_comp.csv};
+                table[col sep=semicolon, header=true, x = {reads 2}, y = {reads 1} , meta=rank] {results/viral_fastq1_gs_ku_comp.csv};
                 ]
             \end{axis}
         \end{tikzpicture}
         \\
 
         \ref{legend2}
-
         \fi
+        \includegraphics{fig3.pdf}
         \caption{Scatter plots of $k$-mer counts (a) and read counts (b) for a simulated viral fastq file from \cite{Wu:2024aa} analyzed with KrakenUniq and Genestrip using the viral databases  \texttt{cv\_ku} and  \texttt{cv\_g} from Figure \ref{viraldbscatter} (based on a logarithmic scale with 1 added to each value in order to enable the representation of zero-counts).}\label{viralscattersim}
     \end{figure}
 
@@ -380,7 +381,7 @@ The goal \verb|match| loads a database and performs the read classification on f
 %\multicolumn{1}{c|}{Points} &
 %\multicolumn{2}{c}{}
 % & \multicolumn{2}{c}{Read counts (\%)}
-            \csvreader[separator=semicolon,before filter=\\\hline]{\csvpath results/viral_viral_db_errors_gs_ku_comp.csv}{}
+            \csvreader[separator=semicolon,before filter=\\\hline]{results/viral_viral_db_errors_gs_ku_comp.csv}{}
             { \csvcoli & \csvcoliii & \csvcoliv & \csvcolv & \csvcolx & (\csvcolxii)
 % & \csvcolxi & (\csvcolxiii)
             }\\
@@ -391,7 +392,6 @@ The goal \verb|match| loads a database and performs the read classification on f
 
     \begin{figure}[h]%
         \centering
-        \ifscatter
         \begin{tikzpicture}
             \begin{axis}[
                 title=(a) $k$-mer counts,
@@ -414,7 +414,7 @@ The goal \verb|match| loads a database and performs the read classification on f
                     null={mark=triangle,red} %  <-- don't add comma
                 }
                 ]
-                table[col sep=semicolon, header=true, x = {kmers 2}, y = {kmers 1} , meta=rank] {\csvpath results/viral_saliva3_gs_ku_comp.csv};
+                table[col sep=semicolon, header=true, x = {kmers 2}, y = {kmers 1} , meta=rank] {results/viral_saliva3_gs_ku_comp.csv};
             \end{axis}
         \end{tikzpicture}
         \begin{tikzpicture}
@@ -435,7 +435,7 @@ The goal \verb|match| loads a database and performs the read classification on f
                     null={mark=triangle,red} %  <-- don't add comma
                 }
                 ]
-                table[col sep=semicolon, header=true, x = {reads 2}, y = {reads 1} , meta=rank] {\csvpath results/viral_saliva3_gs_ku_comp.csv};
+                table[col sep=semicolon, header=true, x = {reads 2}, y = {reads 1} , meta=rank] {results/viral_saliva3_gs_ku_comp.csv};
                 ]
             \end{axis}
         \end{tikzpicture}
@@ -443,7 +443,6 @@ The goal \verb|match| loads a database and performs the read classification on f
 
         \ref{legend3}
 
-        \fi
         \caption{Scatter plots of $k$-mer counts (a) and read counts (b) for fastq file \#3 from Table \ref{errorsviral} using the viral databases from Figure \ref{viraldbscatter} (based on a logarithmic scale with 1 added to each value to enable the representation of zero-counts).}\label{viralscatter}
     \end{figure}
 
@@ -461,7 +460,6 @@ The goal \verb|match| loads a database and performs the read classification on f
 
     \begin{figure}[h]%
         \centering
-        \ifscatter
         $k$-mers in Database\\
         \begin{tikzpicture}
             \begin{axis}[
@@ -481,7 +479,7 @@ The goal \verb|match| loads a database and performs the read classification on f
                     null={mark=triangle,red} %  <-- don't add comma
                 }
                 ]
-                table[col sep=semicolon, header=true, x = {kmers 1}, y = {kmers 2} , meta=rank] {\csvpath results/viral_db_human_virus_db_ku_ku_dbcomp.csv};
+                table[col sep=semicolon, header=true, x = {kmers 1}, y = {kmers 2} , meta=rank] {results/viral_db_human_virus_db_ku_ku_dbcomp.csv};
             \end{axis}
         \end{tikzpicture}
         \begin{tikzpicture}
@@ -506,7 +504,7 @@ The goal \verb|match| loads a database and performs the read classification on f
                     null={mark=triangle,red} %  <-- don't add comma
                 }
                 ]
-                table[col sep=semicolon, header=true, x = {kmers 1}, y = {kmers 2} , meta={rank}] {\csvpath results/viral_human_virus_gs_gs_dbcomp.csv};
+                table[col sep=semicolon, header=true, x = {kmers 1}, y = {kmers 2} , meta={rank}] {results/viral_human_virus_gs_gs_dbcomp.csv};
                 ]
             \end{axis}
         \end{tikzpicture}
@@ -514,8 +512,7 @@ The goal \verb|match| loads a database and performs the read classification on f
 
         \ref{legend4}
 
-        \fi
-        \caption{Scatter plots of $k$-mers per \taxon\ in a complete viral database versus a ``human virus only" database both from the RefSeq created via (a) KrakenUniq and (b) Genestrip (based on a logarithmic scale with 1 added to each value to enable the representation of zero-counts).}\label{viraldbscomp}
+         \caption{Scatter plots of $k$-mers per \taxon\ in a complete viral database versus a ``human virus only" database both from the RefSeq created via (a) KrakenUniq and (b) Genestrip (based on a logarithmic scale with 1 added to each value to enable the representation of zero-counts).}\label{viraldbscomp}
     \end{figure}
 
     Figure \ref{salivascatter} (a,b) shows the scatter plots of $k$-mer counts and read counts from KrakenUniq on a logarithmic scale for the database \texttt{cv\_ku} versus \texttt{hv\_ku} when applied to the human saliva fastq file \#3 from Table \ref{errorsviral}.
@@ -523,7 +520,6 @@ The goal \verb|match| loads a database and performs the read classification on f
 
     \begin{figure}[h]%
         \centering
-        \ifscatter
         \textbf{KrakenUniq}\\
         \begin{tikzpicture}
             \begin{axis}[
@@ -547,7 +543,7 @@ The goal \verb|match| loads a database and performs the read classification on f
                     null={mark=triangle,red} %  <-- don't add comma
                 }
                 ]
-                table[col sep=semicolon, header=true, x = {kmers 1}, y = {kmers 2} , meta={rank}] {\csvpath results/viral_human_virus_saliva3_ku_ku_comp.csv};
+                table[col sep=semicolon, header=true, x = {kmers 1}, y = {kmers 2} , meta={rank}] {results/viral_human_virus_saliva3_ku_ku_comp.csv};
                 ]
             \end{axis}
         \end{tikzpicture}
@@ -568,7 +564,7 @@ The goal \verb|match| loads a database and performs the read classification on f
                     null={mark=triangle,red} %  <-- don't add comma
                 }
                 ]
-                table[col sep=semicolon, header=true, x = {reads 1}, y = {reads 2} , meta=rank] {\csvpath results/viral_human_virus_saliva3_ku_ku_comp.csv};
+                table[col sep=semicolon, header=true, x = {reads 1}, y = {reads 2} , meta=rank] {results/viral_human_virus_saliva3_ku_ku_comp.csv};
             \end{axis}
         \end{tikzpicture}
         \\
@@ -591,7 +587,7 @@ The goal \verb|match| loads a database and performs the read classification on f
                     null={mark=triangle,red} %  <-- don't add comma
                 }
                 ]
-                table[col sep=semicolon, header=true, x = {kmers 1}, y = {kmers 2} , meta={rank}] {\csvpath results/viral_human_virus_saliva3_gs_gs_comp.csv};
+                table[col sep=semicolon, header=true, x = {kmers 1}, y = {kmers 2} , meta={rank}] {results/viral_human_virus_saliva3_gs_gs_comp.csv};
                 ]
             \end{axis}
         \end{tikzpicture}
@@ -613,14 +609,13 @@ The goal \verb|match| loads a database and performs the read classification on f
                     null={mark=triangle,red} %  <-- don't add comma
                 }
                 ]
-                table[col sep=semicolon, header=true, x = {reads 1}, y = {reads 2} , meta=rank] {\csvpath results/viral_human_virus_saliva3_gs_gs_comp.csv};
+                table[col sep=semicolon, header=true, x = {reads 1}, y = {reads 2} , meta=rank] {results/viral_human_virus_saliva3_gs_gs_comp.csv};
             \end{axis}
         \end{tikzpicture}
         \\
 
         \ref{legend5}
 
-        \fi
         \caption{Scatter plots of $k$-mer counts (a, c) and read counts (b, d) for the human saliva fastq file \#3 from Table \ref{errorsviral} analyzed with KrakenUniq (a, b) and Genestrip (c, d) using the complete viral databases versus the ``human virus only" databases, as both shown in Figure \ref{viraldbscomp} (based on a logarithmic scale with 1 added to each value to enable the representation of zero-counts).}\label{salivascatter}
     \end{figure}
 
@@ -652,7 +647,7 @@ The goal \verb|match| loads a database and performs the read classification on f
 %no; key; reads; gs read len;
 %gs errs; gs kmer err; gs kmer err std dev; gs read err; gs read err std dev;
 %%ku errs; ku kmer err; ku kmer err std dev; ku read err; ku read err std dev;
-            \csvreader[separator=semicolon,before filter=\\\hline]{\csvpath results/viral_human_virus_errors_gs_ku_comp.csv}{}
+            \csvreader[separator=semicolon,before filter=\\\hline]{results/viral_human_virus_errors_gs_ku_comp.csv}{}
             { \csvcoli & \csvcolxi & (\csvcolxii) & \csvcolxiii & (\csvcolxiv) & \csvcolvi & (\csvcolvii)  & \csvcolviii & (\csvcolix)}
         \end{tabular}
         \caption{Mean absolute percentage error of $k$-mer counts and read counts for five human saliva fastq files between the complete viral database and the ``human virus only" database where both databases either belong to KrakenUniq or Genestrip, respectively. Standard deviations for the errors are included in parentheses.}\label{errorscvhv}
