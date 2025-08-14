@@ -186,7 +186,8 @@
   
     \subsection{Read classification}
 
-    The principal read classification algorithm is similar to that from  Kraken 1 \citep{kraken} and equivalently KrakenUniq. When iterating over a read's $k$-mers, each $k$-mer is encoded as a long -- once by considering its regular order and once via its reverse complement order. For efficiency, only the larger of the two encoded values is looked up in the database. This is sufficient since, if at all, then only just the larger of two values got stored in the first place during database generation (see Section \ref{database}).
+The goal \verb|match| loads a database and performs the read classification on fastq files.
+    The principal classification algorithm is similar to that from  Kraken 1 \citep{kraken} and equivalently KrakenUniq. When iterating over a read's $k$-mers, each $k$-mer is encoded as a long -- once by considering its regular order and once via its reverse complement order. For efficiency, only the larger of the two encoded values is looked up in the database. This is sufficient since, if at all, then only just the larger of two values got stored in the first place during database generation (see Section \ref{database}).
 
     Genestrip implements a multithreading enabled classification procedure following a producer consumer pattern, where a producer thread reads a fastq file and puts reads into an in-memory queue while consumer threads pick reads from the queue in order to classify them.
 
@@ -199,7 +200,7 @@
 
     \subsection{Analysis reports} \label{measures}
 
-    Genestrip produces analysis reports in CSV file format with a comprehensive set of statistical values. We use the following notation to describe them: Let $k_{t,f,d}$ be the number of $k$-mers for \taxon\ $t$ found in fastq file $f$ with respect to database $d$ and let $u_{t,f,d}$ be the corresponding number of unique $k$-mers. Similarly, let $u_{t,d}$ be the number of (unique) $k$-mers for $t$ stored in $d$.
+    The read classification via the goal \verb|match| produces analysis reports in CSV file format with a comprehensive set of statistical values. We use the following notation to describe them: Let $k_{t,f,d}$ be the number of $k$-mers for \taxon\ $t$ found in fastq file $f$ with respect to database $d$ and let $u_{t,f,d}$ be the corresponding number of unique $k$-mers. Similarly, let $u_{t,d}$ be the number of (unique) $k$-mers for $t$ stored in $d$.
 
     Table \ref{csvcolumns} describes the most important reported columns. Additional columns exist to  accumulate $k$-mer counts and read counts etc. upward to ancestors in the taxonomy. We also track the standard deviations of \verb|avg. contig length|, \verb|avg. read length|, \verb|mean class error| and other columns wherever suitable. Moreover, normalized values derived from the original values by dividing by $u_{t,d}$ are included where suitable. Normalized values aim to reduce counting bias due to a high or low representation of a \taxon\ $t$ in terms of its stored $k$-mers $u_{t,d}$.
 
@@ -217,37 +218,37 @@
             \verb|max contig length| & The maximum length of all contiguous sequences of $k$-mers that are specific to $t$'s genome(s)  \\
             \verb|avg. read length| & The average length of reads for $t$ in base pairs \\
             \verb|db coverage| & $u_{t,f} / u_{t,d}$ \\
-            \verb|exp. unique kmers| & $E(k_{t,f,d},u_{t,d})$ (see Equation \ref{E}) \\
-            \verb|unique kmers / exp.| & The $k$-mer consistency ratio $r_{t,f,d}$ (see Equation \ref{r}) \\
+ %           \verb|exp. unique kmers| & $E(k_{t,f,d},u_{t,d})$ (see Equation \ref{E}) \\
+ %           \verb|unique kmers / exp.| & The $k$-mer consistency ratio $r_{t,f,d}$ (see Equation \ref{r}) \\
             \verb|mean class error| & The mean ratio of $k$-mers from a read $r$ for $t$, where those $k$-mers are not consistent with $t$ per $r$'s total number of $k$-mers \\
         \end{tabular}
         \caption{Extract of columns from Genestrip's read analysis reports}\label{csvcolumns}
     \end{table}
 
-    Genestrip introduces a novel, derived statistical measure --- the \emph{$k$-mer consistency ratio} --- as explained in the following: Given $k_{t,f,d}$, the apriori probability $p(t\ |\ k_{t,f,d})$ of a unique $k$-mer from $d$ belonging to $t$ to occur \emph{at least once} in $f$\ is approximately:\footnote{The approximation is based on the assumption that all $k$-mers in $d$ belonging to $t$ are equally likely to be found in $f$ (such as reported in \cite[Fig. 3]{nanoporeticks}). However, this assumption does not hold when special DNA library preparation protocols such as 16S or 18S amplification are used \citep{Wensel:2022aa,16srrnause}. In such cases the $k$-mer consistency ratio should therefore be disregarded.}
-    \begin{equation}
-        \label{ptk}
-        p(t\ |\ k_{t,f,d}) = 1 - (1 - 1/u_{t,d})^{k_{t,f,d}}
-    \end{equation}
-    The corresponding \emph{expected number of unique $k$-mers} is as follows:
-    \begin{equation}
-        \label{E}
-        E(k_{t,f,d},u_{t,d}) = u_{t,d} \cdot p(t\ |\ k_{t,f,d})
-    \end{equation}
-
-    It is useful to compare $E(k_{t,f,d},u_{t,d})$ with the actual count $u_{t,f,d}$: If these quantities divert too much from each other, then the consistency of the $k$-mer counting results for $t$ in $f$ should be questioned. If on the other hand, these quantities are close, then this supports the consistency of the counting results. This leads to the \emph{$k$-mer consistency ratio}, which ideally is close to $1$:\footnote{A mathematically sounder approach is to consider the probability distribution
-        $q(u_{t,f,d}\ |\ k_{t,f,d})$, i.e., the probability of obtaining exactly $u_{t,f,d}$ unique $k$-mers for a given (nonunique) $k$-mer count of $k_{t,f,d}$ by sampling with replacement as the underlying random process.
-        Interestingly, this distribution is non-trivial and has been investigated in \cite{Mendelson2016WhatIT}. The authors have shown that the distribution can be approximated by a normal distribution $\mathcal{N}(E(k_{t,f,d},u_{t,d}),\sigma^2_q)$ under most practically relevant conditions. Moreover, they confirm the expectation $E(k_{t,f,d},u_{t,d})$ from above and give a formula for the variance $\sigma^2_q$ which in our case depends on $k_{t,f,d}$ and $u_{t,d}$.
-        Although mathematically sound, the approach did not prove useful with respect to $k$-mer counts because $\mathcal{N}$ tends to be extremely peaked and so, even small deviations from $E(k_{t,f,d},u_{t,d})$ result in a $q(u_{t,f,d}\ |\ k_{t,f,d}) \approx 0$.}
-%Expectation accounting for duplicate kmers in DB:
-%Let $k_{t,d}(i)$ be the number of times a unique kmer $i$ occurs in the genome of $t$ with $1 \leq i \leq u_{t,d}$ and $\vec{k}_{t,d}$ the corresponding vector:
-%\[ E_q(k_{t,f,d},\vec{k}_{t,d}) = \sum_{i = 1}^{u_{t,d}} k_{t,d}(i) \cdot (1 - (1 - 1/k_{t,d}(i))^{k_{t,f,d}}) \]
-    \begin{equation}
-        \label{r}
-        r_{t,f,d} := u_{t,f,d} / E(k_{t,f,d},u_{t,d})
-    \end{equation}
-
-    Section \ref{consistencyratio} discusses the results associated with the $k$-mer consistency ratio.
+%    Genestrip introduces a novel, derived statistical measure --- the \emph{$k$-mer consistency ratio} --- as explained in the following: Given $k_{t,f,d}$, the apriori probability $p(t\ |\ k_{t,f,d})$ of a unique $k$-mer from $d$ belonging to $t$ to occur \emph{at least once} in $f$\ is approximately:\footnote{The approximation is based on the assumption that all $k$-mers in $d$ belonging to $t$ are equally likely to be found in $f$ (such as reported in \cite[Fig. 3]{nanoporeticks}). However, this assumption does not hold when special DNA library preparation protocols such as 16S or 18S amplification are used \citep{Wensel:2022aa,16srrnause}. In such cases the $k$-mer consistency ratio should therefore be disregarded.}
+%    \begin{equation}
+%        \label{ptk}
+%        p(t\ |\ k_{t,f,d}) = 1 - (1 - 1/u_{t,d})^{k_{t,f,d}}
+%    \end{equation}
+%    The corresponding \emph{expected number of unique $k$-mers} is as follows:
+%    \begin{equation}
+%        \label{E}
+%        E(k_{t,f,d},u_{t,d}) = u_{t,d} \cdot p(t\ |\ k_{t,f,d})
+%    \end{equation}
+%
+%    It is useful to compare $E(k_{t,f,d},u_{t,d})$ with the actual count $u_{t,f,d}$: If these quantities divert too much from each other, then the consistency of the $k$-mer counting results for $t$ in $f$ should be questioned. If on the other hand, these quantities are close, then this supports the consistency of the counting results. This leads to the \emph{$k$-mer consistency ratio}, which ideally is close to $1$:\footnote{A mathematically sounder approach is to consider the probability distribution
+%        $q(u_{t,f,d}\ |\ k_{t,f,d})$, i.e., the probability of obtaining exactly $u_{t,f,d}$ unique $k$-mers for a given (nonunique) $k$-mer count of $k_{t,f,d}$ by sampling with replacement as the underlying random process.
+%        Interestingly, this distribution is non-trivial and has been investigated in \cite{Mendelson2016WhatIT}. The authors have shown that the distribution can be approximated by a normal distribution $\mathcal{N}(E(k_{t,f,d},u_{t,d}),\sigma^2_q)$ under most practically relevant conditions. Moreover, they confirm the expectation $E(k_{t,f,d},u_{t,d})$ from above and give a formula for the variance $\sigma^2_q$ which in our case depends on $k_{t,f,d}$ and $u_{t,d}$.
+%        Although mathematically sound, the approach did not prove useful with respect to $k$-mer counts because $\mathcal{N}$ tends to be extremely peaked and so, even small deviations from $E(k_{t,f,d},u_{t,d})$ result in a $q(u_{t,f,d}\ |\ k_{t,f,d}) \approx 0$.}
+%%Expectation accounting for duplicate kmers in DB:
+%%Let $k_{t,d}(i)$ be the number of times a unique kmer $i$ occurs in the genome of $t$ with $1 \leq i \leq u_{t,d}$ and $\vec{k}_{t,d}$ the corresponding vector:
+%%\[ E_q(k_{t,f,d},\vec{k}_{t,d}) = \sum_{i = 1}^{u_{t,d}} k_{t,d}(i) \cdot (1 - (1 - 1/k_{t,d}(i))^{k_{t,f,d}}) \]
+%    \begin{equation}
+%        \label{r}
+%        r_{t,f,d} := u_{t,f,d} / E(k_{t,f,d},u_{t,d})
+%    \end{equation}
+%
+%    Section \ref{consistencyratio} discusses the results associated with the $k$-mer consistency ratio.
 
     \section{Results}\label{results}
 
@@ -730,7 +731,8 @@
     \end{figure}
 
     Figure \ref{ehrlichiatick6} details the results for Tick 6 with respect to ``943" (Ehrlichia):
-    Interestingly, Genestrip assigns most of the found $k$-mers right to the genus, whereas KrakenUniq produces a peak under the strain ``1423892" (Ehrlichia muris AS145). The difference originates in the deeper database \texttt{tb}, where in comparison with \texttt{MicrobialDB}, more common $k$-mers were found from a broader range of genomic data under the genus Ehrlichia at \texttt{tb}'s generation time. In turn, Genestrip's update phase pushed these $k$-mers to the genus rank as the lowest common ancestor. Indeed, the ratio of stored $k$-mers between \texttt{tb} and \texttt{MicrobialDB} is 4.54 for the taxon ``943" but only 0.24 for ``1423892". The high $k$-mer consistency ratios shown in Figure \ref{ehrlichiatick6} also suggest that the respective $k$-mer counts for Tick 6 are no false positives.
+    Interestingly, Genestrip assigns most of the found $k$-mers right to the genus, whereas KrakenUniq produces a peak under the strain ``1423892" (Ehrlichia muris AS145). The difference originates in the deeper database \texttt{tb}, where in comparison with \texttt{MicrobialDB}, more common $k$-mers were found from a broader range of genomic data under the genus Ehrlichia at \texttt{tb}'s generation time. In turn, Genestrip's update phase pushed these $k$-mers to the genus rank as the lowest common ancestor. Indeed, the ratio of stored $k$-mers between \texttt{tb} and \texttt{MicrobialDB} is 4.54 for the taxon ``943" but only 0.24 for ``1423892". 
+    % The high $k$-mer consistency ratios shown in Figure \ref{ehrlichiatick6} also suggest that the respective $k$-mer counts for Tick 6 are no false positives.
 
     Again, we observed similar results, particularly with respect to Ehrlichia, Rickettsia and partly to Anaplasma, in all of the eight ticks' fastq files whenever corresponding organisms were present via \texttt{MicrobialDB}.
     These findings form a general trend when $k$-mer databases with a lowest common ancestor representation become deeper. The effect was first discovered and studied in \cite{Nasko:2018aa}. Note that this is beneficial since such deeper $k$-mer databases tend to protect read classification from potentially falsely assigning a too low-ranked taxon.
@@ -739,39 +741,39 @@
         \centering
         \footnotesize
         \begin{tikzpicture}
-            \begin{axis}[
-            axis y line=right,
-            axis line style={-},
-            ymax=1.1,
-            xmajorticks=false,
-            width = 0.45\textwidth,
-            height = 0.45\textwidth,
-            bar width=1mm,
-            symbolic x coords={\textbf{943} (genus),106178 (sp. group),779,302409,944,269484,945,35795,1359167,1423892,391036,1242993},
-            ymin=0,
-            ylabel=$k$-mer cons. ratio,
-            y label style={at={(0.95,0.5)}},
-            scaled ticks=false,
-            xticklabels=\empty
-            legend cell align=left,
-            legend style={
-                at={(0.95,0.5)},
-                anchor=east}	]
-            \addplot [only marks] coordinates {
-                (\textbf{943} (genus),0.991923673)
-                (106178 (sp. group),0.844030726)
-                (779,0.777778421)
-                (944,1.000000873)
-                (945,1.000013447)
-                (35795,0.963950483)
-                (1359167,0.980977988)
-                (1423892,1.000006958)
-                (391036,1.000013264)
-                (1242993,1.000001284) };
-            \addlegendentry{$k$-mer cons. ratio}
-            \end{axis}
+%            \begin{axis}[
+%            axis y line=right,
+%            axis line style={-},
+%            ymax=1.1,
+%            xmajorticks=false,
+%            width = 0.45\textwidth,
+%            height = 0.45\textwidth,
+%            bar width=1mm,
+%            symbolic x coords={\textbf{943} (genus),106178 (sp. group),779,302409,944,269484,945,35795,1359167,1423892,391036,1242993},
+%            ymin=0,
+%            ylabel=$k$-mer cons. ratio,
+%            y label style={at={(0.95,0.5)}},
+%            scaled ticks=false,
+%            xticklabels=\empty
+%            legend cell align=left,
+%            legend style={
+%                at={(0.95,0.5)},
+%                anchor=east}	]
+%            \addplot [only marks] coordinates {
+%                (\textbf{943} (genus),0.991923673)
+%                (106178 (sp. group),0.844030726)
+%                (779,0.777778421)
+%                (944,1.000000873)
+%                (945,1.000013447)
+%                (35795,0.963950483)
+%                (1359167,0.980977988)
+%                (1423892,1.000006958)
+%                (391036,1.000013264)
+%                (1242993,1.000001284) };
+%            \addlegendentry{$k$-mer cons. ratio}
+%            \end{axis}
             \begin{axis}[title  = (a) $k$-mer counts,
-            axis y line=left,
+%            axis y line=left,
             axis line style={-},
             ymax=70000,
             width = 0.45\textwidth,
@@ -863,27 +865,29 @@
                     (1242993,2) };
             \end{axis}
         \end{tikzpicture}
-        \caption{Comparison of $k$-mer counts (a) and read counts (b) between the database \texttt{MicrobialDB} (based on KrakenUniq) and \texttt{tb} (based on Genestrip) for all taxons under the genus ``943" (Ehrlichia) including the genus itself. Where applicable, the black dots in (a) indicate the taxon's $k$-mer consistency ratio according to Section \ref{measures}. The counts belong to the long read fastq file of ``Tick 6" from \cite{nanoporeticks} -- the same file as in Figure \ref{genusestick6}.}
+        \caption{Comparison of $k$-mer counts (a) and read counts (b) between the database \texttt{MicrobialDB} (based on KrakenUniq) and \texttt{tb} (based on Genestrip) for all taxons under the genus ``943" (Ehrlichia) including the genus itself. 
+        %Where applicable, the black dots in (a) indicate the taxon's $k$-mer consistency ratio according to Section \ref{measures}. 
+        The counts belong to the long read fastq file of ``Tick 6" from \cite{nanoporeticks} -- the same file as in Figure \ref{genusestick6}.}
         \label{ehrlichiatick6}
     \end{figure}
 
-    \subsection{$k$-Mer consistency ratio}
-    \label{consistencyratio}
-
-    Based on the previously used fastq files and the Genestrip database \texttt{tb}, we provide anecdotal evidence of the usefulness of the $k$-mer consistency ratio $r_{t,f,d}$ as introduced in Section \ref{measures}.
-
-    Table \ref{ratiosamples} reports the five hits with the highest unique $k$-mer counts $u_{t,f,d}$ on the ranks species or below for the human saliva fast files \#1, \#3 and \#5 from Table \ref{errorsviral} analyzed via \texttt{tb} from Section \ref{mdbtb}: Since $r_{t,f,d}$ relates the parameters $k_{t,f,d}$, $u_{t,f,d}$ and $u_{t,d}$ accordingly, it tends to be aligned with biomedical expectations for true and false hits. For example, species like ``" (Metamycoplasma salivarium) under the genus ``" (Metamycoplasma) are also included in \texttt{tb} and typically occur in the oral microbiome \citep{}. In contrast, the hits ``" (Francisella tularensis) and ``" (Borreliella garinii) are implausible and also have a low $k$-mer Consistency ratio. Note that the unique $k$-mer count, the $k$-mer count or the classified read count alone occur to be inconclusive. Results for the other three human saliva fastq files from Table \ref{errorsviral} are similar in nature (not reported).
-
-    \begin{table}[h]
-        \centering
-        \begin{tabular}{c|c|c|c|c|c|c|c}
-            \# & $t$ & $u_{t,f,d}$ & $k_{t,f,d}$ & Read  & $u_{t,f,d} / u_{t,d}$ & $r_{t,f,d}$ & Biomedically \\
-            &  &  &  & count &  &  & plausible \\
-            \hline
-        \end{tabular}
-        \caption{Analysis results for the five hits with the highest unique $k$-mer counts $u_{t,f,d}$ on the ranks species or below for the human saliva fast files \#1, \#3 and \#5 from Table \ref{errorsviral} analyzed via the Genestrip database \texttt{tb} from Section \ref{mdbtb}.}
-        \label{ratiosamples}
-    \end{table}
+%    \subsection{$k$-Mer consistency ratio}
+%    \label{consistencyratio}
+%
+%    Based on the previously used fastq files and the Genestrip database \texttt{tb}, we provide anecdotal evidence of the usefulness of the $k$-mer consistency ratio $r_{t,f,d}$ as introduced in Section \ref{measures}.
+%
+%    Table \ref{ratiosamples} reports the five hits with the highest unique $k$-mer counts $u_{t,f,d}$ on the ranks species or below for the human saliva fast files \#1, \#3 and \#5 from Table \ref{errorsviral} analyzed via \texttt{tb} from Section \ref{mdbtb}: Since $r_{t,f,d}$ relates the parameters $k_{t,f,d}$, $u_{t,f,d}$ and $u_{t,d}$ accordingly, it tends to be aligned with biomedical expectations for true and false hits. For example, species like ``" (Metamycoplasma salivarium) under the genus ``" (Metamycoplasma) are also included in \texttt{tb} and typically occur in the oral microbiome \citep{}. In contrast, the hits ``" (Francisella tularensis) and ``" (Borreliella garinii) are implausible and also have a low $k$-mer Consistency ratio. Note that the unique $k$-mer count, the $k$-mer count or the classified read count alone occur to be inconclusive. Results for the other three human saliva fastq files from Table \ref{errorsviral} are similar in nature (not reported).
+%
+%    \begin{table}[h]
+%        \centering
+%        \begin{tabular}{c|c|c|c|c|c|c|c}
+%            \# & $t$ & $u_{t,f,d}$ & $k_{t,f,d}$ & Read  & $u_{t,f,d} / u_{t,d}$ & $r_{t,f,d}$ & Biomedically \\
+%            &  &  &  & count &  &  & plausible \\
+%            \hline
+%        \end{tabular}
+%        \caption{Analysis results for the five hits with the highest unique $k$-mer counts $u_{t,f,d}$ on the ranks species or below for the human saliva fast files \#1, \#3 and \#5 from Table \ref{errorsviral} analyzed via the Genestrip database \texttt{tb} from Section \ref{mdbtb}.}
+%        \label{ratiosamples}
+%    \end{table}
 
     \subsection{Performance}
     \label{performance}
@@ -1038,7 +1042,7 @@ $d$ & Placeholder for $k$-mer database \\
 $k_{t,f,d}$& Number of $k$-mers found for taxon $t$ in fastq file $f$ via database $d$\\
 $u_{t,f,d}$& Number of unique $k$-mers found for taxon $t$ in fastq file $f$  via database $d$\\
 $u_{t,d}$& Number of $k$-mers stored under taxon $t$ in database $d$ \\
-$r_{t,f,d}$ &$k$-mer consistency ratio for $k$-mers found for taxon $t$ in fastq file $f$ with respect to database $d$ \\
+% $r_{t,f,d}$ &$k$-mer consistency ratio for $k$-mers found for taxon $t$ in fastq file $f$ with respect to database $d$ \\
 \texttt{cv\_ku} & Complete viral database for KrakenUniq \\
 \texttt{cv\_g} & Complete viral database for Genestrip \\
 BPs & Base pairs \\
