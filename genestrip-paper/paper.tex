@@ -630,7 +630,7 @@ The goal \verb|match| loads a database and performs the read classification on f
     Note that we limit the taxa to the rank species or below because, as discussed in the context of Figure \ref{viraldbscomp} and \ref{salivascatter}, we cannot expect $k$-mer counts and read counts to be close between $d$ and a corresponding smaller database $e$ for higher taxonomic ranks.
     Analogously, we also measured the error with regard to the counts of classified reads.
 
-    As shown in Table \ref{errorscvhv}, the error rates for $k$-mer counts are zero under Genestrip, and for read counts, they are two orders of magnitude than those under KrakenUniq across all the examples. These findings solidify the usefulness of Genestrip's analysis results in the context of smaller databases.
+    As shown in Table \ref{errorscvhv}, the error rates for $k$-mer counts are zero under Genestrip, and for read counts, they are two orders of magnitude lower than those under KrakenUniq across all the examples. These findings solidify the usefulness of Genestrip's analysis results in the context of smaller databases.
 
     \begin{table}[h]
         \centering
@@ -894,7 +894,7 @@ The goal \verb|match| loads a database and performs the read classification on f
     \subsection{Database generation}
     \label{genperformance}
 
-    Table \ref{dbperf} lists six Genestrip databases used for assessing database generation performance. They refer to several categories and were designed with a potential use in medicine or agriculture in mind. Table \ref{dbperf} reports execution statistics for the generation of these databases from scratch via the goal \texttt{db} from Figure \ref{goalgraph}. The execution times and the maximum RAM remained moderate in all of the cases. (Times for downloading any of the necessary RefSeq or Genbank files from the NCBI are not included. Related files were downloaded upfront via the goals \texttt{refseqfna} and \texttt{fastasgenbankdl} from Figure \ref{goalgraph}.)
+    Table \ref{dbdesc} lists six Genestrip databases used for assessing database generation performance. They refer to several categories and were designed with a potential use in medicine or agriculture in mind. Table \ref{dbperf} reports execution statistics for the generation of these databases from scratch via the goal \texttt{db} from Figure \ref{goalgraph}. The execution times and the maximum RAM remained moderate in all of the cases. (Times for downloading any of the necessary RefSeq or Genbank files from the NCBI are not included. Related files were downloaded upfront via the goals \texttt{refseqfna} and \texttt{fastasgenbankdl} from Figure \ref{goalgraph}.)
 
     The different execution times in Table \ref{dbperf} depend on the size of the database itself but also on the RefSeq category, where ``Bacteria" is the largest of the five ones used with genomes in over 2,800 zip files with a total disk size of over 550 GB (in RefSeq Release 230).
     The zip files must all be screened during each goal from Table \ref{goals} but the update phase, i.e., the goal \texttt{updatedb}, dominates the execution time.
