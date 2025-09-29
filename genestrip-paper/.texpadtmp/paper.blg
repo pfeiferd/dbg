@@ -1,0 +1,54 @@
+This is BibTeX, Version 0.99d (TeX Live 2025)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: /Users/dpfeifer/dev/intellij/genestrip-docs/genestrip-paper/.texpadtmp/paper.aux
+The style file: ../sn-vancouver-num.bst
+Reallocated glb_str_ptr (elt_size=4) to 20 items from 10.
+Reallocated global_strs (elt_size=200001) to 20 items from 10.
+Reallocated glb_str_end (elt_size=4) to 20 items from 10.
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+Database file #1: ../sn-bibliography.bib
+sn-vancouver-num.bst [2024/07/19 v1.1 Vancouver bibliography style]
+Warning--empty author and editor in microbialdb
+Warning--missing publisher in microbialdb
+You've used 36 entries,
+            3508 wiz_defined-function locations,
+            1023 strings with 40200 characters,
+and the built_in function-call counts, 94355 in all, are:
+= -- 11356
+> -- 668
+< -- 0
++ -- 363
+- -- 158
+* -- 8521
+:= -- 10173
+add.period$ -- 177
+call.type$ -- 36
+change.case$ -- 2
+chr.to.int$ -- 0
+cite$ -- 38
+duplicate$ -- 5976
+empty$ -- 9428
+format.name$ -- 236
+if$ -- 21735
+int.to.chr$ -- 0
+int.to.str$ -- 36
+missing$ -- 466
+newline$ -- 220
+num.names$ -- 72
+pop$ -- 738
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 0
+skip$ -- 633
+stack$ -- 0
+substring$ -- 21221
+swap$ -- 1078
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 1
+type$ -- 0
+warning$ -- 2
+while$ -- 369
+width$ -- 38
+write$ -- 613
+(There were 2 warnings)

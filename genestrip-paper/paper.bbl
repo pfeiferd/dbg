@@ -1,0 +1,220 @@
+\begin{thebibliography}{10}
+\providecommand{\doi}[1]{\url{https://doi.org/#1}}
+\bibcommenthead
+
+\bibitem[\protect\citeauthoryear{Wood and Salzberg}{2014}]{kraken}
+Wood DE, Salzberg SL.
+\newblock Kraken: ultrafast metagenomic sequence classification using exact alignments.
+\newblock Genome Biology. 2014;15(3):R46.
+\newblock \doi{10.1186/gb-2014-15-3-r46}.
+
+\bibitem[\protect\citeauthoryear{Wood et~al.}{2019}]{kraken2}
+Wood DE, Lu J, Langmead B.
+\newblock Improved metagenomic analysis with Kraken 2.
+\newblock Genome Biology. 2019;20(1):257.
+\newblock \doi{10.1186/s13059-019-1891-0}.
+
+\bibitem[\protect\citeauthoryear{Breitwieser et~al.}{2018}]{krakenUniq}
+Breitwieser FP, Baker DN, Salzberg SL.
+\newblock KrakenUniq: confident and fast metagenomics classification using unique k-mer counts.
+\newblock Genome Biology. 2018;19(1):198.
+\newblock \doi{10.1186/s13059-018-1568-0}.
+
+\bibitem[\protect\citeauthoryear{Pockrandt et~al.}{2022}]{lowmemkraken}
+Pockrandt C, Zimin AV, Salzberg SL.
+\newblock Metagenomic classification with KrakenUniq on low-memory computers.
+\newblock J Open Source Softw. 2022;7(80).
+\newblock \doi{10.21105/joss.04908}.
+
+\bibitem[\protect\citeauthoryear{O'Leary et~al.}{2016}]{refseq}
+O'Leary NA, Wright MW, Brister JR, Ciufo S, Haddad D, McVeigh R, et~al.
+\newblock Reference sequence (RefSeq) database at NCBI: current status, taxonomic expansion, and functional annotation.
+\newblock Nucleic Acids Res. 2016 Jan;44(D1):D733--45.
+\newblock \doi{10.1093/nar/gkv1189}.
+
+\bibitem[\protect\citeauthoryear{Nasko et~al.}{2018}]{Nasko:2018aa}
+Nasko DJ, Koren S, Phillippy AM, Treangen TJ.
+\newblock RefSeq database growth influences the accuracy of k-mer-based lowest common ancestor species identification.
+\newblock Genome Biology. 2018;19(1):165.
+\newblock \doi{10.1186/s13059-018-1554-6}.
+
+\bibitem[\protect\citeauthoryear{Goldfarb et~al.}{2024}]{10.1093/nar/gkae1038}
+Goldfarb T, Kodali V, Pujar S, Brover V, Robbertse B, Farrell C, et~al.
+\newblock NCBI RefSeq: reference sequence standards through 25 years of curation and annotation.
+\newblock Nucleic Acids Research. 2024 11;53(D1):D243--D257.
+\newblock \doi{10.1093/nar/gkae1038}.
+\newblock {\href{https://arxiv.org/abs/https://academic.oup.com/nar/article-pdf/53/D1/D243/60586509/gkae1038.pdf}{{https://academic.oup.com/nar/article-pdf/53/D1/D243/60586509/gkae1038.pdf}}}.
+
+\bibitem[\protect\citeauthoryear{Sayers et~al.}{2019}]{genbank}
+Sayers EW, Cavanaugh M, Clark K, Ostell J, Pruitt KD, Karsch-Mizrachi I.
+\newblock GenBank.
+\newblock Nucleic Acids Research. 2019 10;48(D1):D84--D86.
+\newblock \doi{10.1093/nar/gkz956}.
+\newblock {\href{https://arxiv.org/abs/https://academic.oup.com/nar/article-pdf/48/D1/D84/31697602/gkz956.pdf}{{https://academic.oup.com/nar/article-pdf/48/D1/D84/31697602/gkz956.pdf}}}.
+
+\bibitem[\protect\citeauthoryear{de~la Cuesta-Zuluaga et~al.}{2020}]{Cuesta-Zuluaga:2020aa}
+de~la Cuesta-Zuluaga J, Ley RE, Youngblut ND.
+\newblock Struo: a pipeline for building custom databases for common metagenome profilers.
+\newblock Bioinformatics. 2020 Apr;36(7):2314--2315.
+\newblock \doi{10.1093/bioinformatics/btz899}.
+
+\bibitem[\protect\citeauthoryear{Youngblut and Ley}{2021}]{Youngblut:2021aa}
+Youngblut ND, Ley RE.
+\newblock Struo2: efficient metagenome profiling database construction for ever-expanding microbial genome datasets.
+\newblock PeerJ. 2021;9:e12198.
+\newblock \doi{10.7717/peerj.12198}.
+
+\bibitem[\protect\citeauthoryear{Kipp et~al.}{2023}]{nanoporeticks}
+Kipp EJ, Lindsey LL, Khoo B, Faulk C, Oliver JD, Larsen PA.
+\newblock Metagenomic surveillance for bacterial tick-borne pathogens using nanopore adaptive sampling.
+\newblock Scientific Reports. 2023;13(1):10991.
+\newblock \doi{10.1038/s41598-023-37134-9}.
+
+\bibitem[\protect\citeauthoryear{Feldman}{1979}]{feldman1979make}
+Feldman SI.
+\newblock Make -- a program for maintaining computer programs.
+\newblock Software: Practice and experience. 1979;9(4):255--265.
+
+\bibitem[\protect\citeauthoryear{Sayers et~al.}{2025}]{Sayers:2025aa}
+Sayers EW, Beck J, Bolton EE, Brister JR, Chan J, Connor R, et~al.
+\newblock Database resources of the National Center for Biotechnology Information in 2025.
+\newblock Nucleic Acids Res. 2025 Jan;53(D1):D20--D29.
+\newblock \doi{10.1093/nar/gkae979}.
+
+\bibitem[\protect\citeauthoryear{Bloom}{1970}]{bloomfilter}
+Bloom BH.
+\newblock Space/time trade-offs in hash coding with allowable errors.
+\newblock Commun ACM. 1970 Jul;13(7):422--426.
+\newblock \doi{10.1145/362686.362692}.
+
+\bibitem[\protect\citeauthoryear{Schoch et~al.}{2020}]{taxonomy}
+Schoch CL, Ciufo S, Domrachev M, Hotton CL, Kannan S, Khovanskaya R, et~al.
+\newblock NCBI Taxonomy: a comprehensive update on curation, resources and tools.
+\newblock Database (Oxford). 2020 Jan;2020.
+\newblock \doi{10.1093/database/baaa062}.
+
+\bibitem[\protect\citeauthoryear{Breitwieser et~al.}{2019}]{Breitwieser:2019aa}
+Breitwieser FP, Pertea M, Zimin AV, Salzberg SL.
+\newblock Human contamination in bacterial genomes has created thousands of spurious proteins.
+\newblock Genome Res. 2019 Jun;29(6):954--960.
+\newblock \doi{10.1101/gr.245373.118}.
+
+\bibitem[\protect\citeauthoryear{Lu and Salzberg}{2018}]{Lu:2018aa}
+Lu J, Salzberg SL.
+\newblock Removing contaminants from databases of draft genomes.
+\newblock PLoS Comput Biol. 2018 Jun;14(6):e1006277.
+\newblock \doi{10.1371/journal.pcbi.1006277}.
+
+\bibitem[\protect\citeauthoryear{Morgulis et~al.}{2006}]{doi:10.1089/cmb.2006.13.1028}
+Morgulis A, Gertz EM, Sch\"{a}ffer AA, Agarwala R.
+\newblock A Fast and Symmetric DUST Implementation to Mask Low-Complexity DNA Sequences.
+\newblock Journal of Computational Biology. 2006;13(5):1028--1040.
+\newblock PMID: 16796549. \doi{10.1089/cmb.2006.13.1028}.
+\newblock {\href{https://arxiv.org/abs/https://doi.org/10.1089/cmb.2006.13.1028}{{https://doi.org/10.1089/cmb.2006.13.1028}}}.
+
+\bibitem[\protect\citeauthoryear{Chu et~al.}{2014}]{biobloom}
+Chu J, Sadeghi S, Raymond A, Jackman SD, Nip KM, Mar R, et~al.
+\newblock BioBloom tools: fast, accurate and memory-efficient host species sequence screening using bloom filters.
+\newblock Bioinformatics. 2014 08;30(23):3402--3404.
+\newblock \doi{10.1093/bioinformatics/btu558}.
+\newblock {\href{https://arxiv.org/abs/https://academic.oup.com/bioinformatics/article-pdf/30/23/3402/48931434/bioinformatics\_30\_23\_3402.pdf}{{https://academic.oup.com/bioinformatics/article-pdf/30/23/3402/48931434/bioinformatics\_30\_23\_3402.pdf}}}.
+
+\bibitem[\protect\citeauthoryear{Delahaye and Nicolas}{2021}]{Delahaye:2021aa}
+Delahaye C, Nicolas J.
+\newblock Sequencing DNA with nanopores: Troubles and biases.
+\newblock PLoS One. 2021;16(10):e0257521.
+\newblock \doi{10.1371/journal.pone.0257521}.
+
+\bibitem[\protect\citeauthoryear{Liu-Wei et~al.}{2024}]{Liu-Wei:2024aa}
+Liu-Wei W, van~der Toorn W, Bohn P, H{\"o}lzer M, Smyth RP, von Kleist M.
+\newblock Sequencing accuracy and systematic errors of nanopore direct RNA sequencing.
+\newblock BMC Genomics. 2024;25(1):528.
+\newblock \doi{10.1186/s12864-024-10440-w}.
+
+\bibitem[\protect\citeauthoryear{Lu et~al.}{2022}]{Lu:2022aa}
+Lu J, Rincon N, Wood DE, Breitwieser FP, Pockrandt C, Langmead B, et~al.
+\newblock Metagenome analysis using the Kraken software suite.
+\newblock Nature Protocols. 2022;17(12):2815--2839.
+\newblock \doi{10.1038/s41596-022-00738-y}.
+
+\bibitem[\protect\citeauthoryear{Wu et~al.}{2024}]{Wu:2024aa}
+Wu LY, Wijesekara Y, Piedade GJ, Pappas N, Brussaard CPD, Dutilh BE.
+\newblock Benchmarking bioinformatic virus identification tools using real-world metagenomic data across biomes.
+\newblock Genome Biology. 2024;25(1):97.
+\newblock \doi{10.1186/s13059-024-03236-4}.
+
+\bibitem[\protect\citeauthoryear{Hulo et~al.}{2011}]{viralzone}
+Hulo C, de~Castro E, Masson P, Bougueleret L, Bairoch A, Xenarios I, et~al.
+\newblock ViralZone: a knowledge resource to understand virus diversity.
+\newblock Nucleic Acids Res. 2011 Jan;39(Database issue):D576--82.
+\newblock \doi{10.1093/nar/gkq901}.
+
+\bibitem[\protect\citeauthoryear{Langmead}{2025}]{microbialdb}
+Langmead B.: Kraken 2, KrakenUniq and Bracken indexes.
+\newblock \url{https://benlangmead.github.io/aws-indexes/k2}.
+
+\bibitem[\protect\citeauthoryear{Huggins et~al.}{2024}]{HUGGINS2024100839}
+Huggins LG, Namgyel U, Wangchuk P, Atapattu U, Traub R, Colella V.
+\newblock Metabarcoding using nanopore sequencing enables identification of diverse and zoonotic vector-borne pathogens from neglected regions: A case study investigating dogs from Bhutan.
+\newblock One Health. 2024;19:100839.
+\newblock \doi{https://doi.org/10.1016/j.onehlt.2024.100839}.
+
+\bibitem[\protect\citeauthoryear{Miao et~al.}{2024}]{Miao:2024aa}
+Miao Y, Guo W, Zhang W, Chen Z, Mian D, Li R, et~al.
+\newblock Detection of Bartonella spp. in farmed deer (Artiodactyla: Cervidae) using multiplex assays in the Qinghai-Tibet Plateau, China.
+\newblock Microbiol Spectr. 2024 Jul;12(7):e0412023.
+\newblock \doi{10.1128/spectrum.04120-23}.
+
+\bibitem[\protect\citeauthoryear{Huggins et~al.}{2024}]{Huggins:2024aa}
+Huggins LG, Colella V, Young ND, Traub RJ.
+\newblock Metabarcoding using nanopore long-read sequencing for the unbiased characterization of apicomplexan haemoparasites.
+\newblock Mol Ecol Resour. 2024 Feb;24(2):e13878.
+\newblock \doi{10.1111/1755-0998.13878}.
+
+\bibitem[\protect\citeauthoryear{Eisen and Eisen}{2018}]{Eisen:2018aa}
+Eisen RJ, Eisen L.
+\newblock The Blacklegged Tick, Ixodes scapularis: An Increasing Public Health Concern [doi: 10.1016/j.pt.2017.12.006].
+\newblock Trends in Parasitology. 2018 2025/06/22;34(4):295--309.
+\newblock \doi{10.1016/j.pt.2017.12.006}.
+
+\bibitem[\protect\citeauthoryear{Johnson et~al.}{2018}]{JOHNSON20181499}
+Johnson TL, Graham CB, Maes SE, Hojgaard A, Fleshman A, Boegler KA, et~al.
+\newblock Prevalence and distribution of seven human pathogens in host-seeking Ixodes scapularis (Acari: Ixodidae) nymphs in Minnesota, USA.
+\newblock Ticks and Tick-borne Diseases. 2018;9(6):1499--1507.
+\newblock \doi{https://doi.org/10.1016/j.ttbdis.2018.07.009}.
+
+\bibitem[\protect\citeauthoryear{Janecek et~al.}{2012}]{Janecek:2012aa}
+Janecek E, Mietze A, Goethe R, Schnieder T, Strube C.
+\newblock Bartonella spp. infection rate and B. grahamii in ticks.
+\newblock Emerg Infect Dis. 2012 Oct;18(10):1689--1690.
+\newblock \doi{10.3201/eid1810.120390}.
+
+\bibitem[\protect\citeauthoryear{Thomas et~al.}{1990}]{Thomas:1990aa}
+Thomas RE, Karstens RH, Schwan TG.
+\newblock Experimental infection of Ornithodoros spp. ticks (Acari: Argasidae) with Yersinia pestis.
+\newblock J Med Entomol. 1990 Jul;27(4):720--723.
+\newblock \doi{10.1093/jmedent/27.4.720}.
+
+\bibitem[\protect\citeauthoryear{Shi et~al.}{2025}]{10.3389/fvets.2025.1522904}
+Shi H, Li G, Li D, Zhai H, Ji S, Hu Y, et~al.
+\newblock Molecular investigation reveals three hemotropic mycoplasmas in cats and three tick species in China.
+\newblock Frontiers in Veterinary Science. 2025;Volume 12 - 2025.
+\newblock \doi{10.3389/fvets.2025.1522904}.
+
+\bibitem[\protect\citeauthoryear{Mehlhorn}{2023}]{mehlhorn2012parasiten}
+Mehlhorn H.
+\newblock Die Parasiten des Menschen: Erkrankungen erkennen, bekämpfen und vorbeugen.
+\newblock SpringerLink: Bücher. Heidelberg: Springer Spektrum; 2023.
+
+\bibitem[\protect\citeauthoryear{Hillebrand et~al.}{1998}]{hillebrand1998rebschutz}
+Hillebrand W, Lorenz D, Louis F.
+\newblock Rebschutz-Taschenbuch.
+\newblock Heidelberg: Fachverlag Fraund; 1998.
+
+\bibitem[\protect\citeauthoryear{Samson et~al.}{2020}]{Samson:2020aa}
+Samson CA, Whitford W, Snell RG, Jacobsen JC, Lehnert K.
+\newblock Contaminating DNA in human saliva alters the detection of variants from whole genome sequencing.
+\newblock Sci Rep. 2020 Nov;10(1):19255.
+\newblock \doi{10.1038/s41598-020-76022-4}.
+
+\end{thebibliography}

@@ -1,0 +1,151 @@
+/*
+Theme Name: Beaver Builder Child Theme
+Theme URI: http://www.wpbeaverbuilder.com
+Version: 1.0
+Description: An example child theme that can be used as a starting point for custom development.
+Author: The Beaver Builder Team
+Author URI: http://www.fastlinemedia.com
+template: bb-theme
+*/
+
+/* Add your custom styles here... */
+
+
+.conference-banner img {
+    margin: 0 auto;
+    width: 100%;
+}
+
+ul.conference-nav {
+    border-top: 4px solid #0c3465;
+    margin: 0;
+    padding: 0;
+    list-style-image: none;
+}
+
+ul.conference-nav li {
+    list-style: none;
+    margin-left: 0;
+    color: #0c3465;
+    padding: 10px 20px;
+    border-bottom: 1px solid #c9c9c9;
+}
+
+ul.conference-nav li:hover {
+    cursor: pointer;
+    background-color: #0d3e71;
+    color: white;
+}
+
+ul.conference-nav li.active {
+    background-color: #5bcbf5;
+    color: white;
+}
+
+.conference-tab-content {
+    display: none;
+}
+
+.conference-tab-content.active {
+    display: block;
+}
+
+input[type=text].fl-search-input {
+
+}
+
+.search-form {
+    display: flex;
+}
+
+.search-form button.search-submit {
+    margin-left: 5px;
+}
+
+.search-form button.search-submit img {
+    width: 15px !important;
+    margin-top: -3px;
+}
+
+.upcoming-conferences-row .col-sm-12.col-md-4 img {
+    width: 100%;
+}
+
+.upcoming-conferences-row h1 a,
+.upcoming-conferences-row h1 a:hover {
+    color: #005cb9;
+    font-size: 25px;
+    line-height: 30px;
+    margin: 10px 0 20px 0;
+}
+
+.upcoming-conferences-row div.col-sm-12.col-md-8 h1 {
+    line-height: 0;
+    margin: 15px 0 0;
+}
+
+.upcoming-conferences-row div.col-sm-12.col-md-8 h2 {
+    color: #005cb9;
+    text-transform: none;
+    line-height: 20px;
+    font-size: 20px;
+    margin: 10px 0 20px 0;
+}
+
+.upcoming-conferences-row .meta {
+    text-transform: uppercase;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.upcoming-conferences-row .description {
+    margin-bottom: 15px;
+    font-size: 15px;
+    font-weight: 500;
+    display: flex;
+}
+
+.upcoming-conferences-row .booking {
+    display: flex;
+}
+
+.upcoming-conferences-row .booking a,
+.upcoming-conferences-row .booking a:hover {
+    background: #0c3464;
+    text-transform: uppercase;
+    margin-right: 10px;
+    padding: 15px 25px;
+    color: #fff;
+    font-weight: 500;
+
+}
+
+
+
+.fl-node-5ced7b86ddaf9 .fl-row-content-wrap{
+	padding:0 !important;
+}
+
+
+
+button,
+.btn.btn-primary
+{
+    background-color: rgb(12, 52, 100);
+    border-color: rgb(12, 52, 100);
+    color: white;
+}
+
+
+.logout-link {
+    display: none !important;
+}
+
+body.logged-in .logout-link {
+    display: inline-block !important;
+}
+
+.pp-logo{
+   padding:12px !important;
+   min-height:150px;
+}
