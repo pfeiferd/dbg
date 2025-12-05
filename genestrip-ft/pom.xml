@@ -1,0 +1,242 @@
+<!--
+ “Commons Clause” License Condition v1.0
+  
+ The Software is provided to you by the Licensor under the License, 
+ as defined below, subject to the following condition.
+  
+ Without limiting other conditions in the License, the grant of rights under the License 
+ will not include, and the License does not grant to you, the right to Sell the Software.
+  
+ For purposes of the foregoing, “Sell” means practicing any or all of the rights granted 
+ to you under the License to provide to third parties, for a fee or other consideration 
+ (including without limitation fees for hosting or consulting/ support services related to 
+ the Software), a product or service whose value derives, entirely or substantially, from the 
+ functionality of the Software. Any license notice or attribution required by the License 
+ must also include this Commons Clause License Condition notice.
+  
+ Software: genestrip
+  
+ License: Apache 2.0
+  
+ Licensor: Daniel Pfeifer (daniel.pfeifer@progotec.de) 
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.genestrip</groupId>
+	<artifactId>genestrip-ft</artifactId>
+	<version>2.2</version>
+	<packaging>jar</packaging>
+
+	<properties>
+		<main.class>org.metagene.genestrip.Main</main.class>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<javapackager.jdkPath>C:/java/jdk-17.0.2</javapackager.jdkPath>
+	</properties>
+
+	<name>genestrip</name>
+	<description>Genestrip-FT is a Bioinformatics tool that improves Genestrip's read classification, filtering and k-mer counting capabilities by refining the taxonomy tree.</description>
+	<url>https://git.it.hs-heilbronn.de/pfeiferd/genestrip-docs/genestrip-ft</url>
+	<inceptionYear>2024</inceptionYear>
+
+	<organization>
+		<name>Hochschule Heilbronn</name>
+		<url>http://www.hs-heilbronn.de</url>
+	</organization>
+
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0 subject to Commons Clause License Condition 1.0</name>
+			<url>https://raw.githubusercontent.com/pfeiferd/genestrip/master/LICENSE.txt</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<name>Daniel Pfeifer</name>
+			<email>daniel.pfeifer@progotec.de</email>
+		</developer>
+	</developers>
+
+	<scm>
+		<connection>scm:git:git://github.com/pfeiferd/genestrip.git</connection>
+		<developerConnection>scm:git:ssh://github.com/pfeiferd/genestrip.git</developerConnection>
+		<url>https://github.com/pfeiferd/genestrip/tree/master</url>
+	</scm>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.genestrip</groupId>
+			<artifactId>genestrip</artifactId>
+			<version>2.2</version>
+		</dependency>
+	</dependencies>
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+			<resource>
+				<directory>${project.basedir}</directory>
+				<includes>
+					<include>LICENSE.txt</include>
+				</includes>
+				<targetPath>META-INF</targetPath>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.0</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.1.2</version>
+				<configuration>
+					<skipTests>true</skipTests>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.3.0</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<mainClass>${main.class}</mainClass>
+							<addDefaultImplementationEntries>
+              					true
+            				</addDefaultImplementationEntries>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.2.1</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.6.3</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>2.6</version>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>javancss-maven-plugin</artifactId>
+				<version>2.1</version>
+			</plugin>
+		</plugins>
+	</reporting>
+	<profiles>
+		<profile>
+			<id>spotless</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.diffplug.spotless</groupId>
+						<artifactId>spotless-maven-plugin</artifactId>
+						<version>2.43.0</version>
+						<configuration>
+							<java>
+								<lineEndings>UNIX</lineEndings>
+								<includes>
+									<include>src/main/java/**/*.java</include>
+									<include>src/test/java/**/*.java</include>
+								</includes>
+								<licenseHeader>
+									<file>${project.basedir}/license-header</file>
+								</licenseHeader>
+							</java>
+						</configuration>
+						<executions>
+							<execution>
+								<goals>
+									<goal>check</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>test</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<version>3.1.2</version>
+						<configuration>
+							<systemPropertyVariables>
+								<propertyName>project.build.directory</propertyName>
+								<buildDirectory>${project.build.directory}</buildDirectory>
+								<propertyName>project.directory</propertyName>
+								<buildDirectory>${project.directory}</buildDirectory>
+							</systemPropertyVariables>
+							<skipTests>false</skipTests>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<version>2.2.1</version>
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<goals>
+									<goal>jar-no-fork</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>3.6.3</version>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>

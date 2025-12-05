@@ -1,0 +1,116 @@
+/*
+ * 
+ * “Commons Clause” License Condition v1.0
+ * 
+ * The Software is provided to you by the Licensor under the License, 
+ * as defined below, subject to the following condition.
+ * 
+ * Without limiting other conditions in the License, the grant of rights under the License 
+ * will not include, and the License does not grant to you, the right to Sell the Software.
+ * 
+ * For purposes of the foregoing, “Sell” means practicing any or all of the rights granted 
+ * to you under the License to provide to third parties, for a fee or other consideration 
+ * (including without limitation fees for hosting or consulting/ support services related to 
+ * the Software), a product or service whose value derives, entirely or substantially, from the 
+ * functionality of the Software. Any license notice or attribution required by the License 
+ * must also include this Commons Clause License Condition notice.
+ * 
+ * Software: genestrip-ft
+ * 
+ * License: Apache 2.0
+ * 
+ * Licensor: Daniel Pfeifer (daniel.pfeifer@progotec.de)
+ * 
+ */
+package org.metagene.genestrip.finertree.goals;
+
+import org.metagene.genestrip.GSProject;
+import org.metagene.genestrip.finertree.FinerTreeGSMaker;
+import org.metagene.genestrip.io.StreamProvider;
+import org.metagene.genestrip.make.*;
+import org.metagene.genestrip.store.Database;
+import org.metagene.genestrip.tax.Rank;
+import org.metagene.genestrip.tax.SmallTaxTree;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.*;
+
+public class KMerIntersectCSVGoal extends FileListGoal<GSProject> {
+    private static final DecimalFormat DF = new DecimalFormat("0.00000000", new DecimalFormatSymbols(Locale.US));
+
+    public static GoalKey GOAL_KEY = new GoalKey() {
+        @Override
+        public String getName() {
+            return "intersectcsv";
+        }
+    };
+
+    private final ObjectGoal<Database, GSProject> storeGoal;
+    private final ObjectGoal<KMerIntersectCountGoal.IntersectionsPerNode, GSProject> kmerIntersectGoal;
+    private final Map<File, SmallTaxTree.SmallTaxIdNode> fileToNodeMap;
+
+    @SafeVarargs
+    public KMerIntersectCSVGoal(GSProject project, ObjectGoal<Database, GSProject> storeGoal, ObjectGoal<KMerIntersectCountGoal.IntersectionsPerNode, GSProject> kmerIntersectGoal, Goal<GSProject>... deps) {
+        super(project, GOAL_KEY, (List<File>) null,  append(deps, kmerIntersectGoal));
+        this.storeGoal = storeGoal;
+        this.kmerIntersectGoal = kmerIntersectGoal;
+        fileToNodeMap = new HashMap<>();
+    }
+
+    @Override
+    protected void provideFiles() {
+        // Do not access kmerIntersectGoal here as it would trigger the related computation already...
+        Collection<Rank> ranksToRefine = new HashSet<>((Collection<Rank>) configValue(FinerTreeGSMaker.REFINEMENT_RANKS));
+        SmallTaxTree tree = storeGoal.get().getTaxTree();
+        Iterator<SmallTaxTree.SmallTaxIdNode> it = tree.iterator();
+        while (it.hasNext()) {
+            SmallTaxTree.SmallTaxIdNode node = it.next();
+            if (ranksToRefine.contains(node.getRank())) {
+                if (node.getSubNodes() != null && node.getSubNodes().length > 0) {
+                    File matchFile = getProject().getOutputFile(getKey().getName(), node.getTaxId(), null, GSProject.FileType.CSV, false);
+                    addFile(matchFile);
+                    fileToNodeMap.put(matchFile, node);
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void makeFile(File file) throws IOException {
+        SmallTaxTree.SmallTaxIdNode node = fileToNodeMap.get(file);
+        KMerIntersectCountGoal.IntersectionsPerNode intersections = kmerIntersectGoal.get();
+
+        try (PrintStream out = new PrintStream(StreamProvider.getOutputStreamForFile(file))) {
+            SmallTaxTree.SmallTaxIdNode[] children = node.getSubNodes();
+            for (int i = 0; i < children.length; i++) {
+                out.print(children[i].getTaxId());
+                out.print(';');
+            }
+            out.println();
+            for (int i = 0; i < children.length; i++) {
+                for (int j = 0; j < children.length; j++) {
+                    out.print(intersections.getIntersectionCount(node, i, j));
+                    out.print(';');
+                }
+                out.println();
+            }
+            out.println();
+            for (int i = 0; i < children.length; i++) {
+                for (int j = 0; j < children.length; j++) {
+                    out.print(DF.format(getJaccardIndex(intersections, node, i, j)));
+                    out.print(';');
+                }
+                out.println();
+            }
+        }
+    }
+
+    public double getJaccardIndex(KMerIntersectCountGoal.IntersectionsPerNode intersections, SmallTaxTree.SmallTaxIdNode node, int i, int j) {
+        double intersect = intersections.getIntersectionCount(node, i, j);
+        return intersect / (intersections.getIntersectionCount(node, i, i) + intersections.getIntersectionCount(node, j, j) - intersect);
+    }
+}
