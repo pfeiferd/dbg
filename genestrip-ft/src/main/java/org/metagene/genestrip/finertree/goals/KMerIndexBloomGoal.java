@@ -80,7 +80,7 @@ public class KMerIndexBloomGoal extends FastaReaderGoal<XORKMerIndexBloomFilter>
         this.storeGoal = storeGoal;
         this.accessionMapGoal = accessionMapGoal;
         multiThreading = bundle.getThreads() > 0;
-        ranksToRefine = new HashSet<>((Collection<Rank>) configValue(FinerTreeGSMaker.REFINEMENT_RANKS));
+        ranksToRefine =  new HashSet<>((Collection<Rank>) configValue(FinerTreeGSMaker.REFINEMENT_RANKS));
     }
 
     @Override
