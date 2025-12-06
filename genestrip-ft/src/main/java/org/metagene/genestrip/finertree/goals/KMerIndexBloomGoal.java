@@ -147,10 +147,17 @@ public class KMerIndexBloomGoal extends FastaReaderGoal<XORKMerIndexBloomFilter>
             }
 
             if (node != null && (taxNodes.isEmpty() || taxNodes.contains(node))) {
-                includeRegion = true;
                 node = reworkNode();
+                if (node != null) {
+                    smallNode = smallTaxTree.getNodeByTaxId(node.getTaxId());
+                    if (smallNode != null) {
+                        includeRegion = true;
+                    }
+                }
+                else {
+                    smallNode = null;
+                }
             }
-            smallNode = node == null ? null : smallTaxTree.getNodeByTaxId(node.getTaxId());
         }
 
         @Override

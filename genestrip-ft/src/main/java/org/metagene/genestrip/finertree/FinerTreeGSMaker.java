@@ -42,6 +42,8 @@ import java.io.File;
 import java.util.*;
 
 public class FinerTreeGSMaker extends GSMaker {
+    public static List<Rank> DEFAULT_REFINEMENT_RANKS = Collections.unmodifiableList(Arrays.asList(Rank.GENUS, Rank.SPECIES_GROUP));
+
     public static ConfigKey REFINEMENT_RANKS = new ConfigKey() {
         @Override
         public String getName() {
@@ -50,7 +52,7 @@ public class FinerTreeGSMaker extends GSMaker {
 
         @Override
         public ConfigParamInfo<?> getInfo() {
-            return new ConfigParamInfo.ListConfigParamInfo<Rank>(Collections.singletonList(Rank.GENUS)) {
+            return new ConfigParamInfo.ListConfigParamInfo<Rank>(DEFAULT_REFINEMENT_RANKS) {
                 @Override
                 protected List<Rank> fromString(String qs) {
                     List<Rank> res = new ArrayList<Rank>();
