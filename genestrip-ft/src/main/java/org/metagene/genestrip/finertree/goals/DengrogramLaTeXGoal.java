@@ -1,0 +1,135 @@
+package org.metagene.genestrip.finertree.goals;
+
+import org.metagene.genestrip.GSProject;
+import org.metagene.genestrip.finertree.FinerTreeGSMaker;
+import org.metagene.genestrip.finertree.cluster.DendrogramNode;
+import org.metagene.genestrip.io.StreamProvider;
+import org.metagene.genestrip.make.FileListGoal;
+import org.metagene.genestrip.make.Goal;
+import org.metagene.genestrip.make.GoalKey;
+import org.metagene.genestrip.make.ObjectGoal;
+import org.metagene.genestrip.store.Database;
+import org.metagene.genestrip.tax.Rank;
+import org.metagene.genestrip.tax.SmallTaxTree;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.*;
+
+public class DengrogramLaTeXGoal extends FileListGoal<GSProject> {
+    public static GoalKey GOAL_KEY = new GoalKey() {
+        @Override
+        public String getName() {
+            return "dendrolatex";
+        }
+    };
+
+    private static final DecimalFormat DF = new DecimalFormat("0.000000", new DecimalFormatSymbols(Locale.US));
+
+    private final ObjectGoal<Database, GSProject> storeGoal;
+    private final ObjectGoal<Map<SmallTaxTree.SmallTaxIdNode, DendrogramNode>, GSProject> dendrogramGoal;
+    private final Map<File, SmallTaxTree.SmallTaxIdNode> fileToNodeMap;
+
+    public DengrogramLaTeXGoal(GSProject project, ObjectGoal<Database, GSProject> storeGoal, ObjectGoal<Map<SmallTaxTree.SmallTaxIdNode, DendrogramNode>, GSProject> dendrogramGoal, Goal<GSProject>... deps) {
+        super(project, GOAL_KEY, (List<File>) null, append(deps, storeGoal, dendrogramGoal));
+        this.storeGoal = storeGoal;
+        this.dendrogramGoal = dendrogramGoal;
+        fileToNodeMap = new HashMap<>();
+    }
+
+    @Override
+    // Do not access kmerIntersectGoal here as it would trigger the related computation already...
+    protected void provideFiles() {
+        Collection parents = KMerIntersectCSVGoal.getNodesWithRanks(storeGoal.get().getTaxTree(), (Collection<Rank>) configValue(FinerTreeGSMaker.REFINEMENT_RANKS));
+        for (SmallTaxTree.SmallTaxIdNode node : fileToNodeMap.values()) {
+            // TODO: A CSV file for LatTeX is not really ideal...
+            File matchFile = getProject().getOutputFile(getKey().getName(), node.getTaxId(), null, GSProject.FileType.CSV, false);
+            addFile(matchFile);
+            fileToNodeMap.put(matchFile, node);
+        }
+    }
+
+    @Override
+    protected void makeFile(File file) throws IOException {
+        SmallTaxTree.SmallTaxIdNode parent = fileToNodeMap.get(file);
+        DendrogramNode dendrogram = dendrogramGoal.get().get(parent);
+
+        try (PrintStream out = new PrintStream(StreamProvider.getOutputStreamForFile(file))) {
+            out.println("\\begin{tikzpicture}[scale=1]");
+            out.println("\\draw[->] (-7,0) -- node[above]{distance} (-7,6);");
+            SmallTaxTree.SmallTaxIdNode[] children = parent.getSubNodes();
+            double offset = children.length / 2;
+            double yScaleFactor = 2;
+            double xScaleFactor = 1;
+            int[] leafCounter = new int[1];
+            int[] preCounter = new int[1];
+            dendrogram.visit(new DendrogramNode.Visitor() {
+                @Override
+                public void preNode(DendrogramNode node) {
+                    node.setValue(new IntDouble(preCounter[0], leafCounter[0]));
+                    if (node.getValueIndex() >= 0) {
+                        SmallTaxTree.SmallTaxIdNode child = children[node.getValueIndex()];
+                        out.println("\\node [rotate=90,anchor=east] (n");
+                        out.print(preCounter[0]);
+                        out.print(") at (");
+                        out.print(DF.format(xScaleFactor * (leafCounter[0] - offset)));
+                        out.print(",0) {");
+                        out.print(child.getTaxId());
+                        out.print(" ");
+                        out.print(child.getName());
+                        out.println("};");
+                        leafCounter[0]++;
+                    }
+                    preCounter[0]++;
+                }
+
+                public void postNode(DendrogramNode node) {
+                    if (node.getValueIndex() < 0) {
+                        double xPos = (((IntDouble) node.getChild1().getValue()).d + ((IntDouble) node.getChild1().getValue()).d) / 2;
+                        IntDouble value = (IntDouble) node.getValue();
+                        value.d = xPos;
+                        out.println("\\node (n");
+                        out.print(value.i);
+                        out.print(") at (");
+                        out.print(DF.format(xScaleFactor * (xPos - offset)));
+                        out.print(",");
+                        out.print(DF.format(yScaleFactor * node.getSimilarity()));
+                        out.println(") {};");
+                    }
+                }
+            });
+            preCounter[0] = 0;
+            dendrogram.visit(new DendrogramNode.Visitor() {
+                @Override
+                public void preNode(DendrogramNode node) {
+                    if (node.getParent() != null) {
+                        out.print("\\draw  (n");
+                        out.print(((IntDouble) node.getValue()).i);
+                        out.print(") |- (n");
+                        out.print(((IntDouble) node.getParent().getValue()).i);
+                        out.println(");");
+                    }
+                }
+
+                @Override
+                public void postNode(DendrogramNode node) {
+                }
+            });
+
+            out.println("\\end{tikzpicture}");
+        }
+    }
+
+    private static class IntDouble {
+        public IntDouble(int i, double d) {
+            this.i = i;
+            this.d = d;
+        }
+
+        public int i;
+        public double d;
+    }
+}

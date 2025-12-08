@@ -35,6 +35,7 @@ import org.metagene.genestrip.store.KMerSortedArray;
 import org.metagene.genestrip.tax.Rank;
 import org.metagene.genestrip.tax.SmallTaxTree;
 
+import java.io.File;
 import java.util.*;
 
 public class KMerIntersectCountGoal extends ObjectGoal<KMerIntersectCountGoal.IntersectionsPerNode, GSProject> {

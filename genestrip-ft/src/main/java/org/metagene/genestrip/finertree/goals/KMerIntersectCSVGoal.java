@@ -40,14 +40,14 @@ import java.text.DecimalFormatSymbols;
 import java.util.*;
 
 public class KMerIntersectCSVGoal extends FileListGoal<GSProject> {
-    private static final DecimalFormat DF = new DecimalFormat("0.00000000", new DecimalFormatSymbols(Locale.US));
-
     public static GoalKey GOAL_KEY = new GoalKey() {
         @Override
         public String getName() {
             return "intersectcsv";
         }
     };
+
+    private static final DecimalFormat DF = new DecimalFormat("0.00000000", new DecimalFormatSymbols(Locale.US));
 
     private final ObjectGoal<Database, GSProject> storeGoal;
     private final ObjectGoal<KMerIntersectCountGoal.IntersectionsPerNode, GSProject> kmerIntersectGoal;
@@ -64,23 +64,11 @@ public class KMerIntersectCSVGoal extends FileListGoal<GSProject> {
     @Override
     // Do not access kmerIntersectGoal here as it would trigger the related computation already...
     protected void provideFiles() {
-        boolean [] ranksToRefine = new boolean[Rank.values().length];
-        Collection<Rank> toRefine = (Collection<Rank>) configValue(FinerTreeGSMaker.REFINEMENT_RANKS);
-        for (Rank r : toRefine) {
-            ranksToRefine[r.ordinal()] = true;
-        }
-
-        SmallTaxTree tree = storeGoal.get().getTaxTree();
-        Iterator<SmallTaxTree.SmallTaxIdNode> it = tree.iterator();
-        while (it.hasNext()) {
-            SmallTaxTree.SmallTaxIdNode node = it.next();
-            if (ranksToRefine[node.getRank().ordinal()]) {
-                if (node.getSubNodes() != null && node.getSubNodes().length > 0) {
-                    File matchFile = getProject().getOutputFile(getKey().getName(), node.getTaxId(), null, GSProject.FileType.CSV, false);
-                    addFile(matchFile);
-                    fileToNodeMap.put(matchFile, node);
-                }
-            }
+        Collection parents = getNodesWithRanks(storeGoal.get().getTaxTree(), (Collection<Rank>) configValue(FinerTreeGSMaker.REFINEMENT_RANKS));
+        for (SmallTaxTree.SmallTaxIdNode node : fileToNodeMap.values()) {
+            File matchFile = getProject().getOutputFile(getKey().getName(), node.getTaxId(), null, GSProject.FileType.CSV, false);
+            addFile(matchFile);
+            fileToNodeMap.put(matchFile, node);
         }
     }
 
@@ -91,7 +79,7 @@ public class KMerIntersectCSVGoal extends FileListGoal<GSProject> {
 
         try (PrintStream out = new PrintStream(StreamProvider.getOutputStreamForFile(file))) {
             out.println("children; kmer sum; kmer spread sum; avg kmer spread; overspread ratio;");
-            int nChildren = intersections.getParentNodes().size();
+            int nChildren = node.getSubNodes().length;
             out.print(nChildren);
             out.print(intersections.getKMerSum(node));
             out.print(intersections.getKMerSpreadSum(node));
@@ -127,5 +115,24 @@ public class KMerIntersectCSVGoal extends FileListGoal<GSProject> {
     public double getJaccardIndex(KMerIntersectCountGoal.IntersectionsPerNode intersections, SmallTaxTree.SmallTaxIdNode node, int i, int j) {
         double intersect = intersections.getIntersectionCount(node, i, j);
         return intersect / (intersections.getIntersectionCount(node, i, i) + intersections.getIntersectionCount(node, j, j) - intersect);
+    }
+
+    public static Collection<SmallTaxTree.SmallTaxIdNode> getNodesWithRanks(SmallTaxTree tree, Collection<Rank> ranks) {
+        Collection<SmallTaxTree.SmallTaxIdNode> res = new ArrayList<>();
+        boolean [] ranksToRefine = new boolean[Rank.values().length];
+        for (Rank r : ranks) {
+            ranksToRefine[r.ordinal()] = true;
+        }
+
+        Iterator<SmallTaxTree.SmallTaxIdNode> it = tree.iterator();
+        while (it.hasNext()) {
+            SmallTaxTree.SmallTaxIdNode node = it.next();
+            if (ranksToRefine[node.getRank().ordinal()]) {
+                if (node.getSubNodes() != null && node.getSubNodes().length > 0) {
+                    res.add(node);
+                }
+            }
+        }
+        return res;
     }
 }
