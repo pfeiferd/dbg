@@ -1,20 +1,17 @@
 package org.metagene.genestrip.finertree.cluster;
 
-import java.io.PrintStream;
-import java.io.PrintWriter;
-
-public class DendroGramNode {
+public class DendrogramNode {
     public interface Visitor {
-        void nextNode(DendroGramNode node);
+        void nextNode(DendrogramNode node);
     }
 
     private final int valueIndex;
-    private final DendroGramNode child1;
-    private final DendroGramNode child2;
+    private final DendrogramNode child1;
+    private final DendrogramNode child2;
     private double similarity;
-    private DendroGramNode parent;
+    private DendrogramNode parent;
 
-    public DendroGramNode(DendroGramNode child1, DendroGramNode child2, double similarity) {
+    public DendrogramNode(DendrogramNode child1, DendrogramNode child2, double similarity) {
         this.valueIndex = -1;
         this.child1 = child1;
         child1.parent = this;
@@ -23,7 +20,7 @@ public class DendroGramNode {
         this.similarity = similarity;
     }
 
-    public DendroGramNode(int valueIndex, double similarity) {
+    public DendrogramNode(int valueIndex, double similarity) {
         this.valueIndex = valueIndex;
         this.child1 = null;
         this.child2 = null;
@@ -34,15 +31,15 @@ public class DendroGramNode {
         return valueIndex;
     }
 
-    public DendroGramNode getChild1() {
+    public DendrogramNode getChild1() {
         return child1;
     }
 
-    public DendroGramNode getChild2() {
+    public DendrogramNode getChild2() {
         return child2;
     }
 
-    public DendroGramNode getParent() {
+    public DendrogramNode getParent() {
         return parent;
     }
 

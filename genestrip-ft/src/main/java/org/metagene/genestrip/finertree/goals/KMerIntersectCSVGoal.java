@@ -90,9 +90,14 @@ public class KMerIntersectCSVGoal extends FileListGoal<GSProject> {
         KMerIntersectCountGoal.IntersectionsPerNode intersections = kmerIntersectGoal.get();
 
         try (PrintStream out = new PrintStream(StreamProvider.getOutputStreamForFile(file))) {
-            out.println("kmer sum; kmer spread sum;");
+            out.println("children; kmer sum; kmer spread sum; avg kmer spread; overspread ratio;");
+            int nChildren = intersections.getParentNodes().size();
+            out.print(nChildren);
             out.print(intersections.getKMerSum(node));
             out.print(intersections.getKMerSpreadSum(node));
+            double avgSpread = ((double) intersections.getKMerSpreadSum(node)) / intersections.getKMerSum(node);
+            out.print(DF.format(avgSpread));
+            out.print(DF.format((avgSpread - 2) / (nChildren - 2)));
             out.println();
 
             SmallTaxTree.SmallTaxIdNode[] children = node.getSubNodes();
