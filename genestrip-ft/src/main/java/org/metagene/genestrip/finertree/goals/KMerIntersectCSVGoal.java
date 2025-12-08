@@ -62,14 +62,19 @@ public class KMerIntersectCSVGoal extends FileListGoal<GSProject> {
     }
 
     @Override
+    // Do not access kmerIntersectGoal here as it would trigger the related computation already...
     protected void provideFiles() {
-        // Do not access kmerIntersectGoal here as it would trigger the related computation already...
-        Collection<Rank> ranksToRefine = new HashSet<>((Collection<Rank>) configValue(FinerTreeGSMaker.REFINEMENT_RANKS));
+        boolean [] ranksToRefine = new boolean[Rank.values().length];
+        Collection<Rank> toRefine = (Collection<Rank>) configValue(FinerTreeGSMaker.REFINEMENT_RANKS);
+        for (Rank r : toRefine) {
+            ranksToRefine[r.ordinal()] = true;
+        }
+
         SmallTaxTree tree = storeGoal.get().getTaxTree();
         Iterator<SmallTaxTree.SmallTaxIdNode> it = tree.iterator();
         while (it.hasNext()) {
             SmallTaxTree.SmallTaxIdNode node = it.next();
-            if (ranksToRefine.contains(node.getRank())) {
+            if (ranksToRefine[node.getRank().ordinal()]) {
                 if (node.getSubNodes() != null && node.getSubNodes().length > 0) {
                     File matchFile = getProject().getOutputFile(getKey().getName(), node.getTaxId(), null, GSProject.FileType.CSV, false);
                     addFile(matchFile);
@@ -85,6 +90,11 @@ public class KMerIntersectCSVGoal extends FileListGoal<GSProject> {
         KMerIntersectCountGoal.IntersectionsPerNode intersections = kmerIntersectGoal.get();
 
         try (PrintStream out = new PrintStream(StreamProvider.getOutputStreamForFile(file))) {
+            out.println("kmer sum; kmer spread sum;");
+            out.print(intersections.getKMerSum(node));
+            out.print(intersections.getKMerSpreadSum(node));
+            out.println();
+
             SmallTaxTree.SmallTaxIdNode[] children = node.getSubNodes();
             for (int i = 0; i < children.length; i++) {
                 out.print(children[i].getTaxId());

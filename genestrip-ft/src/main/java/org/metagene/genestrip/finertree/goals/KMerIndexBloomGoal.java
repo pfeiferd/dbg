@@ -25,6 +25,8 @@
 package org.metagene.genestrip.finertree.goals;
 
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
+import it.unimi.dsi.fastutil.shorts.Short2IntMap;
+import it.unimi.dsi.fastutil.shorts.Short2LongMap;
 import org.metagene.genestrip.ExecutionContext;
 import org.metagene.genestrip.GSConfigKey;
 import org.metagene.genestrip.GSProject;
@@ -63,7 +65,7 @@ public class KMerIndexBloomGoal extends FastaReaderGoal<XORKMerIndexBloomFilter>
     private final ObjectGoal<AccessionMap, GSProject> accessionMapGoal;
     private final ObjectGoal<Database, GSProject> storeGoal;
     private final boolean multiThreading;
-    private final Collection<Rank> ranksToRefine;
+    private final boolean[] ranksToRefine;
 
     private KMerSortedArray<SmallTaxTree.SmallTaxIdNode> kMerSortedArray;
     private SmallTaxTree smallTaxTree;
@@ -80,7 +82,11 @@ public class KMerIndexBloomGoal extends FastaReaderGoal<XORKMerIndexBloomFilter>
         this.storeGoal = storeGoal;
         this.accessionMapGoal = accessionMapGoal;
         multiThreading = bundle.getThreads() > 0;
-        ranksToRefine =  new HashSet<>((Collection<Rank>) configValue(FinerTreeGSMaker.REFINEMENT_RANKS));
+        ranksToRefine = new boolean[Rank.values().length];
+        Collection<Rank> toRefine = (Collection<Rank>) configValue(FinerTreeGSMaker.REFINEMENT_RANKS);
+        for (Rank r : toRefine) {
+            ranksToRefine[r.ordinal()] = true;
+        }
     }
 
     @Override
@@ -92,7 +98,7 @@ public class KMerIndexBloomGoal extends FastaReaderGoal<XORKMerIndexBloomFilter>
             long[] counter = new long[1];
             stats.forEach((s, aLong) -> {
                 if (s != null) {
-                    if (ranksToRefine.contains(s.getRank())) {
+                    if (ranksToRefine[s.getRank().ordinal()]) {
                         // Conservative estimate: k-mer could be in genome of every subnode, i.e. species...
                         counter[0] += aLong * s.getSubNodes().length;
                     }
@@ -174,7 +180,7 @@ public class KMerIndexBloomGoal extends FastaReaderGoal<XORKMerIndexBloomFilter>
         protected boolean handleStore() {
             long kmer = byteRingBuffer.getStandardKMer();
             SmallTaxTree.SmallTaxIdNode storedNode = kMerSortedArray.getLong(kmer, null);
-            if (storedNode != null && ranksToRefine.contains(storedNode.getRank())) {
+            if (storedNode != null && ranksToRefine[storedNode.getRank().ordinal()]) {
                 short index = smallNode.storeIndex;
                 if (!filter.containsLongShort(kmer, index)) {
                     if (multiThreading) {
