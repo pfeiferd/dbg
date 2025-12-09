@@ -81,10 +81,15 @@ public class KMerIntersectCSVGoal extends FileListGoal<GSProject> {
             out.println("children; kmer sum; kmer spread sum; avg kmer spread; overspread ratio;");
             int nChildren = parent.getSubNodes().length;
             out.print(nChildren);
+            out.print(';');
             out.print(intersections.getKMerSum(parent));
+            out.print(';');
             out.print(intersections.getKMerSpreadSum(parent));
+            out.print(';');
             out.print(DF.format(intersections.getAvgKMerSpread(parent)));
+            out.print(';');
             out.print(DF.format(intersections.getOverspreadRatio(parent)));
+            out.print(';');
             out.println();
 
             SmallTaxTree.SmallTaxIdNode[] children = parent.getSubNodes();
@@ -121,7 +126,8 @@ public class KMerIntersectCSVGoal extends FileListGoal<GSProject> {
         Iterator<SmallTaxTree.SmallTaxIdNode> it = tree.iterator();
         while (it.hasNext()) {
             SmallTaxTree.SmallTaxIdNode node = it.next();
-            if (ranksToRefine[node.getRank().ordinal()]) {
+            Rank r = node.getRank();
+            if (r != null && ranksToRefine[r.ordinal()]) {
                 if (node.getSubNodes() != null && node.getSubNodes().length > 0) {
                     res.add(node);
                 }

@@ -85,10 +85,10 @@ public class DengrogramLaTeXGoal extends FileListGoal<GSProject> {
                     out.print(") at (");
                     out.print(DF.format(xScaleFactor * (leafCounter[0] - offset)));
                     out.print(",0) {");
-                    out.print(child.getTaxId());
-                    out.print(" ");
                     out.print(child.getName());
-                    out.println("};");
+                    out.print(" (");
+                    out.print(child.getTaxId());
+                    out.println(")};");
                     leafCounter[0]++;
                 }
                 preCounter[0]++;

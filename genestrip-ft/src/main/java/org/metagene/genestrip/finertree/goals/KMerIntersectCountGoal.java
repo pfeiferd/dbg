@@ -25,6 +25,8 @@
 package org.metagene.genestrip.finertree.goals;
 
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
+import me.tongfei.progressbar.ProgressBar;
+import org.metagene.genestrip.GSConfigKey;
 import org.metagene.genestrip.GSProject;
 import org.metagene.genestrip.finertree.FinerTreeMaker;
 import org.metagene.genestrip.finertree.bloom.XORKMerIndexBloomFilter;
@@ -35,6 +37,8 @@ import org.metagene.genestrip.store.Database;
 import org.metagene.genestrip.store.KMerSortedArray;
 import org.metagene.genestrip.tax.Rank;
 import org.metagene.genestrip.tax.SmallTaxTree;
+import org.metagene.genestrip.util.progressbar.GSProgressBarCreator;
+import org.metagene.genestrip.util.progressbar.GSProgressUpdate;
 
 import java.io.File;
 import java.util.*;
@@ -83,69 +87,97 @@ public class KMerIntersectCountGoal extends ObjectGoal<KMerIntersectCountGoal.In
         XORKMerIndexBloomFilter bloomFilter = bloomFilterGoal.get();
 
         IntersectionsPerNodeImpl intersectionsPerNode = new IntersectionsPerNodeImpl();
-        kMerSortedArray.visit(new KMerSortedArray.KMerSortedArrayVisitor<SmallTaxTree.SmallTaxIdNode>() {
-            private boolean[] bits = new boolean[INITIAL_MAX_CHILDREN];
+
+        long max = kMerSortedArray.getEntries();
+        long[] current = new long[1];
+        GSProgressUpdate update = new GSProgressUpdate() {
+            @Override
+            public long current() {
+                return current[0];
+            }
 
             @Override
-            public void nextValue(KMerSortedArray<SmallTaxTree.SmallTaxIdNode> trie, long kmer, short index, long pos) {
-                SmallTaxTree.SmallTaxIdNode parent = kMerSortedArray.getValueForIndex(index);
-                if (parent != null) {
-                    if (ranksToRefine[parent.getRank().ordinal()]) {
-                        SmallTaxTree.SmallTaxIdNode[] children = parent.getSubNodes();
-                        if (children != null && children.length > 0) {
-                            int n;
-                            for (n = bits.length; n < children.length; n *= 2) {
-                            }
-                            if (n > bits.length) {
-                                bits = new boolean[n];
-                            }
-                            int spread = 0;
-                            for (int i = 0; i < children.length; i++) {
-                                bits[i] = checkSubtree(children[i], kmer);
-                                if (bits[i]) {
-                                    spread++;
+            public long max() {
+                return max;
+            }
+        };
+        try (ProgressBar pb = createProgressBar(update)) {
+            kMerSortedArray.visit(new KMerSortedArray.KMerSortedArrayVisitor<SmallTaxTree.SmallTaxIdNode>() {
+                private boolean[] bits = new boolean[INITIAL_MAX_CHILDREN];
+
+                @Override
+                public void nextValue(KMerSortedArray<SmallTaxTree.SmallTaxIdNode> trie, long kmer, short index, long pos) {
+                    current[0] = pos;
+                    SmallTaxTree.SmallTaxIdNode parent = kMerSortedArray.getValueForIndex(index);
+                    if (parent != null) {
+                        if (ranksToRefine[parent.getRank().ordinal()]) {
+                            SmallTaxTree.SmallTaxIdNode[] children = parent.getSubNodes();
+                            if (children != null && children.length > 0) {
+                                int n;
+                                for (n = bits.length; n < children.length; n *= 2) {
                                 }
-                            }
-                            for (int i = 0; i < children.length; i++) {
-                                for (int j = i; j < children.length; j++) {
-                                    if (bits[i] && bits[j]) {
-                                        intersectionsPerNode.incIntersectionCount(parent, i, j);
+                                if (n > bits.length) {
+                                    bits = new boolean[n];
+                                }
+                                int spread = 0;
+                                for (int i = 0; i < children.length; i++) {
+                                    bits[i] = checkSubtree(children[i], kmer);
+                                    if (bits[i]) {
+                                        spread++;
+                                    }
+                                }
+                                intersectionsPerNode.incKMerSpread(parent, spread);
+                                for (int i = 0; i < children.length; i++) {
+                                    for (int j = i; j < children.length; j++) {
+                                        if (bits[i] && bits[j]) {
+                                            intersectionsPerNode.incIntersectionCount(parent, i, j);
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
-            }
 
-            protected boolean checkSubtree(SmallTaxTree.SmallTaxIdNode node, long kmer) {
-                if (bloomFilter.containsLongShort(kmer, node.storeIndex)) {
-                    return true;
-                }
-                if (node.getSubNodes() != null) {
-                    SmallTaxTree.SmallTaxIdNode[] children = node.getSubNodes();
-                    for (int i = 0; i < children.length; i++) {
-                        if (checkSubtree(children[i], kmer)) {
-                            return true;
+                protected boolean checkSubtree(SmallTaxTree.SmallTaxIdNode node, long kmer) {
+                    if (bloomFilter.containsLongShort(kmer, node.storeIndex)) {
+                        return true;
+                    }
+                    if (node.getSubNodes() != null) {
+                        SmallTaxTree.SmallTaxIdNode[] children = node.getSubNodes();
+                        for (int i = 0; i < children.length; i++) {
+                            if (checkSubtree(children[i], kmer)) {
+                                return true;
+                            }
                         }
                     }
+                    return false;
                 }
-                return false;
-            }
-        });
+            });
+        }
 
         Object2LongMap<SmallTaxTree.SmallTaxIdNode> stats = kMerSortedArray.getNKmersPerTaxid();
         stats.forEach((s, aLong) -> {
             if (s != null) {
                 // TODO: Not recursive but just based on the children's counts. Is this sufficient?
                 SmallTaxTree.SmallTaxIdNode parent = s.getParent();
-                if (parent != null && ranksToRefine[parent.getRank().ordinal()]) {
-                    intersectionsPerNode.incSubnodeCounts(s, aLong);
+
+                if (parent != null) {
+                    Rank r = parent.getRank();
+                    if (r != null && ranksToRefine[r.ordinal()]) {
+                        intersectionsPerNode.incSubnodeCounts(s, aLong);
+                    }
                 }
             }
         });
 
         set(intersectionsPerNode);
+    }
+
+    protected ProgressBar createProgressBar(GSProgressUpdate update) {
+        return booleanConfigValue(GSConfigKey.PROGRESS_BAR) ?
+                GSProgressBarCreator.newGSProgressBar(getKey().getName(), update.max(), 1000, " kmers", update, getLogger(), false) :
+                null;
     }
 
     public class IntersectionsPerNodeImpl implements IntersectionsPerNode {
