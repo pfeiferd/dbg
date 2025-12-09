@@ -45,7 +45,7 @@ public class DendrogramGoal extends ObjectGoal<Map<SmallTaxTree.SmallTaxIdNode, 
 
                 @Override
                 public double getSimilarity(int i, int j) {
-                    return intersections.getIntersectionCount(parent, i, j);
+                    return intersections.getJaccardIndex(parent, i, j);
                 }
             });
             res.put(parent, node);

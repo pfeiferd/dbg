@@ -28,6 +28,7 @@ public class DengrogramLaTeXGoal extends FileListGoal<GSProject> {
     };
 
     private static final DecimalFormat DF = new DecimalFormat("0.000000", new DecimalFormatSymbols(Locale.US));
+    private static final DecimalFormat DF2 = new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.US));
 
     private final ObjectGoal<Database, GSProject> storeGoal;
     private final ObjectGoal<Map<SmallTaxTree.SmallTaxIdNode, DendrogramNode>, GSProject> dendrogramGoal;
@@ -57,69 +58,123 @@ public class DengrogramLaTeXGoal extends FileListGoal<GSProject> {
         SmallTaxTree.SmallTaxIdNode parent = fileToNodeMap.get(file);
         DendrogramNode dendrogram = dendrogramGoal.get().get(parent);
 
+        double offset = 0; // children.length / 2;
+        double yScaleFactor = 2;
+        double xScaleFactor = 1;
+
         try (PrintStream out = new PrintStream(StreamProvider.getOutputStreamForFile(file))) {
             out.println("\\begin{tikzpicture}[scale=1]");
-            out.println("\\draw[->] (-7,0) -- node[above]{distance} (-7,6);");
-            SmallTaxTree.SmallTaxIdNode[] children = parent.getSubNodes();
-            double offset = children.length / 2;
-            double yScaleFactor = 2;
-            double xScaleFactor = 1;
-            int[] leafCounter = new int[1];
-            int[] preCounter = new int[1];
-            dendrogram.visit(new DendrogramNode.Visitor() {
-                @Override
-                public void preNode(DendrogramNode node) {
-                    node.setValue(new IntDouble(preCounter[0], leafCounter[0]));
-                    if (node.getValueIndex() >= 0) {
-                        SmallTaxTree.SmallTaxIdNode child = children[node.getValueIndex()];
-                        out.println("\\node [rotate=90,anchor=east] (n");
-                        out.print(preCounter[0]);
-                        out.print(") at (");
-                        out.print(DF.format(xScaleFactor * (leafCounter[0] - offset)));
-                        out.print(",0) {");
-                        out.print(child.getTaxId());
-                        out.print(" ");
-                        out.print(child.getName());
-                        out.println("};");
-                        leafCounter[0]++;
-                    }
-                    preCounter[0]++;
-                }
-
-                public void postNode(DendrogramNode node) {
-                    if (node.getValueIndex() < 0) {
-                        double xPos = (((IntDouble) node.getChild1().getValue()).d + ((IntDouble) node.getChild1().getValue()).d) / 2;
-                        IntDouble value = (IntDouble) node.getValue();
-                        value.d = xPos;
-                        out.println("\\node (n");
-                        out.print(value.i);
-                        out.print(") at (");
-                        out.print(DF.format(xScaleFactor * (xPos - offset)));
-                        out.print(",");
-                        out.print(DF.format(yScaleFactor * node.getSimilarity()));
-                        out.println(") {};");
-                    }
-                }
-            });
-            preCounter[0] = 0;
-            dendrogram.visit(new DendrogramNode.Visitor() {
-                @Override
-                public void preNode(DendrogramNode node) {
-                    if (node.getParent() != null) {
-                        out.print("\\draw  (n");
-                        out.print(((IntDouble) node.getValue()).i);
-                        out.print(") |- (n");
-                        out.print(((IntDouble) node.getParent().getValue()).i);
-                        out.println(");");
-                    }
-                }
-
-                @Override
-                public void postNode(DendrogramNode node) {
-                }
-            });
-
+            drawAxis(out, xScaleFactor, yScaleFactor, offset);
+            drawDendrogram(out, parent, dendrogram, xScaleFactor, yScaleFactor, offset);
             out.println("\\end{tikzpicture}");
+        }
+    }
+
+    protected void drawDendrogram(PrintStream out, SmallTaxTree.SmallTaxIdNode parent, DendrogramNode dendrogram, double xScaleFactor, double yScaleFactor, double offset) {
+        SmallTaxTree.SmallTaxIdNode[] children = parent.getSubNodes();
+        int[] leafCounter = new int[1];
+        int[] preCounter = new int[1];
+        dendrogram.visit(new DendrogramNode.Visitor() {
+            @Override
+            public void preNode(DendrogramNode node) {
+                node.setValue(new IntDouble(preCounter[0], leafCounter[0]));
+                if (node.getValueIndex() >= 0) {
+                    SmallTaxTree.SmallTaxIdNode child = children[node.getValueIndex()];
+                    out.println("\\node [rotate=90,anchor=east] (n");
+                    out.print(preCounter[0]);
+                    out.print(") at (");
+                    out.print(DF.format(xScaleFactor * (leafCounter[0] - offset)));
+                    out.print(",0) {");
+                    out.print(child.getTaxId());
+                    out.print(" ");
+                    out.print(child.getName());
+                    out.println("};");
+                    leafCounter[0]++;
+                }
+                preCounter[0]++;
+            }
+
+            public void postNode(DendrogramNode node) {
+                if (node.getValueIndex() < 0) {
+                    double xPos = (((IntDouble) node.getChild1().getValue()).d + ((IntDouble) node.getChild1().getValue()).d) / 2;
+                    IntDouble value = (IntDouble) node.getValue();
+                    value.d = xPos;
+                    out.println("\\node (n");
+                    out.print(value.i);
+                    out.print(") at (");
+                    out.print(DF.format(xScaleFactor * (xPos - offset)));
+                    out.print(",");
+                    out.print(DF.format(yScaleFactor * node.getSimilarity()));
+                    out.println(") {};");
+                }
+            }
+        });
+        preCounter[0] = 0;
+        dendrogram.visit(new DendrogramNode.Visitor() {
+            @Override
+            public void preNode(DendrogramNode node) {
+                if (node.getValueIndex() < 0) {
+                    out.print("\\draw  (n");
+                    out.print(((IntDouble) node.getChild1().getValue()).i);
+                    out.print(") |- (n");
+                    out.print(((IntDouble) node.getValue()).i);
+                    out.println(");");
+                    out.print("\\draw  (n");
+                    out.print(((IntDouble) node.getChild2().getValue()).i);
+                    out.print(") |- (n");
+                    out.print(((IntDouble) node.getValue()).i);
+                    out.println(");");
+                }
+            }
+
+            @Override
+            public void postNode(DendrogramNode node) {
+            }
+        });
+    }
+
+    protected void drawAxis(PrintStream out, double xScaleFactor, double yScaleFactor, double offset) {
+        double xPos = xScaleFactor * (- offset - 2);
+        double yPos = yScaleFactor * 1;
+        out.print("\\draw[<-] (");
+        out.print(DF.format(xPos));
+        out.print(",0) -- node[above]{similarity} (");
+        out.print(DF.format(xPos));
+        out.print(",");
+        out.print(DF.format(yPos));
+        out.println(");");
+
+        xPos = xScaleFactor * (- offset - 1);
+        out.print("\\draw (");
+        out.print(DF.format(xPos));
+        out.print(",0) -- (");
+        out.print(DF.format(xPos));
+        out.print(",");
+        out.print(DF.format(yPos));
+        out.println(");");
+
+        int max = 5;
+        double xPosLeft = xScaleFactor * (-0.1 - offset - 1);
+        for (int i = 0; i <= max; i++) {
+            yPos = (yScaleFactor * i) / max;
+            out.print("\\draw (");
+            out.print(DF.format(xPos));
+            out.print(",");
+            out.print(DF.format(yPos));
+            out.print(") -- (");
+            out.print(DF.format(xPosLeft));
+            out.print(",");
+            out.print(DF.format(yPos));
+            out.print(",");
+            out.print(");");
+
+            out.print("\\node[left] at (");
+            out.print(DF.format(xPosLeft));
+            out.print(",");
+            out.print(DF.format(yPos));
+            out.print(") {$");
+            out.print(DF2.format(((double) i) / max));
+            out.print("$};");
         }
     }
 

@@ -74,21 +74,20 @@ public class KMerIntersectCSVGoal extends FileListGoal<GSProject> {
 
     @Override
     protected void makeFile(File file) throws IOException {
-        SmallTaxTree.SmallTaxIdNode node = fileToNodeMap.get(file);
+        SmallTaxTree.SmallTaxIdNode parent = fileToNodeMap.get(file);
         KMerIntersectCountGoal.IntersectionsPerNode intersections = kmerIntersectGoal.get();
 
         try (PrintStream out = new PrintStream(StreamProvider.getOutputStreamForFile(file))) {
             out.println("children; kmer sum; kmer spread sum; avg kmer spread; overspread ratio;");
-            int nChildren = node.getSubNodes().length;
+            int nChildren = parent.getSubNodes().length;
             out.print(nChildren);
-            out.print(intersections.getKMerSum(node));
-            out.print(intersections.getKMerSpreadSum(node));
-            double avgSpread = ((double) intersections.getKMerSpreadSum(node)) / intersections.getKMerSum(node);
-            out.print(DF.format(avgSpread));
-            out.print(DF.format((avgSpread - 2) / (nChildren - 2)));
+            out.print(intersections.getKMerSum(parent));
+            out.print(intersections.getKMerSpreadSum(parent));
+            out.print(DF.format(intersections.getAvgKMerSpread(parent)));
+            out.print(DF.format(intersections.getOverspreadRatio(parent)));
             out.println();
 
-            SmallTaxTree.SmallTaxIdNode[] children = node.getSubNodes();
+            SmallTaxTree.SmallTaxIdNode[] children = parent.getSubNodes();
             for (int i = 0; i < children.length; i++) {
                 out.print(children[i].getTaxId());
                 out.print(';');
@@ -96,7 +95,7 @@ public class KMerIntersectCSVGoal extends FileListGoal<GSProject> {
             out.println();
             for (int i = 0; i < children.length; i++) {
                 for (int j = 0; j < children.length; j++) {
-                    out.print(intersections.getIntersectionCount(node, i, j));
+                    out.print(intersections.getIntersectionCount(parent, i, j));
                     out.print(';');
                 }
                 out.println();
@@ -104,17 +103,12 @@ public class KMerIntersectCSVGoal extends FileListGoal<GSProject> {
             out.println();
             for (int i = 0; i < children.length; i++) {
                 for (int j = 0; j < children.length; j++) {
-                    out.print(DF.format(getJaccardIndex(intersections, node, i, j)));
+                    out.print(DF.format(intersections.getJaccardIndex(parent, i, j)));
                     out.print(';');
                 }
                 out.println();
             }
         }
-    }
-
-    public double getJaccardIndex(KMerIntersectCountGoal.IntersectionsPerNode intersections, SmallTaxTree.SmallTaxIdNode node, int i, int j) {
-        double intersect = intersections.getIntersectionCount(node, i, j);
-        return intersect / (intersections.getIntersectionCount(node, i, i) + intersections.getIntersectionCount(node, j, j) - intersect);
     }
 
     public static Collection<SmallTaxTree.SmallTaxIdNode> getNodesWithRanks(SmallTaxTree tree, Collection<Rank> ranks) {

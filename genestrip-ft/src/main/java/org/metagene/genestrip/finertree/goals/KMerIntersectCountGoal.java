@@ -44,6 +44,9 @@ public class KMerIntersectCountGoal extends ObjectGoal<KMerIntersectCountGoal.In
         public long getIntersectionCount(SmallTaxTree.SmallTaxIdNode parent, int child1, int child2);
         public long getKMerSpreadSum(SmallTaxTree.SmallTaxIdNode parent);
         public long getKMerSum(SmallTaxTree.SmallTaxIdNode parent);
+        public double getJaccardIndex(SmallTaxTree.SmallTaxIdNode parent, int i, int j);
+        public double getAvgKMerSpread(SmallTaxTree.SmallTaxIdNode parent);
+        public double getOverspreadRatio(SmallTaxTree.SmallTaxIdNode parent);
     }
     private static int INITIAL_MAX_CHILDREN = 256;
 
@@ -189,6 +192,19 @@ public class KMerIntersectCountGoal extends ObjectGoal<KMerIntersectCountGoal.In
         public long getKMerSum(SmallTaxTree.SmallTaxIdNode parent) {
             long[] counts = parentToCounts.get(parent);
             return counts == null ? 0 : counts[counts.length - 1];
+        }
+
+        public double getJaccardIndex(SmallTaxTree.SmallTaxIdNode parent, int i, int j) {
+            double intersect = getIntersectionCount(parent, i, j);
+            return intersect / (getIntersectionCount(parent, i, i) + getIntersectionCount(parent, j, j) - intersect);
+        }
+
+        public double getAvgKMerSpread(SmallTaxTree.SmallTaxIdNode parent) {
+            return ((double) getKMerSpreadSum(parent)) / getKMerSum(parent);
+        }
+
+        public double getOverspreadRatio(SmallTaxTree.SmallTaxIdNode parent) {
+            return (getAvgKMerSpread(parent) - 2) / (parent.getSubNodes().length - 2);
         }
     }
 }

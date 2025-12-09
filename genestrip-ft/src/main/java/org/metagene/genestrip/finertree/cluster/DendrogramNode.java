@@ -10,15 +10,12 @@ public class DendrogramNode {
     private final DendrogramNode child1;
     private final DendrogramNode child2;
     private double similarity;
-    private DendrogramNode parent;
     private Object value;
 
     public DendrogramNode(DendrogramNode child1, DendrogramNode child2, double similarity) {
         this.valueIndex = -1;
         this.child1 = child1;
-        child1.parent = this;
         this.child2 = child2;
-        child2.parent = this;
         this.similarity = similarity;
     }
 
@@ -39,10 +36,6 @@ public class DendrogramNode {
 
     public DendrogramNode getChild2() {
         return child2;
-    }
-
-    public DendrogramNode getParent() {
-        return parent;
     }
 
     public double getSimilarity() {
