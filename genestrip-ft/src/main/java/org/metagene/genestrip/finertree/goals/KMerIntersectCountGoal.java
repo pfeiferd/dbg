@@ -26,7 +26,7 @@ package org.metagene.genestrip.finertree.goals;
 
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import org.metagene.genestrip.GSProject;
-import org.metagene.genestrip.finertree.FinerTreeGSMaker;
+import org.metagene.genestrip.finertree.FinerTreeMaker;
 import org.metagene.genestrip.finertree.bloom.XORKMerIndexBloomFilter;
 import org.metagene.genestrip.make.Goal;
 import org.metagene.genestrip.make.GoalKey;
@@ -74,7 +74,7 @@ public class KMerIntersectCountGoal extends ObjectGoal<KMerIntersectCountGoal.In
     @Override
     protected void doMakeThis() {
         boolean [] ranksToRefine = new boolean[Rank.values().length];
-        Collection<Rank> toRefine = (Collection<Rank>) configValue(FinerTreeGSMaker.REFINEMENT_RANKS);
+        Collection<Rank> toRefine = (Collection<Rank>) configValue(FinerTreeMaker.REFINEMENT_RANKS);
         for (Rank r : toRefine) {
             ranksToRefine[r.ordinal()] = true;
         }

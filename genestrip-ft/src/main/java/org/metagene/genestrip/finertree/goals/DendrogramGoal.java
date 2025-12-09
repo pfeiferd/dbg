@@ -1,6 +1,7 @@
 package org.metagene.genestrip.finertree.goals;
 
 import org.metagene.genestrip.GSProject;
+import org.metagene.genestrip.finertree.FinerTreeMaker;
 import org.metagene.genestrip.finertree.cluster.DendrogramNode;
 import org.metagene.genestrip.finertree.cluster.Similarity;
 import org.metagene.genestrip.finertree.cluster.SimpleAggloClustering;
@@ -32,7 +33,9 @@ public class DendrogramGoal extends ObjectGoal<Map<SmallTaxTree.SmallTaxIdNode, 
     protected void doMakeThis() {
         Map<SmallTaxTree.SmallTaxIdNode, DendrogramNode> res = new HashMap<>();
         KMerIntersectCountGoal.IntersectionsPerNode intersections = kmerIntersectGoal.get();
-        SimpleAggloClustering clustering = new SimpleAggloClustering(SimpleAggloClustering.Method.SINGLE_LINKAGE);
+        SimpleAggloClustering.Method method = (SimpleAggloClustering.Method) configValue(FinerTreeMaker.CLUSTER_METHOD);
+        SimpleAggloClustering clustering = new SimpleAggloClustering(method);
+        boolean withChildCounts = booleanConfigValue(FinerTreeMaker.WITH_CHILD_COUNTS);
         for (SmallTaxTree.SmallTaxIdNode parent : intersections.getParentNodes()) {
             DendrogramNode node = clustering.cluster(new Similarity() {
                 @Override
@@ -42,7 +45,7 @@ public class DendrogramGoal extends ObjectGoal<Map<SmallTaxTree.SmallTaxIdNode, 
 
                 @Override
                 public double getSimilarity(int i, int j) {
-                    return intersections.getJaccardIndex(parent, i, j, false);
+                    return intersections.getJaccardIndex(parent, i, j, withChildCounts);
                 }
             });
             res.put(parent, node);

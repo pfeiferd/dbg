@@ -31,7 +31,7 @@ import org.metagene.genestrip.Main;
 public class FinerTreeMain extends Main {
     @Override
     protected GSMaker createMaker(GSProject project) {
-        return new FinerTreeGSMaker(project);
+        return new FinerTreeMaker(project);
     }
 
     public static void main(String[] args) {

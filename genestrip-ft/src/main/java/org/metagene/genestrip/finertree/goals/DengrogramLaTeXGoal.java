@@ -1,7 +1,7 @@
 package org.metagene.genestrip.finertree.goals;
 
 import org.metagene.genestrip.GSProject;
-import org.metagene.genestrip.finertree.FinerTreeGSMaker;
+import org.metagene.genestrip.finertree.FinerTreeMaker;
 import org.metagene.genestrip.finertree.cluster.DendrogramNode;
 import org.metagene.genestrip.io.StreamProvider;
 import org.metagene.genestrip.make.FileListGoal;
@@ -44,7 +44,7 @@ public class DengrogramLaTeXGoal extends FileListGoal<GSProject> {
     @Override
     // Do not access kmerIntersectGoal here as it would trigger the related computation already...
     protected void provideFiles() {
-        Collection parents = KMerIntersectCSVGoal.getNodesWithRanks(storeGoal.get().getTaxTree(), (Collection<Rank>) configValue(FinerTreeGSMaker.REFINEMENT_RANKS));
+        Collection parents = KMerIntersectCSVGoal.getNodesWithRanks(storeGoal.get().getTaxTree(), (Collection<Rank>) configValue(FinerTreeMaker.REFINEMENT_RANKS));
         for (SmallTaxTree.SmallTaxIdNode node : fileToNodeMap.values()) {
             // TODO: A CSV file for LatTeX is not really ideal...
             File matchFile = getProject().getOutputFile(getKey().getName(), node.getTaxId(), null, GSProject.FileType.CSV, false);

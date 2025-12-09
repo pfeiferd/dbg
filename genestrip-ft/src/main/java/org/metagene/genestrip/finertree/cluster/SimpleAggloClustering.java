@@ -4,7 +4,7 @@ package org.metagene.genestrip.finertree.cluster;
 // as described in Figure 17.2. in Manning's "Introduction to Information Retrieval"
 // Too inefficient for larger problems, but sufficient here.
 public class SimpleAggloClustering {
-    public enum Method { SINGLE_LINKAGE, COMPLETE_LINKAGE, UPGMA };
+    public enum Method { SINGLE_LINKAGE, COMPLETE_LINKAGE, GROUP_AVERAGE, WHEIGHTED_GROUP_AVERAGE };
 
     private final Method method;
 
@@ -65,8 +65,10 @@ public class SimpleAggloClustering {
                 return singleLinkage(sims, bestI, bestJ, h, sizes);
             case COMPLETE_LINKAGE:
                 return completeLinkage(sims, bestI, bestJ, h, sizes);
+            case GROUP_AVERAGE:
+                return groupAverage(sims, bestI, bestJ, h, sizes);
             default:
-                return UPGMA(sims, bestI, bestJ, h, sizes);
+                return weightedGroupAverage(sims, bestI, bestJ, h, sizes);
         }
     }
 
@@ -78,7 +80,13 @@ public class SimpleAggloClustering {
         return Math.min(sims[h][bestI], sims[h][bestJ]);
     }
 
-    protected double UPGMA(double[][] sims, int bestI, int bestJ, int h, int[] sizes) {
+    // According to:
+    // https://en.wikipedia.org/wiki/UPGMA
+    protected double groupAverage(double[][] sims, int bestI, int bestJ, int h, int[] sizes) {
         return (sizes[bestI] * sims[h][bestI] + sizes[bestJ] * sims[h][bestJ]) / (sizes[bestI] + sizes[bestJ]);
+    }
+
+    protected double weightedGroupAverage(double[][] sims, int bestI, int bestJ, int h, int[] sizes) {
+        return (sims[h][bestI] + sims[h][bestJ]) / 2;
     }
 }
