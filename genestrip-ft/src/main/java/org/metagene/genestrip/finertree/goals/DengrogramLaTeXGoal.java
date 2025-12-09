@@ -63,7 +63,7 @@ public class DengrogramLaTeXGoal extends FileListGoal<GSProject> {
         double xScaleFactor = 1;
 
         try (PrintStream out = new PrintStream(StreamProvider.getOutputStreamForFile(file))) {
-            out.println("\\begin{tikzpicture}[sloped][scale=1]");
+            out.println("\\begin{tikzpicture}[sloped,scale=1]");
             drawAxis(out, xScaleFactor, yScaleFactor, offset);
             drawDendrogram(out, parent, dendrogram, xScaleFactor, yScaleFactor, offset);
             out.println("\\end{tikzpicture}");
