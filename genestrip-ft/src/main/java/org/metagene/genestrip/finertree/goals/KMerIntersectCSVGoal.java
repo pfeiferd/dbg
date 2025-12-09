@@ -64,8 +64,8 @@ public class KMerIntersectCSVGoal extends FileListGoal<GSProject> {
     @Override
     // Do not access kmerIntersectGoal here as it would trigger the related computation already...
     protected void provideFiles() {
-        Collection parents = getNodesWithRanks(storeGoal.get().getTaxTree(), (Collection<Rank>) configValue(FinerTreeMaker.REFINEMENT_RANKS));
-        for (SmallTaxTree.SmallTaxIdNode node : fileToNodeMap.values()) {
+        Collection<SmallTaxTree.SmallTaxIdNode> parents = getNodesWithRanks(storeGoal.get().getTaxTree(), (Collection<Rank>) configValue(FinerTreeMaker.REFINEMENT_RANKS));
+        for (SmallTaxTree.SmallTaxIdNode node : parents) {
             File matchFile = getProject().getOutputFile(getKey().getName(), node.getTaxId(), null, GSProject.FileType.CSV, false);
             addFile(matchFile);
             fileToNodeMap.put(matchFile, node);

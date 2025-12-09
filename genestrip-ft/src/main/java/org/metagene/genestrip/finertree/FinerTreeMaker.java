@@ -82,7 +82,7 @@ public class FinerTreeMaker extends GSMaker {
 
         @Override
         public ConfigParamInfo<SimpleAggloClustering.Method> getInfo() {
-            return new MethodConfigParamInfo(SimpleAggloClustering.Method.WHEIGHTED_GROUP_AVERAGE);
+            return new MethodConfigParamInfo(SimpleAggloClustering.Method.SINGLE_LINKAGE);
         }
     };
 

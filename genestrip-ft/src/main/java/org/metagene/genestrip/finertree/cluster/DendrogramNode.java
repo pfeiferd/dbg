@@ -52,7 +52,7 @@ public class DendrogramNode {
 
     public void visit(Visitor visitor) {
         visitor.preNode(this);
-        if (valueIndex != - 1) {
+        if (valueIndex == - 1) {
             child1.visit(visitor);
             child2.visit(visitor);
         }
