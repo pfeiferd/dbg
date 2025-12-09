@@ -103,7 +103,7 @@ public class KMerIntersectCSVGoal extends FileListGoal<GSProject> {
             out.println();
             for (int i = 0; i < children.length; i++) {
                 for (int j = 0; j < children.length; j++) {
-                    out.print(DF.format(intersections.getJaccardIndex(parent, i, j)));
+                    out.print(DF.format(intersections.getJaccardIndex(parent, i, j, false)));
                     out.print(';');
                 }
                 out.println();

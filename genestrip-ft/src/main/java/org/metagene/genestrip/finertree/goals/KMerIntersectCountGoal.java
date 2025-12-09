@@ -24,6 +24,7 @@
  */
 package org.metagene.genestrip.finertree.goals;
 
+import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import org.metagene.genestrip.GSProject;
 import org.metagene.genestrip.finertree.FinerTreeGSMaker;
 import org.metagene.genestrip.finertree.bloom.XORKMerIndexBloomFilter;
@@ -44,9 +45,10 @@ public class KMerIntersectCountGoal extends ObjectGoal<KMerIntersectCountGoal.In
         public long getIntersectionCount(SmallTaxTree.SmallTaxIdNode parent, int child1, int child2);
         public long getKMerSpreadSum(SmallTaxTree.SmallTaxIdNode parent);
         public long getKMerSum(SmallTaxTree.SmallTaxIdNode parent);
-        public double getJaccardIndex(SmallTaxTree.SmallTaxIdNode parent, int i, int j);
+        public double getJaccardIndex(SmallTaxTree.SmallTaxIdNode parent, int i, int j, boolean withChildCounts);
         public double getAvgKMerSpread(SmallTaxTree.SmallTaxIdNode parent);
         public double getOverspreadRatio(SmallTaxTree.SmallTaxIdNode parent);
+        public long getSubnodesKMerCount(SmallTaxTree.SmallTaxIdNode parent);
     }
     private static int INITIAL_MAX_CHILDREN = 256;
 
@@ -131,15 +133,29 @@ public class KMerIntersectCountGoal extends ObjectGoal<KMerIntersectCountGoal.In
                 return false;
             }
         });
+
+        Object2LongMap<SmallTaxTree.SmallTaxIdNode> stats = kMerSortedArray.getNKmersPerTaxid();
+        stats.forEach((s, aLong) -> {
+            if (s != null) {
+                // TODO: Not recursive but just based on the children's counts. Is this sufficient?
+                SmallTaxTree.SmallTaxIdNode parent = s.getParent();
+                if (parent != null && ranksToRefine[parent.getRank().ordinal()]) {
+                    intersectionsPerNode.incSubnodeCounts(s, aLong);
+                }
+            }
+        });
+
         set(intersectionsPerNode);
     }
 
     public class IntersectionsPerNodeImpl implements IntersectionsPerNode {
         private Set<SmallTaxTree.SmallTaxIdNode> immutableParentNodes;
         private Map<SmallTaxTree.SmallTaxIdNode, long[]> parentToCounts;
+        private Map<SmallTaxTree.SmallTaxIdNode, long[]> childToSubnodeCounts;
 
         public IntersectionsPerNodeImpl() {
             parentToCounts = new HashMap<>();
+            childToSubnodeCounts = new HashMap<>();
             immutableParentNodes = Collections.unmodifiableSet(parentToCounts.keySet());
         }
 
@@ -157,6 +173,15 @@ public class KMerIntersectCountGoal extends ObjectGoal<KMerIntersectCountGoal.In
             }
             long[] counts = parentToCounts.get(parent);
             return counts == null ? 0 : counts[(j * j + j) / 2 + i];
+        }
+
+        void incSubnodeCounts(SmallTaxTree.SmallTaxIdNode parent, long add) {
+            long[] count = childToSubnodeCounts.get(parent);
+            if (count == null) {
+                count = new long[1];
+                childToSubnodeCounts.put(parent, count);
+            }
+            count[0] += add;
         }
 
         void incIntersectionCount(SmallTaxTree.SmallTaxIdNode parent, int i, int j) {
@@ -184,27 +209,43 @@ public class KMerIntersectCountGoal extends ObjectGoal<KMerIntersectCountGoal.In
             counts[counts.length - 1]++;
         }
 
+        @Override
         public long getKMerSpreadSum(SmallTaxTree.SmallTaxIdNode parent) {
             long[] counts = parentToCounts.get(parent);
             return counts == null ? 0 : counts[counts.length - 2];
         }
 
+        @Override
         public long getKMerSum(SmallTaxTree.SmallTaxIdNode parent) {
             long[] counts = parentToCounts.get(parent);
             return counts == null ? 0 : counts[counts.length - 1];
         }
 
-        public double getJaccardIndex(SmallTaxTree.SmallTaxIdNode parent, int i, int j) {
-            double intersect = getIntersectionCount(parent, i, j);
-            return intersect / (getIntersectionCount(parent, i, i) + getIntersectionCount(parent, j, j) - intersect);
+        @Override
+        public double getJaccardIndex(SmallTaxTree.SmallTaxIdNode parent, int i, int j, boolean withChildCounts) {
+            long intersect = getIntersectionCount(parent, i, j);
+            long union = getIntersectionCount(parent, i, i) + getIntersectionCount(parent, j, j) - intersect;
+            if (withChildCounts) {
+                union += getSubnodesKMerCount(parent.getSubNodes()[i]);
+                union += getSubnodesKMerCount(parent.getSubNodes()[j]);
+            }
+            return ((double) intersect) / union;
         }
 
+        @Override
         public double getAvgKMerSpread(SmallTaxTree.SmallTaxIdNode parent) {
             return ((double) getKMerSpreadSum(parent)) / getKMerSum(parent);
         }
 
+        @Override
         public double getOverspreadRatio(SmallTaxTree.SmallTaxIdNode parent) {
             return (getAvgKMerSpread(parent) - 2) / (parent.getSubNodes().length - 2);
+        }
+
+        @Override
+        public long getSubnodesKMerCount(SmallTaxTree.SmallTaxIdNode child) {
+            long[] count = childToSubnodeCounts.get(child);
+            return count == null ? 0 : count[0];
         }
     }
 }

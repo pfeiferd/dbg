@@ -4,13 +4,23 @@ package org.metagene.genestrip.finertree.cluster;
 // as described in Figure 17.2. in Manning's "Introduction to Information Retrieval"
 // Too inefficient for larger problems, but sufficient here.
 public class SimpleAggloClustering {
+    public enum Method { SINGLE_LINKAGE, COMPLETE_LINKAGE, UPGMA };
+
+    private final Method method;
+
+    public SimpleAggloClustering(Method method) {
+        this.method = method;
+    }
+
     public DendrogramNode cluster(Similarity similarity) {
         DendrogramNode[] clusters = new DendrogramNode[similarity.values()];
         // Only about half of this array is really needed. (Could optimize, but it's not worth it.)
         double[][] sims = new double[clusters.length][clusters.length];
+        int[] sizes = new int[clusters.length];
 
         for (int i = 0; i < clusters.length; i++) {
             clusters[i] = new DendrogramNode(i, similarity.getSimilarity(i, i));
+            sizes[i] = 1;
         }
         for (int i = 0; i < sims.length; i++) {
             for (int j = i + 1; j < sims.length; j++) {
@@ -39,17 +49,36 @@ public class SimpleAggloClustering {
             DendrogramNode node = new DendrogramNode(clusters[bestI], clusters[bestJ], bestSim);
             clusters[bestI] = node;
             clusters[bestJ] = null;
+            sizes[bestI] += sizes[bestJ];
             for (int h = 0; h < clusters.length; h++) {
                 if (clusters[h] != null && h != bestI) {
-                    sims[bestI][h] = sims[h][bestI] = similarity(similarity, sims, bestI, bestJ, h);
+                    sims[bestI][h] = sims[h][bestI] = similarity(similarity, sims, bestI, bestJ, h,sizes);
                 }
             }
         }
         return clusters[bestI];
     }
 
-    // Single linkage with regard to similarity
-    protected double similarity(Similarity similarity, double[][] sims, int bestI, int bestJ, int h) {
+    protected double similarity(Similarity similarity, double[][] sims, int bestI, int bestJ, int h, int[] sizes) {
+        switch (method) {
+            case SINGLE_LINKAGE:
+                return singleLinkage(sims, bestI, bestJ, h, sizes);
+            case COMPLETE_LINKAGE:
+                return completeLinkage(sims, bestI, bestJ, h, sizes);
+            default:
+                return UPGMA(sims, bestI, bestJ, h, sizes);
+        }
+    }
+
+    protected double singleLinkage(double[][] sims, int bestI, int bestJ, int h, int[] sizes) {
         return Math.max(sims[h][bestI], sims[h][bestJ]);
+    }
+
+    protected double completeLinkage(double[][] sims, int bestI, int bestJ, int h, int[] sizes) {
+        return Math.min(sims[h][bestI], sims[h][bestJ]);
+    }
+
+    protected double UPGMA(double[][] sims, int bestI, int bestJ, int h, int[] sizes) {
+        return (sizes[bestI] * sims[h][bestI] + sizes[bestJ] * sims[h][bestJ]) / (sizes[bestI] + sizes[bestJ]);
     }
 }
