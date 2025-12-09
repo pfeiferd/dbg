@@ -71,6 +71,9 @@ public class DengrogramLaTeXGoal extends FileListGoal<GSProject> {
     }
 
     protected void drawDendrogram(PrintStream out, SmallTaxTree.SmallTaxIdNode parent, DendrogramNode dendrogram, double xScaleFactor, double yScaleFactor, double offset) {
+        if (dendrogram == null) {
+            return;
+        }
         SmallTaxTree.SmallTaxIdNode[] children = parent.getSubNodes();
         int[] leafCounter = new int[1];
         int[] preCounter = new int[1];

@@ -82,7 +82,6 @@ public class KMerIntersectCountGoal extends ObjectGoal<KMerIntersectCountGoal.In
         for (Rank r : toRefine) {
             ranksToRefine[r.ordinal()] = true;
         }
-        SmallTaxTree tree = storeGoal.get().getTaxTree();
         KMerSortedArray<SmallTaxTree.SmallTaxIdNode> kMerSortedArray = storeGoal.get().convertKMerStore();
         XORKMerIndexBloomFilter bloomFilter = bloomFilterGoal.get();
 
