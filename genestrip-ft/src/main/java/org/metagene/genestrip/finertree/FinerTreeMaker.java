@@ -130,7 +130,7 @@ public class FinerTreeMaker extends GSMaker {
 
         @Override
         public ConfigParamInfo.DoubleConfigParamInfo getInfo() {
-            return new ConfigParamInfo.DoubleConfigParamInfo(0,Double.MAX_VALUE, 4);
+            return new ConfigParamInfo.DoubleConfigParamInfo(0,Double.MAX_VALUE, 8);
         }
     };
 

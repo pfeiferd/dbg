@@ -157,16 +157,16 @@ public class KMerIntersectCountGoal extends ObjectGoal<KMerIntersectCountGoal.In
 
         Object2LongMap<SmallTaxTree.SmallTaxIdNode> stats = kMerSortedArray.getNKmersPerTaxid();
         stats.forEach((s, aLong) -> {
-            if (s != null) {
-                // TODO: Not recursive but just based on the children's counts. Is this sufficient?
+            while (s != null) {
                 SmallTaxTree.SmallTaxIdNode parent = s.getParent();
-
                 if (parent != null) {
                     Rank r = parent.getRank();
                     if (r != null && ranksToRefine[r.ordinal()]) {
                         intersectionsPerNode.incSubnodeCounts(s, aLong);
+                        break;
                     }
                 }
+                s = parent;
             }
         });
 

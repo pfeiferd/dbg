@@ -58,20 +58,19 @@ public class DengrogramLaTeXGoal extends FileListGoal<GSProject> {
         SmallTaxTree.SmallTaxIdNode parent = fileToNodeMap.get(file);
         DendrogramNode dendrogram = dendrogramGoal.get().get(parent);
 
-        double offset = 0; // children.length / 2;
         double yScaleFactor = doubleConfigValue(FinerTreeMaker.Y_FACTOR_LATEX);
         double xScaleFactor = doubleConfigValue(FinerTreeMaker.X_FACTOR_LATEX);
         boolean turn = booleanConfigValue(FinerTreeMaker.TURN_LATEX);
 
         try (PrintStream out = new PrintStream(StreamProvider.getOutputStreamForFile(file))) {
             out.println("\\begin{tikzpicture}[sloped,scale=1]");
-            drawAxis(out, xScaleFactor, yScaleFactor, offset, turn);
-            drawDendrogram(out, parent, dendrogram, xScaleFactor, yScaleFactor, offset, turn);
+            drawAxis(out, xScaleFactor, yScaleFactor, turn);
+            drawDendrogram(out, parent, dendrogram, xScaleFactor, yScaleFactor, turn);
             out.println("\\end{tikzpicture}");
         }
     }
 
-    protected void drawDendrogram(PrintStream out, SmallTaxTree.SmallTaxIdNode parent, DendrogramNode dendrogram, double xScaleFactor, double yScaleFactor, double offset, boolean turn) {
+    protected void drawDendrogram(PrintStream out, SmallTaxTree.SmallTaxIdNode parent, DendrogramNode dendrogram, double xScaleFactor, double yScaleFactor, boolean turn) {
         if (dendrogram == null) {
             return;
         }
@@ -97,7 +96,7 @@ public class DengrogramLaTeXGoal extends FileListGoal<GSProject> {
                     if (turn) {
                         out.print("0,");
                     }
-                    out.print(DF.format(xScaleFactor * (leafCounter[0] - offset)));
+                    out.print(DF.format(xScaleFactor * leafCounter[0]));
                     if (!turn) {
                         out.print(",0");
                     }
@@ -122,10 +121,10 @@ public class DengrogramLaTeXGoal extends FileListGoal<GSProject> {
                     if (turn) {
                         out.print(DF.format(yScaleFactor * (1 - node.getSimilarity())));
                         out.print(",");
-                        out.print(DF.format(xScaleFactor * (xPos - offset)));
+                        out.print(DF.format(xScaleFactor * xPos));
                     }
                     else {
-                        out.print(DF.format(xScaleFactor * (xPos - offset)));
+                        out.print(DF.format(xScaleFactor * xPos));
                         out.print(",");
                         out.print(DF.format(yScaleFactor * (1 - node.getSimilarity())));
                     }
@@ -175,9 +174,9 @@ public class DengrogramLaTeXGoal extends FileListGoal<GSProject> {
         });
     }
 
-    protected void drawAxis(PrintStream out, double xScaleFactor, double yScaleFactor, double offset, boolean turn) {
-        double xPos = xScaleFactor * (- offset - 3);
-        double yPos = yScaleFactor * 1;
+    protected void drawAxis(PrintStream out, double xScaleFactor, double yScaleFactor, boolean turn) {
+        double xPos = -xScaleFactor -1.5;
+        double yPos = yScaleFactor;
         out.print("\\draw[<-] (");
         out.print(turn ? "0" : DF.format(xPos));
         out.print(",");
@@ -188,7 +187,7 @@ public class DengrogramLaTeXGoal extends FileListGoal<GSProject> {
         out.print(DF.format(turn ? xPos : yPos));
         out.println(");");
 
-        xPos = xScaleFactor * (- offset - 1);
+        xPos = -xScaleFactor;
         out.print("\\draw (");
         out.print(turn ? "0" : DF.format(xPos));
         out.print(",");
@@ -200,8 +199,8 @@ public class DengrogramLaTeXGoal extends FileListGoal<GSProject> {
         out.println(");");
 
         int max = 5;
-        double xPosLeft = xScaleFactor * (-0.1 - offset - 1);
         for (int i = 0; i <= max; i++) {
+            double xPosLeft = -xScaleFactor - 0.1;
             yPos = (yScaleFactor * i) / max;
             out.print("\\draw (");
             out.print(DF.format(turn ? yPos : xPos));
@@ -213,7 +212,7 @@ public class DengrogramLaTeXGoal extends FileListGoal<GSProject> {
             out.print(DF.format(turn ? xPosLeft : yPos));
             out.println(");");
 
-            xPosLeft = xScaleFactor * ((turn ? -0.4 : -0.1) - offset - 1);
+            xPosLeft = -xScaleFactor - (turn ? 0.4 : 0.1);
             out.print(turn ? "\\node at (": "\\node[left] at (");
             out.print(DF.format(turn ? yPos : xPosLeft));
             out.print(",");
