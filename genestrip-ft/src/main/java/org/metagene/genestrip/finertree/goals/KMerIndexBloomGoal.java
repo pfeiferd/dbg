@@ -98,7 +98,8 @@ public class KMerIndexBloomGoal extends FastaReaderGoal<XORKMerIndexBloomFilter>
             long[] counter = new long[1];
             stats.forEach((s, aLong) -> {
                 if (s != null) {
-                    if (ranksToRefine[s.getRank().ordinal()]) {
+                    Rank r = s.getRank();
+                    if (r != null && ranksToRefine[r.ordinal()]) {
                         // Conservative estimate: k-mer could be in genome of every subnode, i.e. species...
                         counter[0] += aLong * s.getSubNodes().length;
                     }
