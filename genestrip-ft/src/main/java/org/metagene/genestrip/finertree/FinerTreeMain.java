@@ -64,6 +64,9 @@ public class FinerTreeMain extends Main {
                 keys.add(FinerTreeMaker.CLUSTER_METHOD);
                 keys.add(FinerTreeMaker.WITH_CHILD_COUNTS);
                 keys.add(FinerTreeMaker.REFINEMENT_RANKS);
+                keys.add(FinerTreeMaker.X_FACTOR_LATEX);
+                keys.add(FinerTreeMaker.Y_FACTOR_LATEX);
+                keys.add(FinerTreeMaker.TURN_LATEX);
                 configKeys = keys.toArray(new ConfigKey[keys.size()]);
             }
             return configKeys;

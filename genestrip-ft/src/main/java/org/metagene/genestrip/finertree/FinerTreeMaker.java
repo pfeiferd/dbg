@@ -98,6 +98,42 @@ public class FinerTreeMaker extends GSMaker {
         }
     };
 
+    public static ConfigKey TURN_LATEX = new ConfigKey() {
+        @Override
+        public String getName() {
+            return "turnLatex";
+        }
+
+        @Override
+        public ConfigParamInfo.BooleanConfigParamInfo getInfo() {
+            return new ConfigParamInfo.BooleanConfigParamInfo(true);
+        }
+    };
+
+    public static ConfigKey X_FACTOR_LATEX = new ConfigKey() {
+        @Override
+        public String getName() {
+            return "xFactorLatex";
+        }
+
+        @Override
+        public ConfigParamInfo.DoubleConfigParamInfo getInfo() {
+            return new ConfigParamInfo.DoubleConfigParamInfo(0,Double.MAX_VALUE, 1);
+        }
+    };
+
+    public static ConfigKey Y_FACTOR_LATEX = new ConfigKey() {
+        @Override
+        public String getName() {
+            return "yFactorLatex";
+        }
+
+        @Override
+        public ConfigParamInfo.DoubleConfigParamInfo getInfo() {
+            return new ConfigParamInfo.DoubleConfigParamInfo(0,Double.MAX_VALUE, 4);
+        }
+    };
+
     public static class MethodConfigParamInfo extends ConfigParamInfo<SimpleAggloClustering.Method> {
         public MethodConfigParamInfo(SimpleAggloClustering.Method defaultValue) {
             super(defaultValue);
