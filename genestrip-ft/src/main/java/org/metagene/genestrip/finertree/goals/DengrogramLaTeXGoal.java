@@ -46,8 +46,7 @@ public class DengrogramLaTeXGoal extends FileListGoal<GSProject> {
     protected void provideFiles() {
         Collection<SmallTaxTree.SmallTaxIdNode> parents = KMerIntersectCSVGoal.getNodesWithRanks(storeGoal.get().getTaxTree(), (Collection<Rank>) configValue(FinerTreeMaker.REFINEMENT_RANKS));
         for (SmallTaxTree.SmallTaxIdNode node : parents) {
-            // TODO: A CSV file for LatTeX is not really ideal...
-            File matchFile = getProject().getOutputFile(getKey().getName(), node.getTaxId(), null, GSProject.FileType.CSV, false);
+            File matchFile = getProject().getOutputFile(getKey().getName(), node.getTaxId(), null, GSProject.FileType.TXT, false);
             addFile(matchFile);
             fileToNodeMap.put(matchFile, node);
         }
