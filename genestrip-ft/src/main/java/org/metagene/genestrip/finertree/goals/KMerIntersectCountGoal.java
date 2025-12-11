@@ -109,7 +109,7 @@ public class KMerIntersectCountGoal extends ObjectGoal<KMerIntersectCountGoal.In
                     current[0] = pos;
                     SmallTaxTree.SmallTaxIdNode parent = kMerSortedArray.getValueForIndex(index);
                     if (parent != null) {
-                        if (ranksToRefine[parent.getRank().ordinal()]) {
+                        if (ranksToRefine[parent.getRankOrdinal()]) {
                             SmallTaxTree.SmallTaxIdNode[] children = parent.getSubNodes();
                             if (children != null && children.length > 0) {
                                 int n;
@@ -125,9 +125,13 @@ public class KMerIntersectCountGoal extends ObjectGoal<KMerIntersectCountGoal.In
                                         spread++;
                                     }
                                 }
+                                bits[children.length] = bloomFilter.containsLongShort(kmer, KMerIndexBloomGoal.OTHER_VALUE);
+                                if (bits[children.length]) {
+                                    spread++;
+                                }
                                 intersectionsPerNode.incKMerSpread(parent, spread);
-                                for (int i = 0; i < children.length; i++) {
-                                    for (int j = i; j < children.length; j++) {
+                                for (int i = 0; i <= children.length; i++) {
+                                    for (int j = i; j <= children.length; j++) {
                                         if (bits[i] && bits[j]) {
                                             intersectionsPerNode.incIntersectionCount(parent, i, j);
                                         }
@@ -159,12 +163,9 @@ public class KMerIntersectCountGoal extends ObjectGoal<KMerIntersectCountGoal.In
         stats.forEach((s, aLong) -> {
             while (s != null) {
                 SmallTaxTree.SmallTaxIdNode parent = s.getParent();
-                if (parent != null) {
-                    Rank r = parent.getRank();
-                    if (r != null && ranksToRefine[r.ordinal()]) {
-                        intersectionsPerNode.incSubnodeCounts(s, aLong);
-                        break;
-                    }
+                if (parent != null && ranksToRefine[parent.getRankOrdinal()]) {
+                    intersectionsPerNode.incSubnodeCounts(s, aLong);
+                    break;
                 }
                 s = parent;
             }
@@ -175,7 +176,7 @@ public class KMerIntersectCountGoal extends ObjectGoal<KMerIntersectCountGoal.In
 
     protected ProgressBar createProgressBar(GSProgressUpdate update) {
         return booleanConfigValue(GSConfigKey.PROGRESS_BAR) ?
-                GSProgressBarCreator.newGSProgressBar(getKey().getName(), update.max(), 1000, " kmers", update, getLogger(), false) :
+                GSProgressBarCreator.newGSProgressBar(getKey().getName(), update.max(), 1000, " kmers", update, getLogger(), true) :
                 null;
     }
 
@@ -228,7 +229,8 @@ public class KMerIntersectCountGoal extends ObjectGoal<KMerIntersectCountGoal.In
         private long[] countsForParent(SmallTaxTree.SmallTaxIdNode parent) {
             long[] counts = parentToCounts.get(parent);
             if (counts == null) {
-                int c = parent.getSubNodes().length;
+                // "+ 1" for "OTHER_VALUE", spread and number of k-mers
+                int c = parent.getSubNodes().length + 1;
                 parentToCounts.put(parent, counts = new long[(c * c + c) / 2 + 2]);
             }
             return counts;
@@ -257,8 +259,11 @@ public class KMerIntersectCountGoal extends ObjectGoal<KMerIntersectCountGoal.In
             long intersect = getIntersectionCount(parent, i, j);
             long union = getIntersectionCount(parent, i, i) + getIntersectionCount(parent, j, j) - intersect;
             if (withChildCounts) {
-                union += getSubnodesKMerCount(parent.getSubNodes()[i]);
-                union += getSubnodesKMerCount(parent.getSubNodes()[j]);
+                SmallTaxTree.SmallTaxIdNode[] children = parent.getSubNodes();
+                if (i < children.length && j < children.length) {
+                    union += getSubnodesKMerCount(parent.getSubNodes()[i]);
+                    union += getSubnodesKMerCount(parent.getSubNodes()[j]);
+                }
             }
             return ((double) intersect) / union;
         }
@@ -270,7 +275,7 @@ public class KMerIntersectCountGoal extends ObjectGoal<KMerIntersectCountGoal.In
 
         @Override
         public double getOverspreadRatio(SmallTaxTree.SmallTaxIdNode parent) {
-            return (getAvgKMerSpread(parent) - 2) / (parent.getSubNodes().length - 2);
+            return (getAvgKMerSpread(parent) - 2) / ((parent.getSubNodes().length + 1) - 2);
         }
 
         @Override

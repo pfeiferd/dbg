@@ -1,26 +1,26 @@
 /*
- * 
+ *
  * “Commons Clause” License Condition v1.0
- * 
- * The Software is provided to you by the Licensor under the License, 
+ *
+ * The Software is provided to you by the Licensor under the License,
  * as defined below, subject to the following condition.
- * 
- * Without limiting other conditions in the License, the grant of rights under the License 
+ *
+ * Without limiting other conditions in the License, the grant of rights under the License
  * will not include, and the License does not grant to you, the right to Sell the Software.
- * 
- * For purposes of the foregoing, “Sell” means practicing any or all of the rights granted 
- * to you under the License to provide to third parties, for a fee or other consideration 
- * (including without limitation fees for hosting or consulting/ support services related to 
- * the Software), a product or service whose value derives, entirely or substantially, from the 
- * functionality of the Software. Any license notice or attribution required by the License 
+ *
+ * For purposes of the foregoing, “Sell” means practicing any or all of the rights granted
+ * to you under the License to provide to third parties, for a fee or other consideration
+ * (including without limitation fees for hosting or consulting/ support services related to
+ * the Software), a product or service whose value derives, entirely or substantially, from the
+ * functionality of the Software. Any license notice or attribution required by the License
  * must also include this Commons Clause License Condition notice.
- * 
+ *
  * Software: genestrip-ft
- * 
+ *
  * License: Apache 2.0
- * 
+ *
  * Licensor: Daniel Pfeifer (daniel.pfeifer@progotec.de)
- * 
+ *
  */
 package org.metagene.genestrip.finertree.goals;
 
@@ -45,14 +45,12 @@ import org.metagene.genestrip.store.Database;
 import org.metagene.genestrip.store.KMerSortedArray;
 import org.metagene.genestrip.tax.Rank;
 import org.metagene.genestrip.tax.SmallTaxTree;
+import org.metagene.genestrip.tax.TaxIdCollector;
 import org.metagene.genestrip.tax.TaxTree;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class KMerIndexBloomGoal extends FastaReaderGoal<XORKMerIndexBloomFilter> implements Goal.LogHeapInfo {
     public static GoalKey GOAL_KEY = new GoalKey() {
@@ -62,27 +60,35 @@ public class KMerIndexBloomGoal extends FastaReaderGoal<XORKMerIndexBloomFilter>
         }
     };
 
+    public static final short OTHER_VALUE = (short) KMerSortedArray.MAX_VALUES;
+
     private final ObjectGoal<AccessionMap, GSProject> accessionMapGoal;
     private final ObjectGoal<Database, GSProject> storeGoal;
+    private final ObjectGoal<TaxTree, GSProject> taxTreeGoal;
     private final boolean multiThreading;
     private final boolean[] ranksToRefine;
+    private final boolean minUpdate;
 
     private KMerSortedArray<SmallTaxTree.SmallTaxIdNode> kMerSortedArray;
     private SmallTaxTree smallTaxTree;
     private XORKMerIndexBloomFilter filter;
+    private Set<TaxTree.TaxIdNode> relevantNodes;
 
     @SafeVarargs
     public KMerIndexBloomGoal(GSProject project, ExecutionContext bundle, ObjectGoal<Set<RefSeqCategory>, GSProject> categoriesGoal,
-                  ObjectGoal<Set<TaxTree.TaxIdNode>, GSProject> taxNodesGoal,
-                  ObjectGoal<TaxTree, GSProject> taxTreeGoal, RefSeqFnaFilesDownloadGoal fnaFilesGoal,
-                  ObjectGoal<Map<File, TaxTree.TaxIdNode>, GSProject> additionalGoal,
-                  ObjectGoal<AccessionMap, GSProject> accessionMapGoal, ObjectGoal<Database, GSProject> storeGoal,
-                  Goal<GSProject>... deps) {
+                              ObjectGoal<Set<TaxTree.TaxIdNode>, GSProject> taxNodesGoal,
+                              ObjectGoal<TaxTree, GSProject> taxTreeGoal, RefSeqFnaFilesDownloadGoal fnaFilesGoal,
+                              ObjectGoal<Map<File, TaxTree.TaxIdNode>, GSProject> additionalGoal,
+                              ObjectGoal<AccessionMap, GSProject> accessionMapGoal, ObjectGoal<Database, GSProject> storeGoal,
+                              Goal<GSProject>... deps) {
         super(project, GOAL_KEY, bundle, categoriesGoal, taxNodesGoal, fnaFilesGoal, additionalGoal, Goal.append(deps, taxTreeGoal, accessionMapGoal, storeGoal));
         this.storeGoal = storeGoal;
         this.accessionMapGoal = accessionMapGoal;
+        this.taxTreeGoal = taxTreeGoal;
         multiThreading = bundle.getThreads() > 0;
         ranksToRefine = new boolean[Rank.values().length];
+        minUpdate = project.booleanConfigValue(GSConfigKey.MIN_UPDATE);
+
         Collection<Rank> toRefine = (Collection<Rank>) configValue(FinerTreeMaker.REFINEMENT_RANKS);
         for (Rank r : toRefine) {
             ranksToRefine[r.ordinal()] = true;
@@ -92,16 +98,35 @@ public class KMerIndexBloomGoal extends FastaReaderGoal<XORKMerIndexBloomFilter>
     @Override
     protected void doMakeThis() {
         try {
+            if (minUpdate) {
+                relevantNodes = taxNodesGoal.get();
+            } else {
+                TaxIdCollector collector = new TaxIdCollector(taxTreeGoal.get());
+                // Quite inefficient but should be good enough at this placse.
+                Set<TaxTree.TaxIdNode> nodesWithRank = new HashSet<>();
+                for (TaxTree.TaxIdNode node : taxNodesGoal.get()) {
+                    while (node != null) {
+                        int r = node.getRankOrdinal();
+                        if (r > 0 && ranksToRefine[r]) {
+                            nodesWithRank.add(node);
+                        }
+                        node = node.getParent();
+                    }
+                }
+                // Include subnodes from all nodes where we have ranks to refine:
+                relevantNodes = collector.withDescendants(nodesWithRank, (Rank) configValue(GSConfigKey.RANK_COMPLETION_DEPTH));
+            }
             smallTaxTree = storeGoal.get().getTaxTree();
             kMerSortedArray = storeGoal.get().convertKMerStore();
             Object2LongMap<SmallTaxTree.SmallTaxIdNode> stats = kMerSortedArray.getNKmersPerTaxid();
             long[] counter = new long[1];
             stats.forEach((s, aLong) -> {
                 if (s != null) {
-                    Rank r = s.getRank();
-                    if (r != null && ranksToRefine[r.ordinal()]) {
+                    int r = s.getRankOrdinal();
+                    if (r > 0 && ranksToRefine[r]) {
                         // Conservative estimate: k-mer could be in genome of every subnode, i.e. species...
-                        counter[0] += aLong * s.getSubNodes().length;
+                        // "+ 1" is for nodes not included in the database but below a rank to refine.
+                        counter[0] += aLong * (s.getSubNodes().length + 1);
                     }
                 }
             });
@@ -124,7 +149,7 @@ public class KMerIndexBloomGoal extends FastaReaderGoal<XORKMerIndexBloomFilter>
     @Override
     protected AbstractStoreFastaReader createFastaReader(AbstractRefSeqFastaReader.StringLong2DigitTrie regionsPerTaxid) {
         return new MyFastaReader(intConfigValue(GSConfigKey.FASTA_LINE_SIZE_BYTES),
-                taxNodesGoal.get(),
+                relevantNodes,
                 isIncludeRefSeqFna() ? accessionMapGoal.get() : null,
                 intConfigValue(GSConfigKey.MAX_GENOMES_PER_TAXID),
                 (Rank) configValue(GSConfigKey.MAX_GENOMES_PER_TAXID_RANK),
@@ -148,22 +173,14 @@ public class KMerIndexBloomGoal extends FastaReaderGoal<XORKMerIndexBloomFilter>
         protected void infoLine() {
             if (ignoreMap) {
                 node = mappedNode;
-            }
-            else {
+            } else {
                 updateNodeFromInfoLine();
             }
 
-            if (node != null && (taxNodes.isEmpty() || taxNodes.contains(node))) {
-                node = reworkNode();
-                if (node != null) {
-                    smallNode = smallTaxTree.getNodeByTaxId(node.getTaxId());
-                    if (smallNode != null) {
-                        includeRegion = true;
-                    }
-                }
-                else {
-                    smallNode = null;
-                }
+            if (node != null && taxNodes.contains(node)) {
+                includeRegion = true;
+                // This can become null if the node is not in the database:
+                smallNode = smallTaxTree.getNodeByTaxId(node.getTaxId());
             }
         }
 
@@ -181,8 +198,8 @@ public class KMerIndexBloomGoal extends FastaReaderGoal<XORKMerIndexBloomFilter>
         protected boolean handleStore() {
             long kmer = byteRingBuffer.getStandardKMer();
             SmallTaxTree.SmallTaxIdNode storedNode = kMerSortedArray.getLong(kmer, null);
-            if (storedNode != null && ranksToRefine[storedNode.getRank().ordinal()]) {
-                short index = smallNode.storeIndex;
+            if (storedNode != null && ranksToRefine[storedNode.getRankOrdinal()]) {
+                short index = smallNode == null ? OTHER_VALUE : smallNode.storeIndex;
                 if (!filter.containsLongShort(kmer, index)) {
                     if (multiThreading) {
                         synchronized (filter) {

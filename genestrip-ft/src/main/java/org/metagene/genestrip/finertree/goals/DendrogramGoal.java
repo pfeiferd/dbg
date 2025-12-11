@@ -40,7 +40,7 @@ public class DendrogramGoal extends ObjectGoal<Map<SmallTaxTree.SmallTaxIdNode, 
             DendrogramNode node = clustering.cluster(new Similarity() {
                 @Override
                 public int values() {
-                    return parent.getSubNodes().length;
+                    return parent.getSubNodes().length + 1; // "+ 1" for "OTHER_VALUE"
                 }
 
                 @Override

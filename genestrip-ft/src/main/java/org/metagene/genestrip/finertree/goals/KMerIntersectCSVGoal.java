@@ -97,17 +97,18 @@ public class KMerIntersectCSVGoal extends FileListGoal<GSProject> {
                 out.print(children[i].getTaxId());
                 out.print(';');
             }
+            out.print("OTHER;");
             out.println();
-            for (int i = 0; i < children.length; i++) {
-                for (int j = 0; j < children.length; j++) {
+            for (int i = 0; i <= children.length; i++) {
+                for (int j = 0; j <= children.length; j++) {
                     out.print(intersections.getIntersectionCount(parent, i, j));
                     out.print(';');
                 }
                 out.println();
             }
             out.println();
-            for (int i = 0; i < children.length; i++) {
-                for (int j = 0; j < children.length; j++) {
+            for (int i = 0; i <= children.length; i++) {
+                for (int j = 0; j <= children.length; j++) {
                     out.print(DF.format(intersections.getJaccardIndex(parent, i, j, false)));
                     out.print(';');
                 }
@@ -126,8 +127,8 @@ public class KMerIntersectCSVGoal extends FileListGoal<GSProject> {
         Iterator<SmallTaxTree.SmallTaxIdNode> it = tree.iterator();
         while (it.hasNext()) {
             SmallTaxTree.SmallTaxIdNode node = it.next();
-            Rank r = node.getRank();
-            if (r != null && ranksToRefine[r.ordinal()]) {
+            int r = node.getRankOrdinal();
+            if (node != null && r > 0 && ranksToRefine[r]) {
                 if (node.getSubNodes() != null && node.getSubNodes().length > 0) {
                     res.add(node);
                 }
