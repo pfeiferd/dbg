@@ -1,5 +1,6 @@
 package org.metagene.genestrip.finertree.goals;
 
+import org.metagene.genestrip.GSConfigKey;
 import org.metagene.genestrip.GSProject;
 import org.metagene.genestrip.finertree.FTConfigKey;
 import org.metagene.genestrip.finertree.FTGoalKey;
@@ -39,7 +40,15 @@ public class DengrogramLaTeXGoal extends FileListGoal<GSProject> {
     @Override
     // Do not access kmerIntersectGoal here as it would trigger the related computation already...
     protected void provideFiles() {
-        Collection<SmallTaxTree.SmallTaxIdNode> parents = KMerIntersectCSVGoal.getNodesWithRanks(storeGoal.get().getTaxTree(), (Collection<Rank>) configValue(FTConfigKey.REFINEMENT_RANKS));
+        SmallTaxTree tree = storeGoal.get().getTaxTree();
+        Collection<SmallTaxTree.SmallTaxIdNode> parents = KMerIntersectCSVGoal.getNodesWithRanks(tree, (Collection<Rank>) configValue(FTConfigKey.REFINEMENT_RANKS));
+        List<String> taxids = (List<String>) configValue(GSConfigKey.TAX_IDS);
+        for (String taxid : taxids) {
+            SmallTaxTree.SmallTaxIdNode parentNode = tree.getNodeByTaxId(taxid);
+            if (parentNode != null) {
+                parents.add(parentNode);
+            }
+        }
         for (SmallTaxTree.SmallTaxIdNode node : parents) {
             File matchFile = getProject().getOutputFile(getKey().getName(), node.getTaxId(), null, GSProject.FileType.TXT, false);
             addFile(matchFile);
@@ -74,7 +83,10 @@ public class DengrogramLaTeXGoal extends FileListGoal<GSProject> {
         dendrogram.visit(new DendrogramNode.Visitor() {
             @Override
             public void preNode(DendrogramNode node) {
-                node.setValue(new IntDouble(preCounter[0], leafCounter[0]));
+                // Exclude "OTHER" from display if it carries no information.
+                if (node.getValueIndex() != children.length || node.getSimilarity() == 0) {
+                    node.setValue(new IntDouble(preCounter[0], leafCounter[0]));
+                }
                 int index = node.getValueIndex();
                 if (index >= 0) {
                     out.print("\\node ");
@@ -111,6 +123,9 @@ public class DengrogramLaTeXGoal extends FileListGoal<GSProject> {
             }
 
             public void postNode(DendrogramNode node) {
+                if (node.getValue() == null) {
+                    return;
+                }
                 if (node.getValueIndex() == -1) {
                     double xPos = (((IntDouble) node.getChild1().getValue()).d + ((IntDouble) node.getChild2().getValue()).d) / 2;
                     IntDouble value = (IntDouble) node.getValue();
@@ -149,6 +164,10 @@ public class DengrogramLaTeXGoal extends FileListGoal<GSProject> {
             }
 
             protected void drawEdge(DendrogramNode from, DendrogramNode to, boolean turn) {
+                if (from.getValue() == null || to.getValue() == null) {
+                    return;
+                }
+
                 out.print("\\draw  (n");
                 out.print(((IntDouble) from.getValue()).i);
                 if (from.getValueIndex() == -1) {

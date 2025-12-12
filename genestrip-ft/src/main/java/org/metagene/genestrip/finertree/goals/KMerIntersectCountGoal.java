@@ -68,6 +68,8 @@ public class KMerIntersectCountGoal extends ObjectGoal<KMerIntersectCountGoal.In
 
     private final ObjectGoal<Database, GSProject> storeGoal;
     private final ObjectGoal<XORKMerIndexBloomFilter, GSProject> bloomFilterGoal;
+    private final boolean [] ranksToRefine;
+    private final List<String> taxidsToRefine;
 
     @SafeVarargs
     public KMerIntersectCountGoal(GSProject project, ObjectGoal<Database, GSProject> storeGoal,
@@ -76,15 +78,16 @@ public class KMerIntersectCountGoal extends ObjectGoal<KMerIntersectCountGoal.In
         super(project, FTGoalKey.INTERSECT_COUNT, Goal.append(deps, storeGoal, bloomFilterGoal));
         this.storeGoal = storeGoal;
         this.bloomFilterGoal = bloomFilterGoal;
-    }
-
-    @Override
-    protected void doMakeThis() {
-        boolean [] ranksToRefine = new boolean[Rank.values().length];
+        ranksToRefine = new boolean[Rank.values().length];
         Collection<Rank> toRefine = (Collection<Rank>) configValue(FTConfigKey.REFINEMENT_RANKS);
         for (Rank r : toRefine) {
             ranksToRefine[r.ordinal()] = true;
         }
+        taxidsToRefine = (List<String>) configValue(GSConfigKey.TAX_IDS);
+    }
+
+    @Override
+    protected void doMakeThis() {
         KMerSortedArray<SmallTaxTree.SmallTaxIdNode> kMerSortedArray = storeGoal.get().convertKMerStore();
         XORKMerIndexBloomFilter bloomFilter = bloomFilterGoal.get();
 
@@ -112,7 +115,8 @@ public class KMerIntersectCountGoal extends ObjectGoal<KMerIntersectCountGoal.In
                     current[0] = pos;
                     SmallTaxTree.SmallTaxIdNode parent = kMerSortedArray.getValueForIndex(index);
                     if (parent != null) {
-                        if (ranksToRefine[parent.getRankOrdinal()]) {
+                        int r = parent.getRankOrdinal();
+                        if ((r > 0 && ranksToRefine[r]) || taxidsToRefine.contains(parent.getTaxId())) {
                             SmallTaxTree.SmallTaxIdNode[] children = parent.getSubNodes();
                             if (children != null && children.length > 0) {
                                 int n;
@@ -168,7 +172,7 @@ public class KMerIntersectCountGoal extends ObjectGoal<KMerIntersectCountGoal.In
                 SmallTaxTree.SmallTaxIdNode parent = s.getParent();
                 if (parent != null) {
                     int r = parent.getRankOrdinal();
-                    if (r > 0 && ranksToRefine[r]) {
+                    if ((r > 0 && ranksToRefine[r]) || taxidsToRefine.contains(parent.getTaxId())) {
                         intersectionsPerNode.incSubnodeCounts(s, aLong);
                         break;
                     }

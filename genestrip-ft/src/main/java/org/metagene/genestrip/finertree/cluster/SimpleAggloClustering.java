@@ -4,7 +4,7 @@ package org.metagene.genestrip.finertree.cluster;
 // as described in Figure 17.2. in Manning's "Introduction to Information Retrieval"
 // Too inefficient for larger problems, but sufficient here.
 public class SimpleAggloClustering {
-    public enum Method { SINGLE_LINKAGE, COMPLETE_LINKAGE, GROUP_AVERAGE, WHEIGHTED_GROUP_AVERAGE };
+    public enum Method { SINGLE_LINKAGE, COMPLETE_LINKAGE, GROUP_AVERAGE, CENTROID};
 
     private final Method method;
 
@@ -68,7 +68,7 @@ public class SimpleAggloClustering {
             case GROUP_AVERAGE:
                 return groupAverage(sims, bestI, bestJ, h, sizes);
             default:
-                return weightedGroupAverage(sims, bestI, bestJ, h, sizes);
+                return centroid(sims, bestI, bestJ, h, sizes);
         }
     }
 
@@ -86,7 +86,7 @@ public class SimpleAggloClustering {
         return (sizes[bestI] * sims[h][bestI] + sizes[bestJ] * sims[h][bestJ]) / (sizes[bestI] + sizes[bestJ]);
     }
 
-    protected double weightedGroupAverage(double[][] sims, int bestI, int bestJ, int h, int[] sizes) {
+    protected double centroid(double[][] sims, int bestI, int bestJ, int h, int[] sizes) {
         return (sims[h][bestI] + sims[h][bestJ]) / 2;
     }
 }

@@ -24,6 +24,7 @@
  */
 package org.metagene.genestrip.finertree.goals;
 
+import org.metagene.genestrip.GSConfigKey;
 import org.metagene.genestrip.GSProject;
 import org.metagene.genestrip.finertree.FTConfigKey;
 import org.metagene.genestrip.finertree.FTGoalKey;
@@ -59,7 +60,15 @@ public class KMerIntersectCSVGoal extends FileListGoal<GSProject> {
     @Override
     // Do not access kmerIntersectGoal here as it would trigger the related computation already...
     protected void provideFiles() {
-        Collection<SmallTaxTree.SmallTaxIdNode> parents = getNodesWithRanks(storeGoal.get().getTaxTree(), (Collection<Rank>) configValue(FTConfigKey.REFINEMENT_RANKS));
+        SmallTaxTree tree = storeGoal.get().getTaxTree();
+        Collection<SmallTaxTree.SmallTaxIdNode> parents = getNodesWithRanks(tree, (Collection<Rank>) configValue(FTConfigKey.REFINEMENT_RANKS));
+        List<String> taxids = (List<String>) configValue(GSConfigKey.TAX_IDS);
+        for (String taxid : taxids) {
+            SmallTaxTree.SmallTaxIdNode parentNode = tree.getNodeByTaxId(taxid);
+            if (parentNode != null) {
+                parents.add(parentNode);
+            }
+        }
         for (SmallTaxTree.SmallTaxIdNode node : parents) {
             File matchFile = getProject().getOutputFile(getKey().getName(), node.getTaxId(), null, GSProject.FileType.CSV, false);
             addFile(matchFile);

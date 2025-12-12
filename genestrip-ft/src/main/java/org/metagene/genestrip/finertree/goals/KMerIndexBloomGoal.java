@@ -62,6 +62,7 @@ public class KMerIndexBloomGoal extends FastaReaderGoal<XORKMerIndexBloomFilter>
     private final ObjectGoal<TaxTree, GSProject> taxTreeGoal;
     private final boolean multiThreading;
     private final boolean[] ranksToRefine;
+    private final List<String> taxidsToRefine;
     private final boolean minUpdate;
 
     private KMerSortedArray<SmallTaxTree.SmallTaxIdNode> kMerSortedArray;
@@ -88,6 +89,7 @@ public class KMerIndexBloomGoal extends FastaReaderGoal<XORKMerIndexBloomFilter>
         for (Rank r : toRefine) {
             ranksToRefine[r.ordinal()] = true;
         }
+        taxidsToRefine = (List<String>) configValue(GSConfigKey.TAX_IDS);
     }
 
     @Override
@@ -102,7 +104,7 @@ public class KMerIndexBloomGoal extends FastaReaderGoal<XORKMerIndexBloomFilter>
                 for (TaxTree.TaxIdNode node : taxNodesGoal.get()) {
                     while (node != null) {
                         int r = node.getRankOrdinal();
-                        if (r > 0 && ranksToRefine[r]) {
+                        if (r > 0 && ranksToRefine[r] || taxidsToRefine.contains(node.getTaxId())) {
                             nodesWithRank.add(node);
                         }
                         node = node.getParent();
@@ -118,7 +120,7 @@ public class KMerIndexBloomGoal extends FastaReaderGoal<XORKMerIndexBloomFilter>
             stats.forEach((s, aLong) -> {
                 if (s != null) {
                     int r = s.getRankOrdinal();
-                    if (r > 0 && ranksToRefine[r]) {
+                    if (r > 0 && ranksToRefine[r] || taxidsToRefine.contains(s)) {
                         // Conservative estimate: k-mer could be in genome of every subnode, i.e. species...
                         // "+ 1" is for nodes not included in the database but below a rank to refine.
                         counter[0] += aLong * (s.getSubNodes().length + 1);
@@ -193,21 +195,25 @@ public class KMerIndexBloomGoal extends FastaReaderGoal<XORKMerIndexBloomFilter>
         protected boolean handleStore() {
             long kmer = byteRingBuffer.getStandardKMer();
             SmallTaxTree.SmallTaxIdNode storedNode = kMerSortedArray.getLong(kmer, null);
-            if (storedNode != null && ranksToRefine[storedNode.getRankOrdinal()]) {
-                short index = smallNode == null ? OTHER_VALUE : smallNode.storeIndex;
-                if (!filter.containsLongShort(kmer, index)) {
-                    if (multiThreading) {
-                        synchronized (filter) {
-                            // This is a trick to enable more parallelism -
-                            // check again after synchronized to avoid synchronized further outside...
-                            if (!filter.containsLongShort(kmer, index)) {
-                                filter.putLongShort(kmer, index);
-                                return true;
+            if (storedNode != null) {
+                int r = storedNode.getRankOrdinal();
+                if ((r > 0 && ranksToRefine[storedNode.getRankOrdinal()]) ||
+                        taxidsToRefine.contains(storedNode.getTaxId())) {
+                    short index = smallNode == null ? OTHER_VALUE : smallNode.storeIndex;
+                    if (!filter.containsLongShort(kmer, index)) {
+                        if (multiThreading) {
+                            synchronized (filter) {
+                                // This is a trick to enable more parallelism -
+                                // check again after synchronized to avoid synchronized further outside...
+                                if (!filter.containsLongShort(kmer, index)) {
+                                    filter.putLongShort(kmer, index);
+                                    return true;
+                                }
                             }
+                        } else {
+                            filter.putLongShort(kmer, index);
+                            return true;
                         }
-                    } else {
-                        filter.putLongShort(kmer, index);
-                        return true;
                     }
                 }
             }
