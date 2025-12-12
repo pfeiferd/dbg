@@ -28,16 +28,12 @@ import org.metagene.genestrip.GSGoalKey;
 import org.metagene.genestrip.GSMaker;
 import org.metagene.genestrip.GSProject;
 import org.metagene.genestrip.finertree.cluster.DendrogramNode;
-import org.metagene.genestrip.finertree.cluster.SimpleAggloClustering;
 import org.metagene.genestrip.finertree.goals.*;
 import org.metagene.genestrip.goals.refseq.RefSeqFnaFilesDownloadGoal;
-import org.metagene.genestrip.make.ConfigKey;
-import org.metagene.genestrip.make.ConfigParamInfo;
 import org.metagene.genestrip.make.ObjectGoal;
 import org.metagene.genestrip.refseq.AccessionMap;
 import org.metagene.genestrip.refseq.RefSeqCategory;
 import org.metagene.genestrip.store.Database;
-import org.metagene.genestrip.tax.Rank;
 import org.metagene.genestrip.tax.SmallTaxTree;
 import org.metagene.genestrip.tax.TaxTree;
 
@@ -45,131 +41,6 @@ import java.io.File;
 import java.util.*;
 
 public class FinerTreeMaker extends GSMaker {
-    public static List<Rank> DEFAULT_REFINEMENT_RANKS = Collections.unmodifiableList(Arrays.asList(Rank.GENUS, Rank.SPECIES_GROUP));
-
-    public static ConfigKey REFINEMENT_RANKS = new ConfigKey() {
-        @Override
-        public String getName() {
-            return "refinementRanks";
-        }
-
-        @Override
-        public ConfigParamInfo<List<Rank>> getInfo() {
-            return new ConfigParamInfo.ListConfigParamInfo<Rank>(DEFAULT_REFINEMENT_RANKS) {
-                @Override
-                protected List<Rank> fromString(String qs) {
-                    List<Rank> res = new ArrayList<Rank>();
-                    if (qs != null) {
-                        StringTokenizer tokenizer = new StringTokenizer(qs, ",;");
-                        while (tokenizer.hasMoreTokens()) {
-                            Rank r = Rank.valueOf(tokenizer.nextToken().trim());
-                            if (r != null) {
-                                res.add(r);
-                            }
-                        }
-                    }
-                    return res;
-                }
-            };
-        }
-    };
-
-    public static ConfigKey CLUSTER_METHOD = new ConfigKey() {
-        @Override
-        public String getName() {
-            return "clusterMethod";
-        }
-
-        @Override
-        public ConfigParamInfo<SimpleAggloClustering.Method> getInfo() {
-            return new MethodConfigParamInfo(SimpleAggloClustering.Method.SINGLE_LINKAGE);
-        }
-    };
-
-    public static ConfigKey WITH_CHILD_COUNTS = new ConfigKey() {
-        @Override
-        public String getName() {
-            return "withChildCounts";
-        }
-
-        @Override
-        public ConfigParamInfo.BooleanConfigParamInfo getInfo() {
-            return new ConfigParamInfo.BooleanConfigParamInfo(false);
-        }
-    };
-
-    public static ConfigKey TURN_LATEX = new ConfigKey() {
-        @Override
-        public String getName() {
-            return "turnLatex";
-        }
-
-        @Override
-        public ConfigParamInfo.BooleanConfigParamInfo getInfo() {
-            return new ConfigParamInfo.BooleanConfigParamInfo(true);
-        }
-    };
-
-    public static ConfigKey X_FACTOR_LATEX = new ConfigKey() {
-        @Override
-        public String getName() {
-            return "xFactorLatex";
-        }
-
-        @Override
-        public ConfigParamInfo.DoubleConfigParamInfo getInfo() {
-            return new ConfigParamInfo.DoubleConfigParamInfo(0,Double.MAX_VALUE, 1);
-        }
-    };
-
-    public static ConfigKey Y_FACTOR_LATEX = new ConfigKey() {
-        @Override
-        public String getName() {
-            return "yFactorLatex";
-        }
-
-        @Override
-        public ConfigParamInfo.DoubleConfigParamInfo getInfo() {
-            return new ConfigParamInfo.DoubleConfigParamInfo(0,Double.MAX_VALUE, 8);
-        }
-    };
-
-    public static class MethodConfigParamInfo extends ConfigParamInfo<SimpleAggloClustering.Method> {
-        public MethodConfigParamInfo(SimpleAggloClustering.Method defaultValue) {
-            super(defaultValue);
-        }
-
-        @Override
-        public boolean isValueInRange(Object o) {
-            return o == null || o instanceof SimpleAggloClustering.Method;
-        }
-
-        @Override
-        protected SimpleAggloClustering.Method fromString(String s) {
-            return SimpleAggloClustering.Method.valueOf(s);
-        }
-
-        @Override
-        public String getMDRangeDescriptor() {
-            StringBuilder builder = new StringBuilder();
-            SimpleAggloClustering.Method[] methods = SimpleAggloClustering.Method.values();
-            for (int i = 0; i < methods.length; i++) {
-                if (i > 0) {
-                    builder.append(", ");
-                }
-                builder.append('`');
-                builder.append(methods[i].name());
-                builder.append('`');
-            }
-            return builder.toString();
-        }
-
-        @Override
-        public String getTypeDescriptor() {
-            return "nominal";
-        }
-    }
-
     public FinerTreeMaker(GSProject project) {
         super(project);
     }

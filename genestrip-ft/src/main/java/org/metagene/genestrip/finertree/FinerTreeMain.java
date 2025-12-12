@@ -61,12 +61,7 @@ public class FinerTreeMain extends Main {
         protected ConfigKey[] getConfigKeys() {
             if (configKeys == null) {
                 List<ConfigKey> keys = new ArrayList<ConfigKey>(Arrays.asList(super.getConfigKeys()));
-                keys.add(FinerTreeMaker.CLUSTER_METHOD);
-                keys.add(FinerTreeMaker.WITH_CHILD_COUNTS);
-                keys.add(FinerTreeMaker.REFINEMENT_RANKS);
-                keys.add(FinerTreeMaker.X_FACTOR_LATEX);
-                keys.add(FinerTreeMaker.Y_FACTOR_LATEX);
-                keys.add(FinerTreeMaker.TURN_LATEX);
+                keys.addAll(Arrays.asList(FTConfigKey.values()));
                 configKeys = keys.toArray(new ConfigKey[keys.size()]);
             }
             return configKeys;

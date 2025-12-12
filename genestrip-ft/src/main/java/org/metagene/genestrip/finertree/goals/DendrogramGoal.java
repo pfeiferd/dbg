@@ -1,6 +1,7 @@
 package org.metagene.genestrip.finertree.goals;
 
 import org.metagene.genestrip.GSProject;
+import org.metagene.genestrip.finertree.FTConfigKey;
 import org.metagene.genestrip.finertree.FinerTreeMaker;
 import org.metagene.genestrip.finertree.cluster.DendrogramNode;
 import org.metagene.genestrip.finertree.cluster.Similarity;
@@ -33,9 +34,9 @@ public class DendrogramGoal extends ObjectGoal<Map<SmallTaxTree.SmallTaxIdNode, 
     protected void doMakeThis() {
         Map<SmallTaxTree.SmallTaxIdNode, DendrogramNode> res = new HashMap<>();
         KMerIntersectCountGoal.IntersectionsPerNode intersections = kmerIntersectGoal.get();
-        SimpleAggloClustering.Method method = (SimpleAggloClustering.Method) configValue(FinerTreeMaker.CLUSTER_METHOD);
+        SimpleAggloClustering.Method method = (SimpleAggloClustering.Method) configValue(FTConfigKey.CLUSTER_METHOD);
         SimpleAggloClustering clustering = new SimpleAggloClustering(method);
-        boolean withChildCounts = booleanConfigValue(FinerTreeMaker.WITH_CHILD_COUNTS);
+        boolean withChildCounts = booleanConfigValue(FTConfigKey.WITH_CHILD_COUNTS);
         for (SmallTaxTree.SmallTaxIdNode parent : intersections.getParentNodes()) {
             DendrogramNode node = clustering.cluster(new Similarity() {
                 @Override

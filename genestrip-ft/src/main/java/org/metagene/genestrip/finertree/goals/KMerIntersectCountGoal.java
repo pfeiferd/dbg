@@ -28,6 +28,7 @@ import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import me.tongfei.progressbar.ProgressBar;
 import org.metagene.genestrip.GSConfigKey;
 import org.metagene.genestrip.GSProject;
+import org.metagene.genestrip.finertree.FTConfigKey;
 import org.metagene.genestrip.finertree.FinerTreeMaker;
 import org.metagene.genestrip.finertree.bloom.XORKMerIndexBloomFilter;
 import org.metagene.genestrip.make.Goal;
@@ -78,7 +79,7 @@ public class KMerIntersectCountGoal extends ObjectGoal<KMerIntersectCountGoal.In
     @Override
     protected void doMakeThis() {
         boolean [] ranksToRefine = new boolean[Rank.values().length];
-        Collection<Rank> toRefine = (Collection<Rank>) configValue(FinerTreeMaker.REFINEMENT_RANKS);
+        Collection<Rank> toRefine = (Collection<Rank>) configValue(FTConfigKey.REFINEMENT_RANKS);
         for (Rank r : toRefine) {
             ranksToRefine[r.ordinal()] = true;
         }
@@ -163,9 +164,12 @@ public class KMerIntersectCountGoal extends ObjectGoal<KMerIntersectCountGoal.In
         stats.forEach((s, aLong) -> {
             while (s != null) {
                 SmallTaxTree.SmallTaxIdNode parent = s.getParent();
-                if (parent != null && ranksToRefine[parent.getRankOrdinal()]) {
-                    intersectionsPerNode.incSubnodeCounts(s, aLong);
-                    break;
+                if (parent != null) {
+                    int r = parent.getRankOrdinal();
+                    if (r > 0 && ranksToRefine[r]) {
+                        intersectionsPerNode.incSubnodeCounts(s, aLong);
+                        break;
+                    }
                 }
                 s = parent;
             }

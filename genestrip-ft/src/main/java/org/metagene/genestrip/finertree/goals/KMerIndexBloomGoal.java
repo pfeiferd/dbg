@@ -30,6 +30,7 @@ import it.unimi.dsi.fastutil.shorts.Short2LongMap;
 import org.metagene.genestrip.ExecutionContext;
 import org.metagene.genestrip.GSConfigKey;
 import org.metagene.genestrip.GSProject;
+import org.metagene.genestrip.finertree.FTConfigKey;
 import org.metagene.genestrip.finertree.FinerTreeMaker;
 import org.metagene.genestrip.finertree.bloom.XORKMerIndexBloomFilter;
 import org.metagene.genestrip.goals.refseq.FastaReaderGoal;
@@ -89,7 +90,7 @@ public class KMerIndexBloomGoal extends FastaReaderGoal<XORKMerIndexBloomFilter>
         ranksToRefine = new boolean[Rank.values().length];
         minUpdate = project.booleanConfigValue(GSConfigKey.MIN_UPDATE);
 
-        Collection<Rank> toRefine = (Collection<Rank>) configValue(FinerTreeMaker.REFINEMENT_RANKS);
+        Collection<Rank> toRefine = (Collection<Rank>) configValue(FTConfigKey.REFINEMENT_RANKS);
         for (Rank r : toRefine) {
             ranksToRefine[r.ordinal()] = true;
         }

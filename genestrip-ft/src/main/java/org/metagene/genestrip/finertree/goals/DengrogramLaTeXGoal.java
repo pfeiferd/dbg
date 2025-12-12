@@ -1,6 +1,7 @@
 package org.metagene.genestrip.finertree.goals;
 
 import org.metagene.genestrip.GSProject;
+import org.metagene.genestrip.finertree.FTConfigKey;
 import org.metagene.genestrip.finertree.FinerTreeMaker;
 import org.metagene.genestrip.finertree.cluster.DendrogramNode;
 import org.metagene.genestrip.io.StreamProvider;
@@ -44,7 +45,7 @@ public class DengrogramLaTeXGoal extends FileListGoal<GSProject> {
     @Override
     // Do not access kmerIntersectGoal here as it would trigger the related computation already...
     protected void provideFiles() {
-        Collection<SmallTaxTree.SmallTaxIdNode> parents = KMerIntersectCSVGoal.getNodesWithRanks(storeGoal.get().getTaxTree(), (Collection<Rank>) configValue(FinerTreeMaker.REFINEMENT_RANKS));
+        Collection<SmallTaxTree.SmallTaxIdNode> parents = KMerIntersectCSVGoal.getNodesWithRanks(storeGoal.get().getTaxTree(), (Collection<Rank>) configValue(FTConfigKey.REFINEMENT_RANKS));
         for (SmallTaxTree.SmallTaxIdNode node : parents) {
             File matchFile = getProject().getOutputFile(getKey().getName(), node.getTaxId(), null, GSProject.FileType.TXT, false);
             addFile(matchFile);
@@ -57,9 +58,9 @@ public class DengrogramLaTeXGoal extends FileListGoal<GSProject> {
         SmallTaxTree.SmallTaxIdNode parent = fileToNodeMap.get(file);
         DendrogramNode dendrogram = dendrogramGoal.get().get(parent);
 
-        double yScaleFactor = doubleConfigValue(FinerTreeMaker.Y_FACTOR_LATEX);
-        double xScaleFactor = doubleConfigValue(FinerTreeMaker.X_FACTOR_LATEX);
-        boolean turn = booleanConfigValue(FinerTreeMaker.TURN_LATEX);
+        double yScaleFactor = doubleConfigValue(FTConfigKey.Y_FACTOR_LATEX);
+        double xScaleFactor = doubleConfigValue(FTConfigKey.X_FACTOR_LATEX);
+        boolean turn = booleanConfigValue(FTConfigKey.TURN_LATEX);
 
         try (PrintStream out = new PrintStream(StreamProvider.getOutputStreamForFile(file))) {
             out.println("\\begin{tikzpicture}[sloped,scale=1]");
@@ -80,8 +81,8 @@ public class DengrogramLaTeXGoal extends FileListGoal<GSProject> {
             @Override
             public void preNode(DendrogramNode node) {
                 node.setValue(new IntDouble(preCounter[0], leafCounter[0]));
-                if (node.getValueIndex() >= 0) {
-                    SmallTaxTree.SmallTaxIdNode child = children[node.getValueIndex()];
+                int index = node.getValueIndex();
+                if (index >= 0) {
                     out.print("\\node ");
                     if (!turn) {
                         out.print("[rotate=90,anchor=east] ");
@@ -100,10 +101,16 @@ public class DengrogramLaTeXGoal extends FileListGoal<GSProject> {
                         out.print(",0");
                     }
                     out.print(") {");
-                    out.print(child.getName());
-                    out.print(" (");
-                    out.print(child.getTaxId());
-                    out.println(")};");
+                    if (index < children.length) {
+                        out.print(children[index].getName());
+                        out.print(" (");
+                        out.print(children[index].getTaxId());
+                        out.println(");");
+                    }
+                    else {
+                        out.print("OTHER");
+                    }
+                    out.println("};");
                     leafCounter[0]++;
                 }
                 preCounter[0]++;
