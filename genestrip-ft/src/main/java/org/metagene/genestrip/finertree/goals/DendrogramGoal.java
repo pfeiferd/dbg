@@ -35,7 +35,9 @@ public class DendrogramGoal extends ObjectGoal<Map<SmallTaxTree.SmallTaxIdNode, 
             DendrogramNode node = clustering.cluster(new Similarity() {
                 @Override
                 public int values() {
-                    return parent.getSubNodes().length + 1; // "+ 1" for "OTHER_VALUE"
+                    int otherPos = parent.getSubNodes().length;
+                    long count = intersections.getIntersectionCount(parent, otherPos, otherPos);
+                    return  parent.getSubNodes().length + (count == 0 ? 0 : 1); // "+ 1" for "OTHER_VALUE"
                 }
 
                 @Override

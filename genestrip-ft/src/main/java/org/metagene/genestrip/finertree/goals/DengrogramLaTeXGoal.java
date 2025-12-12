@@ -84,7 +84,7 @@ public class DengrogramLaTeXGoal extends FileListGoal<GSProject> {
             @Override
             public void preNode(DendrogramNode node) {
                 // Exclude "OTHER" from display if it carries no information.
-                if (node.getValueIndex() != children.length || node.getSimilarity() == 0) {
+                if (node.getValueIndex() != children.length || node.getSimilarity() != 0) {
                     node.setValue(new IntDouble(preCounter[0], leafCounter[0]));
                 }
                 int index = node.getValueIndex();
