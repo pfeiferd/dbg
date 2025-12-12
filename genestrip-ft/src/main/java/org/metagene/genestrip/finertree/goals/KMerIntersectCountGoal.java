@@ -29,6 +29,7 @@ import me.tongfei.progressbar.ProgressBar;
 import org.metagene.genestrip.GSConfigKey;
 import org.metagene.genestrip.GSProject;
 import org.metagene.genestrip.finertree.FTConfigKey;
+import org.metagene.genestrip.finertree.FTGoalKey;
 import org.metagene.genestrip.finertree.FinerTreeMaker;
 import org.metagene.genestrip.finertree.bloom.XORKMerIndexBloomFilter;
 import org.metagene.genestrip.make.Goal;
@@ -55,6 +56,7 @@ public class KMerIntersectCountGoal extends ObjectGoal<KMerIntersectCountGoal.In
         public double getOverspreadRatio(SmallTaxTree.SmallTaxIdNode parent);
         public long getSubnodesKMerCount(SmallTaxTree.SmallTaxIdNode parent);
     }
+
     private static int INITIAL_MAX_CHILDREN = 256;
 
     public static GoalKey GOAL_KEY = new GoalKey() {
@@ -71,7 +73,7 @@ public class KMerIntersectCountGoal extends ObjectGoal<KMerIntersectCountGoal.In
     public KMerIntersectCountGoal(GSProject project, ObjectGoal<Database, GSProject> storeGoal,
                               ObjectGoal<XORKMerIndexBloomFilter, GSProject> bloomFilterGoal,
                               Goal<GSProject>... deps) {
-        super(project, GOAL_KEY, Goal.append(deps, storeGoal, bloomFilterGoal));
+        super(project, FTGoalKey.INTERSECT_COUNT, Goal.append(deps, storeGoal, bloomFilterGoal));
         this.storeGoal = storeGoal;
         this.bloomFilterGoal = bloomFilterGoal;
     }

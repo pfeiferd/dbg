@@ -27,6 +27,7 @@ package org.metagene.genestrip.finertree.goals;
 import org.metagene.genestrip.GSProject;
 import org.metagene.genestrip.GSProject.FileType;
 import org.metagene.genestrip.bloom.AbstractKMerBloomFilter;
+import org.metagene.genestrip.finertree.FTGoalKey;
 import org.metagene.genestrip.finertree.bloom.XORKMerIndexBloomFilter;
 import org.metagene.genestrip.make.FileListGoal;
 import org.metagene.genestrip.make.Goal;
@@ -37,19 +38,12 @@ import java.io.File;
 import java.io.IOException;
 
 public class StoreKMerIndexGoal extends FileListGoal<GSProject> {
-	public static GoalKey GOAL_KEY = new GoalKey() {
-		@Override
-		public String getName() {
-			return "storekmerindex";
-		}
-	};
-
 	private final ObjectGoal<XORKMerIndexBloomFilter, GSProject> indexGoal;
 
 	@SafeVarargs
 	public StoreKMerIndexGoal(GSProject project, ObjectGoal<XORKMerIndexBloomFilter, GSProject> indexGoal,
                               Goal<GSProject>... deps) {
-		super(project, GOAL_KEY, project.getOutputFile(GOAL_KEY.getName(), FileType.FILTER, true),
+		super(project, FTGoalKey.STORE_KMER_INDEX, project.getOutputFile(FTGoalKey.STORE_KMER_INDEX.getName(), FileType.FILTER, true),
 				Goal.append(deps, indexGoal));
 		this.indexGoal = indexGoal;
 	}

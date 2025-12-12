@@ -26,6 +26,7 @@ package org.metagene.genestrip.finertree.goals;
 
 import org.metagene.genestrip.GSProject;
 import org.metagene.genestrip.finertree.FTConfigKey;
+import org.metagene.genestrip.finertree.FTGoalKey;
 import org.metagene.genestrip.finertree.FinerTreeMaker;
 import org.metagene.genestrip.io.StreamProvider;
 import org.metagene.genestrip.make.*;
@@ -41,13 +42,6 @@ import java.text.DecimalFormatSymbols;
 import java.util.*;
 
 public class KMerIntersectCSVGoal extends FileListGoal<GSProject> {
-    public static GoalKey GOAL_KEY = new GoalKey() {
-        @Override
-        public String getName() {
-            return "intersectcsv";
-        }
-    };
-
     private static final DecimalFormat DF = new DecimalFormat("0.00000000", new DecimalFormatSymbols(Locale.US));
 
     private final ObjectGoal<Database, GSProject> storeGoal;
@@ -56,7 +50,7 @@ public class KMerIntersectCSVGoal extends FileListGoal<GSProject> {
 
     @SafeVarargs
     public KMerIntersectCSVGoal(GSProject project, ObjectGoal<Database, GSProject> storeGoal, ObjectGoal<KMerIntersectCountGoal.IntersectionsPerNode, GSProject> kmerIntersectGoal, Goal<GSProject>... deps) {
-        super(project, GOAL_KEY, (List<File>) null,  append(deps, kmerIntersectGoal));
+        super(project, FTGoalKey.INTERSECT_CSV, (List<File>) null,  append(deps, kmerIntersectGoal));
         this.storeGoal = storeGoal;
         this.kmerIntersectGoal = kmerIntersectGoal;
         fileToNodeMap = new HashMap<>();

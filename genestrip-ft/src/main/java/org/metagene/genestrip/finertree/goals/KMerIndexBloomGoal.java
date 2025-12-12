@@ -31,6 +31,7 @@ import org.metagene.genestrip.ExecutionContext;
 import org.metagene.genestrip.GSConfigKey;
 import org.metagene.genestrip.GSProject;
 import org.metagene.genestrip.finertree.FTConfigKey;
+import org.metagene.genestrip.finertree.FTGoalKey;
 import org.metagene.genestrip.finertree.FinerTreeMaker;
 import org.metagene.genestrip.finertree.bloom.XORKMerIndexBloomFilter;
 import org.metagene.genestrip.goals.refseq.FastaReaderGoal;
@@ -54,13 +55,6 @@ import java.io.IOException;
 import java.util.*;
 
 public class KMerIndexBloomGoal extends FastaReaderGoal<XORKMerIndexBloomFilter> implements Goal.LogHeapInfo {
-    public static GoalKey GOAL_KEY = new GoalKey() {
-        @Override
-        public String getName() {
-            return "kmerindexbloom";
-        }
-    };
-
     public static final short OTHER_VALUE = (short) KMerSortedArray.MAX_VALUES;
 
     private final ObjectGoal<AccessionMap, GSProject> accessionMapGoal;
@@ -82,7 +76,7 @@ public class KMerIndexBloomGoal extends FastaReaderGoal<XORKMerIndexBloomFilter>
                               ObjectGoal<Map<File, TaxTree.TaxIdNode>, GSProject> additionalGoal,
                               ObjectGoal<AccessionMap, GSProject> accessionMapGoal, ObjectGoal<Database, GSProject> storeGoal,
                               Goal<GSProject>... deps) {
-        super(project, GOAL_KEY, bundle, categoriesGoal, taxNodesGoal, fnaFilesGoal, additionalGoal, Goal.append(deps, taxTreeGoal, accessionMapGoal, storeGoal));
+        super(project, FTGoalKey.KMER_INDEX_BLOOM, bundle, categoriesGoal, taxNodesGoal, fnaFilesGoal, additionalGoal, Goal.append(deps, taxTreeGoal, accessionMapGoal, storeGoal));
         this.storeGoal = storeGoal;
         this.accessionMapGoal = accessionMapGoal;
         this.taxTreeGoal = taxTreeGoal;

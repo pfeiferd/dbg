@@ -2,6 +2,7 @@ package org.metagene.genestrip.finertree.goals;
 
 import org.metagene.genestrip.GSProject;
 import org.metagene.genestrip.finertree.FTConfigKey;
+import org.metagene.genestrip.finertree.FTGoalKey;
 import org.metagene.genestrip.finertree.FinerTreeMaker;
 import org.metagene.genestrip.finertree.cluster.DendrogramNode;
 import org.metagene.genestrip.io.StreamProvider;
@@ -21,13 +22,6 @@ import java.text.DecimalFormatSymbols;
 import java.util.*;
 
 public class DengrogramLaTeXGoal extends FileListGoal<GSProject> {
-    public static GoalKey GOAL_KEY = new GoalKey() {
-        @Override
-        public String getName() {
-            return "dendrolatex";
-        }
-    };
-
     private static final DecimalFormat DF = new DecimalFormat("0.000000", new DecimalFormatSymbols(Locale.US));
     private static final DecimalFormat DF2 = new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.US));
 
@@ -36,7 +30,7 @@ public class DengrogramLaTeXGoal extends FileListGoal<GSProject> {
     private final Map<File, SmallTaxTree.SmallTaxIdNode> fileToNodeMap;
 
     public DengrogramLaTeXGoal(GSProject project, ObjectGoal<Database, GSProject> storeGoal, ObjectGoal<Map<SmallTaxTree.SmallTaxIdNode, DendrogramNode>, GSProject> dendrogramGoal, Goal<GSProject>... deps) {
-        super(project, GOAL_KEY, (List<File>) null, append(deps, storeGoal, dendrogramGoal));
+        super(project, FTGoalKey.DENDRO_LATEX, (List<File>) null, append(deps, storeGoal, dendrogramGoal));
         this.storeGoal = storeGoal;
         this.dendrogramGoal = dendrogramGoal;
         fileToNodeMap = new HashMap<>();
