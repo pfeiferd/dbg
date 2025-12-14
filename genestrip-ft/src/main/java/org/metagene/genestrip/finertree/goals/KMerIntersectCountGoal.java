@@ -275,6 +275,13 @@ public class KMerIntersectCountGoal extends ObjectGoal<KMerIntersectCountGoal.In
                     union += getSubnodesKMerCount(parent.getSubNodes()[j]);
                 }
             }
+            if (union == 0) {
+                if (intersect != 0) {
+                    throw new IllegalStateException("If union is 0 then intersect must be too.");
+                }
+                // Both sets are empty - so they are identical and perfectly similar...
+                return 1;
+            }
             return ((double) intersect) / union;
         }
 

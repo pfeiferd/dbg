@@ -178,6 +178,7 @@ public class KMerIndexBloomGoal extends FastaReaderGoal<XORKMerIndexBloomFilter>
                 includeRegion = true;
                 // This can become null if the node is not in the database:
                 smallNode = smallTaxTree.getNodeByTaxId(node.getTaxId());
+                /*
                 TaxTree.TaxIdNode n = node;
                 if (smallNode == null) {
                     while (n != null) {
@@ -188,6 +189,7 @@ public class KMerIndexBloomGoal extends FastaReaderGoal<XORKMerIndexBloomFilter>
                         n = n.getParent();
                     }
                 }
+                 */
             }
         }
 
