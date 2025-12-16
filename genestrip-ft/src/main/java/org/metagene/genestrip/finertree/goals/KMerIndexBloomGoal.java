@@ -127,13 +127,17 @@ public class KMerIndexBloomGoal extends FastaReaderGoal<XORKMerIndexBloomFilter>
                     }
                 }
             });
-            filter = new XORKMerIndexBloomFilter(intConfigValue(GSConfigKey.KMER_SIZE), 0.001
-                    /*doubleConfigValue(GSConfigKey.TEMP_BLOOM_FILTER_FPP)*/);
-            filter.ensureExpectedSize(counter[0], false);
+            if (getLogger().isInfoEnabled()) {
+                getLogger().info("Maximum expected filter entries: " + counter[0]);
+            }
+            filter = new XORKMerIndexBloomFilter(intConfigValue(GSConfigKey.KMER_SIZE), doubleConfigValue(GSConfigKey.TEMP_BLOOM_FILTER_FPP));
+            long bitSize = filter.ensureExpectedSize(counter[0], false);
+            if (getLogger().isInfoEnabled()) {
+                getLogger().info("Filter size in MB: " + (bitSize / 8 / 1024 / 1024));
+            }
             readFastas();
             set(filter);
             if (getLogger().isInfoEnabled()) {
-                getLogger().info("Maximum expected filter entries: " + counter[0]);
                 getLogger().info("Actual filter entries: " + filter.getEntries());
             }
         } catch (IOException e) {
