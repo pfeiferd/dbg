@@ -33,7 +33,8 @@ public enum FTGoalKey implements GoalKey {
     INTERSECT_COUNT("intersectcount"),
     INTERSECT_CSV("intersectcsv", true),
     LOAD_KMER_INDEX("loadkmerindex"),
-    STORE_KMER_INDEX("storekmerindex"),;
+    STORE_KMER_INDEX("storekmerindex"),
+    UPDATE_STORE_GOAL("updatestore", true);
 
     private final boolean forUser;
     private final String name;

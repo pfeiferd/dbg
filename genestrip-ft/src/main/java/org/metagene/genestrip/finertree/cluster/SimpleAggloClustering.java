@@ -53,7 +53,7 @@ public class SimpleAggloClustering {
         }
 
         double bestSim;
-        int bestI = -1;
+        int bestI = 0;
         int bestJ;
         for (int k = 0; k < clusters.length - 1; k++) {
             bestSim = 0;

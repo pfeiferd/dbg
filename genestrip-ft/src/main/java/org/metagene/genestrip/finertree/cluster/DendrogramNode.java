@@ -82,4 +82,13 @@ public class DendrogramNode {
         }
         visitor.postNode(this);
     }
+
+    public int size() {
+        if (valueIndex == - 1) {
+            return 1 + child1.size() + child2.size();
+        }
+        else {
+            return 1;
+        }
+    }
 }
