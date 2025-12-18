@@ -24,9 +24,6 @@
  */
 package org.metagene.genestrip.finertree.goals;
 
-import it.unimi.dsi.fastutil.BigArrays;
-import it.unimi.dsi.fastutil.BigSwapper;
-import it.unimi.dsi.fastutil.longs.LongComparator;
 import me.tongfei.progressbar.ProgressBar;
 import org.metagene.genestrip.GSConfigKey;
 import org.metagene.genestrip.GSProject;
@@ -80,10 +77,10 @@ public class UpdateStoreGoal extends ObjectGoal<Database, GSProject> implements 
         Map<SmallTaxTree.SmallTaxIdNode, DendrogramNode> dendrograms = dendrogramGoal.get();
         Map<SmallTaxTree.SmallTaxIdNode, BitSetsForNodes> parentToBitSets = new HashMap<>();
         for (SmallTaxTree.SmallTaxIdNode key : dendrograms.keySet()) {
-            SmallTaxTree.SmallTaxIdNode[] orgSubnodes = key.getSubNodes();
             DendrogramNode root = dendrograms.get(key);
             if (root != null) {
                 if (root.getValueIndex() == -1) {
+                    SmallTaxTree.SmallTaxIdNode[] orgSubnodes = key.getSubNodes();
                     BitSetsForNodes bitSets = new BitSetsForNodes(root.size() - 1, orgSubnodes.length);
                     parentToBitSets.put(key, bitSets);
                     createNode(root.getChild1(), orgSubnodes, bitSets);
@@ -114,7 +111,7 @@ public class UpdateStoreGoal extends ObjectGoal<Database, GSProject> implements 
         XORKMerIndexBloomFilter bloomFilter = bloomFilterGoal.get();
         try (ProgressBar pb = createProgressBar(update)) {
             kMerSortedArray.visit(new KMerSortedArray.KMerSortedArrayVisitor<SmallTaxTree.SmallTaxIdNode>() {
-                private BitSet bits = new BitSet();
+                private boolean[] bits = new boolean[INITIAL_MAX_CHILDREN];
 
                 @Override
                 public void nextValue(KMerSortedArray<SmallTaxTree.SmallTaxIdNode> trie, long kmer, short index, long pos) {
@@ -127,10 +124,16 @@ public class UpdateStoreGoal extends ObjectGoal<Database, GSProject> implements 
                             if (children != null && children.length > 0) {
                                 BitSetsForNodes bitSetsForNodes = parentToBitSets.get(parent);
                                 if (bitSetsForNodes != null) {
-                                    for (int i = 0; i < children.length; i++) {
-                                        bits.set(i, checkSubtree(children[i], kmer));
+                                    int n;
+                                    for (n = bits.length; n < children.length; n *= 2) {
                                     }
-                                    bits.set(children.length, bloomFilter.containsLongShort(kmer, KMerIndexBloomGoal.OTHER_VALUE));
+                                    if (n > bits.length) {
+                                        bits = new boolean[n];
+                                    }
+                                    for (int i = 0; i < children.length; i++) {
+                                        bits[i] = checkSubtree(children[i], kmer);
+                                    }
+                                    bits[children.length] = bloomFilter.containsLongShort(kmer, KMerIndexBloomGoal.OTHER_VALUE);
                                     SmallTaxTree.SmallTaxIdNode node = bitSetsForNodes.getBestMatchingNode(bits);
                                     if (node != null) {
                                         orgkMerSortedArray.setIndexAtPosition(pos, node.getStoreIndex());
@@ -178,34 +181,41 @@ public class UpdateStoreGoal extends ObjectGoal<Database, GSProject> implements 
     }
 
     protected SmallTaxTree.SmallTaxIdNode createNode(DendrogramNode node, SmallTaxTree.SmallTaxIdNode[] orgSubnodes, BitSetsForNodes bitSets) {
-        if (node.getValueIndex() == -1) {
+        int valueIndex = node.getValueIndex();
+        if (valueIndex == -1 || valueIndex == orgSubnodes.length)  {
             String taxId = "000" + idCounter++;
             short index = orgkMerSortedArray.getAddValueIndex(taxId);
             SmallTaxTree.SmallTaxIdNode newNode = new SmallTaxTree.SmallTaxIdNode(taxId, Rank.NO_RANK);
             newNode.setStoreIndex(index);
-            SmallTaxTree.SmallTaxIdNode[] newSubnodes = new SmallTaxTree.SmallTaxIdNode[2];
-            newNode.setSubNodes(newSubnodes);
-            int oldCounter1 = bitSets.currentIndex();
-            newSubnodes[0] = createNode(node.getChild1(), orgSubnodes, bitSets);
-            int oldCounter2 = bitSets.currentIndex();
-            newSubnodes[1] = createNode(node.getChild2(), orgSubnodes, bitSets);
-            return bitSets.initNextNode(newNode, oldCounter1, oldCounter2);
+            if (node.getValueIndex() == -1) {
+                SmallTaxTree.SmallTaxIdNode[] newSubnodes = new SmallTaxTree.SmallTaxIdNode[2];
+                newNode.setSubNodes(newSubnodes);
+                int oldCounter1 = bitSets.currentIndex();
+                newSubnodes[0] = createNode(node.getChild1(), orgSubnodes, bitSets);
+                int oldCounter2 = bitSets.currentIndex();
+                newSubnodes[1] = createNode(node.getChild2(), orgSubnodes, bitSets);
+                return bitSets.initNextNode(newNode, oldCounter1, oldCounter2);
+            }
+            else {
+                // "OTHER" case
+                return bitSets.initNextNode(newNode, orgSubnodes.length);
+            }
         } else {
-            return bitSets.initNextNode(orgSubnodes[node.getValueIndex()], node.getValueIndex());
+            return bitSets.initNextNode(orgSubnodes[valueIndex], valueIndex);
         }
     }
 
     private static class BitSetsForNodes {
-        private final BitSet[] bitSets;
+        private final boolean[][] bitSets;
         private final SmallTaxTree.SmallTaxIdNode[] nodes;
         private int bitsetPosCounter;
 
         public BitSetsForNodes(int nBitSets, int nNodes) {
-            this.bitSets = new BitSet[nBitSets];
+            this.bitSets = new boolean[nBitSets][];
             this.nodes = new SmallTaxTree.SmallTaxIdNode[nNodes];
 
             for (int i = 0; i < bitSets.length; i++) {
-                bitSets[i] = new BitSet(nNodes);
+                bitSets[i] = new boolean[nNodes];
             }
             bitsetPosCounter = 0;
         }
@@ -215,14 +225,15 @@ public class UpdateStoreGoal extends ObjectGoal<Database, GSProject> implements 
             // unfortunateld, standard library methods don't work for this case.
             for (int i = 0; i < bitSets.length; i++) {
                 int maxIndex = 0;
-                int minCard = bitSets[i].cardinality();
+                int minCard = cardinality(bitSets[i]);
                 for (int j = i + 1; i < bitSets.length; j++) {
-                    if (bitSets[j].cardinality() < minCard) {
+                    int c = cardinality(bitSets[j]);
+                    if (c < minCard) {
                         maxIndex = j;
-                        minCard = bitSets[j].cardinality();
+                        minCard = c;
                     }
                 }
-                BitSet h = bitSets[i];
+                boolean[] h = bitSets[i];
                 bitSets[i] = bitSets[maxIndex];
                 bitSets[maxIndex] = h;
                 SmallTaxTree.SmallTaxIdNode hn = nodes[i];
@@ -231,26 +242,38 @@ public class UpdateStoreGoal extends ObjectGoal<Database, GSProject> implements 
             }
         }
 
+        private int cardinality(boolean[] bits) {
+            int cardinality = 0;
+            for (int i = 0; i < bitSets.length; i++) {
+                if (bits[i]) {
+                    cardinality++;
+                }
+            }
+            return cardinality;
+        }
+
         public int currentIndex() {
             return bitsetPosCounter;
         }
 
         public SmallTaxTree.SmallTaxIdNode initNextNode(SmallTaxTree.SmallTaxIdNode node, int a, int b) {
             nodes[bitsetPosCounter] = node;
-            bitSets[bitsetPosCounter].or(bitSets[a]);
-            bitSets[bitsetPosCounter].or(bitSets[b]);
+            boolean[] target = bitSets[bitsetPosCounter];
+            for (int i = 0; i < target.length; i++) {
+                target[i] = bitSets[a][i] || bitSets[b][i];
+            }
             bitsetPosCounter++;
             return node;
         }
 
         public SmallTaxTree.SmallTaxIdNode initNextNode(SmallTaxTree.SmallTaxIdNode node, int bit) {
             nodes[bitsetPosCounter] = node;
-            bitSets[bitsetPosCounter].set(bit);
+            bitSets[bitsetPosCounter][bit] = true;
             bitsetPosCounter++;
             return node;
         }
 
-        public SmallTaxTree.SmallTaxIdNode getBestMatchingNode(BitSet bits) {
+        public SmallTaxTree.SmallTaxIdNode getBestMatchingNode(boolean[] bits) {
             short newIndex = -1;
             for (int i = 0; i < bitSets.length; i++) {
                 if (contains(bitSets[i], bits)) {
@@ -261,9 +284,9 @@ public class UpdateStoreGoal extends ObjectGoal<Database, GSProject> implements 
             return null;
         }
 
-        private boolean contains(BitSet container, BitSet contained) {
-            for (int i = 0; i < container.length(); i++) {
-                if (container.get(i) && !contained.get(i)) {
+        private boolean contains(boolean[] container, boolean[] contained) {
+            for (int i = 0; i < container.length; i++) {
+                if (container[i] && !contained[i]) {
                     return false;
                 }
             }
