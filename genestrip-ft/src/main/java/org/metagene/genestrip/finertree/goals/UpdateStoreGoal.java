@@ -24,10 +24,7 @@
  */
 package org.metagene.genestrip.finertree.goals;
 
-import me.tongfei.progressbar.ProgressBar;
-import org.metagene.genestrip.GSConfigKey;
 import org.metagene.genestrip.GSProject;
-import org.metagene.genestrip.finertree.FTConfigKey;
 import org.metagene.genestrip.finertree.FTGoalKey;
 import org.metagene.genestrip.finertree.bloom.XORKMerIndexBloomFilter;
 import org.metagene.genestrip.finertree.cluster.DendrogramNode;
@@ -37,45 +34,29 @@ import org.metagene.genestrip.store.Database;
 import org.metagene.genestrip.store.KMerSortedArray;
 import org.metagene.genestrip.tax.Rank;
 import org.metagene.genestrip.tax.SmallTaxTree;
-import org.metagene.genestrip.util.progressbar.GSProgressBarCreator;
-import org.metagene.genestrip.util.progressbar.GSProgressUpdate;
 
 import java.util.*;
 
-public class UpdateStoreGoal extends ObjectGoal<Database, GSProject> implements Goal.LogHeapInfo {
+public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal.LogHeapInfo {
     private static int INITIAL_MAX_CHILDREN = 256;
 
-    private final ObjectGoal<Database, GSProject> storeGoal;
     private final ObjectGoal<Map<SmallTaxTree.SmallTaxIdNode, DendrogramNode>, GSProject> dendrogramGoal;
-    private final KMerIndexBloomGoal bloomFilterGoal;
-    private final boolean[] ranksToRefine;
-    private final List<String> taxidsToRefine;
 
     private int idCounter;
-    private int bitsetPosCounter;
     private KMerSortedArray<String> orgkMerSortedArray;
+    private Map<SmallTaxTree.SmallTaxIdNode, DendrogramNode> dendrograms;
+    private Map<SmallTaxTree.SmallTaxIdNode, BitSetsForNodes> parentToBitSets;
 
     @SafeVarargs
-    public UpdateStoreGoal(GSProject project, ObjectGoal<Database, GSProject> storeGoal, ObjectGoal<Map<SmallTaxTree.SmallTaxIdNode, DendrogramNode>, GSProject> dendrogramGoal, KMerIndexBloomGoal bloomFilterGoal, Goal<GSProject>... deps) {
-        super(project, FTGoalKey.DENDROGRAM, append(deps, storeGoal, dendrogramGoal, bloomFilterGoal));
-        this.storeGoal = storeGoal;
+    public UpdateStoreGoal(GSProject project, ObjectGoal<Database, GSProject> storeGoal, ObjectGoal<Map<SmallTaxTree.SmallTaxIdNode, DendrogramNode>, GSProject> dendrogramGoal, ObjectGoal<XORKMerIndexBloomFilter, GSProject> bloomFilterGoal, Goal<GSProject>... deps) {
+        super(project, FTGoalKey.UPDATE_STORE_GOAL, storeGoal, bloomFilterGoal, deps);
         this.dendrogramGoal = dendrogramGoal;
-        this.bloomFilterGoal = bloomFilterGoal;
-        ranksToRefine = new boolean[Rank.values().length];
-
-        Collection<Rank> toRefine = (Collection<Rank>) configValue(FTConfigKey.REFINEMENT_RANKS);
-        for (Rank r : toRefine) {
-            ranksToRefine[r.ordinal()] = true;
-        }
-        taxidsToRefine = (List<String>) configValue(GSConfigKey.TAX_IDS);
     }
 
     @Override
-    protected void doMakeThis() {
-        SmallTaxTree tree = storeGoal.get().getTaxTree();
-
-        Map<SmallTaxTree.SmallTaxIdNode, DendrogramNode> dendrograms = dendrogramGoal.get();
-        Map<SmallTaxTree.SmallTaxIdNode, BitSetsForNodes> parentToBitSets = new HashMap<>();
+    protected void beforeKMerStoreWork() {
+        dendrograms = dendrogramGoal.get();
+        parentToBitSets = new HashMap<>();
         for (SmallTaxTree.SmallTaxIdNode key : dendrograms.keySet()) {
             DendrogramNode root = dendrograms.get(key);
             if (root != null) {
@@ -91,76 +72,22 @@ public class UpdateStoreGoal extends ObjectGoal<Database, GSProject> implements 
                 }
             }
         }
+    }
 
-        Database database = storeGoal.get();
-        orgkMerSortedArray = database.getKmerStore();
-        KMerSortedArray<SmallTaxTree.SmallTaxIdNode> kMerSortedArray = database.convertKMerStore();
-        long max = kMerSortedArray.getEntries();
-        long[] current = new long[1];
-        GSProgressUpdate update = new GSProgressUpdate() {
-            @Override
-            public long current() {
-                return current[0];
+    @Override
+    protected void inKMerStoreWork(SmallTaxTree.SmallTaxIdNode parent, long pos, boolean[] bits, int spread) {
+        BitSetsForNodes bitSetsForNodes = parentToBitSets.get(parent);
+        if (bitSetsForNodes != null) {
+            SmallTaxTree.SmallTaxIdNode node = bitSetsForNodes.getBestMatchingNode(bits);
+            if (node != null) {
+                orgkMerSortedArray.setIndexAtPosition(pos, node.getStoreIndex());
             }
-
-            @Override
-            public long max() {
-                return max;
-            }
-        };
-        XORKMerIndexBloomFilter bloomFilter = bloomFilterGoal.get();
-        try (ProgressBar pb = createProgressBar(update)) {
-            kMerSortedArray.visit(new KMerSortedArray.KMerSortedArrayVisitor<SmallTaxTree.SmallTaxIdNode>() {
-                private boolean[] bits = new boolean[INITIAL_MAX_CHILDREN];
-
-                @Override
-                public void nextValue(KMerSortedArray<SmallTaxTree.SmallTaxIdNode> trie, long kmer, short index, long pos) {
-                    current[0] = pos;
-                    SmallTaxTree.SmallTaxIdNode parent = kMerSortedArray.getValueForIndex(index);
-                    if (parent != null) {
-                        int r = parent.getRankOrdinal();
-                        if ((r > 0 && ranksToRefine[r]) || taxidsToRefine.contains(parent.getTaxId())) {
-                            SmallTaxTree.SmallTaxIdNode[] children = parent.getSubNodes();
-                            if (children != null && children.length > 0) {
-                                BitSetsForNodes bitSetsForNodes = parentToBitSets.get(parent);
-                                if (bitSetsForNodes != null) {
-                                    int n;
-                                    for (n = bits.length; n < children.length; n *= 2) {
-                                    }
-                                    if (n > bits.length) {
-                                        bits = new boolean[n];
-                                    }
-                                    for (int i = 0; i < children.length; i++) {
-                                        bits[i] = checkSubtree(children[i], kmer);
-                                    }
-                                    bits[children.length] = bloomFilter.containsLongShort(kmer, KMerIndexBloomGoal.OTHER_VALUE);
-                                    SmallTaxTree.SmallTaxIdNode node = bitSetsForNodes.getBestMatchingNode(bits);
-                                    if (node != null) {
-                                        orgkMerSortedArray.setIndexAtPosition(pos, node.getStoreIndex());
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                protected boolean checkSubtree(SmallTaxTree.SmallTaxIdNode node, long kmer) {
-                    if (bloomFilter.containsLongShort(kmer, node.storeIndex)) {
-                        return true;
-                    }
-                    if (node.getSubNodes() != null) {
-                        SmallTaxTree.SmallTaxIdNode[] children = node.getSubNodes();
-                        for (int i = 0; i < children.length; i++) {
-                            if (checkSubtree(children[i], kmer)) {
-                                return true;
-                            }
-                        }
-                    }
-                    return false;
-                }
-            });
         }
+    }
 
+    @Override
+    protected void afterKMerStoreWork() {
+        SmallTaxTree tree = storeGoal.get().getTaxTree();
         // Adjust the small tree at each parent node now:
         for (SmallTaxTree.SmallTaxIdNode key : parentToBitSets.keySet()) {
             SmallTaxTree.SmallTaxIdNode[] newSubnodes = new SmallTaxTree.SmallTaxIdNode[2];
@@ -172,12 +99,6 @@ public class UpdateStoreGoal extends ObjectGoal<Database, GSProject> implements 
         tree.reinitPositions();
 
         set(storeGoal.get());
-    }
-
-    protected ProgressBar createProgressBar(GSProgressUpdate update) {
-        return booleanConfigValue(GSConfigKey.PROGRESS_BAR) ?
-                GSProgressBarCreator.newGSProgressBar(getKey().getName(), update.max(), 1000, " kmers", update, getLogger(), true) :
-                null;
     }
 
     protected SmallTaxTree.SmallTaxIdNode createNode(DendrogramNode node, SmallTaxTree.SmallTaxIdNode[] orgSubnodes, BitSetsForNodes bitSets) {

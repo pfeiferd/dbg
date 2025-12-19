@@ -45,7 +45,7 @@ import org.metagene.genestrip.util.progressbar.GSProgressUpdate;
 import java.io.File;
 import java.util.*;
 
-public class KMerIntersectCountGoal extends ObjectGoal<KMerIntersectCountGoal.IntersectionsPerNode, GSProject> {
+public class KMerIntersectCountGoal extends KMerStoreWorkGoal<KMerIntersectCountGoal.IntersectionsPerNode> {
     public interface IntersectionsPerNode  {
         public Set<SmallTaxTree.SmallTaxIdNode> getParentNodes();
         public long getIntersectionCount(SmallTaxTree.SmallTaxIdNode parent, int child1, int child2);
@@ -57,115 +57,35 @@ public class KMerIntersectCountGoal extends ObjectGoal<KMerIntersectCountGoal.In
         public long getSubnodesKMerCount(SmallTaxTree.SmallTaxIdNode parent);
     }
 
-    private static int INITIAL_MAX_CHILDREN = 256;
-
-    public static GoalKey GOAL_KEY = new GoalKey() {
-        @Override
-        public String getName() {
-            return "intersectcount";
-        }
-    };
-
-    private final ObjectGoal<Database, GSProject> storeGoal;
-    private final ObjectGoal<XORKMerIndexBloomFilter, GSProject> bloomFilterGoal;
-    private final boolean [] ranksToRefine;
-    private final List<String> taxidsToRefine;
+    private IntersectionsPerNodeImpl intersectionsPerNode;
 
     @SafeVarargs
     public KMerIntersectCountGoal(GSProject project, ObjectGoal<Database, GSProject> storeGoal,
                               ObjectGoal<XORKMerIndexBloomFilter, GSProject> bloomFilterGoal,
                               Goal<GSProject>... deps) {
-        super(project, FTGoalKey.INTERSECT_COUNT, Goal.append(deps, storeGoal, bloomFilterGoal));
-        this.storeGoal = storeGoal;
-        this.bloomFilterGoal = bloomFilterGoal;
-        ranksToRefine = new boolean[Rank.values().length];
-        Collection<Rank> toRefine = (Collection<Rank>) configValue(FTConfigKey.REFINEMENT_RANKS);
-        for (Rank r : toRefine) {
-            ranksToRefine[r.ordinal()] = true;
-        }
-        taxidsToRefine = (List<String>) configValue(GSConfigKey.TAX_IDS);
+        super(project, FTGoalKey.INTERSECT_COUNT, storeGoal, bloomFilterGoal, deps);
     }
 
     @Override
-    protected void doMakeThis() {
-        KMerSortedArray<SmallTaxTree.SmallTaxIdNode> kMerSortedArray = storeGoal.get().convertKMerStore();
-        XORKMerIndexBloomFilter bloomFilter = bloomFilterGoal.get();
-
+    protected void beforeKMerStoreWork() {
         IntersectionsPerNodeImpl intersectionsPerNode = new IntersectionsPerNodeImpl();
+    }
 
-        long max = kMerSortedArray.getEntries();
-        long[] current = new long[1];
-        GSProgressUpdate update = new GSProgressUpdate() {
-            @Override
-            public long current() {
-                return current[0];
-            }
-
-            @Override
-            public long max() {
-                return max;
-            }
-        };
-        try (ProgressBar pb = createProgressBar(update)) {
-            kMerSortedArray.visit(new KMerSortedArray.KMerSortedArrayVisitor<SmallTaxTree.SmallTaxIdNode>() {
-                private boolean[] bits = new boolean[INITIAL_MAX_CHILDREN];
-
-                @Override
-                public void nextValue(KMerSortedArray<SmallTaxTree.SmallTaxIdNode> trie, long kmer, short index, long pos) {
-                    current[0] = pos;
-                    SmallTaxTree.SmallTaxIdNode parent = kMerSortedArray.getValueForIndex(index);
-                    if (parent != null) {
-                        int r = parent.getRankOrdinal();
-                        if ((r > 0 && ranksToRefine[r]) || taxidsToRefine.contains(parent.getTaxId())) {
-                            SmallTaxTree.SmallTaxIdNode[] children = parent.getSubNodes();
-                            if (children != null && children.length > 0) {
-                                int n;
-                                for (n = bits.length; n < children.length; n *= 2) {
-                                }
-                                if (n > bits.length) {
-                                    bits = new boolean[n];
-                                }
-                                int spread = 0;
-                                for (int i = 0; i < children.length; i++) {
-                                    bits[i] = checkSubtree(children[i], kmer);
-                                    if (bits[i]) {
-                                        spread++;
-                                    }
-                                }
-                                bits[children.length] = bloomFilter.containsLongShort(kmer, KMerIndexBloomGoal.OTHER_VALUE);
-                                if (bits[children.length]) {
-                                    spread++;
-                                }
-                                intersectionsPerNode.incKMerSpread(parent, spread);
-                                for (int i = 0; i <= children.length; i++) {
-                                    for (int j = i; j <= children.length; j++) {
-                                        if (bits[i] && bits[j]) {
-                                            intersectionsPerNode.incIntersectionCount(parent, i, j);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+    @Override
+    protected void inKMerStoreWork(SmallTaxTree.SmallTaxIdNode parent, long pos, boolean[] bits, int spread) {
+        SmallTaxTree.SmallTaxIdNode[] children = parent.getSubNodes();
+        intersectionsPerNode.incKMerSpread(parent, spread);
+        for (int i = 0; i <= children.length; i++) {
+            for (int j = i; j <= children.length; j++) {
+                if (bits[i] && bits[j]) {
+                    intersectionsPerNode.incIntersectionCount(parent, i, j);
                 }
-
-                protected boolean checkSubtree(SmallTaxTree.SmallTaxIdNode node, long kmer) {
-                    if (bloomFilter.containsLongShort(kmer, node.storeIndex)) {
-                        return true;
-                    }
-                    if (node.getSubNodes() != null) {
-                        SmallTaxTree.SmallTaxIdNode[] children = node.getSubNodes();
-                        for (int i = 0; i < children.length; i++) {
-                            if (checkSubtree(children[i], kmer)) {
-                                return true;
-                            }
-                        }
-                    }
-                    return false;
-                }
-            });
+            }
         }
+    }
 
+    @Override
+    protected void afterKMerStoreWork() {
         Object2LongMap<SmallTaxTree.SmallTaxIdNode> stats = kMerSortedArray.getNKmersPerTaxid();
         stats.forEach((s, aLong) -> {
             while (s != null) {
@@ -182,12 +102,6 @@ public class KMerIntersectCountGoal extends ObjectGoal<KMerIntersectCountGoal.In
         });
 
         set(intersectionsPerNode);
-    }
-
-    protected ProgressBar createProgressBar(GSProgressUpdate update) {
-        return booleanConfigValue(GSConfigKey.PROGRESS_BAR) ?
-                GSProgressBarCreator.newGSProgressBar(getKey().getName(), update.max(), 1000, " kmers", update, getLogger(), true) :
-                null;
     }
 
     public class IntersectionsPerNodeImpl implements IntersectionsPerNode {

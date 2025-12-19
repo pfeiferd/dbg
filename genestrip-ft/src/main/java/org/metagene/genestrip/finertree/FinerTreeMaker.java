@@ -77,5 +77,8 @@ public class FinerTreeMaker extends GSMaker {
 
         DengrogramLaTeXGoal laTeXGoal = new DengrogramLaTeXGoal(getProject(), storeGoal, dendrogramGoal);
         registerGoal(laTeXGoal);
+
+        UpdateStoreGoal updateStoreGoal = new UpdateStoreGoal(getProject(), storeGoal, dendrogramGoal, loadKMerIndexGoal);
+        registerGoal(updateStoreGoal);
     }
 }
