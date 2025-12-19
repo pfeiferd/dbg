@@ -38,8 +38,6 @@ import org.metagene.genestrip.tax.SmallTaxTree;
 import java.util.*;
 
 public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal.LogHeapInfo {
-    private static int INITIAL_MAX_CHILDREN = 256;
-
     private final ObjectGoal<Map<SmallTaxTree.SmallTaxIdNode, DendrogramNode>, GSProject> dendrogramGoal;
 
     private int idCounter;
@@ -55,18 +53,14 @@ public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal
 
     @Override
     protected void beforeKMerStoreWork() {
+        orgkMerSortedArray = storeGoal.get().getKmerStore();
         dendrograms = dendrogramGoal.get();
         parentToBitSets = new HashMap<>();
         for (SmallTaxTree.SmallTaxIdNode key : dendrograms.keySet()) {
             DendrogramNode root = dendrograms.get(key);
             if (root != null) {
                 if (root.getValueIndex() == -1) {
-                    SmallTaxTree.SmallTaxIdNode[] orgSubnodes = key.getSubNodes();
-                    BitSetsForNodes bitSets = new BitSetsForNodes(root.size() - 1, orgSubnodes.length);
-                    parentToBitSets.put(key, bitSets);
-                    createNode(root.getChild1(), orgSubnodes, bitSets);
-                    createNode(root.getChild2(), orgSubnodes, bitSets);
-                    bitSets.sort();
+                    parentToBitSets.put(key, new BitSetsForNodes(key.getSubNodes(), root));
                 } else {
                     // Nothing to do...
                 }
@@ -101,53 +95,37 @@ public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal
         set(storeGoal.get());
     }
 
-    protected SmallTaxTree.SmallTaxIdNode createNode(DendrogramNode node, SmallTaxTree.SmallTaxIdNode[] orgSubnodes, BitSetsForNodes bitSets) {
-        int valueIndex = node.getValueIndex();
-        if (valueIndex == -1 || valueIndex == orgSubnodes.length)  {
-            String taxId = "000" + idCounter++;
-            short index = orgkMerSortedArray.getAddValueIndex(taxId);
-            SmallTaxTree.SmallTaxIdNode newNode = new SmallTaxTree.SmallTaxIdNode(taxId, Rank.NO_RANK);
-            newNode.setStoreIndex(index);
-            if (node.getValueIndex() == -1) {
-                SmallTaxTree.SmallTaxIdNode[] newSubnodes = new SmallTaxTree.SmallTaxIdNode[2];
-                newNode.setSubNodes(newSubnodes);
-                int oldCounter1 = bitSets.currentIndex();
-                newSubnodes[0] = createNode(node.getChild1(), orgSubnodes, bitSets);
-                int oldCounter2 = bitSets.currentIndex();
-                newSubnodes[1] = createNode(node.getChild2(), orgSubnodes, bitSets);
-                return bitSets.initNextNode(newNode, oldCounter1, oldCounter2);
-            }
-            else {
-                // "OTHER" case
-                return bitSets.initNextNode(newNode, orgSubnodes.length);
-            }
-        } else {
-            return bitSets.initNextNode(orgSubnodes[valueIndex], valueIndex);
-        }
-    }
+    private class BitSetsForNodes {
+        private final SmallTaxTree.SmallTaxIdNode[] orgSubnodes;
 
-    private static class BitSetsForNodes {
         private final boolean[][] bitSets;
         private final SmallTaxTree.SmallTaxIdNode[] nodes;
         private int bitsetPosCounter;
 
-        public BitSetsForNodes(int nBitSets, int nNodes) {
-            this.bitSets = new boolean[nBitSets][];
-            this.nodes = new SmallTaxTree.SmallTaxIdNode[nNodes];
+        public BitSetsForNodes(SmallTaxTree.SmallTaxIdNode[] orgSubnodes, DendrogramNode root) {
+            this.orgSubnodes = orgSubnodes;
+            this.bitSets = new boolean[root.size() - 1 - orgSubnodes.length][];
+            this.nodes = new SmallTaxTree.SmallTaxIdNode[bitSets.length];
 
             for (int i = 0; i < bitSets.length; i++) {
-                bitSets[i] = new boolean[nNodes];
+                bitSets[i] = new boolean[orgSubnodes.length];
             }
             bitsetPosCounter = 0;
+            createNode(root.getChild1());
+            createNode(root.getChild2());
+            bitsetPosCounter = 0;
+            initBitSets(root.getChild1());
+            initBitSets(root.getChild2());
+            sort();
         }
 
         public void sort() {
             // Very basic max sort is sufficient -
-            // unfortunateld, standard library methods don't work for this case.
+            // unfortunately, standard library methods don't work for this case.
             for (int i = 0; i < bitSets.length; i++) {
                 int maxIndex = 0;
                 int minCard = cardinality(bitSets[i]);
-                for (int j = i + 1; i < bitSets.length; j++) {
+                for (int j = i + 1; j < bitSets.length; j++) {
                     int c = cardinality(bitSets[j]);
                     if (c < minCard) {
                         maxIndex = j;
@@ -173,34 +151,12 @@ public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal
             return cardinality;
         }
 
-        public int currentIndex() {
-            return bitsetPosCounter;
-        }
-
-        public SmallTaxTree.SmallTaxIdNode initNextNode(SmallTaxTree.SmallTaxIdNode node, int a, int b) {
-            nodes[bitsetPosCounter] = node;
-            boolean[] target = bitSets[bitsetPosCounter];
-            for (int i = 0; i < target.length; i++) {
-                target[i] = bitSets[a][i] || bitSets[b][i];
-            }
-            bitsetPosCounter++;
-            return node;
-        }
-
-        public SmallTaxTree.SmallTaxIdNode initNextNode(SmallTaxTree.SmallTaxIdNode node, int bit) {
-            nodes[bitsetPosCounter] = node;
-            bitSets[bitsetPosCounter][bit] = true;
-            bitsetPosCounter++;
-            return node;
-        }
-
         public SmallTaxTree.SmallTaxIdNode getBestMatchingNode(boolean[] bits) {
             short newIndex = -1;
             for (int i = 0; i < bitSets.length; i++) {
                 if (contains(bitSets[i], bits)) {
                     return nodes[i];
                 }
-                ;
             }
             return null;
         }
@@ -212,6 +168,49 @@ public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal
                 }
             }
             return true;
+        }
+
+        protected SmallTaxTree.SmallTaxIdNode createNode(DendrogramNode node) {
+            int valueIndex = node.getValueIndex();
+            if (valueIndex == -1 || valueIndex == orgSubnodes.length) {
+                String taxId = "000" + idCounter++;
+                short index = orgkMerSortedArray.getAddValueIndex(taxId);
+                SmallTaxTree.SmallTaxIdNode newNode = new SmallTaxTree.SmallTaxIdNode(taxId, Rank.NO_RANK);
+                newNode.setStoreIndex(index);
+                if (node.getValueIndex() == -1) {
+                    nodes[bitsetPosCounter++] = newNode;
+                    SmallTaxTree.SmallTaxIdNode[] newSubnodes = new SmallTaxTree.SmallTaxIdNode[2];
+                    newNode.setSubNodes(newSubnodes);
+                    newSubnodes[0] = createNode(node.getChild1());
+                    newSubnodes[1] = createNode(node.getChild2());
+                } else {
+                }
+                return newNode;
+            } else {
+                return orgSubnodes[valueIndex];
+            }
+        }
+
+        protected int initBitSets(DendrogramNode node) {
+            int valueIndex = node.getValueIndex();
+            if (valueIndex == -1 || valueIndex == orgSubnodes.length) {
+                if (node.getValueIndex() == -1) {
+                    int res = bitsetPosCounter;
+                    bitsetPosCounter++;
+                    int a = initBitSets(node.getChild1());
+                    int b = initBitSets(node.getChild2());
+                    boolean[] target = bitSets[bitsetPosCounter];
+                    for (int i = 0; i < target.length; i++) {
+                        target[i] = ((a < 0) ? (i == -a + 1) : bitSets[a][i]) || ((b < 0) ? (i == -b + 1) : bitSets[b][i]);
+                    }
+                    return res;
+                } else {
+                    // "OTHER" case
+                    return -orgSubnodes.length - 1;
+                }
+            } else {
+                return -valueIndex - 1;
+            }
         }
     }
 }

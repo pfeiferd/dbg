@@ -68,7 +68,7 @@ public class KMerIntersectCountGoal extends KMerStoreWorkGoal<KMerIntersectCount
 
     @Override
     protected void beforeKMerStoreWork() {
-        IntersectionsPerNodeImpl intersectionsPerNode = new IntersectionsPerNodeImpl();
+        intersectionsPerNode = new IntersectionsPerNodeImpl();
     }
 
     @Override
