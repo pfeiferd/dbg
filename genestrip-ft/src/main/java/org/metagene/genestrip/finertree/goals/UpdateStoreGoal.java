@@ -81,7 +81,8 @@ public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal
 
     @Override
     protected void afterKMerStoreWork() {
-        SmallTaxTree tree = storeGoal.get().getTaxTree();
+        Database db = storeGoal.get();
+        SmallTaxTree tree = db.getTaxTree();
         // Adjust the small tree at each parent node now:
         // (It must be done later, cause the original tree is still needed in inKMerStoreWork().)
         for (SmallTaxTree.SmallTaxIdNode key : parentToBitSets.keySet()) {
@@ -89,11 +90,12 @@ public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal
             BitSetsForNodes bitSetsForNodes = parentToBitSets.get(key);
             newSubnodes[0] = bitSetsForNodes.child1;
             newSubnodes[1] = bitSetsForNodes.child2;
-            tree.setSubNodes(key.getName(), newSubnodes);
+            tree.setSubNodes(key.getTaxId(), newSubnodes);
         }
         tree.reinitPositions();
+        orgkMerSortedArray.fix();
 
-        set(storeGoal.get());
+        set(db);
     }
 
     private class BitSetsForNodes {
@@ -178,7 +180,7 @@ public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal
             if (valueIndex == -1 || valueIndex == orgSubnodes.length) {
                 String taxId = "000" + idCounter++;
                 short index = orgkMerSortedArray.getAddValueIndex(taxId);
-                SmallTaxTree.SmallTaxIdNode newNode = new SmallTaxTree.SmallTaxIdNode(taxId, Rank.NO_RANK);
+                SmallTaxTree.SmallTaxIdNode newNode = new SmallTaxTree.SmallTaxIdNode(taxId, taxId, Rank.NO_RANK);
                 newNode.setStoreIndex(index);
                 if (node.getValueIndex() == -1) {
                     nodes[bitsetPosCounter++] = newNode;
