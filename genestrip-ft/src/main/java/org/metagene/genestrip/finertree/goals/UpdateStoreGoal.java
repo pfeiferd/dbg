@@ -83,11 +83,12 @@ public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal
     protected void afterKMerStoreWork() {
         SmallTaxTree tree = storeGoal.get().getTaxTree();
         // Adjust the small tree at each parent node now:
+        // (It must be done later, cause the original tree is still needed in inKMerStoreWork().)
         for (SmallTaxTree.SmallTaxIdNode key : parentToBitSets.keySet()) {
             SmallTaxTree.SmallTaxIdNode[] newSubnodes = new SmallTaxTree.SmallTaxIdNode[2];
-            SmallTaxTree.SmallTaxIdNode[] nodes = parentToBitSets.get(key).nodes;
-            newSubnodes[0] = nodes[nodes.length - 1];
-            newSubnodes[1] = nodes[nodes.length - 2];
+            BitSetsForNodes bitSetsForNodes = parentToBitSets.get(key);
+            newSubnodes[0] = bitSetsForNodes.child1;
+            newSubnodes[1] = bitSetsForNodes.child2;
             tree.setSubNodes(key.getName(), newSubnodes);
         }
         tree.reinitPositions();
@@ -101,6 +102,8 @@ public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal
         private final boolean[][] bitSets;
         private final SmallTaxTree.SmallTaxIdNode[] nodes;
         private int bitsetPosCounter;
+        private final SmallTaxTree.SmallTaxIdNode child1;
+        private final SmallTaxTree.SmallTaxIdNode child2;
 
         public BitSetsForNodes(SmallTaxTree.SmallTaxIdNode[] orgSubnodes, DendrogramNode root) {
             this.orgSubnodes = orgSubnodes;
@@ -111,8 +114,8 @@ public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal
                 bitSets[i] = new boolean[orgSubnodes.length];
             }
             bitsetPosCounter = 0;
-            createNode(root.getChild1());
-            createNode(root.getChild2());
+            child1 = createNode(root.getChild1());
+            child2 = createNode(root.getChild2());
             bitsetPosCounter = 0;
             initBitSets(root.getChild1());
             initBitSets(root.getChild2());
@@ -123,27 +126,27 @@ public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal
             // Very basic max sort is sufficient -
             // unfortunately, standard library methods don't work for this case.
             for (int i = 0; i < bitSets.length; i++) {
-                int maxIndex = 0;
+                int minIndex = i;
                 int minCard = cardinality(bitSets[i]);
                 for (int j = i + 1; j < bitSets.length; j++) {
                     int c = cardinality(bitSets[j]);
                     if (c < minCard) {
-                        maxIndex = j;
+                        minIndex = j;
                         minCard = c;
                     }
                 }
                 boolean[] h = bitSets[i];
-                bitSets[i] = bitSets[maxIndex];
-                bitSets[maxIndex] = h;
+                bitSets[i] = bitSets[minIndex];
+                bitSets[minIndex] = h;
                 SmallTaxTree.SmallTaxIdNode hn = nodes[i];
-                nodes[i] = nodes[maxIndex];
-                nodes[maxIndex] = hn;
+                nodes[i] = nodes[minIndex];
+                nodes[minIndex] = hn;
             }
         }
 
         private int cardinality(boolean[] bits) {
             int cardinality = 0;
-            for (int i = 0; i < bitSets.length; i++) {
+            for (int i = 0; i < bits.length; i++) {
                 if (bits[i]) {
                     cardinality++;
                 }
@@ -193,21 +196,15 @@ public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal
 
         protected int initBitSets(DendrogramNode node) {
             int valueIndex = node.getValueIndex();
-            if (valueIndex == -1 || valueIndex == orgSubnodes.length) {
-                if (node.getValueIndex() == -1) {
-                    int res = bitsetPosCounter;
-                    bitsetPosCounter++;
-                    int a = initBitSets(node.getChild1());
-                    int b = initBitSets(node.getChild2());
-                    boolean[] target = bitSets[bitsetPosCounter];
-                    for (int i = 0; i < target.length; i++) {
-                        target[i] = ((a < 0) ? (i == -a + 1) : bitSets[a][i]) || ((b < 0) ? (i == -b + 1) : bitSets[b][i]);
-                    }
-                    return res;
-                } else {
-                    // "OTHER" case
-                    return -orgSubnodes.length - 1;
+            if (node.getValueIndex() == -1) {
+                int res = bitsetPosCounter++;
+                int a = initBitSets(node.getChild1());
+                int b = initBitSets(node.getChild2());
+                boolean[] target = bitSets[res];
+                for (int i = 0; i < target.length; i++) {
+                    target[i] = ((a < 0) ? (i == -a + 1) : bitSets[a][i]) || ((b < 0) ? (i == -b + 1) : bitSets[b][i]);
                 }
+                return res;
             } else {
                 return -valueIndex - 1;
             }
