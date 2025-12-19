@@ -24,7 +24,6 @@
  */
 package org.metagene.genestrip.finertree;
 
-import org.metagene.genestrip.GSConfigKey;
 import org.metagene.genestrip.GSGoalKey;
 import org.metagene.genestrip.GSMaker;
 import org.metagene.genestrip.GSProject;
@@ -33,7 +32,6 @@ import org.metagene.genestrip.finertree.goals.*;
 import org.metagene.genestrip.goals.LoadDBGoal;
 import org.metagene.genestrip.goals.refseq.RefSeqFnaFilesDownloadGoal;
 import org.metagene.genestrip.goals.refseq.StoreDBGoal;
-import org.metagene.genestrip.make.Goal;
 import org.metagene.genestrip.make.ObjectGoal;
 import org.metagene.genestrip.refseq.AccessionMap;
 import org.metagene.genestrip.refseq.RefSeqCategory;
@@ -92,7 +90,7 @@ public class FinerTreeMaker extends GSMaker {
         LoadDBGoal loadDBGoal = new LoadDBGoal(getProject(), FTGoalKey.LOAD_FTDB, updateStoreGoal, storeUpdatedDBGoal);
         registerGoal(loadDBGoal);
 
-        FTInfoGoal infoGoal = new FTInfoGoal(getProject(), loadDBGoal);
+        FTDBInfoGoal infoGoal = new FTDBInfoGoal(getProject(), loadDBGoal);
         registerGoal(infoGoal);
     }
 }
