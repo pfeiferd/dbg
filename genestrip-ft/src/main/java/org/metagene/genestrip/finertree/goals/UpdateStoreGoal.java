@@ -202,7 +202,7 @@ public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal
                 int b = initBitSets(node.getChild2());
                 boolean[] target = bitSets[res];
                 for (int i = 0; i < target.length; i++) {
-                    target[i] = ((a < 0) ? (i == -a + 1) : bitSets[a][i]) || ((b < 0) ? (i == -b + 1) : bitSets[b][i]);
+                    target[i] = ((a < 0) ? (i == -a - 1) : bitSets[a][i]) || ((b < 0) ? (i == -b - 1) : bitSets[b][i]);
                 }
                 return res;
             } else {

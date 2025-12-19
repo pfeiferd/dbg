@@ -24,6 +24,7 @@
  */
 package org.metagene.genestrip.finertree;
 
+import org.metagene.genestrip.goals.MDDescription;
 import org.metagene.genestrip.make.GoalKey;
 
 public enum FTGoalKey implements GoalKey {
@@ -34,7 +35,8 @@ public enum FTGoalKey implements GoalKey {
     INTERSECT_CSV("intersectcsv", true),
     LOAD_KMER_INDEX("loadkmerindex"),
     STORE_KMER_INDEX("storekmerindex"),
-    UPDATE_STORE_GOAL("updatestore", true);
+    UPDATE_STORE_GOAL("updatestore", true),
+    FTDB("ftdb");
 
     private final boolean forUser;
     private final String name;
