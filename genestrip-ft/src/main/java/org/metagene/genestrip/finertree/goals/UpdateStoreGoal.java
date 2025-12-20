@@ -60,7 +60,7 @@ public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal
             DendrogramNode root = dendrograms.get(key);
             if (root != null) {
                 if (root.getValueIndex() == -1) {
-                    parentToBitSets.put(key, new BitSetsForNodes(key.getSubNodes(), root));
+                    parentToBitSets.put(key, new BitSetsForNodes(key, root));
                 } else {
                     // Nothing to do...
                 }
@@ -107,8 +107,8 @@ public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal
         private final SmallTaxTree.SmallTaxIdNode child1;
         private final SmallTaxTree.SmallTaxIdNode child2;
 
-        public BitSetsForNodes(SmallTaxTree.SmallTaxIdNode[] orgSubnodes, DendrogramNode root) {
-            this.orgSubnodes = orgSubnodes;
+        public BitSetsForNodes(SmallTaxTree.SmallTaxIdNode parent, DendrogramNode root) {
+            this.orgSubnodes = parent.getSubNodes();
             this.bitSets = new boolean[root.size() - 1 - orgSubnodes.length][];
             this.nodes = new SmallTaxTree.SmallTaxIdNode[bitSets.length];
 
@@ -116,8 +116,8 @@ public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal
                 bitSets[i] = new boolean[orgSubnodes.length];
             }
             bitsetPosCounter = 0;
-            child1 = createNode(root.getChild1());
-            child2 = createNode(root.getChild2());
+            child1 = createNode(parent, root.getChild1());
+            child2 = createNode(parent, root.getChild2());
             bitsetPosCounter = 0;
             initBitSets(root.getChild1());
             initBitSets(root.getChild2());
@@ -175,7 +175,7 @@ public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal
             return true;
         }
 
-        protected SmallTaxTree.SmallTaxIdNode createNode(DendrogramNode node) {
+        protected SmallTaxTree.SmallTaxIdNode createNode(SmallTaxTree.SmallTaxIdNode parent, DendrogramNode node) {
             int valueIndex = node.getValueIndex();
             if (valueIndex == -1 || valueIndex == orgSubnodes.length) {
                 String taxId = "000" + idCounter++;
@@ -185,9 +185,9 @@ public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal
                 if (node.getValueIndex() == -1) {
                     nodes[bitsetPosCounter++] = newNode;
                     SmallTaxTree.SmallTaxIdNode[] newSubnodes = new SmallTaxTree.SmallTaxIdNode[2];
+                    newSubnodes[0] = createNode(newNode, node.getChild1());
+                    newSubnodes[1] = createNode(newNode, node.getChild2());
                     newNode.setSubNodes(newSubnodes);
-                    newSubnodes[0] = createNode(node.getChild1());
-                    newSubnodes[1] = createNode(node.getChild2());
                 } else {
                 }
                 return newNode;

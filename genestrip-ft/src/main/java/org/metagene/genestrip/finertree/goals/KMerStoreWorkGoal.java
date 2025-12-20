@@ -152,7 +152,7 @@ public abstract class KMerStoreWorkGoal<T> extends ObjectGoal<T, GSProject> {
 
     protected ProgressBar createProgressBar(GSProgressUpdate update) {
         return booleanConfigValue(GSConfigKey.PROGRESS_BAR) ?
-                GSProgressBarCreator.newGSProgressBar(getKey().getName(), update.max(), 1000, " kmers", update, getLogger(), true) :
+                GSProgressBarCreator.newGSProgressBar(getKey().getName(), update.max(), 1000, " kmers", update, null, true) :
                 null;
     }
 }
