@@ -199,21 +199,31 @@ public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal
         }
 
         protected void buildName(DendrogramNode node, StringBuilder name) {
+            int depth = buildFirstLastName(node, true, name);
+            if (depth == 1) {
+                name.append('/');
+            }
+            else if (depth > 1) {
+                name.append("/.../");
+            }
+            if (depth > 0) {
+                buildFirstLastName(node, false, name);
+            }
+        }
+
+        protected int buildFirstLastName(DendrogramNode node, boolean first, StringBuilder name) {
             int index = node.getValueIndex();
             if (index != -1) {
-                if (name.length() > 0) {
-                    name.append('/');
-                }
                 if (index < orgSubnodes.length) {
                     name.append(orgSubnodes[index].getTaxId());
                 }
                 else {
                     name.append("OTHER");
                 }
+                return 0;
             }
             else {
-                buildName(node.getChild1(), name);
-                buildName(node.getChild2(), name);
+                return buildFirstLastName(first ? node.getChild1() : node.getChild2(), first, name) + 1;
             }
         }
 
