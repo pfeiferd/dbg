@@ -168,7 +168,7 @@ public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal
 
         private boolean contains(boolean[] container, boolean[] contained) {
             for (int i = 0; i < container.length; i++) {
-                if (container[i] && !contained[i]) {
+                if (contained[i] && !container[i]) {
                     return false;
                 }
             }
@@ -180,7 +180,9 @@ public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal
             if (valueIndex == -1 || valueIndex == orgSubnodes.length) {
                 String taxId = "000" + idCounter++;
                 short index = orgkMerSortedArray.getAddValueIndex(taxId);
-                SmallTaxTree.SmallTaxIdNode newNode = new SmallTaxTree.SmallTaxIdNode(taxId, taxId, Rank.NO_RANK);
+                StringBuilder name = new StringBuilder();
+                buildName(node, name);
+                SmallTaxTree.SmallTaxIdNode newNode = new SmallTaxTree.SmallTaxIdNode(taxId, name.toString(), Rank.NO_RANK);
                 newNode.setStoreIndex(index);
                 if (node.getValueIndex() == -1) {
                     nodes[bitsetPosCounter++] = newNode;
@@ -193,6 +195,25 @@ public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal
                 return newNode;
             } else {
                 return orgSubnodes[valueIndex];
+            }
+        }
+
+        protected void buildName(DendrogramNode node, StringBuilder name) {
+            int index = node.getValueIndex();
+            if (index != -1) {
+                if (name.length() > 0) {
+                    name.append('/');
+                }
+                if (index < orgSubnodes.length) {
+                    name.append(orgSubnodes[index].getTaxId());
+                }
+                else {
+                    name.append("OTHER");
+                }
+            }
+            else {
+                buildName(node.getChild1(), name);
+                buildName(node.getChild2(), name);
             }
         }
 
