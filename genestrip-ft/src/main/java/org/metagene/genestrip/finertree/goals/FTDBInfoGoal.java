@@ -15,7 +15,7 @@
  * functionality of the Software. Any license notice or attribution required by the License 
  * must also include this Commons Clause License Condition notice.
  * 
- * Software: genestrip
+ * Software: genestrip-ft
  * 
  * License: Apache 2.0
  * 
