@@ -54,7 +54,9 @@ public enum FTConfigKey implements ConfigKey {
     WITH_CHILD_COUNTS("withChildCounts", new ConfigParamInfo.BooleanConfigParamInfo(false), FTGoalKey.INTERSECT_COUNT),
     TURN_LATEX("turnLatex", new ConfigParamInfo.BooleanConfigParamInfo(true), FTGoalKey.DENDRO_LATEX),
     X_FACTOR_LATEX("xFactorLatex",new ConfigParamInfo.DoubleConfigParamInfo(0,Double.MAX_VALUE, 1), FTGoalKey.DENDRO_LATEX),
-    Y_FACTOR_LATEX("yFactorLatex", new ConfigParamInfo.DoubleConfigParamInfo(0,Double.MAX_VALUE, 8), FTGoalKey.DENDRO_LATEX);
+    Y_FACTOR_LATEX("yFactorLatex", new ConfigParamInfo.DoubleConfigParamInfo(0,Double.MAX_VALUE, 8), FTGoalKey.DENDRO_LATEX),
+    FT_BLOOM_FILTER_FPP("ftBloomFilterFpp", new ConfigParamInfo.DoubleConfigParamInfo(0, 1, 0.001d), true, FTGoalKey.KMER_INDEX_BLOOM);
+
 
     private final String name;
     private final ConfigParamInfo<?> param;

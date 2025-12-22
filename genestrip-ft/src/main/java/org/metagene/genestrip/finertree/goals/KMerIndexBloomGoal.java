@@ -130,7 +130,7 @@ public class KMerIndexBloomGoal extends FastaReaderGoal<XORKMerIndexBloomFilter>
             if (getLogger().isInfoEnabled()) {
                 getLogger().info("Maximum expected filter entries: " + counter[0]);
             }
-            filter = new XORKMerIndexBloomFilter(intConfigValue(GSConfigKey.KMER_SIZE), doubleConfigValue(GSConfigKey.TEMP_BLOOM_FILTER_FPP));
+            filter = new XORKMerIndexBloomFilter(intConfigValue(GSConfigKey.KMER_SIZE), doubleConfigValue(FTConfigKey.FT_BLOOM_FILTER_FPP));
             long bitSize = filter.ensureExpectedSize(counter[0], false);
             if (getLogger().isInfoEnabled()) {
                 getLogger().info("Filter size in MB: " + (bitSize / 8 / 1024 / 1024));
