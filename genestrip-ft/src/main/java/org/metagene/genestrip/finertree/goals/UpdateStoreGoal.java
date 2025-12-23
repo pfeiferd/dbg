@@ -47,7 +47,7 @@ public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal
 
     @SafeVarargs
     public UpdateStoreGoal(GSProject project, ObjectGoal<Database, GSProject> storeGoal, ObjectGoal<Map<SmallTaxTree.SmallTaxIdNode, DendrogramNode>, GSProject> dendrogramGoal, ObjectGoal<XORKMerIndexBloomFilter, GSProject> bloomFilterGoal, Goal<GSProject>... deps) {
-        super(project, FTGoalKey.UPDATE_STORE_GOAL, storeGoal, bloomFilterGoal, deps);
+        super(project, FTGoalKey.UPDATE_STORE_GOAL, storeGoal, bloomFilterGoal, append(deps, dendrogramGoal));
         this.dendrogramGoal = dendrogramGoal;
     }
 
