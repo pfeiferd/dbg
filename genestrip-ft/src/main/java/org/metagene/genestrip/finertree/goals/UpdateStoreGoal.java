@@ -53,7 +53,11 @@ public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal
 
     @Override
     protected void beforeKMerStoreWork() {
-        orgkMerSortedArray = storeGoal.get().getKmerStore();
+        // We are going to change the database, so that the original store goal's
+        // content becomes invalid:
+        cleanStoreGoal();
+
+        orgkMerSortedArray = database.getKmerStore();
         dendrograms = dendrogramGoal.get();
         parentToBitSets = new HashMap<>();
         for (SmallTaxTree.SmallTaxIdNode key : dendrograms.keySet()) {
@@ -81,8 +85,7 @@ public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal
 
     @Override
     protected void afterKMerStoreWork() {
-        Database db = storeGoal.get();
-        SmallTaxTree tree = db.getTaxTree();
+        SmallTaxTree tree = database.getTaxTree();
         // Adjust the small tree at each parent node now:
         // (It must be done later, cause the original tree is still needed in inKMerStoreWork().)
         for (SmallTaxTree.SmallTaxIdNode key : parentToBitSets.keySet()) {
@@ -95,7 +98,7 @@ public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal
         tree.reinitPositions();
         orgkMerSortedArray.fix();
 
-        set(db);
+        set(database);
     }
 
     private class BitSetsForNodes {

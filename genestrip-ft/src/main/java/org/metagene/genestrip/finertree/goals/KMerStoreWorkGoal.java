@@ -46,10 +46,11 @@ import java.util.List;
 public abstract class KMerStoreWorkGoal<T> extends ObjectGoal<T, GSProject> {
     private static int INITIAL_MAX_CHILDREN = 256;
 
-    protected final ObjectGoal<Database, GSProject> storeGoal;
+    private final ObjectGoal<Database, GSProject> storeGoal;
     protected final ObjectGoal<XORKMerIndexBloomFilter, GSProject> bloomFilterGoal;
     protected final boolean [] ranksToRefine;
     protected final List<String> taxidsToRefine;
+    protected Database database;
     protected KMerSortedArray<SmallTaxTree.SmallTaxIdNode> kMerSortedArray;
     protected XORKMerIndexBloomFilter bloomFilter;
 
@@ -68,9 +69,14 @@ public abstract class KMerStoreWorkGoal<T> extends ObjectGoal<T, GSProject> {
         taxidsToRefine = (List<String>) configValue(GSConfigKey.TAX_IDS);
     }
 
+    protected void cleanStoreGoal() {
+        storeGoal.cleanThis();
+    }
+
     @Override
     protected void doMakeThis() {
-        kMerSortedArray = storeGoal.get().convertKMerStore();
+        database = storeGoal.get();
+        kMerSortedArray = database.convertKMerStore();
         bloomFilter = bloomFilterGoal.get();
 
         beforeKMerStoreWork();

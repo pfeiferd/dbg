@@ -68,6 +68,9 @@ public class GenDocFiles {
 			//ps.println("edge [fontname=\"Helvetica,Arial,sans-serif\"]");
 			Collection<Goal<GSProject>> goals = maker.getGoals();
 			for (Goal<GSProject> goal : goals) {
+				if (!isRelevantGoal(goal, goals)) {
+					continue;
+				}
 				if (goal.getKey().equals(GSGoalKey.SETUP)) {
 					continue;
 				}
@@ -86,9 +89,7 @@ public class GenDocFiles {
 				ps.print("\"");
 				GoalKey key = goal.getKey();
 				if (key instanceof GSGoalKey) {
-					if (((GSGoalKey) key).isForUser()) {
-						ps.print(" style=\"bold\"");
-					}
+					ps.print(" style=\"rounded, dashed\"");
 				}
 				else if (key instanceof FTGoalKey) {
 					if (((FTGoalKey) key).isForUser()) {
@@ -99,6 +100,12 @@ public class GenDocFiles {
 			}
 
 			for (Goal<GSProject> goal : goals) {
+				if (!isRelevantGoal(goal, goals)) {
+					continue;
+				}
+				if (goal.getKey() instanceof GSGoalKey) {
+					continue;
+				}
 				if (goal.getKey().equals(GSGoalKey.SETUP)) {
 					continue;
 				}
@@ -118,6 +125,27 @@ public class GenDocFiles {
 			ps.println("}");
 		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
+		}
+	}
+
+	private boolean isRelevantGoal(Goal goal, Collection<Goal<GSProject>> goals) {
+		if (goal.getKey() instanceof FTGoalKey) {
+			return true;
+		}
+		else if (goal.getKey() instanceof GSGoalKey) {
+			for (Goal<GSProject> g : goals) {
+				if (g.getKey() instanceof FTGoalKey) {
+					for (Goal<GSProject> g2 : g.getDependencies()) {
+						if (g2 == goal) {
+							return true;
+						}
+					}
+				}
+			}
+			return false;
+		}
+		else {
+			return true;
 		}
 	}
 
