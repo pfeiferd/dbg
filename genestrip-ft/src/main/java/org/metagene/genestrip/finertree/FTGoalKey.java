@@ -27,6 +27,9 @@ package org.metagene.genestrip.finertree;
 import org.metagene.genestrip.goals.MDDescription;
 import org.metagene.genestrip.make.GoalKey;
 
+import java.io.PrintStream;
+import java.lang.annotation.Annotation;
+
 public enum FTGoalKey implements GoalKey {
     DENDROGRAM("dendrogram"),
     DENDRO_LATEX("dendrolatex", true),
@@ -58,5 +61,51 @@ public enum FTGoalKey implements GoalKey {
 
     public String getName() {
         return name;
+    }
+
+    public static void printGoalInfo(PrintStream ps) {
+        ps.print('|');
+        ps.print("Name");
+        ps.print('|');
+        ps.print("User Goal");
+        ps.print('|');
+        ps.print("Description");
+        ps.print('|');
+        ps.println();
+
+        ps.print('|');
+        ps.print('-');
+        ps.print('|');
+        ps.print('-');
+        ps.print('|');
+        ps.print('-');
+        ps.print('|');
+        ps.println();
+
+        for (FTGoalKey goalKey : FTGoalKey.values()) {
+            ps.print('|');
+            ps.print('`');
+            ps.print(goalKey.getName());
+            ps.print('`');
+            ps.print('|');
+            ps.print(goalKey.isForUser() ? "X" : "");
+            ps.print('|');
+            Annotation[] annotations;
+            try {
+                annotations = FTGoalKey.class.getField(goalKey.name()).getAnnotations();
+            } catch (NoSuchFieldException e) {
+                throw new RuntimeException(e);
+            } catch (SecurityException e) {
+                throw new RuntimeException(e);
+            }
+            for (Annotation annotation : annotations) {
+                if (annotation instanceof MDDescription) {
+                    ps.print(((MDDescription) annotation).value());
+                    break;
+                }
+            }
+            ps.print('|');
+            ps.println();
+        }
     }
 }

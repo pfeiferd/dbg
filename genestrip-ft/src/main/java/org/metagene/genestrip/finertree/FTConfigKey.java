@@ -24,13 +24,15 @@
  */
 package org.metagene.genestrip.finertree;
 
-import org.metagene.genestrip.GSGoalKey;
 import org.metagene.genestrip.finertree.cluster.SimpleAggloClustering;
+import org.metagene.genestrip.goals.MDDescription;
 import org.metagene.genestrip.make.ConfigKey;
 import org.metagene.genestrip.make.ConfigParamInfo;
 import org.metagene.genestrip.make.GoalKey;
 import org.metagene.genestrip.tax.Rank;
 
+import java.io.PrintStream;
+import java.lang.annotation.Annotation;
 import java.util.*;
 
 public enum FTConfigKey implements ConfigKey {
@@ -137,6 +139,87 @@ public enum FTConfigKey implements ConfigKey {
         @Override
         public String getTypeDescriptor() {
             return "nominal";
+        }
+    }
+
+    public static void printMDConfigParamInfo(PrintStream ps, GoalKey filterGoalKey) {
+        ps.print('|');
+        ps.print("Name");
+        ps.print('|');
+        ps.print("Type");
+        ps.print('|');
+        ps.print("Value Range");
+        ps.print('|');
+        ps.print("Default");
+        ps.print('|');
+        ps.print("Description");
+        ps.print('|');
+        ps.print("For Goals");
+        ps.print('|');
+        ps.println();
+
+        ps.print('|');
+        ps.print('-');
+        ps.print('|');
+        ps.print('-');
+        ps.print('|');
+        ps.print('-');
+        ps.print('|');
+        ps.print('-');
+        ps.print('|');
+        ps.print('-');
+        ps.print('|');
+        ps.print('-');
+        ps.print('|');
+        ps.println();
+
+        for (FTConfigKey configKey : FTConfigKey.values()) {
+            if (!configKey.isInternal() && configKey.isForGoal(filterGoalKey)) {
+                ps.print('|');
+                ps.print('`');
+                ps.print(configKey.getName());
+                ps.print('`');
+                ps.print('|');
+                ps.print(configKey.getInfo().getTypeDescriptor());
+                ps.print('|');
+                ps.print(configKey.getInfo().getMDRangeDescriptor());
+                ps.print('|');
+                ps.print('`');
+                ps.print(configKey.getInfo().getMDDefaultValue());
+                ps.print('`');
+                ps.print('|');
+                Annotation[] annotations;
+                try {
+                    annotations = FTConfigKey.class.getField(configKey.name()).getAnnotations();
+                } catch (NoSuchFieldException e) {
+                    throw new RuntimeException(e);
+                } catch (SecurityException e) {
+                    throw new RuntimeException(e);
+                }
+                for (Annotation annotation : annotations) {
+                    if (annotation instanceof MDDescription) {
+                        ps.print(((MDDescription) annotation).value());
+                        break;
+                    }
+                }
+                ps.print('|');
+                if (configKey.forGoals.length == 0) {
+                    ps.print("all");
+                } else {
+                    boolean first = true;
+                    for (GoalKey key : configKey.forGoals) {
+                        if (!first) {
+                            ps.print(", ");
+                        }
+                        first = false;
+                        ps.print('`');
+                        ps.print(key.getName());
+                        ps.print('`');
+                    }
+                }
+                ps.print('|');
+                ps.println();
+            }
         }
     }
 }
