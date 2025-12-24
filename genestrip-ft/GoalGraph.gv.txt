@@ -1,0 +1,46 @@
+digraph regexp {
+rankdir="BT"
+fontname="Helvetica,Arial,sans-serif"
+node [fontname="Helvetica,Arial,sans-serif", style=rounded, shape=box]
+taxtree [label="o:taxtree" style="rounded, dashed"];
+taxnodes [label="o:taxnodes" style="rounded, dashed"];
+categories [label="o:categories" style="rounded, dashed"];
+refseqfna [label="d:refseqfna" style="rounded, dashed"];
+accmap [label="o:accmap" style="rounded, dashed"];
+addfastas [label="o:addfastas" style="rounded, dashed"];
+loaddb [label="o:loaddb" style="rounded, dashed"];
+kmerindexbloom [label="o:kmerindexbloom"];
+storekmerindex [label="f:storekmerindex"];
+loadkmerindex [label="o:loadkmerindex"];
+intersectcount [label="o:intersectcount"];
+intersectcsv [label="f:intersectcsv" style="bold"];
+dendrogram [label="o:dendrogram"];
+dendrolatex [label="f:dendrolatex" style="bold"];
+updatestore [label="o:updatestore"];
+ftdb [label="f:ftdb" style="bold"];
+loadftdb [label="o:loadftdb"];
+ftdbinfo [label="f:ftdbinfo" style="bold"];
+kmerindexbloom -> taxtree [style=dotted];
+kmerindexbloom -> accmap [style=dotted];
+kmerindexbloom -> loaddb [style=dotted];
+kmerindexbloom -> categories [style=dotted];
+kmerindexbloom -> taxnodes [style=dotted];
+kmerindexbloom -> refseqfna;
+kmerindexbloom -> addfastas [style=dotted];
+storekmerindex -> kmerindexbloom [style=dotted];
+loadkmerindex -> kmerindexbloom [style=dotted];
+loadkmerindex -> storekmerindex;
+intersectcount -> loaddb [style=dotted];
+intersectcount -> loadkmerindex [style=dotted];
+intersectcsv -> intersectcount [style=dotted];
+dendrogram -> intersectcount [style=dotted];
+dendrolatex -> loaddb [style=dotted];
+dendrolatex -> dendrogram [style=dotted];
+updatestore -> dendrogram [style=dotted];
+updatestore -> loaddb [style=dotted];
+updatestore -> loadkmerindex [style=dotted];
+ftdb -> updatestore [style=dotted];
+loadftdb -> updatestore [style=dotted];
+loadftdb -> ftdb;
+ftdbinfo -> loadftdb [style=dotted];
+}
