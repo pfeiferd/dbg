@@ -182,7 +182,7 @@ public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal
             int valueIndex = node.getValueIndex();
             if (valueIndex == -1 || valueIndex == orgSubnodes.length) {
                 String taxId = "000" + idCounter++;
-                short index = orgkMerSortedArray.getAddValueIndex(taxId);
+                int index = orgkMerSortedArray.getAddValueIndex(taxId);
                 StringBuilder name = new StringBuilder();
                 buildName(node, name);
                 SmallTaxTree.SmallTaxIdNode newNode = new SmallTaxTree.SmallTaxIdNode(taxId, name.toString(), Rank.NO_RANK);

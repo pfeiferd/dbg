@@ -43,13 +43,13 @@ public class XORKMerIndexBloomFilter extends XORKMerBloomFilter {
     }
      */
 
-    public void putLongShort(long data, short index) {
-        data = data ^ ((long) index) ^ (((long) index) << 48);
+    public void putLongInt(long data, int index) {
+        data = data ^ ((long) index) ^ (((long) index) << 32);
         super.putViaHash(data);
     }
 
-    public boolean containsLongShort(long data, short index) {
-        data = data ^ ((long) index) ^ (((long) index) << 48);
+    public boolean containsLongInt(long data, int index) {
+        data = data ^ ((long) index) ^ (((long) index) << 32);
         return super.containsViaHash(data);
     }
 }

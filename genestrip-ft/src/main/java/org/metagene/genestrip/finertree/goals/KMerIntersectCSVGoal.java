@@ -70,7 +70,7 @@ public class KMerIntersectCSVGoal extends FileListGoal<GSProject> {
             }
         }
         for (SmallTaxTree.SmallTaxIdNode node : parents) {
-            File matchFile = getProject().getOutputFile(getKey().getName(), node.getTaxId(), null, GSProject.FileType.CSV, false);
+            File matchFile = getProject().getOutputFile(getKey().getName(), node.getTaxId(), null, GSProject.GSFileType.CSV, false);
             addFile(matchFile);
             fileToNodeMap.put(matchFile, node);
         }

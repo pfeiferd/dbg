@@ -58,7 +58,7 @@ public class GenDocFiles {
 		File graphFile = new File(getProjectDir(), "GoalGraph.gv.txt");
 		try (PrintStream ps = new PrintStream(graphFile)) {
 			GSCommon config = new GSCommon(getBaseDir());
-			GSProject project = new GSProject(config, "human_virus", null, new String[0]);
+			FTProject project = new FTProject(config, "virus", null, null, null, null, null, null, null, null, null, false);
 			FinerTreeMaker maker = new FinerTreeMaker(project);
 
 			ps.println("digraph regexp {");

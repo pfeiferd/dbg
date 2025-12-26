@@ -43,7 +43,7 @@ public class StoreKMerIndexGoal extends FileListGoal<GSProject> {
 	@SafeVarargs
 	public StoreKMerIndexGoal(GSProject project, ObjectGoal<XORKMerIndexBloomFilter, GSProject> indexGoal,
                               Goal<GSProject>... deps) {
-		super(project, FTGoalKey.STORE_KMER_INDEX, project.getOutputFile(FTGoalKey.STORE_KMER_INDEX.getName(), FileType.FILTER, true),
+		super(project, FTGoalKey.STORE_KMER_INDEX, project.getOutputFile(FTGoalKey.STORE_KMER_INDEX.getName(), GSProject.GSFileType.FILTER, true),
 				Goal.append(deps, indexGoal));
 		this.indexGoal = indexGoal;
 	}

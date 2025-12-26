@@ -99,7 +99,7 @@ public abstract class KMerStoreWorkGoal<T> extends ObjectGoal<T, GSProject> {
                 private boolean[] bits = new boolean[INITIAL_MAX_CHILDREN];
 
                 @Override
-                public void nextValue(KMerSortedArray<SmallTaxTree.SmallTaxIdNode> trie, long kmer, short index, long pos) {
+                public void nextValue(KMerSortedArray<SmallTaxTree.SmallTaxIdNode> trie, long kmer, int index, long pos) {
                     current[0] = pos;
                     SmallTaxTree.SmallTaxIdNode parent = kMerSortedArray.getValueForIndex(index);
                     if (parent != null) {
@@ -120,7 +120,7 @@ public abstract class KMerStoreWorkGoal<T> extends ObjectGoal<T, GSProject> {
                                         spread++;
                                     }
                                 }
-                                bits[children.length] = bloomFilter.containsLongShort(kmer, KMerIndexBloomGoal.OTHER_VALUE);
+                                bits[children.length] = bloomFilter.containsLongInt(kmer, KMerIndexBloomGoal.OTHER_VALUE);
                                 if (bits[children.length]) {
                                     spread++;
                                 }
@@ -131,7 +131,7 @@ public abstract class KMerStoreWorkGoal<T> extends ObjectGoal<T, GSProject> {
                 }
 
                 protected boolean checkSubtree(SmallTaxTree.SmallTaxIdNode node, long kmer) {
-                    if (bloomFilter.containsLongShort(kmer, node.storeIndex)) {
+                    if (bloomFilter.containsLongInt(kmer, node.storeIndex)) {
                         return true;
                     }
                     if (node.getSubNodes() != null) {

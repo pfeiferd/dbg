@@ -28,6 +28,7 @@ import org.metagene.genestrip.GSConfigKey;
 import org.metagene.genestrip.GSProject;
 import org.metagene.genestrip.finertree.FTConfigKey;
 import org.metagene.genestrip.finertree.FTGoalKey;
+import org.metagene.genestrip.finertree.FTProject;
 import org.metagene.genestrip.finertree.FinerTreeMaker;
 import org.metagene.genestrip.finertree.cluster.DendrogramNode;
 import org.metagene.genestrip.io.StreamProvider;
@@ -74,7 +75,7 @@ public class DengrogramLaTeXGoal extends FileListGoal<GSProject> {
             }
         }
         for (SmallTaxTree.SmallTaxIdNode node : parents) {
-            File matchFile = getProject().getOutputFile(getKey().getName(), node.getTaxId(), null, GSProject.FileType.TXT, false);
+            File matchFile = getProject().getOutputFile(getKey().getName(), node.getTaxId(), null, FTProject.FTFileType.TEX, false);
             addFile(matchFile);
             fileToNodeMap.put(matchFile, node);
         }

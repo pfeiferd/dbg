@@ -55,7 +55,7 @@ import java.io.IOException;
 import java.util.*;
 
 public class KMerIndexBloomGoal extends FastaReaderGoal<XORKMerIndexBloomFilter> implements Goal.LogHeapInfo {
-    public static final short OTHER_VALUE = (short) KMerSortedArray.MAX_VALUES;
+    public static final int OTHER_VALUE = Integer.MAX_VALUE;
 
     private final ObjectGoal<AccessionMap, GSProject> accessionMapGoal;
     private final ObjectGoal<Database, GSProject> storeGoal;
@@ -215,19 +215,19 @@ public class KMerIndexBloomGoal extends FastaReaderGoal<XORKMerIndexBloomFilter>
                 int r = storedNode.getRankOrdinal();
                 if ((r > 0 && ranksToRefine[storedNode.getRankOrdinal()]) ||
                         taxidsToRefine.contains(storedNode.getTaxId())) {
-                    short index = smallNode == null ? OTHER_VALUE : smallNode.storeIndex;
-                    if (!filter.containsLongShort(kmer, index)) {
+                    int index = smallNode == null ? OTHER_VALUE : smallNode.storeIndex;
+                    if (!filter.containsLongInt(kmer, index)) {
                         if (multiThreading) {
                             synchronized (filter) {
                                 // This is a trick to enable more parallelism -
                                 // check again after synchronized to avoid synchronized further outside...
-                                if (!filter.containsLongShort(kmer, index)) {
-                                    filter.putLongShort(kmer, index);
+                                if (!filter.containsLongInt(kmer, index)) {
+                                    filter.putLongInt(kmer, index);
                                     return true;
                                 }
                             }
                         } else {
-                            filter.putLongShort(kmer, index);
+                            filter.putLongInt(kmer, index);
                             return true;
                         }
                     }

@@ -32,6 +32,8 @@ import org.metagene.genestrip.finertree.goals.*;
 import org.metagene.genestrip.goals.LoadDBGoal;
 import org.metagene.genestrip.goals.refseq.RefSeqFnaFilesDownloadGoal;
 import org.metagene.genestrip.goals.refseq.StoreDBGoal;
+import org.metagene.genestrip.make.FileListGoal;
+import org.metagene.genestrip.make.Goal;
 import org.metagene.genestrip.make.ObjectGoal;
 import org.metagene.genestrip.refseq.AccessionMap;
 import org.metagene.genestrip.refseq.RefSeqCategory;
@@ -40,16 +42,34 @@ import org.metagene.genestrip.tax.SmallTaxTree;
 import org.metagene.genestrip.tax.TaxTree;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 public class FinerTreeMaker extends GSMaker {
-    public FinerTreeMaker(GSProject project) {
+    public FinerTreeMaker(FTProject project) {
         super(project);
     }
 
     @Override
     protected void createGoals() {
         super.createGoals();
+
+        FTProject project = (FTProject) getProject();
+
+        List<File> projectDirs = Arrays.asList(project.getTeXDir());
+        Goal<GSProject> projectSetupGoal = new FileListGoal<GSProject>(project, FTGoalKey.FTSETUP, projectDirs,
+                getGoal(GSGoalKey.SETUP)) {
+            @Override
+            protected void makeFile(File file) throws IOException {
+                file.mkdir();
+            }
+
+            @Override
+            public boolean isAllowTransitiveClean() {
+                return false;
+            }
+        };
+        registerGoal(projectSetupGoal);
 
         ObjectGoal<Set<RefSeqCategory>, GSProject> categoriesGoal = (ObjectGoal<Set<RefSeqCategory>, GSProject>) getGoal(GSGoalKey.CATEGORIES);
         ObjectGoal<Set<TaxTree.TaxIdNode>, GSProject> taxNodesGoal = (ObjectGoal<Set<TaxTree.TaxIdNode>, GSProject>) getGoal(GSGoalKey.TAXNODES);
@@ -58,39 +78,39 @@ public class FinerTreeMaker extends GSMaker {
         ObjectGoal<Map<File, TaxTree.TaxIdNode>, GSProject> additionalGoal = (ObjectGoal<Map<File, TaxTree.TaxIdNode>, GSProject>) getGoal(GSGoalKey.ADD_FASTAS);
         ObjectGoal<AccessionMap, GSProject> accessionMapGoal = (ObjectGoal<AccessionMap, GSProject>) getGoal(GSGoalKey.ACCMAP);
         ObjectGoal<Database, GSProject> storeGoal = (ObjectGoal<Database, GSProject>) getGoal(GSGoalKey.LOAD_DB);
-        KMerIndexBloomGoal bloomGoal = new KMerIndexBloomGoal(getProject(), getExecutionContext(getProject()),
+        KMerIndexBloomGoal bloomGoal = new KMerIndexBloomGoal(project, getExecutionContext(project),
                 categoriesGoal, taxNodesGoal, taxTreeGoal, fnaFilesGoal, additionalGoal, accessionMapGoal, storeGoal);
         registerGoal(bloomGoal);
 
-        StoreKMerIndexGoal storeKMerIndexGoal = new StoreKMerIndexGoal(getProject(), bloomGoal);
+        StoreKMerIndexGoal storeKMerIndexGoal = new StoreKMerIndexGoal(project, bloomGoal);
         registerGoal(storeKMerIndexGoal);
 
-        LoadKMerIndexGoal loadKMerIndexGoal = new LoadKMerIndexGoal(getProject(), bloomGoal, storeKMerIndexGoal);
+        LoadKMerIndexGoal loadKMerIndexGoal = new LoadKMerIndexGoal(project, bloomGoal, storeKMerIndexGoal);
         registerGoal(loadKMerIndexGoal);
 
-        KMerIntersectCountGoal intersectCountGoal = new KMerIntersectCountGoal(getProject(), storeGoal, loadKMerIndexGoal);
+        KMerIntersectCountGoal intersectCountGoal = new KMerIntersectCountGoal(project, storeGoal, loadKMerIndexGoal);
         registerGoal(intersectCountGoal);
 
-        KMerIntersectCSVGoal csvGoal = new KMerIntersectCSVGoal(getProject(), storeGoal, intersectCountGoal);
+        KMerIntersectCSVGoal csvGoal = new KMerIntersectCSVGoal(project, storeGoal, intersectCountGoal);
         registerGoal(csvGoal);
 
-        ObjectGoal<Map<SmallTaxTree.SmallTaxIdNode, DendrogramNode>, GSProject> dendrogramGoal = new DendrogramGoal(getProject(), intersectCountGoal);
+        ObjectGoal<Map<SmallTaxTree.SmallTaxIdNode, DendrogramNode>, GSProject> dendrogramGoal = new DendrogramGoal(project, intersectCountGoal);
         registerGoal(dendrogramGoal);
 
-        DengrogramLaTeXGoal laTeXGoal = new DengrogramLaTeXGoal(getProject(), storeGoal, dendrogramGoal);
+        DengrogramLaTeXGoal laTeXGoal = new DengrogramLaTeXGoal(project, storeGoal, dendrogramGoal, projectSetupGoal);
         registerGoal(laTeXGoal);
 
-        UpdateStoreGoal updateStoreGoal = new UpdateStoreGoal(getProject(), storeGoal, dendrogramGoal, loadKMerIndexGoal);
+        UpdateStoreGoal updateStoreGoal = new UpdateStoreGoal(project, storeGoal, dendrogramGoal, loadKMerIndexGoal);
         registerGoal(updateStoreGoal);
 
-        StoreDBGoal storeUpdatedDBGoal = new StoreDBGoal(getProject(), FTGoalKey.FTDB,
-                getProject().getOutputFile(FTGoalKey.FTDB.getName(), GSProject.FileType.DB, false), updateStoreGoal);
+        StoreDBGoal storeUpdatedDBGoal = new StoreDBGoal(project, FTGoalKey.FTDB,
+                project.getOutputFile(FTGoalKey.FTDB.getName(), GSProject.GSFileType.DB, false), updateStoreGoal);
         registerGoal(storeUpdatedDBGoal);
 
-        LoadDBGoal loadDBGoal = new LoadDBGoal(getProject(), FTGoalKey.LOAD_FTDB, updateStoreGoal, storeUpdatedDBGoal);
+        LoadDBGoal loadDBGoal = new LoadDBGoal(project, FTGoalKey.LOAD_FTDB, updateStoreGoal, storeUpdatedDBGoal);
         registerGoal(loadDBGoal);
 
-        FTDBInfoGoal infoGoal = new FTDBInfoGoal(getProject(), loadDBGoal);
+        FTDBInfoGoal infoGoal = new FTDBInfoGoal(project, loadDBGoal);
         registerGoal(infoGoal);
     }
 }

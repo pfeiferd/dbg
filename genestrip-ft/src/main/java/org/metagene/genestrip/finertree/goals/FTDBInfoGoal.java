@@ -48,7 +48,7 @@ public class FTDBInfoGoal extends FileListGoal<GSProject> {
 	}
 
 	public static File getDBInfoFile(GSProject project) {
-		return project.getOutputFile(FTGoalKey.FTDBINFO.getName(), GSProject.FileType.CSV, false);
+		return project.getOutputFile(FTGoalKey.FTDBINFO.getName(), GSProject.GSFileType.CSV, false);
 	}
 
 	@Override

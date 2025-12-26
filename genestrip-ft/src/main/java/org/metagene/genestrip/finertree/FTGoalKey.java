@@ -31,6 +31,7 @@ import java.io.PrintStream;
 import java.lang.annotation.Annotation;
 
 public enum FTGoalKey implements GoalKey {
+    FTSETUP("ftsetup"),
     DENDROGRAM("dendrogram"),
     DENDRO_LATEX("dendrolatex", true),
     KMER_INDEX_BLOOM("kmerindexbloom"),
