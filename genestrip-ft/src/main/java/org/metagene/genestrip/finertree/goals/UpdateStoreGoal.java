@@ -119,8 +119,8 @@ public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal
                 bitSets[i] = new boolean[orgSubnodes.length];
             }
             bitsetPosCounter = 0;
-            child1 = createNode(parent, root.getChild1());
-            child2 = createNode(parent, root.getChild2());
+            child1 = createNode(root.getChild1());
+            child2 = createNode(root.getChild2());
             bitsetPosCounter = 0;
             initBitSets(root.getChild1());
             initBitSets(root.getChild2());
@@ -160,7 +160,6 @@ public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal
         }
 
         public SmallTaxTree.SmallTaxIdNode getBestMatchingNode(boolean[] bits) {
-            short newIndex = -1;
             for (int i = 0; i < bitSets.length; i++) {
                 if (contains(bitSets[i], bits)) {
                     return nodes[i];
@@ -178,7 +177,7 @@ public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal
             return true;
         }
 
-        protected SmallTaxTree.SmallTaxIdNode createNode(SmallTaxTree.SmallTaxIdNode parent, DendrogramNode node) {
+        protected SmallTaxTree.SmallTaxIdNode createNode(DendrogramNode node) {
             int valueIndex = node.getValueIndex();
             if (valueIndex == -1 || valueIndex == orgSubnodes.length) {
                 String taxId = "000" + idCounter++;
@@ -190,8 +189,8 @@ public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal
                 if (node.getValueIndex() == -1) {
                     nodes[bitsetPosCounter++] = newNode;
                     SmallTaxTree.SmallTaxIdNode[] newSubnodes = new SmallTaxTree.SmallTaxIdNode[2];
-                    newSubnodes[0] = createNode(newNode, node.getChild1());
-                    newSubnodes[1] = createNode(newNode, node.getChild2());
+                    newSubnodes[0] = createNode(node.getChild1());
+                    newSubnodes[1] = createNode(node.getChild2());
                     newNode.setSubNodes(newSubnodes);
                 } else {
                 }
