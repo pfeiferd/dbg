@@ -42,7 +42,8 @@ public enum FTGoalKey implements GoalKey {
     UPDATE_STORE_GOAL("updatestore"),
     FTDB("ftdb", true),
     FTDBINFO("ftdbinfo", true),
-    LOAD_FTDB("loadftdb");
+    LOAD_FTDB("loadftdb"),
+    ALLINONE_LATEX("allinonelatex", true);
 
     private final boolean forUser;
     private final String name;

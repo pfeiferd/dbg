@@ -32,6 +32,7 @@ import org.metagene.genestrip.finertree.goals.*;
 import org.metagene.genestrip.goals.LoadDBGoal;
 import org.metagene.genestrip.goals.refseq.RefSeqFnaFilesDownloadGoal;
 import org.metagene.genestrip.goals.refseq.StoreDBGoal;
+import org.metagene.genestrip.make.FileGoal;
 import org.metagene.genestrip.make.FileListGoal;
 import org.metagene.genestrip.make.Goal;
 import org.metagene.genestrip.make.ObjectGoal;
@@ -112,5 +113,8 @@ public class FinerTreeMaker extends GSMaker {
 
         FTDBInfoGoal infoGoal = new FTDBInfoGoal(project, loadDBGoal);
         registerGoal(infoGoal);
+
+        FileGoal<GSProject> allInOneLaTeXGoal = new AllInOneLaTeXGoal(project, laTeXGoal, projectSetupGoal);
+        registerGoal(allInOneLaTeXGoal);
     }
 }
