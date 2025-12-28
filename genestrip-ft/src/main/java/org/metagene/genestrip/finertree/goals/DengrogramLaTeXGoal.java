@@ -91,10 +91,25 @@ public class DengrogramLaTeXGoal extends FileListGoal<GSProject> {
         boolean turn = booleanConfigValue(FTConfigKey.TURN_LATEX);
 
         try (PrintStream out = new PrintStream(StreamProvider.getOutputStreamForFile(file))) {
+            out.println("\\begin{figure}");
             out.println("\\begin{tikzpicture}[sloped,scale=1]");
             drawAxis(out, xScaleFactor, yScaleFactor, turn);
             drawDendrogram(out, parent, dendrogram, xScaleFactor, yScaleFactor, turn);
             out.println("\\end{tikzpicture}");
+            out.print("\\caption{");
+            out.print(parent.getName());
+            out.print(" (");
+            out.print(parent.getTaxId());
+            out.print(")");
+            if (parent.getRank() != null) {
+                out.print(" [");
+                out.print(parent.getRank().getName());
+                out.print("]");
+            }
+            out.print("\\label{dendrogram");
+            out.print(parent.getTaxId());
+            out.println("}}");
+            out.println("\\end{figure}");
         }
     }
 
