@@ -29,18 +29,18 @@ import org.metagene.genestrip.*;
 import java.io.File;
 import java.util.Properties;
 
-public class FinerTreeMain extends Main {
+public class FinerTreeMain<P extends FTProject> extends Main<P> {
     @Override
-    protected GSProject createProject(GSCommon config, String name, String key, String[] fastqFiles, String csvFile, File csvDir, File fastqResDir, String taxids, Properties commandLineProps, GSGoalKey forGoal, String dbPath, boolean quietInit) {
-        return new FTProject(config, name, key, fastqFiles, csvFile, csvDir, fastqResDir, taxids, commandLineProps, forGoal, dbPath, quietInit);
-    }
-
-    @Override
-    protected GSMaker createMaker(GSProject project) {
-        return new FinerTreeMaker((FTProject) project);
+    protected FinerTreeMaker<P> createMaker(P project) {
+        return new FinerTreeMaker<P>(project);
     }
 
     public static void main(String[] args) {
-        new FinerTreeMain().parseAndRun(args);
+        new FinerTreeMain<FTProject>() {
+            @Override
+            protected FTProject createProject(GSCommon config, String name, String key, String[] fastqFiles, String csvFile, File csvDir, File fastqResDir, String taxids, Properties commandLineProps, GSGoalKey forGoal, String dbPath, boolean quietInit) {
+                return new FTProject(config, name, key, fastqFiles, csvFile, csvDir, fastqResDir, taxids, commandLineProps, forGoal, dbPath, quietInit);
+            }
+        }.parseAndRun(args);
     }
 }

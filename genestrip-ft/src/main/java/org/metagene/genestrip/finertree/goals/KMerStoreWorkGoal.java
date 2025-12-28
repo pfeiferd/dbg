@@ -24,12 +24,11 @@
  */
 package org.metagene.genestrip.finertree.goals;
 
-import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import me.tongfei.progressbar.ProgressBar;
 import org.metagene.genestrip.GSConfigKey;
-import org.metagene.genestrip.GSProject;
 import org.metagene.genestrip.finertree.FTConfigKey;
 import org.metagene.genestrip.finertree.FTGoalKey;
+import org.metagene.genestrip.finertree.FTProject;
 import org.metagene.genestrip.finertree.bloom.XORKMerIndexBloomFilter;
 import org.metagene.genestrip.make.Goal;
 import org.metagene.genestrip.make.ObjectGoal;
@@ -43,11 +42,11 @@ import org.metagene.genestrip.util.progressbar.GSProgressUpdate;
 import java.util.Collection;
 import java.util.List;
 
-public abstract class KMerStoreWorkGoal<T> extends ObjectGoal<T, GSProject> {
+public abstract class KMerStoreWorkGoal<T, P extends FTProject> extends ObjectGoal<T, P> {
     private static int INITIAL_MAX_CHILDREN = 256;
 
-    private final ObjectGoal<Database, GSProject> storeGoal;
-    protected final ObjectGoal<XORKMerIndexBloomFilter, GSProject> bloomFilterGoal;
+    private final ObjectGoal<Database, P> storeGoal;
+    protected final ObjectGoal<XORKMerIndexBloomFilter, P> bloomFilterGoal;
     protected final boolean [] ranksToRefine;
     protected final List<String> taxidsToRefine;
     protected Database database;
@@ -55,9 +54,9 @@ public abstract class KMerStoreWorkGoal<T> extends ObjectGoal<T, GSProject> {
     protected XORKMerIndexBloomFilter bloomFilter;
 
     @SafeVarargs
-    public KMerStoreWorkGoal(GSProject project, FTGoalKey goalKey, ObjectGoal<Database, GSProject> storeGoal,
-                                  ObjectGoal<XORKMerIndexBloomFilter, GSProject> bloomFilterGoal,
-                                  Goal<GSProject>... deps) {
+    public KMerStoreWorkGoal(P project, FTGoalKey goalKey, ObjectGoal<Database, P> storeGoal,
+                                  ObjectGoal<XORKMerIndexBloomFilter, P> bloomFilterGoal,
+                                  Goal<P>... deps) {
         super(project, goalKey, Goal.append(deps, storeGoal, bloomFilterGoal));
         this.storeGoal = storeGoal;
         this.bloomFilterGoal = bloomFilterGoal;

@@ -1,23 +1,19 @@
 package org.metagene.genestrip.finertree.goals;
 
-import org.metagene.genestrip.GSProject;
 import org.metagene.genestrip.finertree.FTGoalKey;
 import org.metagene.genestrip.finertree.FTProject;
-import org.metagene.genestrip.io.StreamProvider;
 import org.metagene.genestrip.make.FileGoal;
 import org.metagene.genestrip.make.Goal;
 
 import java.io.*;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.util.Collections;
 import java.util.List;
 
-public class AllInOneLaTeXGoal extends FileGoal<GSProject> {
-    private final DengrogramLaTeXGoal dengrogramLaTeXGoal;
+public class AllInOneLaTeXGoal<P extends FTProject>  extends FileGoal<P> {
+    private final DengrogramLaTeXGoal<P> dengrogramLaTeXGoal;
 
-    public AllInOneLaTeXGoal(GSProject project, DengrogramLaTeXGoal dengrogramLaTeXGoal, Goal<GSProject>... deps) {
+    public AllInOneLaTeXGoal(P project, DengrogramLaTeXGoal<P> dengrogramLaTeXGoal, Goal<P>... deps) {
         super(project, FTGoalKey.ALLINONE_LATEX, append(deps, dengrogramLaTeXGoal));
         this.dengrogramLaTeXGoal = dengrogramLaTeXGoal;
     }

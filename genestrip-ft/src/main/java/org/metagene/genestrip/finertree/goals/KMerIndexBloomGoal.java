@@ -25,19 +25,15 @@
 package org.metagene.genestrip.finertree.goals;
 
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
-import it.unimi.dsi.fastutil.shorts.Short2IntMap;
-import it.unimi.dsi.fastutil.shorts.Short2LongMap;
 import org.metagene.genestrip.ExecutionContext;
 import org.metagene.genestrip.GSConfigKey;
-import org.metagene.genestrip.GSProject;
 import org.metagene.genestrip.finertree.FTConfigKey;
 import org.metagene.genestrip.finertree.FTGoalKey;
-import org.metagene.genestrip.finertree.FinerTreeMaker;
+import org.metagene.genestrip.finertree.FTProject;
 import org.metagene.genestrip.finertree.bloom.XORKMerIndexBloomFilter;
 import org.metagene.genestrip.goals.refseq.FastaReaderGoal;
 import org.metagene.genestrip.goals.refseq.RefSeqFnaFilesDownloadGoal;
 import org.metagene.genestrip.make.Goal;
-import org.metagene.genestrip.make.GoalKey;
 import org.metagene.genestrip.make.ObjectGoal;
 import org.metagene.genestrip.refseq.AbstractRefSeqFastaReader;
 import org.metagene.genestrip.refseq.AbstractStoreFastaReader;
@@ -54,12 +50,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-public class KMerIndexBloomGoal extends FastaReaderGoal<XORKMerIndexBloomFilter> implements Goal.LogHeapInfo {
+public class KMerIndexBloomGoal<P extends FTProject> extends FastaReaderGoal<XORKMerIndexBloomFilter, P> implements Goal.LogHeapInfo {
     public static final int OTHER_VALUE = Integer.MAX_VALUE;
 
-    private final ObjectGoal<AccessionMap, GSProject> accessionMapGoal;
-    private final ObjectGoal<Database, GSProject> storeGoal;
-    private final ObjectGoal<TaxTree, GSProject> taxTreeGoal;
+    private final ObjectGoal<AccessionMap, P> accessionMapGoal;
+    private final ObjectGoal<Database, P> storeGoal;
+    private final ObjectGoal<TaxTree, P> taxTreeGoal;
     private final boolean multiThreading;
     private final boolean[] ranksToRefine;
     private final List<String> taxidsToRefine;
@@ -71,12 +67,12 @@ public class KMerIndexBloomGoal extends FastaReaderGoal<XORKMerIndexBloomFilter>
     private Set<TaxTree.TaxIdNode> relevantNodes;
 
     @SafeVarargs
-    public KMerIndexBloomGoal(GSProject project, ExecutionContext bundle, ObjectGoal<Set<RefSeqCategory>, GSProject> categoriesGoal,
-                              ObjectGoal<Set<TaxTree.TaxIdNode>, GSProject> taxNodesGoal,
-                              ObjectGoal<TaxTree, GSProject> taxTreeGoal, RefSeqFnaFilesDownloadGoal fnaFilesGoal,
-                              ObjectGoal<Map<File, TaxTree.TaxIdNode>, GSProject> additionalGoal,
-                              ObjectGoal<AccessionMap, GSProject> accessionMapGoal, ObjectGoal<Database, GSProject> storeGoal,
-                              Goal<GSProject>... deps) {
+    public KMerIndexBloomGoal(P project, ExecutionContext bundle, ObjectGoal<Set<RefSeqCategory>, P> categoriesGoal,
+                              ObjectGoal<Set<TaxTree.TaxIdNode>, P> taxNodesGoal,
+                              ObjectGoal<TaxTree, P> taxTreeGoal, RefSeqFnaFilesDownloadGoal fnaFilesGoal,
+                              ObjectGoal<Map<File, TaxTree.TaxIdNode>, P> additionalGoal,
+                              ObjectGoal<AccessionMap, P> accessionMapGoal, ObjectGoal<Database, P> storeGoal,
+                              Goal<P>... deps) {
         super(project, FTGoalKey.KMER_INDEX_BLOOM, bundle, categoriesGoal, taxNodesGoal, fnaFilesGoal, additionalGoal, Goal.append(deps, taxTreeGoal, accessionMapGoal, storeGoal));
         this.storeGoal = storeGoal;
         this.accessionMapGoal = accessionMapGoal;

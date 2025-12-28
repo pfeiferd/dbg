@@ -25,24 +25,23 @@
 package org.metagene.genestrip.finertree.goals;
 
 import org.metagene.genestrip.GSProject;
-import org.metagene.genestrip.GSProject.FileType;
 import org.metagene.genestrip.bloom.AbstractKMerBloomFilter;
 import org.metagene.genestrip.finertree.FTGoalKey;
+import org.metagene.genestrip.finertree.FTProject;
 import org.metagene.genestrip.finertree.bloom.XORKMerIndexBloomFilter;
 import org.metagene.genestrip.make.FileListGoal;
 import org.metagene.genestrip.make.Goal;
-import org.metagene.genestrip.make.GoalKey;
 import org.metagene.genestrip.make.ObjectGoal;
 
 import java.io.File;
 import java.io.IOException;
 
-public class StoreKMerIndexGoal extends FileListGoal<GSProject> {
-	private final ObjectGoal<XORKMerIndexBloomFilter, GSProject> indexGoal;
+public class StoreKMerIndexGoal<P extends FTProject> extends FileListGoal<P> {
+	private final ObjectGoal<XORKMerIndexBloomFilter, P> indexGoal;
 
 	@SafeVarargs
-	public StoreKMerIndexGoal(GSProject project, ObjectGoal<XORKMerIndexBloomFilter, GSProject> indexGoal,
-                              Goal<GSProject>... deps) {
+	public StoreKMerIndexGoal(P project, ObjectGoal<XORKMerIndexBloomFilter, P> indexGoal,
+                              Goal<P>... deps) {
 		super(project, FTGoalKey.STORE_KMER_INDEX, project.getOutputFile(FTGoalKey.STORE_KMER_INDEX.getName(), GSProject.GSFileType.FILTER, true),
 				Goal.append(deps, indexGoal));
 		this.indexGoal = indexGoal;

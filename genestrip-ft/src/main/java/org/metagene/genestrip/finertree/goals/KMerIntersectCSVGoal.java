@@ -28,7 +28,7 @@ import org.metagene.genestrip.GSConfigKey;
 import org.metagene.genestrip.GSProject;
 import org.metagene.genestrip.finertree.FTConfigKey;
 import org.metagene.genestrip.finertree.FTGoalKey;
-import org.metagene.genestrip.finertree.FinerTreeMaker;
+import org.metagene.genestrip.finertree.FTProject;
 import org.metagene.genestrip.io.StreamProvider;
 import org.metagene.genestrip.make.*;
 import org.metagene.genestrip.store.Database;
@@ -42,15 +42,15 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.*;
 
-public class KMerIntersectCSVGoal extends FileListGoal<GSProject> {
+public class KMerIntersectCSVGoal<P extends FTProject> extends FileListGoal<P> {
     private static final DecimalFormat DF = new DecimalFormat("0.00000000", new DecimalFormatSymbols(Locale.US));
 
-    private final ObjectGoal<Database, GSProject> storeGoal;
-    private final ObjectGoal<KMerIntersectCountGoal.IntersectionsPerNode, GSProject> kmerIntersectGoal;
+    private final ObjectGoal<Database, P> storeGoal;
+    private final ObjectGoal<KMerIntersectCountGoal.IntersectionsPerNode, P> kmerIntersectGoal;
     private final Map<File, SmallTaxTree.SmallTaxIdNode> fileToNodeMap;
 
     @SafeVarargs
-    public KMerIntersectCSVGoal(GSProject project, ObjectGoal<Database, GSProject> storeGoal, ObjectGoal<KMerIntersectCountGoal.IntersectionsPerNode, GSProject> kmerIntersectGoal, Goal<GSProject>... deps) {
+    public KMerIntersectCSVGoal(P project, ObjectGoal<Database, P> storeGoal, ObjectGoal<KMerIntersectCountGoal.IntersectionsPerNode, P> kmerIntersectGoal, Goal<P>... deps) {
         super(project, FTGoalKey.INTERSECT_CSV, (List<File>) null,  append(deps, kmerIntersectGoal));
         this.storeGoal = storeGoal;
         this.kmerIntersectGoal = kmerIntersectGoal;

@@ -26,6 +26,7 @@ package org.metagene.genestrip.finertree.goals;
 
 import org.metagene.genestrip.GSProject;
 import org.metagene.genestrip.finertree.FTGoalKey;
+import org.metagene.genestrip.finertree.FTProject;
 import org.metagene.genestrip.io.StreamProvider;
 import org.metagene.genestrip.make.FileListGoal;
 import org.metagene.genestrip.make.Goal;
@@ -37,17 +38,17 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 
-public class FTDBInfoGoal extends FileListGoal<GSProject> {
-	private final ObjectGoal<Database, GSProject> storeGoal;
+public class FTDBInfoGoal<P extends FTProject> extends FileListGoal<P> {
+	private final ObjectGoal<Database, P> storeGoal;
 
 	@SafeVarargs
-	public FTDBInfoGoal(GSProject project, ObjectGoal<Database, GSProject> storeGoal, Goal<GSProject>... deps) {
+	public FTDBInfoGoal(P project, ObjectGoal<Database, P> storeGoal, Goal<P>... deps) {
 		super(project, FTGoalKey.FTDBINFO, getDBInfoFile(project),
 				Goal.append(deps, storeGoal));
 		this.storeGoal = storeGoal;
 	}
 
-	public static File getDBInfoFile(GSProject project) {
+	public static <P extends GSProject> File getDBInfoFile(P project) {
 		return project.getOutputFile(FTGoalKey.FTDBINFO.getName(), GSProject.GSFileType.CSV, false);
 	}
 

@@ -26,6 +26,7 @@ package org.metagene.genestrip.finertree.goals;
 
 import org.metagene.genestrip.GSProject;
 import org.metagene.genestrip.finertree.FTGoalKey;
+import org.metagene.genestrip.finertree.FTProject;
 import org.metagene.genestrip.finertree.bloom.XORKMerIndexBloomFilter;
 import org.metagene.genestrip.finertree.cluster.DendrogramNode;
 import org.metagene.genestrip.make.Goal;
@@ -37,8 +38,8 @@ import org.metagene.genestrip.tax.SmallTaxTree;
 
 import java.util.*;
 
-public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal.LogHeapInfo {
-    private final ObjectGoal<Map<SmallTaxTree.SmallTaxIdNode, DendrogramNode>, GSProject> dendrogramGoal;
+public class UpdateStoreGoal<P extends FTProject> extends KMerStoreWorkGoal<Database, P> implements Goal.LogHeapInfo {
+    private final ObjectGoal<Map<SmallTaxTree.SmallTaxIdNode, DendrogramNode>, P> dendrogramGoal;
 
     private int idCounter;
     private KMerSortedArray<String> orgkMerSortedArray;
@@ -46,7 +47,7 @@ public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal
     private Map<String, BitSetsForNodes> parentToBitSets;
 
     @SafeVarargs
-    public UpdateStoreGoal(GSProject project, ObjectGoal<Database, GSProject> storeGoal, ObjectGoal<Map<SmallTaxTree.SmallTaxIdNode, DendrogramNode>, GSProject> dendrogramGoal, ObjectGoal<XORKMerIndexBloomFilter, GSProject> bloomFilterGoal, Goal<GSProject>... deps) {
+    public UpdateStoreGoal(P project, ObjectGoal<Database, P> storeGoal, ObjectGoal<Map<SmallTaxTree.SmallTaxIdNode, DendrogramNode>, P> dendrogramGoal, ObjectGoal<XORKMerIndexBloomFilter, P> bloomFilterGoal, Goal<P>... deps) {
         super(project, FTGoalKey.UPDATE_STORE_GOAL, storeGoal, bloomFilterGoal, append(deps, dendrogramGoal));
         this.dendrogramGoal = dendrogramGoal;
     }

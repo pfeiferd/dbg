@@ -25,27 +25,17 @@
 package org.metagene.genestrip.finertree.goals;
 
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
-import me.tongfei.progressbar.ProgressBar;
-import org.metagene.genestrip.GSConfigKey;
-import org.metagene.genestrip.GSProject;
-import org.metagene.genestrip.finertree.FTConfigKey;
 import org.metagene.genestrip.finertree.FTGoalKey;
-import org.metagene.genestrip.finertree.FinerTreeMaker;
+import org.metagene.genestrip.finertree.FTProject;
 import org.metagene.genestrip.finertree.bloom.XORKMerIndexBloomFilter;
 import org.metagene.genestrip.make.Goal;
-import org.metagene.genestrip.make.GoalKey;
 import org.metagene.genestrip.make.ObjectGoal;
 import org.metagene.genestrip.store.Database;
-import org.metagene.genestrip.store.KMerSortedArray;
-import org.metagene.genestrip.tax.Rank;
 import org.metagene.genestrip.tax.SmallTaxTree;
-import org.metagene.genestrip.util.progressbar.GSProgressBarCreator;
-import org.metagene.genestrip.util.progressbar.GSProgressUpdate;
 
-import java.io.File;
 import java.util.*;
 
-public class KMerIntersectCountGoal extends KMerStoreWorkGoal<KMerIntersectCountGoal.IntersectionsPerNode> {
+public class KMerIntersectCountGoal<P extends FTProject> extends KMerStoreWorkGoal<KMerIntersectCountGoal.IntersectionsPerNode, P> {
     public interface IntersectionsPerNode  {
         public Set<SmallTaxTree.SmallTaxIdNode> getParentNodes();
         public long getIntersectionCount(SmallTaxTree.SmallTaxIdNode parent, int child1, int child2);
@@ -60,9 +50,9 @@ public class KMerIntersectCountGoal extends KMerStoreWorkGoal<KMerIntersectCount
     private IntersectionsPerNodeImpl intersectionsPerNode;
 
     @SafeVarargs
-    public KMerIntersectCountGoal(GSProject project, ObjectGoal<Database, GSProject> storeGoal,
-                              ObjectGoal<XORKMerIndexBloomFilter, GSProject> bloomFilterGoal,
-                              Goal<GSProject>... deps) {
+    public KMerIntersectCountGoal(P project, ObjectGoal<Database, P> storeGoal,
+                              ObjectGoal<XORKMerIndexBloomFilter, P> bloomFilterGoal,
+                              Goal<P>... deps) {
         super(project, FTGoalKey.INTERSECT_COUNT, storeGoal, bloomFilterGoal, deps);
     }
 

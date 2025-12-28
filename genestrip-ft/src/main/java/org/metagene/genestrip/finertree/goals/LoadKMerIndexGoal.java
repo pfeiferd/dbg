@@ -26,16 +26,15 @@ package org.metagene.genestrip.finertree.goals;
 
 import me.tongfei.progressbar.ProgressBar;
 import org.metagene.genestrip.GSConfigKey;
-import org.metagene.genestrip.GSProject;
 import org.metagene.genestrip.bloom.AbstractKMerBloomFilter;
 import org.metagene.genestrip.finertree.FTGoalKey;
+import org.metagene.genestrip.finertree.FTProject;
 import org.metagene.genestrip.finertree.bloom.XORKMerIndexBloomFilter;
 import org.metagene.genestrip.io.StreamProvider;
 import org.metagene.genestrip.io.StreamingFileResource;
 import org.metagene.genestrip.io.StreamingResource;
 import org.metagene.genestrip.make.FileGoal;
 import org.metagene.genestrip.make.Goal;
-import org.metagene.genestrip.make.GoalKey;
 import org.metagene.genestrip.make.ObjectGoal;
 import org.metagene.genestrip.util.progressbar.GSProgressBarCreator;
 
@@ -44,13 +43,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InvalidClassException;
 
-public class LoadKMerIndexGoal extends ObjectGoal<XORKMerIndexBloomFilter, GSProject> implements Goal.LogHeapInfo {
-	private final ObjectGoal<XORKMerIndexBloomFilter, GSProject> bloomIndex;
+public class LoadKMerIndexGoal<P extends FTProject> extends ObjectGoal<XORKMerIndexBloomFilter, P> implements Goal.LogHeapInfo {
+	private final ObjectGoal<XORKMerIndexBloomFilter, P> bloomIndex;
 	private final File dbFile;
 
 	@SafeVarargs
-	public LoadKMerIndexGoal(GSProject project, ObjectGoal<XORKMerIndexBloomFilter, GSProject> bloomIndex,
-                             FileGoal<GSProject> storeIndexGoal, Goal<GSProject>... dependencies) {
+	public LoadKMerIndexGoal(P project, ObjectGoal<XORKMerIndexBloomFilter, P> bloomIndex,
+                             FileGoal<P> storeIndexGoal, Goal<P>... dependencies) {
 		super(project, FTGoalKey.LOAD_KMER_INDEX, append(dependencies, bloomIndex, storeIndexGoal));
 		this.bloomIndex = bloomIndex;
 		this.dbFile = storeIndexGoal.getFile();
