@@ -43,7 +43,7 @@ public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal
     private int idCounter;
     private KMerSortedArray<String> orgkMerSortedArray;
     private Map<SmallTaxTree.SmallTaxIdNode, DendrogramNode> dendrograms;
-    private Map<SmallTaxTree.SmallTaxIdNode, BitSetsForNodes> parentToBitSets;
+    private Map<String, BitSetsForNodes> parentToBitSets;
 
     @SafeVarargs
     public UpdateStoreGoal(GSProject project, ObjectGoal<Database, GSProject> storeGoal, ObjectGoal<Map<SmallTaxTree.SmallTaxIdNode, DendrogramNode>, GSProject> dendrogramGoal, ObjectGoal<XORKMerIndexBloomFilter, GSProject> bloomFilterGoal, Goal<GSProject>... deps) {
@@ -53,10 +53,6 @@ public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal
 
     @Override
     protected void beforeKMerStoreWork() {
-        // We are going to change the database, so that the original store goal's
-        // content becomes invalid:
-        cleanStoreGoal();
-
         orgkMerSortedArray = database.getKmerStore();
         dendrograms = dendrogramGoal.get();
         parentToBitSets = new HashMap<>();
@@ -64,7 +60,7 @@ public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal
             DendrogramNode root = dendrograms.get(key);
             if (root != null) {
                 if (root.getValueIndex() == -1) {
-                    parentToBitSets.put(key, new BitSetsForNodes(key, root));
+                    parentToBitSets.put(key.getTaxId(), new BitSetsForNodes(key, root));
                 } else {
                     // Nothing to do...
                 }
@@ -74,7 +70,7 @@ public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal
 
     @Override
     protected void inKMerStoreWork(SmallTaxTree.SmallTaxIdNode parent, long pos, boolean[] bits, int spread) {
-        BitSetsForNodes bitSetsForNodes = parentToBitSets.get(parent);
+        BitSetsForNodes bitSetsForNodes = parentToBitSets.get(parent.getTaxId());
         if (bitSetsForNodes != null) {
             SmallTaxTree.SmallTaxIdNode node = bitSetsForNodes.getBestMatchingNode(bits);
             if (node != null) {
@@ -88,17 +84,21 @@ public class UpdateStoreGoal extends KMerStoreWorkGoal<Database> implements Goal
         SmallTaxTree tree = database.getTaxTree();
         // Adjust the small tree at each parent node now:
         // (It must be done later, cause the original tree is still needed in inKMerStoreWork().)
-        for (SmallTaxTree.SmallTaxIdNode key : parentToBitSets.keySet()) {
+        for (String key : parentToBitSets.keySet()) {
             SmallTaxTree.SmallTaxIdNode[] newSubnodes = new SmallTaxTree.SmallTaxIdNode[2];
             BitSetsForNodes bitSetsForNodes = parentToBitSets.get(key);
             newSubnodes[0] = bitSetsForNodes.child1;
             newSubnodes[1] = bitSetsForNodes.child2;
-            tree.setSubNodes(key.getTaxId(), newSubnodes);
+            tree.setSubNodes(key, newSubnodes);
         }
         tree.reinitPositions();
         orgkMerSortedArray.fix();
 
         set(database);
+
+        // We have changed the original database, so that the original store goal's
+        // content becomes invalid:
+        cleanStoreGoal();
     }
 
     private class BitSetsForNodes {
