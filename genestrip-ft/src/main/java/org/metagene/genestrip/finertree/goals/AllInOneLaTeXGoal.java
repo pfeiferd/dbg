@@ -18,7 +18,7 @@ public class AllInOneLaTeXGoal extends FileGoal<GSProject> {
     private final DengrogramLaTeXGoal dengrogramLaTeXGoal;
 
     public AllInOneLaTeXGoal(GSProject project, DengrogramLaTeXGoal dengrogramLaTeXGoal, Goal<GSProject>... deps) {
-        super(project, FTGoalKey.ALLINONE_LATEX, deps);
+        super(project, FTGoalKey.ALLINONE_LATEX, append(deps, dengrogramLaTeXGoal));
         this.dengrogramLaTeXGoal = dengrogramLaTeXGoal;
     }
 
