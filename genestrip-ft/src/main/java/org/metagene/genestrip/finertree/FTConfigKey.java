@@ -36,7 +36,7 @@ import java.lang.annotation.Annotation;
 import java.util.*;
 
 public enum FTConfigKey implements ConfigKey {
-    REFINEMENT_RANKS("refinementRanks", new ConfigParamInfo.ListConfigParamInfo<Rank>(Collections.unmodifiableList(Arrays.asList(Rank.GENUS, Rank.SPECIES_GROUP))) {
+    REFINEMENT_RANKS("refinementRanks", new ConfigParamInfo.ListConfigParamInfo<Rank>(Collections.unmodifiableList(Arrays.asList(Rank.GENUS, Rank.SPECIES_GROUP, Rank.SUBGENUS))) {
                 @Override
                 protected List<Rank> fromString(String qs) {
                     List<Rank> res = new ArrayList<Rank>();
@@ -51,6 +51,25 @@ public enum FTConfigKey implements ConfigKey {
                     }
                     return res;
                 }
+
+                @Override
+                public String getMDRangeDescriptor() {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("subset of { ");
+                    boolean first = true;
+                    for (Rank e : Rank.values()) {
+                        if (!first) {
+                            sb.append(',');
+                        }
+                        first = false;
+                        sb.append('`');
+                        sb.append(e.getName());
+                        sb.append('`');
+                    }
+                    sb.append(" }");
+                    return sb.toString();
+                }
+
             }, FTGoalKey.KMER_INDEX_BLOOM, FTGoalKey.DENDRO_LATEX, FTGoalKey.INTERSECT_COUNT, FTGoalKey.INTERSECT_CSV),
     CLUSTER_METHOD("clusterMethod", new MethodConfigParamInfo(SimpleAggloClustering.Method.SINGLE_LINKAGE), FTGoalKey.DENDROGRAM),
     WITH_CHILD_COUNTS("withChildCounts", new ConfigParamInfo.BooleanConfigParamInfo(false), FTGoalKey.INTERSECT_COUNT),
