@@ -52,16 +52,16 @@ In addition, refinement can be enforced for specific tax ids as well.
 
 ### Generating and optimizing the sample database
 
-The Genestrip-FT installation holds additional folders for the sample project `virus`. The project allows for generating a Genestrip database covering all *k*-mers for all viruses from the RefSeq.
+The Genestrip-FT installation holds additional folders for the sample project `virus`. The project allows for generating a Genestrip database covering all *k*-mers for all genomes of viruses from the RefSeq.
 
 After building Genestrip-FT, you may call
 `sh ./bin/genestrip-ft.sh virus ftdbinfo`
 in order to generate the basic *and the optimized* `virus` database and create CSV files with information on their content.
 The optimized database file `virus_ftdb.zip` will be stored under `./data/projects/virus/db` and the respective CSV file `virus_ftdbinfo.csv` will be stored under `./data/projects/virus/csv`
 
-When comparing the CSV file `virus_dbinfo.csv` with the optimized database's info file `virus_ftdbinfo.csv` you will
+When comparing the CSV file `virus_dbinfo.csv` with the optimized database's info file `virus_ftdbinfo.csv`, you will
 notice additional entries reflecting the refined taxonomy under genus rank.
-E.g., when comparing the two files the following entries changed from
+E.g., when comparing the two files, the following entries changed from
 ```
 9;Orthopoxvirus;genus;10242;350507;
 10;Orthopoxvirus vaccinia;species;10245;37726;
@@ -80,9 +80,9 @@ to
 16;Horsepox virus;no rank;397342;39804;
 ...
 ```
-This indicates that additional artificial tree nodes were created and $k$-mers
+This indicates that additional artificial tree nodes were created and *k*-mers
 from taxid `10242` were pushed down for example to the artifical taxid `0002648`
-that combines the original two entries with tax ids `10245` and `397342`.
+that combines the original two entries with the tax ids `10245` and `397342`.
 
 ## Examining intermediate results
 
@@ -99,8 +99,8 @@ A corresponding extract is meant to be embedded in a [LaTeX](https://www.latex-p
 
 You may apply the two goals to the included sample project `virus` via
 `sh ./bin/genestrip-ft.sh virus intersectcsv dendrolatex`. This generates over 2.900 LaTeX extract files
-in total for various virus genera and just as many CSV files.
-E.g., the following dendrogram is derived from the generated file `virus_dendrolatex_10242.tex`:
+in total for various virus genera (but also the CSV-files with counts for *k*-mer intersections).
+E.g., the following dendrogram was produced via a corresponding file `virus_dendrolatex_10242.tex`:
 <p align="center">
   <img src="virus_dendrolatex_10242.svg" width="1400"/>
 </p>
@@ -119,7 +119,7 @@ To build it, `cd` to the installation directory `genestrip-ft`. Given a matching
 
 ### Usage and goals
 
-The usage of Genestrip-FT:
+The usage of Genestrip-FT is [the same as for Genestrip](https://github.com/pfeiferd/genestrip?tab=readme-ov-file#usage-and-goals):
 ```
 usage: genestrip-ft [options] <project> [<goal1> <goal2>...]
  -C <key>=<value>           To set Genestrip configuration paramaters via
