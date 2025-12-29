@@ -148,7 +148,7 @@ public class DengrogramLaTeXGoal<P extends FTProject> extends FileListGoal<P> {
                         out.print(children[index].getName());
                         out.print(" (");
                         out.print(children[index].getTaxId());
-                        out.println(");");
+                        out.println(")");
                     }
                     else {
                         out.print("OTHER");

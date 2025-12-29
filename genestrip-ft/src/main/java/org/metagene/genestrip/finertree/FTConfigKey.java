@@ -36,6 +36,7 @@ import java.lang.annotation.Annotation;
 import java.util.*;
 
 public enum FTConfigKey implements ConfigKey {
+    @MDDescription("The ranks for which the taxonomy tree is supposed to be refined.")
     REFINEMENT_RANKS("refinementRanks", new ConfigParamInfo.ListConfigParamInfo<Rank>(Collections.unmodifiableList(Arrays.asList(Rank.GENUS, Rank.SPECIES_GROUP, Rank.SUBGENUS))) {
         @Override
         public String getTypeDescriptor() {
@@ -64,7 +65,7 @@ public enum FTConfigKey implements ConfigKey {
             boolean first = true;
             for (Rank e : Rank.values()) {
                 if (!first) {
-                    sb.append(',');
+                    sb.append(", ");
                 }
                 first = false;
                 sb.append('`');
@@ -75,12 +76,18 @@ public enum FTConfigKey implements ConfigKey {
         }
 
     }, FTGoalKey.KMER_INDEX_BLOOM, FTGoalKey.DENDRO_LATEX, FTGoalKey.INTERSECT_COUNT, FTGoalKey.INTERSECT_CSV),
+    @MDDescription("The cluster distance to be used when performing agglomerative clustering.")
     CLUSTER_METHOD("clusterMethod", new MethodConfigParamInfo(SimpleAggloClustering.Method.SINGLE_LINKAGE), FTGoalKey.DENDROGRAM),
-    WITH_CHILD_COUNTS("withChildCounts", new ConfigParamInfo.BooleanConfigParamInfo(false), FTGoalKey.INTERSECT_COUNT),
+    @MDDescription("Whether to include the *k*-mer counts of *all* descendents for any two considered species in the denominator of the Jaccard-index. If not, only the *k*-mer counts right for the two considered species are used.")
+    WITH_DESCENDANT_COUNTS("withDescendantCounts", new ConfigParamInfo.BooleanConfigParamInfo(false), FTGoalKey.INTERSECT_COUNT),
+    @MDDescription("Whether the dendrogram in LaTeX has the species names aligned horizontally (with the entired diagram turned) or not.")
     TURN_LATEX("turnLatex", new ConfigParamInfo.BooleanConfigParamInfo(true), FTGoalKey.DENDRO_LATEX),
+    @MDDescription("The factory for stretching the dendrogram in tikz's native *x* coordinate.")
     X_FACTOR_LATEX("xFactorLatex", new ConfigParamInfo.DoubleConfigParamInfo(0, Double.MAX_VALUE, 1), FTGoalKey.DENDRO_LATEX),
+    @MDDescription("The factory for stretching the dendrogram in tikz's native *y* coordinate.")
     Y_FACTOR_LATEX("yFactorLatex", new ConfigParamInfo.DoubleConfigParamInfo(0, Double.MAX_VALUE, 8), FTGoalKey.DENDRO_LATEX),
-    FT_BLOOM_FILTER_FPP("ftBloomFilterFpp", new ConfigParamInfo.DoubleConfigParamInfo(0, 1, 0.001d), true, FTGoalKey.KMER_INDEX_BLOOM);
+    @MDDescription("False positive probability of the Bloom filter used in Genestrip-FT.")
+    FT_BLOOM_FILTER_FPP("ftBloomFilterFpp", new ConfigParamInfo.DoubleConfigParamInfo(0, 1, 0.001d), false, FTGoalKey.KMER_INDEX_BLOOM);
 
 
     private final String name;

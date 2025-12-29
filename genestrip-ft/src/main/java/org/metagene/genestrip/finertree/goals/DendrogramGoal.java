@@ -52,7 +52,7 @@ public class DendrogramGoal<P extends FTProject> extends ObjectGoal<Map<SmallTax
         KMerIntersectCountGoal.IntersectionsPerNode intersections = kmerIntersectGoal.get();
         SimpleAggloClustering.Method method = (SimpleAggloClustering.Method) configValue(FTConfigKey.CLUSTER_METHOD);
         SimpleAggloClustering clustering = new SimpleAggloClustering(method);
-        boolean withChildCounts = booleanConfigValue(FTConfigKey.WITH_CHILD_COUNTS);
+        boolean withChildCounts = booleanConfigValue(FTConfigKey.WITH_DESCENDANT_COUNTS);
         for (SmallTaxTree.SmallTaxIdNode parent : intersections.getParentNodes()) {
             DendrogramNode node = clustering.cluster(new Similarity() {
                 @Override
