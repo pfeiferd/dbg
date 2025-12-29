@@ -1,26 +1,26 @@
 /*
- * 
+ *
  * “Commons Clause” License Condition v1.0
- * 
- * The Software is provided to you by the Licensor under the License, 
+ *
+ * The Software is provided to you by the Licensor under the License,
  * as defined below, subject to the following condition.
- * 
- * Without limiting other conditions in the License, the grant of rights under the License 
+ *
+ * Without limiting other conditions in the License, the grant of rights under the License
  * will not include, and the License does not grant to you, the right to Sell the Software.
- * 
- * For purposes of the foregoing, “Sell” means practicing any or all of the rights granted 
- * to you under the License to provide to third parties, for a fee or other consideration 
- * (including without limitation fees for hosting or consulting/ support services related to 
- * the Software), a product or service whose value derives, entirely or substantially, from the 
- * functionality of the Software. Any license notice or attribution required by the License 
+ *
+ * For purposes of the foregoing, “Sell” means practicing any or all of the rights granted
+ * to you under the License to provide to third parties, for a fee or other consideration
+ * (including without limitation fees for hosting or consulting/ support services related to
+ * the Software), a product or service whose value derives, entirely or substantially, from the
+ * functionality of the Software. Any license notice or attribution required by the License
  * must also include this Commons Clause License Condition notice.
- * 
+ *
  * Software: genestrip-ft
- * 
+ *
  * License: Apache 2.0
- * 
+ *
  * Licensor: Daniel Pfeifer (daniel.pfeifer@progotec.de)
- * 
+ *
  */
 package org.metagene.genestrip.finertree;
 
@@ -37,45 +37,49 @@ import java.util.*;
 
 public enum FTConfigKey implements ConfigKey {
     REFINEMENT_RANKS("refinementRanks", new ConfigParamInfo.ListConfigParamInfo<Rank>(Collections.unmodifiableList(Arrays.asList(Rank.GENUS, Rank.SPECIES_GROUP, Rank.SUBGENUS))) {
-                @Override
-                protected List<Rank> fromString(String qs) {
-                    List<Rank> res = new ArrayList<Rank>();
-                    if (qs != null) {
-                        StringTokenizer tokenizer = new StringTokenizer(qs, ",;");
-                        while (tokenizer.hasMoreTokens()) {
-                            Rank r = Rank.valueOf(tokenizer.nextToken().trim());
-                            if (r != null) {
-                                res.add(r);
-                            }
-                        }
-                    }
-                    return res;
-                }
+        @Override
+        public String getTypeDescriptor() {
+            return "comma-separated list of values";
+        }
 
-                @Override
-                public String getMDRangeDescriptor() {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("subset of { ");
-                    boolean first = true;
-                    for (Rank e : Rank.values()) {
-                        if (!first) {
-                            sb.append(',');
-                        }
-                        first = false;
-                        sb.append('`');
-                        sb.append(e.getName());
-                        sb.append('`');
+        @Override
+        protected List<Rank> fromString(String qs) {
+            List<Rank> res = new ArrayList<Rank>();
+            if (qs != null) {
+                StringTokenizer tokenizer = new StringTokenizer(qs, ",;");
+                while (tokenizer.hasMoreTokens()) {
+                    Rank r = Rank.valueOf(tokenizer.nextToken().trim());
+                    if (r != null) {
+                        res.add(r);
                     }
-                    sb.append(" }");
-                    return sb.toString();
                 }
+            }
+            return res;
+        }
 
-            }, FTGoalKey.KMER_INDEX_BLOOM, FTGoalKey.DENDRO_LATEX, FTGoalKey.INTERSECT_COUNT, FTGoalKey.INTERSECT_CSV),
+        @Override
+        public String getMDRangeDescriptor() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("subset of ");
+            boolean first = true;
+            for (Rank e : Rank.values()) {
+                if (!first) {
+                    sb.append(',');
+                }
+                first = false;
+                sb.append('`');
+                sb.append(e.getName());
+                sb.append('`');
+            }
+            return sb.toString();
+        }
+
+    }, FTGoalKey.KMER_INDEX_BLOOM, FTGoalKey.DENDRO_LATEX, FTGoalKey.INTERSECT_COUNT, FTGoalKey.INTERSECT_CSV),
     CLUSTER_METHOD("clusterMethod", new MethodConfigParamInfo(SimpleAggloClustering.Method.SINGLE_LINKAGE), FTGoalKey.DENDROGRAM),
     WITH_CHILD_COUNTS("withChildCounts", new ConfigParamInfo.BooleanConfigParamInfo(false), FTGoalKey.INTERSECT_COUNT),
     TURN_LATEX("turnLatex", new ConfigParamInfo.BooleanConfigParamInfo(true), FTGoalKey.DENDRO_LATEX),
-    X_FACTOR_LATEX("xFactorLatex",new ConfigParamInfo.DoubleConfigParamInfo(0,Double.MAX_VALUE, 1), FTGoalKey.DENDRO_LATEX),
-    Y_FACTOR_LATEX("yFactorLatex", new ConfigParamInfo.DoubleConfigParamInfo(0,Double.MAX_VALUE, 8), FTGoalKey.DENDRO_LATEX),
+    X_FACTOR_LATEX("xFactorLatex", new ConfigParamInfo.DoubleConfigParamInfo(0, Double.MAX_VALUE, 1), FTGoalKey.DENDRO_LATEX),
+    Y_FACTOR_LATEX("yFactorLatex", new ConfigParamInfo.DoubleConfigParamInfo(0, Double.MAX_VALUE, 8), FTGoalKey.DENDRO_LATEX),
     FT_BLOOM_FILTER_FPP("ftBloomFilterFpp", new ConfigParamInfo.DoubleConfigParamInfo(0, 1, 0.001d), true, FTGoalKey.KMER_INDEX_BLOOM);
 
 
