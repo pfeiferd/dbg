@@ -28,13 +28,15 @@ import org.metagene.genestrip.GSGoalKey;
 import org.metagene.genestrip.GSMaker;
 import org.metagene.genestrip.finertree.cluster.DendrogramNode;
 import org.metagene.genestrip.finertree.goals.*;
-import org.metagene.genestrip.goals.LoadDBGoal;
+import org.metagene.genestrip.goals.*;
 import org.metagene.genestrip.goals.refseq.RefSeqFnaFilesDownloadGoal;
 import org.metagene.genestrip.goals.refseq.StoreDBGoal;
+import org.metagene.genestrip.io.StreamingResourceStream;
 import org.metagene.genestrip.make.FileGoal;
 import org.metagene.genestrip.make.FileListGoal;
 import org.metagene.genestrip.make.Goal;
 import org.metagene.genestrip.make.ObjectGoal;
+import org.metagene.genestrip.match.MatchingResult;
 import org.metagene.genestrip.refseq.AccessionMap;
 import org.metagene.genestrip.refseq.RefSeqCategory;
 import org.metagene.genestrip.store.Database;
@@ -46,8 +48,19 @@ import java.io.IOException;
 import java.util.*;
 
 public class FinerTreeMaker<P extends FTProject> extends GSMaker<P> {
+    private boolean useFTDBForAPI;
+
     public FinerTreeMaker(P project) {
         super(project);
+        setUseFTDBForAPI(false);
+    }
+
+    public void setUseFTDBForAPI(boolean useFTDBForAPI) {
+        this.useFTDBForAPI = useFTDBForAPI;
+    }
+
+    public boolean isUseFTDBForAPI() {
+        return useFTDBForAPI;
     }
 
     @Override
@@ -107,13 +120,37 @@ public class FinerTreeMaker<P extends FTProject> extends GSMaker<P> {
                 project.getOutputFile(FTGoalKey.FTDB.getName(), P.GSFileType.DB, false), updateStoreGoal);
         registerGoal(storeUpdatedDBGoal);
 
-        LoadDBGoal<P> loadDBGoal = new LoadDBGoal(project, FTGoalKey.LOAD_FTDB, updateStoreGoal, storeUpdatedDBGoal);
-        registerGoal(loadDBGoal);
+        LoadDBGoal<P> loadFTDBGoal = new LoadDBGoal(project, FTGoalKey.LOAD_FTDB, updateStoreGoal, storeUpdatedDBGoal);
+        registerGoal(loadFTDBGoal);
 
-        FTDBInfoGoal infoGoal = new FTDBInfoGoal(project, loadDBGoal);
+        FTDBInfoGoal infoGoal = new FTDBInfoGoal(project, loadFTDBGoal);
         registerGoal(infoGoal);
 
         FileGoal<P> allInOneLaTeXGoal = new AllInOneLaTeXGoal(project, laTeXGoal, projectSetupGoal);
         registerGoal(allInOneLaTeXGoal);
+
+        ObjectGoal<Map<String, StreamingResourceStream>, P> fastqMapTransfGoal = (ObjectGoal<Map<String, StreamingResourceStream>, P>) getGoal(GSGoalKey.FASTQ_MAP_TRANSFORM);
+        FastqDownloadsGoal<P> fastqDownloadsGoal = (FastqDownloadsGoal<P>) getGoal(GSGoalKey.FASTQ_DOWNLOAD);
+
+        ObjectGoal<Map<String, MatchingResult>, P> ftmatchResGoal = new MatchResultGoal(getProject(), FTGoalKey.FTMATCHRES, fastqMapTransfGoal, loadFTDBGoal,
+                getExecutionContext(getProject()), projectSetupGoal, fastqDownloadsGoal);
+        registerGoal(ftmatchResGoal);
+
+        Goal<P> ftmatchGoal = new MatchGoal(project, FTGoalKey.FTMATCH, fastqMapTransfGoal, ftmatchResGoal, projectSetupGoal);
+        registerGoal(ftmatchGoal);
+
+        ObjectGoal<Set<SmallTaxTree.SmallTaxIdNode>, P> db2fastqTaxNodesGoal = (ObjectGoal<Set<SmallTaxTree.SmallTaxIdNode>, P>) getGoal(GSGoalKey.DB2FASTQ_TAXIDS);
+        Goal<P> db2fastqGoal = new DB2FastqGoal(project, FTGoalKey.FTDB2FASTQ, db2fastqTaxNodesGoal, loadFTDBGoal, projectSetupGoal);
+        registerGoal(db2fastqGoal);
+    }
+
+    @Override
+    protected LoadDBGoal<P> getLoadDBGoal() {
+        if (isUseFTDBForAPI()) {
+            return (LoadDBGoal) getGoal(FTGoalKey.LOAD_FTDB);
+        }
+        else {
+            return super.getLoadDBGoal();
+        }
     }
 }

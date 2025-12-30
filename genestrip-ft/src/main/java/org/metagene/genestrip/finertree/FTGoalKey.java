@@ -56,7 +56,13 @@ public enum FTGoalKey implements GoalKey {
     @MDDescription("Load the updated database.")
     LOAD_FTDB("loadftdb"),
     @MDDescription("Merge a project's LaTeX extracts from `dendrolatex` into one LaTeX document.")
-    ALLINONE_LATEX("allinonelatex", true);
+    ALLINONE_LATEX("allinonelatex", true),
+    @MDDescription("Analyze fastq files according to Genestrip's `matchres` but with a Genestrip-FT database instead.")
+    FTMATCHRES("ftmatchres"),
+    @MDDescription("Analyze fastq files according to Genestrip's `match` but with a Genestrip-FT database instead.")
+    FTMATCH("ftmatch", true),
+    @MDDescription("Generate fastq files according to Genestrip's `db2fastq` but from a Genestrip-FT database instead.")
+    FTDB2FASTQ("ftdb2fastq", true);
 
     private final boolean forUser;
     private final String name;

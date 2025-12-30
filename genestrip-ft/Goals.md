@@ -13,3 +13,6 @@
 |`ftdbinfo`|X|Write information on the updated database content to a CSV file.|
 |`loadftdb`||Load the updated database.|
 |`allinonelatex`|X|Merge a project's LaTeX extracts from `dendrolatex` into one LaTeX document.|
+|`ftmatchres`||Analyze fastq files according to Genestrip's `matchres` but with a Genestrip-FT database instead.|
+|`ftmatch`|X|Analyze fastq files according to Genestrip's `match` but with a Genestrip-FT database instead.|
+|`ftdb2fastq`|X|Generate fastq files according to Genestrip's `db2fastq` but from a Genestrip-FT database instead.|
