@@ -85,11 +85,14 @@ public class DengrogramLaTeXGoal<P extends FTProject> extends FileListGoal<P> {
 
         double yScaleFactor = doubleConfigValue(FTConfigKey.Y_FACTOR_LATEX);
         double xScaleFactor = doubleConfigValue(FTConfigKey.X_FACTOR_LATEX);
+        double tikzScale = doubleConfigValue(FTConfigKey.TIKZ_SCALE_FACTOR);
         boolean turn = booleanConfigValue(FTConfigKey.TURN_LATEX);
 
         try (PrintStream out = new PrintStream(StreamProvider.getOutputStreamForFile(file))) {
             out.println("\\begin{figure}");
-            out.println("\\begin{tikzpicture}[sloped,scale=1]");
+            out.print("\\begin{tikzpicture}[sloped,scale=");
+            out.print(DF2.format(tikzScale));
+            out.println("]");
             drawAxis(out, xScaleFactor, yScaleFactor, turn);
             drawDendrogram(out, parent, dendrogram, xScaleFactor, yScaleFactor, turn);
             out.println("\\end{tikzpicture}");

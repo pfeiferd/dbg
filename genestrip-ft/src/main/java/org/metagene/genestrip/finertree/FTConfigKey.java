@@ -86,8 +86,12 @@ public enum FTConfigKey implements ConfigKey {
     X_FACTOR_LATEX("xFactorLatex", new ConfigParamInfo.DoubleConfigParamInfo(0, Double.MAX_VALUE, 1), FTGoalKey.DENDRO_LATEX),
     @MDDescription("The factory for stretching the dendrogram in TikZ's native *y* coordinate.")
     Y_FACTOR_LATEX("yFactorLatex", new ConfigParamInfo.DoubleConfigParamInfo(0, Double.MAX_VALUE, 8), FTGoalKey.DENDRO_LATEX),
+    @MDDescription("The factor for `scale` in the 'tikzpicture' environment of a LaTex dendrogram.")
+    TIKZ_SCALE_FACTOR("tikzScaleFactor", new ConfigParamInfo.DoubleConfigParamInfo(0, Double.MAX_VALUE, 1), FTGoalKey.DENDRO_LATEX),
     @MDDescription("False positive probability of the Bloom filter used in Genestrip-FT.")
-    FT_BLOOM_FILTER_FPP("ftBloomFilterFpp", new ConfigParamInfo.DoubleConfigParamInfo(0, 1, 0.001d), false, FTGoalKey.KMER_INDEX_BLOOM);
+    FT_BLOOM_FILTER_FPP("ftBloomFilterFpp", new ConfigParamInfo.DoubleConfigParamInfo(0, 1, 0.001d), false, FTGoalKey.KMER_INDEX_BLOOM),
+    @MDDescription("Maximum number of dendrograms put in one LaTeX file via the goal `allinonelatex`.")
+    ALLINONE_CHUNK_SIZE("allInOneChunkSize", new ConfigParamInfo.IntConfigParamInfo(1, Integer.MAX_VALUE, 100));
 
 
     private final String name;

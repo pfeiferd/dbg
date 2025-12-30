@@ -87,7 +87,7 @@ that combines the original two entries with the tax ids `10245` and `397342`.
 ## Examining intermediate results
 
 The counts for *k*-mer intersections and the associated matrix with the Jaccard-indices from step 2 from above can be written
-to a CSV-file via the goal `intersectcsv`. A separate CSV-file will be written for each affected genus.
+to a CSV file via the goal `intersectcsv`. A separate CSV file will be written for each affected genus.
 The corresponding files will be saved under `<base dir>/projects/<project_name>/csv` following the
 pattern `<project_name>_intersectcsv_<genus_tax_id>.csv`.
 
@@ -99,7 +99,7 @@ A corresponding extract is meant to be embedded in a [LaTeX](https://www.latex-p
 
 You may apply the two goals to the included sample project `virus` via
 `sh ./bin/genestrip-ft.sh virus intersectcsv dendrolatex`. This generates over 2.900 LaTeX extract files
-in total for various virus genera (but also the CSV-files with counts for *k*-mer intersections).
+in total for various virus genera (but also the CSV files with counts for *k*-mer intersections).
 E.g., the following dendrogram was produced via a corresponding file `virus_dendrolatex_10242.tex`:
 <p align="center">
   <img src="virus_dendrolatex_10242.svg" width="1400"/>

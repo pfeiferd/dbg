@@ -41,7 +41,7 @@ public enum FTGoalKey implements GoalKey {
     KMER_INDEX_BLOOM("kmerindexbloom"),
     @MDDescription("Count the number of joint *k*-mers between any two species per genus rank (and potentially other ranks depending on configuration).")
     INTERSECT_COUNT("intersectcount"),
-    @MDDescription("Save the number of joint *k*-mers between any two species per genus rank (and potentially other ranks depending on configuration) to CSV files along with derived Jaccard-indices.")
+    @MDDescription("Save the number of joint *k*-mers between any two species per genus rank (and potentially other ranks depending on configuration) to CSV files along with resulting Jaccard-indices.")
     INTERSECT_CSV("intersectcsv", true),
     @MDDescription("Load the Bloom filter computed via the goal `kmerindexbloom`.")
     LOAD_KMER_INDEX("loadkmerindex"),
