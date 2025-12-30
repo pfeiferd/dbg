@@ -31,18 +31,31 @@ import java.io.PrintStream;
 import java.lang.annotation.Annotation;
 
 public enum FTGoalKey implements GoalKey {
+    @MDDescription("Create additional folders in `<base dir>/<project>` like `tex`.")
     FTSETUP("ftsetup"),
+    @MDDescription("Generate the dendrograms from *k*-mer intersection counts using agglomerative clustering.")
     DENDROGRAM("dendrogram"),
+    @MDDescription("Generate LaTeX extracts for depicting the dendrograms from `dendrogram`.")
     DENDRO_LATEX("dendrolatex", true),
+    @MDDescription("Store which *k*-mers belongs to which species for all *k*-mers under the rank genus (and potentially other ranks depending on configuration) in a Bloom filter.")
     KMER_INDEX_BLOOM("kmerindexbloom"),
+    @MDDescription("Count the number of joint *k*-mers between any two species per genus rank (and potentially other ranks depending on configuration).")
     INTERSECT_COUNT("intersectcount"),
+    @MDDescription("Save the number of joint *k*-mers between any two species per genus rank (and potentially other ranks depending on configuration) to CSV files along with derived Jaccard-indices.")
     INTERSECT_CSV("intersectcsv", true),
+    @MDDescription("Load the Bloom filter computed via the goal `kmerindexbloom`.")
     LOAD_KMER_INDEX("loadkmerindex"),
+    @MDDescription("Store the Bloom filter computed via the goal `kmerindexbloom`.")
     STORE_KMER_INDEX("storekmerindex"),
+    @MDDescription("Update the database by integrating the refined taxonomy tree and reassigning *k*-mers under the genus ranks accordingly.")
     UPDATE_STORE_GOAL("updatestore"),
+    @MDDescription("Store the updated database.")
     FTDB("ftdb", true),
+    @MDDescription("Write information on the updated database content to a CSV file.")
     FTDBINFO("ftdbinfo", true),
+    @MDDescription("Load the updated database.")
     LOAD_FTDB("loadftdb"),
+    @MDDescription("Merge a project's LaTeX extracts from `dendrolatex` into one LaTeX document.")
     ALLINONE_LATEX("allinonelatex", true);
 
     private final boolean forUser;
