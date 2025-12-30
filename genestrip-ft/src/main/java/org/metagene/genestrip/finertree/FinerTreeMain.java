@@ -29,7 +29,7 @@ import org.metagene.genestrip.*;
 import java.io.File;
 import java.util.Properties;
 
-public class FinerTreeMain<P extends FTProject> extends Main<P> {
+public abstract class FinerTreeMain<P extends FTProject> extends Main<P> {
     @Override
     protected FinerTreeMaker<P> createMaker(P project) {
         return new FinerTreeMaker<P>(project);

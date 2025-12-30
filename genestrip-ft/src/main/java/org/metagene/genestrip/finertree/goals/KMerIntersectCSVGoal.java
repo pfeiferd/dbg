@@ -24,6 +24,7 @@
  */
 package org.metagene.genestrip.finertree.goals;
 
+import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import org.metagene.genestrip.GSConfigKey;
 import org.metagene.genestrip.GSProject;
 import org.metagene.genestrip.finertree.FTConfigKey;
@@ -60,8 +61,9 @@ public class KMerIntersectCSVGoal<P extends FTProject> extends FileListGoal<P> {
     @Override
     // Do not access kmerIntersectGoal here as it would trigger the related computation already...
     protected void provideFiles() {
-        SmallTaxTree tree = storeGoal.get().getTaxTree();
-        Collection<SmallTaxTree.SmallTaxIdNode> parents = getNodesWithRanks(tree, (Collection<Rank>) configValue(FTConfigKey.REFINEMENT_RANKS));
+        Database database = storeGoal.get();
+        SmallTaxTree tree = database.getTaxTree();
+        Collection<SmallTaxTree.SmallTaxIdNode> parents = getNodesWithRanks(database, (Collection<Rank>) configValue(FTConfigKey.REFINEMENT_RANKS));
         List<String> taxids = (List<String>) configValue(GSConfigKey.TAX_IDS);
         for (String taxid : taxids) {
             SmallTaxTree.SmallTaxIdNode parentNode = tree.getNodeByTaxId(taxid);
@@ -121,20 +123,23 @@ public class KMerIntersectCSVGoal<P extends FTProject> extends FileListGoal<P> {
         }
     }
 
-    public static Collection<SmallTaxTree.SmallTaxIdNode> getNodesWithRanks(SmallTaxTree tree, Collection<Rank> ranks) {
+    public static Collection<SmallTaxTree.SmallTaxIdNode> getNodesWithRanks(Database database, Collection<Rank> ranks) {
         Collection<SmallTaxTree.SmallTaxIdNode> res = new ArrayList<>();
         boolean [] ranksToRefine = new boolean[Rank.values().length];
         for (Rank r : ranks) {
             ranksToRefine[r.ordinal()] = true;
         }
 
-        Iterator<SmallTaxTree.SmallTaxIdNode> it = tree.iterator();
+        Object2LongMap<String> stats = database.getStats();
+        Iterator<SmallTaxTree.SmallTaxIdNode> it = database.getTaxTree().iterator();
         while (it.hasNext()) {
             SmallTaxTree.SmallTaxIdNode node = it.next();
             int r = node.getRankOrdinal();
             if (node != null && r > 0 && ranksToRefine[r]) {
                 if (node.getSubNodes() != null && node.getSubNodes().length > 0) {
-                    res.add(node);
+                    if (stats.getOrDefault(node.getTaxId(), 0) > 0) {
+                        res.add(node);
+                    }
                 }
             }
         }

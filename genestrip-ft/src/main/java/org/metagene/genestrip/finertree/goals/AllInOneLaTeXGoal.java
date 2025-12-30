@@ -27,11 +27,13 @@ public class AllInOneLaTeXGoal<P extends FTProject>  extends FileGoal<P> {
         int stepSize = intConfigValue(FTConfigKey.ALLINONE_CHUNK_SIZE);
         List<File> res = new ArrayList<>();
         for (int i = 0; i < total; i += stepSize) {
-            res.add(getProject().getOutputFile(getKey().getName(), Integer.toString(i), null, FTProject.FTFileType.TEX, false));
+            File outputFile = getProject().getOutputFile(getKey().getName(), Integer.toString(i), null, FTProject.FTFileType.TEX, false);
+            res.add(outputFile);
             List<File> inFiles = new ArrayList<>();
-            for (int j = i; j < stepSize && j < total; j++) {
+            for (int j = i; j < i + stepSize && j < total; j++) {
                 inFiles.add(files.get(j));
             }
+            outToInFiles.put(outputFile, inFiles);
         }
         return res;
     }

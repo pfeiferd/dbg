@@ -62,8 +62,9 @@ public class DengrogramLaTeXGoal<P extends FTProject> extends FileListGoal<P> {
     @Override
     // Do not access kmerIntersectGoal here as it would trigger the related computation already...
     protected void provideFiles() {
-        SmallTaxTree tree = storeGoal.get().getTaxTree();
-        Collection<SmallTaxTree.SmallTaxIdNode> parents = KMerIntersectCSVGoal.getNodesWithRanks(tree, (Collection<Rank>) configValue(FTConfigKey.REFINEMENT_RANKS));
+        Database database = storeGoal.get();
+        SmallTaxTree tree = database.getTaxTree();
+        Collection<SmallTaxTree.SmallTaxIdNode> parents = KMerIntersectCSVGoal.getNodesWithRanks(database, (Collection<Rank>) configValue(FTConfigKey.REFINEMENT_RANKS));
         List<String> taxids = (List<String>) configValue(GSConfigKey.TAX_IDS);
         for (String taxid : taxids) {
             SmallTaxTree.SmallTaxIdNode parentNode = tree.getNodeByTaxId(taxid);

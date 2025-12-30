@@ -91,7 +91,7 @@ public enum FTConfigKey implements ConfigKey {
     @MDDescription("False positive probability of the Bloom filter used in Genestrip-FT.")
     FT_BLOOM_FILTER_FPP("ftBloomFilterFpp", new ConfigParamInfo.DoubleConfigParamInfo(0, 1, 0.001d), false, FTGoalKey.KMER_INDEX_BLOOM),
     @MDDescription("Maximum number of dendrograms put in one LaTeX file via the goal `allinonelatex`.")
-    ALLINONE_CHUNK_SIZE("allInOneChunkSize", new ConfigParamInfo.IntConfigParamInfo(1, Integer.MAX_VALUE, 100));
+    ALLINONE_CHUNK_SIZE("allInOneChunkSize", new ConfigParamInfo.IntConfigParamInfo(1, Integer.MAX_VALUE, 50));
 
 
     private final String name;
