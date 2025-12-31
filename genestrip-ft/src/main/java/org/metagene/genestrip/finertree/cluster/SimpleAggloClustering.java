@@ -56,7 +56,7 @@ public class SimpleAggloClustering {
         int bestI = 0;
         int bestJ;
         for (int k = 0; k < clusters.length - 1; k++) {
-            bestSim = 0;
+            bestSim = -1; // Can't be zero, cause zero might occur as actual similarity value...
             bestI = 0;
             bestJ = 0;
             for (int i = 0; i < clusters.length; i++) {
