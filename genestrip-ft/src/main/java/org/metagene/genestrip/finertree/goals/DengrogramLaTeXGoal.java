@@ -24,6 +24,7 @@
  */
 package org.metagene.genestrip.finertree.goals;
 
+import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import org.metagene.genestrip.GSConfigKey;
 import org.metagene.genestrip.finertree.FTConfigKey;
 import org.metagene.genestrip.finertree.FTGoalKey;
@@ -45,12 +46,14 @@ import java.text.DecimalFormatSymbols;
 import java.util.*;
 
 public class DengrogramLaTeXGoal<P extends FTProject> extends FileListGoal<P> {
+    protected static final DecimalFormat LDF = new DecimalFormat("#,###", new DecimalFormatSymbols(Locale.US));
     private static final DecimalFormat DF = new DecimalFormat("0.000000", new DecimalFormatSymbols(Locale.US));
     private static final DecimalFormat DF2 = new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.US));
 
     private final ObjectGoal<Database, P> storeGoal;
     private final ObjectGoal<Map<SmallTaxTree.SmallTaxIdNode, DendrogramNode>, P> dendrogramGoal;
     private final Map<File, SmallTaxTree.SmallTaxIdNode> fileToNodeMap;
+    private Object2LongMap<String> stats;
 
     public DengrogramLaTeXGoal(P project, ObjectGoal<Database, P> storeGoal, ObjectGoal<Map<SmallTaxTree.SmallTaxIdNode, DendrogramNode>, P> dendrogramGoal, Goal<P>... deps) {
         super(project, FTGoalKey.DENDRO_LATEX, (List<File>) null, append(deps, storeGoal, dendrogramGoal));
@@ -63,6 +66,7 @@ public class DengrogramLaTeXGoal<P extends FTProject> extends FileListGoal<P> {
     // Do not access kmerIntersectGoal here as it would trigger the related computation already...
     protected void provideFiles() {
         Database database = storeGoal.get();
+        stats = database.getStats();
         SmallTaxTree tree = database.getTaxTree();
         Collection<SmallTaxTree.SmallTaxIdNode> parents = KMerIntersectCSVGoal.getNodesWithRanks(database, (Collection<Rank>) configValue(FTConfigKey.REFINEMENT_RANKS));
         List<String> taxids = (List<String>) configValue(GSConfigKey.TAX_IDS);
@@ -105,6 +109,9 @@ public class DengrogramLaTeXGoal<P extends FTProject> extends FileListGoal<P> {
             if (parent.getRank() != null) {
                 out.print(" [");
                 out.print(parent.getRank().getName());
+                out.print(" with ");
+                out.print(LDF.format(stats.getOrDefault(parent.getTaxId(), 0)));
+                out.print(" $k$-mers");
                 out.print("]");
             }
             out.print("\\label{dendrogram");

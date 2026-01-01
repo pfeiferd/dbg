@@ -42,16 +42,18 @@ public class AllInOneLaTeXGoal<P extends FTProject>  extends FileGoal<P> {
     protected void makeFile(File file) throws IOException {
         try (FileOutputStream out = new FileOutputStream(file)) {
             try (PrintStream pout = new PrintStream(out)) {
-                pout.println("\\documentclass[border=0]{standalone}");
+                //pout.println("\\documentclass[border=0]{standalone}");
+                pout.println("\\documentclass{article}");
+                pout.println("\\usepackage[paperwidth=21cm,paperheight=200cm,margin=1cm]{geometry}");
                 pout.println("\\usepackage{tikz}");
                 pout.println("\\begin{document}");
-                pout.println("\\begin{minipage}{21cm}");
+                //pout.println("\\begin{minipage}{21cm}");
                 pout.flush();
                 for (File latexFile : outToInFiles.get(file)) {
                     Files.copy(latexFile.toPath(), out);
                 }
                 out.flush();
-                pout.println("\\end{minipage}");
+                //pout.println("\\end{minipage}");
                 pout.println("\\end{document}");
             }
         }
