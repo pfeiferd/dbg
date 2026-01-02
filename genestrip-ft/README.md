@@ -102,14 +102,14 @@ You may apply the two goals to the included sample project `virus` via
 in total for various virus genera (but also the CSV files with counts for *k*-mer intersections).
 E.g., the following dendrogram was produced via a corresponding file `virus_dendrolatex_10242.tex`:
 <p align="center">
-  <img src="virus_dendrolatex_10242.svg" width="1400"/>
+  <img src="dendrogram_10242.svg" width="1400"/>
 </p>
 
 The following dendrogram results from applying the goal `dendrolatex` to the Genestrip project `borrelia` from [Genestrip-DB](https://github.com/pfeiferd/genestrip-db/).
 As it is based on the *k*-mers shared between any two species under the genus Borreliella, it forms a phylogenetic tree.
 Indeed, the tree's structure is very similar to [the phylogenetic tree for Borreliella established by current research](https://doi.org/10.3390/life13040972).
 <p align="center">
-  <img src="borrelia_dendrolatex_???.svg" width="1400"/>
+  <img src="dendrogram_64895.svg" width="1400"/>
 </p>
 
 
