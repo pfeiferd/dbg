@@ -6,4 +6,6 @@
 |`turnLatex`|boolean||`true`|Whether the dendrogram in LaTeX has the species names aligned horizontally (with the entired diagram turned) or not.|`dendrolatex`|
 |`xFactorLatex`|double|[0.0, 1.7976931348623157E308]|`1.0`|The factory for stretching the dendrogram in TikZ's native *x* coordinate.|`dendrolatex`|
 |`yFactorLatex`|double|[0.0, 1.7976931348623157E308]|`8.0`|The factory for stretching the dendrogram in TikZ's native *y* coordinate.|`dendrolatex`|
+|`tikzScaleFactor`|double|[0.0, 1.7976931348623157E308]|`1.0`|The factor for `scale` in the 'tikzpicture' environment of a LaTex dendrogram.|`dendrolatex`|
 |`ftBloomFilterFpp`|double|[0.0, 1.0]|`0.001`|False positive probability of the Bloom filter used in Genestrip-FT.|`kmerindexbloom`|
+|`allInOneChunkSize`|int|[1, 2147483647]|`50`|Maximum number of dendrograms put in one LaTeX file via the goal `allinonelatex`.|all|
