@@ -121,7 +121,7 @@ public class KMerIntersectCSVGoal<P extends FTProject> extends FileListGoal<P> {
             out.println();
             for (int i = 0; i <= children.length; i++) {
                 for (int j = 0; j <= children.length; j++) {
-                    out.print(DF.format(intersections.getJaccardIndex(parent, i, j, false)));
+                    out.print(DF.format(intersections.getJaccardIndex(parent, i, j, booleanConfigValue(FTConfigKey.WITH_DESCENDANT_COUNTS))));
                     out.print(';');
                 }
                 out.println();
