@@ -142,6 +142,25 @@ public class FinerTreeMaker<P extends FTProject> extends GSMaker<P> {
         ObjectGoal<Set<SmallTaxTree.SmallTaxIdNode>, P> db2fastqTaxNodesGoal = (ObjectGoal<Set<SmallTaxTree.SmallTaxIdNode>, P>) getGoal(GSGoalKey.DB2FASTQ_TAXIDS);
         Goal<P> db2fastqGoal = new DB2FastqGoal(project, FTGoalKey.FTDB2FASTQ, db2fastqTaxNodesGoal, loadFTDBGoal, projectSetupGoal);
         registerGoal(db2fastqGoal);
+
+        Goal<P> clearGoal = getGoal(GSGoalKey.CLEAR);
+        Goal<P> ftclearGoal = new FileListGoal<P>(project, FTGoalKey.FTCLEAR, Arrays
+                .asList(project.getTeXDir()), clearGoal) {
+            @Override
+            public boolean isMade() {
+                return false;
+            }
+
+            @Override
+            protected void makeFile(File file) throws IOException {
+            }
+
+            @Override
+            protected void doMakeThis() {
+                doCleanThis();
+            }
+        };
+        registerGoal(ftclearGoal);
     }
 
     @Override

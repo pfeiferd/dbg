@@ -62,7 +62,9 @@ public enum FTGoalKey implements GoalKey {
     @MDDescription("Analyze fastq files according to Genestrip's `match` but with a Genestrip-FT database instead.")
     FTMATCH("ftmatch", true),
     @MDDescription("Generate fastq files according to Genestrip's `db2fastq` but from a Genestrip-FT database instead.")
-    FTDB2FASTQ("ftdb2fastq", true);
+    FTDB2FASTQ("ftdb2fastq", true),
+    @MDDescription("Same as goal `clear`, but also clears `tex` the folder.")
+    FTCLEAR("ftclear", true);
 
     private final boolean forUser;
     private final String name;
@@ -76,11 +78,22 @@ public enum FTGoalKey implements GoalKey {
         this.forUser = forUser;
     }
 
+    @Override
+    public boolean isTransClean() {
+        return true;
+    }
+
     public boolean isForUser() {
         return forUser;
     }
 
+    @Override
     public String getName() {
+        return name;
+    }
+
+    @Override
+    public String toString() {
         return name;
     }
 

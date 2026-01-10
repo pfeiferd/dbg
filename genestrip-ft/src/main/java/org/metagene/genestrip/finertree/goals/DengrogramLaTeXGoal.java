@@ -63,6 +63,12 @@ public class DengrogramLaTeXGoal<P extends FTProject> extends FileListGoal<P> {
     }
 
     @Override
+    public boolean isCleaned() {
+        // Actual check would require make of other goals - not doable.
+        return true;
+    }
+
+    @Override
     // Do not access kmerIntersectGoal here as it would trigger the related computation already...
     protected void provideFiles() {
         Database database = storeGoal.get();

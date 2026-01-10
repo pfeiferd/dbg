@@ -45,6 +45,12 @@ public class AllInOneLaTeXGoal<P extends FTProject>  extends FileGoal<P> {
     }
 
     @Override
+    public boolean isCleaned() {
+        // Actual check would require make of other goals - not doable.
+        return true;
+    }
+
+    @Override
     public List<File> getFiles() {
         List<File> files = dengrogramLaTeXGoal.getFiles();
         int total = files.size();
