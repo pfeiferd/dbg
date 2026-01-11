@@ -156,27 +156,30 @@ public class KMerIntersectCountGoal<P extends FTProject> extends KMerStoreWorkGo
             counts[counts.length - 1]++;
         }
 
+        // No Laplace correction
         @Override
         public long getKMerSpreadSum(SmallTaxTree.SmallTaxIdNode parent) {
             long[] counts = parentToCounts.get(parent);
             return counts == null ? 0 : counts[counts.length - 2];
         }
 
+        // No Laplace correction
         @Override
         public long getKMerSum(SmallTaxTree.SmallTaxIdNode parent) {
             long[] counts = parentToCounts.get(parent);
             return counts == null ? 0 : counts[counts.length - 1];
         }
 
+        // With Laplace correction
         @Override
         public double getJaccardIndex(SmallTaxTree.SmallTaxIdNode parent, int i, int j, boolean withChildCounts) {
-            long intersect = getIntersectionCount(parent, i, j);
-            long union = getIntersectionCount(parent, i, i) + getIntersectionCount(parent, j, j) - intersect;
+            long intersect = getIntersectionCount(parent, i, j) + 1; // "+ 1" is Laplace smoothing
+            long union = getIntersectionCount(parent, i, i) + 1 + getIntersectionCount(parent, j, j) + 1 - intersect; // "+ 1" is Laplace smoothing
             if (withChildCounts) {
                 SmallTaxTree.SmallTaxIdNode[] children = parent.getSubNodes();
                 if (i < children.length && j < children.length) {
-                    union += getSubnodesKMerCount(parent.getSubNodes()[i]);
-                    union += getSubnodesKMerCount(parent.getSubNodes()[j]);
+                    union += getSubnodesKMerCount(children[i]);
+                    union += getSubnodesKMerCount(children[j]);
                 }
             }
             if (union == 0) {

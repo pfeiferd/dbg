@@ -48,11 +48,16 @@ import java.util.*;
 public class DengrogramLaTeXGoal<P extends FTProject> extends FileListGoal<P> {
     protected static final DecimalFormat LDF = new DecimalFormat("#,###", new DecimalFormatSymbols(Locale.US));
     private static final DecimalFormat DF = new DecimalFormat("0.000000", new DecimalFormatSymbols(Locale.US));
-    private static final DecimalFormat DF2 = new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.US));
+    private static final DecimalFormat DF2 = new DecimalFormat("0.#####", new DecimalFormatSymbols(Locale.US));
 
     private final ObjectGoal<Database, P> storeGoal;
     private final ObjectGoal<Map<SmallTaxTree.SmallTaxIdNode, DendrogramNode>, P> dendrogramGoal;
     private final Map<File, SmallTaxTree.SmallTaxIdNode> fileToNodeMap;
+    private final double yScaleFactor ;
+    private final double xScaleFactor;
+    private final double tikzScale;
+    private final boolean turn;
+    private final boolean rescale;
     private Object2LongMap<String> stats;
 
     public DengrogramLaTeXGoal(P project, ObjectGoal<Database, P> storeGoal, ObjectGoal<Map<SmallTaxTree.SmallTaxIdNode, DendrogramNode>, P> dendrogramGoal, Goal<P>... deps) {
@@ -60,6 +65,12 @@ public class DengrogramLaTeXGoal<P extends FTProject> extends FileListGoal<P> {
         this.storeGoal = storeGoal;
         this.dendrogramGoal = dendrogramGoal;
         fileToNodeMap = new HashMap<>();
+
+        yScaleFactor = doubleConfigValue(FTConfigKey.Y_FACTOR_LATEX);
+        xScaleFactor = doubleConfigValue(FTConfigKey.X_FACTOR_LATEX);
+        tikzScale = doubleConfigValue(FTConfigKey.TIKZ_SCALE_FACTOR);
+        turn = booleanConfigValue(FTConfigKey.TURN_LATEX);
+        rescale = booleanConfigValue(FTConfigKey.SIM_RESCALING);
     }
 
     @Override
@@ -94,18 +105,28 @@ public class DengrogramLaTeXGoal<P extends FTProject> extends FileListGoal<P> {
         SmallTaxTree.SmallTaxIdNode parent = fileToNodeMap.get(file);
         DendrogramNode dendrogram = dendrogramGoal.get().get(parent);
 
-        double yScaleFactor = doubleConfigValue(FTConfigKey.Y_FACTOR_LATEX);
-        double xScaleFactor = doubleConfigValue(FTConfigKey.X_FACTOR_LATEX);
-        double tikzScale = doubleConfigValue(FTConfigKey.TIKZ_SCALE_FACTOR);
-        boolean turn = booleanConfigValue(FTConfigKey.TURN_LATEX);
+        double[] minSim = new double[] { 1d };
+        dendrogram.visit(new DendrogramNode.Visitor() {
+            @Override
+            public void preNode(DendrogramNode node) {
+                if (node.getSimilarity() < minSim[0]) {
+                    minSim[0] = node.getSimilarity();
+                }
+            }
+
+            @Override
+            public void postNode(DendrogramNode node) {
+            }
+        });
+        double minLogSim = Math.log(minSim[0]);
 
         try (PrintStream out = new PrintStream(StreamProvider.getOutputStreamForFile(file))) {
             out.println("\\begin{figure}");
             out.print("\\begin{tikzpicture}[sloped,scale=");
             out.print(DF2.format(tikzScale));
             out.println("]");
-            drawAxis(out, xScaleFactor, yScaleFactor, turn);
-            drawDendrogram(out, parent, dendrogram, xScaleFactor, yScaleFactor, turn);
+            drawAxis(out, xScaleFactor, yScaleFactor, turn, minLogSim);
+            drawDendrogram(out, parent, dendrogram, xScaleFactor, yScaleFactor, turn, minLogSim);
             out.println("\\end{tikzpicture}");
             out.print("\\caption{");
             out.print(parent.getName());
@@ -127,7 +148,7 @@ public class DengrogramLaTeXGoal<P extends FTProject> extends FileListGoal<P> {
         }
     }
 
-    protected void drawDendrogram(PrintStream out, SmallTaxTree.SmallTaxIdNode parent, DendrogramNode dendrogram, double xScaleFactor, double yScaleFactor, boolean turn) {
+    protected void drawDendrogram(PrintStream out, SmallTaxTree.SmallTaxIdNode parent, DendrogramNode dendrogram, double xScaleFactor, double yScaleFactor, boolean turn, double minLogSim) {
         if (dendrogram == null) {
             return;
         }
@@ -188,14 +209,14 @@ public class DengrogramLaTeXGoal<P extends FTProject> extends FileListGoal<P> {
                     out.print(value.i);
                     out.print(") at (");
                     if (turn) {
-                        out.print(DF.format(yScaleFactor * (1 - node.getSimilarity())));
+                        out.print(DF.format(yScaleFactor * (1 - rescaleSim(node.getSimilarity(), minLogSim))));
                         out.print(",");
                         out.print(DF.format(xScaleFactor * xPos));
                     }
                     else {
                         out.print(DF.format(xScaleFactor * xPos));
                         out.print(",");
-                        out.print(DF.format(yScaleFactor * (1 - node.getSimilarity())));
+                        out.print(DF.format(yScaleFactor * (1 - rescaleSim(node.getSimilarity(), minLogSim))));
                     }
                     out.println(") {};");
                 }
@@ -247,7 +268,11 @@ public class DengrogramLaTeXGoal<P extends FTProject> extends FileListGoal<P> {
         });
     }
 
-    protected void drawAxis(PrintStream out, double xScaleFactor, double yScaleFactor, boolean turn) {
+    protected double rescaleSim(double similarity, double minLogSim) {
+        return rescale ? (1 - Math.log(similarity) / minLogSim) : similarity;
+    }
+
+    protected void drawAxis(PrintStream out, double xScaleFactor, double yScaleFactor, boolean turn, double minLogSim) {
         double xPos = -xScaleFactor -1.5;
         double yPos = yScaleFactor;
         out.print("\\draw[<-] (");
@@ -272,9 +297,10 @@ public class DengrogramLaTeXGoal<P extends FTProject> extends FileListGoal<P> {
         out.println(");");
 
         int max = 5;
-        for (int i = 0; i <= max; i++) {
+        for (int i = max; i >= (rescale ? 1 : 0); i--) {
             double xPosLeft = -xScaleFactor - 0.1;
-            yPos = (yScaleFactor * i) / max;
+            double v = rescale ? Math.pow(10, i - max) : ((double) i) / max;
+            yPos = yScaleFactor * (1 - rescaleSim(v, minLogSim));
             out.print("\\draw (");
             out.print(DF.format(turn ? yPos : xPos));
             out.print(",");
@@ -291,7 +317,7 @@ public class DengrogramLaTeXGoal<P extends FTProject> extends FileListGoal<P> {
             out.print(",");
             out.print(DF.format(turn ? xPosLeft : yPos));
             out.print(") {$");
-            out.print(DF2.format(((double)(max - i)) / max));
+            out.print(DF2.format(v));
             out.println("$};");
         }
     }
