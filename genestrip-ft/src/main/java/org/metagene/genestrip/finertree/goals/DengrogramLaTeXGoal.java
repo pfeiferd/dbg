@@ -70,7 +70,7 @@ public class DengrogramLaTeXGoal<P extends FTProject> extends FileListGoal<P> {
         xScaleFactor = doubleConfigValue(FTConfigKey.X_FACTOR_LATEX);
         tikzScale = doubleConfigValue(FTConfigKey.TIKZ_SCALE_FACTOR);
         turn = booleanConfigValue(FTConfigKey.TURN_LATEX);
-        rescale = booleanConfigValue(FTConfigKey.SIM_RESCALING);
+        rescale = booleanConfigValue(FTConfigKey.SIM_LOG_SCALING);
     }
 
     @Override
@@ -122,6 +122,7 @@ public class DengrogramLaTeXGoal<P extends FTProject> extends FileListGoal<P> {
 
         try (PrintStream out = new PrintStream(StreamProvider.getOutputStreamForFile(file))) {
             out.println("\\begin{figure}");
+            out.println("\\begin{center}");
             out.print("\\begin{tikzpicture}[sloped,scale=");
             out.print(DF2.format(tikzScale));
             out.println("]");
@@ -144,6 +145,7 @@ public class DengrogramLaTeXGoal<P extends FTProject> extends FileListGoal<P> {
             out.print("\\label{dendrogram");
             out.print(parent.getTaxId());
             out.println("}}");
+            out.println("\\end{center}");
             out.println("\\end{figure}");
         }
     }
@@ -297,28 +299,34 @@ public class DengrogramLaTeXGoal<P extends FTProject> extends FileListGoal<P> {
         out.println(");");
 
         int max = 5;
+        int expStep = (int) (- minLogSim / Math.log(10) / (max - 1));
+        if (expStep <= 0) {
+            expStep = 1;
+        }
         for (int i = max; i >= (rescale ? 1 : 0); i--) {
             double xPosLeft = -xScaleFactor - 0.1;
-            double v = rescale ? Math.pow(10, i - max) : ((double) i) / max;
+            double v = rescale ? Math.pow(10, expStep * (i - max)) : ((double) i) / max;
             yPos = yScaleFactor * (1 - rescaleSim(v, minLogSim));
-            out.print("\\draw (");
-            out.print(DF.format(turn ? yPos : xPos));
-            out.print(",");
-            out.print(DF.format(turn ? xPos : yPos));
-            out.print(") -- (");
-            out.print(DF.format(turn ? yPos : xPosLeft));
-            out.print(",");
-            out.print(DF.format(turn ? xPosLeft : yPos));
-            out.println(");");
+            if (yPos <= yScaleFactor) {
+                out.print("\\draw (");
+                out.print(DF.format(turn ? yPos : xPos));
+                out.print(",");
+                out.print(DF.format(turn ? xPos : yPos));
+                out.print(") -- (");
+                out.print(DF.format(turn ? yPos : xPosLeft));
+                out.print(",");
+                out.print(DF.format(turn ? xPosLeft : yPos));
+                out.println(");");
 
-            xPosLeft = -xScaleFactor - (turn ? 0.4 : 0.1);
-            out.print(turn ? "\\node at (": "\\node[left] at (");
-            out.print(DF.format(turn ? yPos : xPosLeft));
-            out.print(",");
-            out.print(DF.format(turn ? xPosLeft : yPos));
-            out.print(") {$");
-            out.print(DF2.format(v));
-            out.println("$};");
+                xPosLeft = -xScaleFactor - (turn ? 0.4 : 0.1);
+                out.print(turn ? "\\node at (" : "\\node[left] at (");
+                out.print(DF.format(turn ? yPos : xPosLeft));
+                out.print(",");
+                out.print(DF.format(turn ? xPosLeft : yPos));
+                out.print(") {$");
+                out.print(DF2.format(v));
+                out.println("$};");
+            }
         }
     }
 
