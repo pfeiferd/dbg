@@ -51,7 +51,9 @@
 
     \author*[1]{\fnm{Daniel} \sur{Pfeifer}}\email{daniel.pfeifer@hs-heilbronn.de}
 
-    \author[2]{\fnm{Clas} \sur{Rurik}}\email{cru@codeclap.cc}
+    \author[2]{\fnm{Jakob} \sur{Birner}}\email{jakob.birner@hs-heilbronn.de}
+    
+    \author[3]{\fnm{Clas} \sur{Rurik}}\email{cru@codeclap.cc}
 
     \affil*[1]{\orgdiv{IT Faculty}, \orgname{Heilbronn University}, \orgaddress{\street{Max-Planck-Str. 39}, \city{Heilbronn}, \postcode{74081}, \state{Baden-W\"urttemberg}, \country{Germany}}}
     
@@ -445,6 +447,25 @@ The goal \verb|match| loads a database and performs the read classification on f
 
         \caption{Scatter plots of $k$-mer counts (a) and read counts (b) for fastq file \#3 from Table \ref{errorsviral} using the viral databases from Figure \ref{viraldbscatter} (based on a logarithmic scale with 1 added to each value to enable the representation of zero-counts).}\label{viralscatter}
     \end{figure}
+    
+    \subsection{Accuracy in the context of databases with broad coverage}
+
+        \begin{table}[h]
+        \centering
+        \begin{tabular}{r|r|r|r|r}
+            \multicolumn{1}{c|}{System} & Database & \multicolumn{1}{c|}{Sensitivity} &
+            \multicolumn{1}{c|}{Precision} &
+            \multicolumn{1}{c}{F1-Score} \\
+            \hline
+            KrakenUniq & \texttt{cv\_ku} \\
+            Kraken 2 & Complete viral DB\\
+            Ganon & Complete viral DB \\
+            Genestrip  & \texttt{cv\_g} \\
+        \end{tabular}
+\caption{Read classification quality for a simulated viral fastq file from \cite{Wu:2024aa} analyzed with KrakenUniq, Kraken 2, Ganon2 and Genestrip. Regarding KrakenUniq und Genestrip the viral databases \texttt{cv\_ku} and  \texttt{cv\_g} from Figure \ref{viraldbscatter} were used. Similar (unnamed) viral databases were generated for Kraken 2 und Ganon.}
+\label{readqviral}
+    \end{table}
+
 
     \subsection{Accuracy in the context of small databases}
     \label{accuracy}
@@ -652,6 +673,21 @@ The goal \verb|match| loads a database and performs the read classification on f
         \end{tabular}
         \caption{Mean absolute percentage error of $k$-mer counts and read counts for five human saliva fastq files between the complete viral database and the ``human virus only" database where both databases either belong to KrakenUniq or Genestrip, respectively. Standard deviations for the errors are included in parentheses.}\label{errorscvhv}
     \end{table}
+
+        \begin{table}[h]
+        \centering
+        \begin{tabular}{r|r|r|r|r}
+            \multicolumn{1}{c|}{System} & Database & \multicolumn{1}{c|}{Sensitivity} &
+            \multicolumn{1}{c|}{Precision} &
+            \multicolumn{1}{c}{F1-Score} \\
+            \hline
+            KrakenUniq & \texttt{hv\_ku} \\
+            Kraken 2 & Human virus DB\\
+            Ganon & Human virus DB \\
+            Genestrip  & \texttt{hv\_g} \\
+        \end{tabular}
+\caption{Read classification quality for the simulated viral fastq file from \cite{Wu:2024aa} analyzed with KrakenUniq, Kraken 2, Ganon2 and Genestrip. Regarding KrakenUniq und Genestrip the \emph{small} human virus databases \texttt{hv\_ku} and  \texttt{hv\_g} (from Section \ref{accuracy}) were used. Similar \emph{small} human virus databases databases were generated for Kraken 2 und Ganon.}
+\end{table}
 
     \subsection{Example: Tick-borne bacterial pathogens}
     \label{tickborne}
