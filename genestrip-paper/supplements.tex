@@ -97,10 +97,7 @@ E.g. for $s = \texttt{ACACTC}$ we get $np_1(s, 1) = 1$ and $np_1(s, 2) = 4$.
 
 %Let $F(h)$ be the factors of an integer $h$. 
 The dust function $d(s)$ sums over all skip-$c$-repeat lengths with $c = 0,\ldots, c_{\max}$ in $s$ transformed via a variant of the Fibonacci function with $fib(0) = 0, fib(1) = 1, fib(2) = 2$ and for $n > 2$: $fib(n) = fib(n - 1) + fib(n - 2)$:
-\[d(s) = \sum_{c = 0}^{c_{\max}}  \sum_{l=1}^{np_c(s, l) \leq |s|} fib(srl_c(s,  np_c(s, l)) 
-%- \sum_{b + 1\in F(c + 1)} sr_b(s,  np_c(s, l)\ div\ (c +1) / (b + 1))
-) 
-\]
+\[d(s) = \sum_{c = 0}^{c_{\max}}  \sum_{l=1}^{np_c(s, l) \leq |s|} fib(srl_c(s,  np_c(s, l))) \]
 The use of the Fibonacci function in $d$ accounts for point 3 from the above rationale.
 
  $d(s)$ is symmetrical: Let $s'=s_k \ldots s_1$ be the reverse of $s=s_1\ldots s_k$; then it follows from the definition of $srl$ that $srl_c(s, i) = srl_c(s', |s| - i - srl_c(s, i) + 1)$. Since $np_c(s, l)$ determines the positions of all skip-$c$-repeats, doing so in reverse order leads to the same skip-$c$-repeat lengths and so, $d(s) = d(s')$.
