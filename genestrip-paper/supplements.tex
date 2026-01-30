@@ -101,20 +101,19 @@ The dust function $d(s)$ sums over all skip-$c$-repeat lengths with $c = 0,\ldot
 %- \sum_{b + 1\in F(c + 1)} sr_b(s,  np_c(s, l)\ div\ (c +1) / (b + 1))
 ) 
 \]
-
 The use of the Fibonacci function in $d$ accounts for point 3 from the above rationale.
 
  $d(s)$ is symmetrical: Let $s'=s_k \ldots s_1$ be the reverse of $s=s_1\ldots s_k$; then it follows from the definition of $srl$ that $srl_c(s, i) = srl_c(s', |s| - i - srl_c(s, i) + 1)$. Since $np_c(s, l)$ determines the positions of all skip-$c$-repeats, doing so in reverse order leads to the same skip-$c$-repeat lengths and so, $d(s) = d(s')$.
 
-We don't use $sr$ but $srl$ in $d$ because otherwise, longer repeats would be underrepresented at higher $d$ values. E.g., for a $31$-mer the maximum skip-$2$-repeat is 9 but the maximum skip-$0$-repeat is 30. This means that with a threshold for $d(s)$ greater than $fib(9)$, no true triplet repeat would qualify anymore.
+We don't use $sr$ but $srl$ in $d$ because otherwise, repeats with a larger $c$ would become underrepresented at higher values of $d$. E.g., for a $31$-mer the maximum skip-$2$-repeat is 9 but the maximum skip-$0$-repeat is 30. This means that with a threshold $t$ for $d(s)$ with $d(s) \geq t \geq fib(9)$, no true triplet repeat would qualify anymore.
  
- $d(s)$ does not compensate for double counts, e.g. $sr_0(\texttt{AAAA}, 1) = 3$ but also $sr_1(\texttt{AAAA}, 1) = 1$. We consider this as legitimate since \texttt{AAAA} is indeed both a triple repeat of \texttt{A} and a single repeat of \texttt{AA}. Given some skip-$c$-repeat, all factors of $c + 1$ are boosted this way. 
+ $d(s)$ does not compensate for double counts, e.g. $sr_0(\texttt{AAAA}, 1) = 3$ but also $sr_1(\texttt{AAAA}, 1) = 1$. We consider this as legitimate since \texttt{AAAA} is indeed both a triple repeat of \texttt{A} and a single repeat of \texttt{AA}. Given some skip-$c$-repeat and the multiples $\{ f + 1 \}$ of $c + 1$ with $f \leq c_{\max}$: Then, in general, that skip-$c$-repeat is boosted in $d$ due to its containing skip-$f$-repeats.
  
  For an efficient implementation that considers no more but triplets, we set $c_{\max} = 2$.
- Although the functional specification of $d(s)$ from above may seem intricate, its computation is simple and  iterates just once over $s$. Listing \ref{dust_alg} presents a simple Java version that computes $d(s)$ for $c_{\max} = 2$. It confirms the desired complexity of $O(|s|)$.
+ Although the functional specification of $d(s)$ from above may seem intricate, its computation is simple and iterates just once over $s$. Listing \ref{dust_alg} presents a basic Java implementation that computes $d(s)$ for $c_{\max} = 2$.\footnote{The presented algorithm just works for $c_{\max} = 2$ but can obviously be generalized by using loops over $c = 0,\ldots,c_{\max}$ when considering a larger $c_{\max}$.} It confirms the desired complexity of $O(|s|)$ with $c_{\max}$ constant.
  With regard to Genestrip, we implemented a streaming variant too with the qualities as describe in the rationale from above (not shown).
- \clearpage
- \begin{lstlisting}[frame=single, basicstyle=\footnotesize\ttfamily, language=Java, numbers=left, numberstyle=\tiny\color{black},caption= {Computation of $d(s)$ in Java with a simplistic representation of a string $s$.}, ,label={dust_alg}]
+
+ \begin{lstlisting}[frame=single, basicstyle=\footnotesize\ttfamily, language=Java, numbers=left, numberstyle=\tiny\color{black},caption= {Computation of $d(s)$ for $c_{\max} = 2$ in Java with a simplistic representation of a string $s$.}, ,label={dust_alg}]
     // int fib[] = ... is assumed to be defined beforehand.
     public int d(byte[] s) {
         int d = 0, srl0 = 0, srl1 = 0, srl2 = 0; // skip-c-repeat lenghts
@@ -139,10 +138,41 @@ We don't use $sr$ but $srl$ in $d$ because otherwise, longer repeats would be un
     }
 \end{lstlisting}
  
- Table \ref{dust_examples} shows examples of $31$-mers at different thresholds of $d$ for $c_{\max} = 2$. Figure \ref{dust_function} shows the percentage of $31$-mers excluded by $d$ for $c_{\max} = 2$ when increasing the threshold. The values were computed via a simulation based on uniform draws over all $31$-mers.
+ Table \ref{kmertab} shows examples of $31$-mers at different thresholds of $d$ for $c_{\max} = 2$. Figure \ref{dustfilterratio} shows the ratio of $31$-mers selected via $d$ for $c_{\max} = 2$ when increasing the threshold.
    
- 
- %We must therefore deduct the skip-$0$-repeats from the skip-$1$-repeats at same position when considering the skip-$1$-repeats for $c = 1$ in the outermost sum.
- \bibliography{sn-bibliography}
+     \begin{table}[h]
+        \centering
+        \begin{tabular}{r|r|r}
+            %\multicolumn{1}{c|}{$n$} &
+             \multicolumn{1}{c|}{$t$} &
+            \multicolumn{1}{c|}{$d(s) \geq t$} &
+            \multicolumn{1}{c}{s}
+            \csvreader[separator=semicolon,before filter=\\\hline]{results/dthresholdsamples.csv}{}
+           { 
+           %\csvcoli & 
+           \csvcolii & \csvcolv & \texttt{\csvcolvi} }\\
+        \end{tabular}
+        \caption{Example $31$-mers $s$ for $c_{\max} = 2$ at different thresholds $t$ with $d(s) \geq t$ . The $31$-mers were randomly drawn but automatically selected to be close to the threshold $t$.}\label{kmertab}
+    \end{table}
+
+    \begin{figure}[h]%
+        \centering
+        \begin{tikzpicture}
+            \begin{axis}[
+                title=Selectivity of $d$,
+                xlabel={Threshold $t$},
+                ylabel={Ratio of $31$-mers $s$ with $d(s) \geq t$},
+                xmode=log,
+                ymode=log,
+                width = 0.6\textwidth,
+                height = 0.6\textwidth,
+            ]
+                \addplot+ [mark size=1pt]
+                table[col sep=semicolon, header=true, x = {t}, y = {>= t ratio}] {results/dthresholdsamples.csv};
+            \end{axis}
+        \end{tikzpicture}
+        \caption{The ratio of $31$-mers $s$ selected via $d(s) \geq t$ for $c_{\max} = 2$ when increasing the threshold $t$ (based on a logarithmic scale for both axes). The ratios were estimated via 10.000.000.000 uniform draws over all $31$-mers.}\label{dustfilterratio}
+    \end{figure}
+\bibliography{sn-bibliography}
  
 \end{document}
