@@ -90,7 +90,7 @@ We then determine the \emph{next position} $np_c(s,l)$ of the $l$-th skip-$c$-re
         \end{cases}
   \]
 E.g. for $s = \texttt{ACACTC}$ we get $np_1(s, 1) = 1$ and $np_1(s, 2) = 4$.
-For clearer discussion, we declare a \emph{skip-$c$-repeat} to be a substring of $s$ of length $srl_c(s,i)$ at a position $i$ as provided by $np_c$.
+For clearer discussion, we declare a \emph{skip-$c$-repeat} to be a substring of $s$ of length $srl_c(s,i)$ at a position $i$ \emph{as provided by $np_c$} (but not at any other positions).
 
 %\[sr_c(s,i) = srl_c(s, i)\ / (c + 1)\]
 %%E.g., since $srl_1(\texttt{ACTCT}, 1) = 2$, \texttt{CT} is repeated once at position 1, i.e. $sr_1(\texttt{ACTCT}, 1) = 1$.
@@ -101,7 +101,7 @@ The dust function $d(s)$ sums over the lengths of all skip-$c$-repeats in $s$ wi
 \[d(s) = \sum_{c = 0}^{c_{\max}}  \sum_{l=1}^{np_c(s, l) \leq |s|} fib(srl_c(s,  np_c(s, l))) \]
 The use of the Fibonacci function in $d$ accounts for point 3 from the above rationale.
 
- $d(s)$ is symmetrical: Let $s'=s_k \ldots s_1$ be the reverse of $s=s_1\ldots s_k$; then it follows from the definition of $srl_c$ that $srl_c(s, i) = srl_c(s', |s| - i - srl_c(s, i) + 1)$. Since $np_c(s, l)$ determines the positions of all skip-$c$-repeats, doing so in reverse order leads to the same skip-$c$-repeat lengths and so, $d(s) = d(s')$.
+ $d(s)$ is symmetrical: Let $s'=s_k \ldots s_1$ be the reverse of $s=s_1\ldots s_k$; then it follows from the definition of $srl_c$ that for a skip-$c$-repeat at position $i$ there is $srl_c(s, i) = srl_c(s', |s| - i - srl_c(s, i) + 1)$. Since $np_c(s, l)$ determines the positions of all skip-$c$-repeats, doing so in reverse order leads to the same skip-$c$-repeat lengths and so, $d(s) = d(s')$.
 
 %We don't use $sr$ but $srl$ in $d$ because otherwise, repeats with a larger $c$ would become underrepresented at higher values of $d$. E.g., for a $31$-mer the maximum skip-$2$-repeat is 9 but the maximum skip-$0$-repeat is 30. This means that with a threshold $t$ for $d(s)$ and $d(s) \geq t \geq fib(9)$, no true skip-$2$-repeat (which is not a skip-$0$-repeat already) would qualify anymore.
  
