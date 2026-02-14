@@ -53,10 +53,10 @@
     \title{Supplements to "Genestrip: Space-efficient $k$-mer counting, read classification and filtering for selected groups of organisms"}
 
     \author*[1]{\fnm{Daniel} \sur{Pfeifer}}\email{daniel.pfeifer@hs-heilbronn.de}
+   
+	\author[1]{\fnm{Markus} \sur{Graf}}\email{markus.graf@hs-heilbronn.de}
 
-    \author[2]{\fnm{Jakob} \sur{Birner}}\email{jakob.birner@hs-heilbronn.de}
-    
-    \author[3]{\fnm{Clas} \sur{Rurik}}\email{cru@codeclap.cc}
+    \author[2]{\fnm{Clas} \sur{Rurik}}\email{cru@codeclap.cc}
 
     \affil*[1]{\orgdiv{IT Faculty}, \orgname{Heilbronn University}, \orgaddress{\street{Max-Planck-Str. 39}, \city{Heilbronn}, \postcode{74081}, \state{Baden-W\"urttemberg}, \country{Germany}}}
     
@@ -97,7 +97,7 @@ For clearer discussion, we declare a \emph{skip-$c$-repeat} to be a substring of
 
 
 %Let $F(h)$ be the factors of an integer $h$. 
-The dust function $d(s)$ sums over the lengths of all skip-$c$-repeats in $s$ with $c = 0,\ldots, c_{\max}$ transformed via a variant of the Fibonacci function where $fib(0) = 0, fib(1) = 1, fib(2) = 2$ and $fib(n) = fib(n - 1) + fib(n - 2)$ for $n > 2$:
+The dust function $d(s)$ sums over the lengths of all skip-$c$-repeats in $s$ with $c = 0,\ldots, c_{\max}$ transformed via a variant of the Fibonacci function \citep{oeisA000045} where $fib(0) = 0, fib(1) = 1, fib(2) = 2$ and $fib(n) = fib(n - 1) + fib(n - 2)$ for $n > 2$:
 \[d(s) = \sum_{c = 0}^{c_{\max}}  \sum_{l=1}^{np_c(s, l) \leq |s|} fib(srl_c(s,  np_c(s, l))) \]
 The use of the Fibonacci function in $d$ accounts for point 3 from the above rationale.
 
