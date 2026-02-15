@@ -47,16 +47,16 @@
 \begin{document}
 
 % Enter title:
-    \title{Genestrip: Space-efficient $k$-mer counting, read classification and filtering for selected groups of organisms}
+    \title{Genestrip: Space-efficient $k$-mer counting, read classification for selected groups of organisms}
 
     \author*[1]{\fnm{Daniel} \sur{Pfeifer}}\email{daniel.pfeifer@hs-heilbronn.de}
-   
+
     \author[1]{\fnm{Markus} \sur{Graf}}\email{markus.graf@hs-heilbronn.de}
-    
+
     \author[2]{\fnm{Clas} \sur{Rurik}}\email{cru@codeclap.cc}
 
     \affil*[1]{\orgdiv{IT Faculty}, \orgname{Heilbronn University}, \orgaddress{\street{Max-Planck-Str. 39}, \city{Heilbronn}, \postcode{74081}, \state{Baden-W\"urttemberg}, \country{Germany}}}
-    
+
     \affil[2]{\orgname{codeclap}, \orgaddress{\street{Kokhaven 20}, \city{R\o dekro}, \postcode{6230} \country{Denmark}}}
 
 % Enter date:
@@ -64,15 +64,12 @@
 
 
     \abstract{\textbf{Background:} The consumption of main memory resources is a significant burden in $k$-mer-based metagenomic analysis when creating related databases but also when performing (unique) $k$-mer-counting and read classification. Genestrip addresses this issue by focusing on small but freely configurable groups of organisms. Regarding the selected organisms, Genestrip produces $k$-mer databases and results comparable to those of KrakenUniq but at a fraction of its required memory resources. Our tool ensures that during database generation, the most suitable lowest common ancestor taxon is assigned for each stored $k$-mer by \emph{also considering genomes of organisms whose $k$-mers are not included in the database}. This enables read analysis with high accuracy for the organisms of interest.
-      Moreover, Genestrip can also be employed to efficiently and accurately filter fastq files with regard to reads from the chosen organisms.
 
-\textbf{Results:}  We assessed the correctness, usefulness and performance of Genestrip in different contexts and showed that it indeed ascertains high accuracy for organisms whose genomes were included in a corresponding database. Our example databases comprise millions to a few billions of $k$-mers covering a dozen to a few thousands of species and lend themselves to usage in tick surveillance, medical diagnostics or agriculture. All databases were generated on a regular PC within hours, and related analysis performance was competitive to highly favorable.    
-   The deliberate focus on a particular set of genera or species allowed for more genomes to be included from related organisms while the resulting databases remained small. We exemplify, that such small but deep databases tend to improve recall during read classification while sustaining high precision. 
-       
-    \textbf{Conclusions:}  Due to Genestrip's particular way of updating the $k$-mers' lowest common ancestor taxa, both database creation and fastq file analysis can be realized with little memory and with favorable runtimes as well as high analysis accuracy. So both, database creation \emph{and} read classification may be performed even on regular PCs. Genestrip's qualities empower users to flexibly design, build and use small $k$-mer databases for their own needs with potentially deep genomic coverage.       
-   }
-    
-        
+    \textbf{Results:}  We assessed the correctness, usefulness and performance of Genestrip in different contexts and showed that it indeed ascertains high accuracy for organisms whose genomes were included in a corresponding database. Our example databases comprise millions to a few billions of $k$-mers covering a dozen to a few thousands of species and lend themselves to usage in tick surveillance, medical diagnostics or agriculture. All databases were generated on a regular PC within hours, and related analysis performance was competitive to highly favorable.
+    The deliberate focus on a particular set of genera or species allowed for more genomes to be included from related organisms while the resulting databases remained small. We exemplify, that such small but deep databases tend to improve recall during read classification while sustaining high precision.
+
+    \textbf{Conclusions:}  Due to Genestrip's particular way of updating the $k$-mers' lowest common ancestor taxa, both database creation and fastq file analysis can be realized with little memory and with favorable runtimes as well as high analysis accuracy. So both, database creation \emph{and} read classification may be performed even on regular PCs. Genestrip's qualities empower users to flexibly design, build and use small $k$-mer databases for their own needs with potentially deep genomic coverage.
+    }
 
     \keywords{Metagenomics, $k$-mer counting, read classification, small $k$-mer database, fastq file filtering, high accuracy, high performance}
 
@@ -107,7 +104,7 @@
     In principle, Genestrip employs a \emph{two-phase} database generation process: During the \emph{entry phase}, all $k$-mers of genomes from selected organisms are entered into the database on the basis of the RefSeq \citep{refseq} and optionally GenBank \citep{genbank} and additional sources. During the \emph{update phase}, all stored $k$-mers from the database are checked against the genomes of \emph{all} other organisms from the RefSeq belonging to the same \emph{category}\footnote{By standard, the RefSeq is structurally divided into 14 categories including ``Bacteria", ``Fungi", ``Invertebrate", ``Protozoa", ``Viral" and others.}. So, if a stored $k$-mer also occurs in another organism which is not part of the database, the $k$-mer's \taxon\ still gets updated in the database and the lowest common ancestor's \taxon\ (known as LCA) is entered instead \citep{Nasko:2018aa}. This prevents a $k$-mer from being falsely associated with one of the selected organisms given that it is too unspecific.
 
     Based on this approach, Genestrip achieves a low memory footprint during database creation as well as at read analysis time. Moreover, it offers competitive to highly favorable runtimes for $k$-mer matching and read classification. Together, these qualities empower users to create and use respective databases on machines with regular main memory size. Genestrip's $k$-mer counting results are similar to those of KrakenUniq \citep{krakenUniq} with respect to the selected organisms. Genestrip also supports unique $k$-mer counting with exact counts and with low memory overhead.
-    
+
     In the results section of this paper, we demonstrate the usefulness of our approach by introducing a small Genestrip database for tick-borne bacterial pathogens. An envisioned application is tick surveillance via metagenomics as reported in \citep{nanoporeticks}. We performed analyses of tick-related fastq files on a regular PC in less than a minute. Thanks to the small database's high genomic coverage for the organisms of interest, we achieved considerably better recall than with a large standard database under KrakenUniq. This means we found more $k$-mers and matching reads for such organisms while also sustaining high precision. As part of our performance experiments, we briefly present further small databases that may prove useful in agriculture and infectious disease diagnostics.
 
     Genestrip is written in Java, has a small code base and supports command-line-based as well as API-based usage. Based on the Java Virtual Machine, it can be executed on  modern operating systems including Linux, Windows and macOS.
@@ -120,35 +117,25 @@
 
     Genestrip generates a database for a selected group of organisms primarily via
     genomes from the RefSeq \citep{refseq} but genomes from Genbank and additional genomic files may be included on top or instead.
-    To better handle the complexity of the generation process, it employs a goal-oriented approach similar to Make \citep{feldman1979make}: Upon access, each goal returns a file or an object in main memory. A goal is executed only if its result is not yet available. Goal execution may involve the access of other goals which in turn, may trigger their execution. Respective goal dependencies are explicitly specified in terms of a directed acyclic graph.
-
-    Figure \ref{goalgraph} depicts an extract of Genestrip's goal dependency graph: Several goals (prefixed with \verb|d:|) revolve around automatically downloading all necessary files of the RefSeq, Genbank and other data from the NCBI's Web site \citep{Sayers:2025aa}.
-    When required for database generation, the goal \verb|refseqfna| downloads the RefSeq genomes belonging to a matching category as a collection of zip files. The collection is one of NCBI's  standard offerings. By consulting the goal \verb|checksummap|, \verb|refseqfna| also performs an MD5 fingerprint check after each zip file download to ensure data integrity and reattempts the download in case the initial file appears to be corrupted.
-
-    Several object goals (prefixed with \verb|o:|) load files and create data structures or compute results in main memory for further processing. Most file goals (prefixed with \verb|f:|) write computational results to files.
-    Boxes with edged corners depict goals that are meant to be executed directly via the command line. For example,
-    the goal \verb|match| is for fastq file analysis but it would trigger a respective database generation goal if the corresponding database file was missing.
-
-    Solid edges symbolize ``eager" dependencies where the existence of a dependency's result is ensured prior to the execution of the dependent goal. In contrast, dotted edges symbolize ``lazy" dependencies where the existence of a dependency's result is ensured when first accessed during the execution of the dependent goal.
-
-    \begin{figure}[h]
-        \centering
-        \includegraphics[width=135mm]{GoalGraphExtract.eps}
-        \caption{Extract of Genestrip's goal dependency graph}\label{goalgraph}
-    \end{figure}
-    \clearpage
+    To better handle the complexity of the generation process, it employs a goal-oriented approach similar to Make \citep{feldman1979make}: Upon access, each goal returns a file or an object in main memory. A goal is executed only if its result is not yet available. Goal execution may involve the access of other goals which in turn, may trigger their execution. Respective goal dependencies are explicitly specified in terms of a directed acyclic graph. Details on the system's goals and its dependencies can be found in Section \ref{??} of the Appendix.
 
     \subsection{Database generation}
     \label{database}
 
     Genestrip stores a database primarily as a large array $L$ of sorted long values. Each long value encodes a $k$-mer from the genome of a selected organism. The default for $k$ is $31$ but smaller values and $k=32$ are possible.
-    In order to handle reverse complements of reads later at read analysis time, stored $k$-mers are standardized in the following way: Each $k$-mer is encoded twice as a long value --- once in its regular version and once via its reverse complement --- but only the larger of the two encoded values is stored in the database.
+    In order to handle reverse complements of reads later at read analysis time, stored $k$-mers are standardized in the following way: Each $k$-mer is encoded twice as a long value --- once in its canonical version and once via its reverse complement --- but only the larger of the two encoded values is stored in the database.
 
-    A second array of the same size as $L$ encodes taxa for each $k$-mer in $L$. At read analysis time, lookups in $L$ are performed via a binary search. However, an additional Bloom filter \citep{bloomfilter} also contains all stored $k$-mers. By default, it is consulted upfront to check whether a certain $k$-mer might be in $L$. A negative result avoids a more expensive binary search in $L$ and therefore saves overall execution cost. Section \ref{bloom} explains this type of filter in more detail.
-    
-    Moreover, all parts of the NCBI taxonomy tree \citep{taxonomy} required at analysis time are also included in  the database. The taxonomy extract comprises entries for the selected organisms and all of their ancestors. At analysis time, a bit vector with the same size as $L$ indicates which $k$-mers from $L$ were found at least once. This is sufficient for exact unique $k$-mer counting and is space-efficient, as it requires only about 1.6\% of additional main memory with respect to $L$.
+    A second array of the same size as $L$ encodes taxa for each $k$-mer in $L$. At read analysis time, lookups in $L$ are performed via a binary search.
 
-    Table \ref{goals} describes the most relevant goals for database generation in their typical execution order. All of these goals are multithreading enabled for faster database generation.
+    All parts of the NCBI taxonomy tree \citep{taxonomy} required at analysis time are also included in  the database. The taxonomy extract comprises entries for the selected organisms and all of their ancestors. At analysis time, a bit vector with the same size as $L$ indicates which $k$-mers from $L$ were found at least once. This is sufficient for exact unique $k$-mer counting and is space-efficient, as it requires only about 1.6\% of additional main memory with respect to $L$.
+
+    Table \ref{goals} describes the most important goals for database generation in their typical execution order. All of these goals are multithreading enabled for faster database generation. Genestrip employs two Bloom filters \citep{bloomfilter} at database generation time:\footnote{More recent filters such as an XOR-filter \citep{} or a Ribbon filter \citep{} do not apply there because their construction demands all $k$-mers to be known upfront, whereas at database generation the $k$-mers stream in one by one from the genomic files being read.}
+    \begin{enumerate}
+        \item A first Bloom filter is populated only to determine the final size of the database as the number of deduplicated $k$-mer entries. This is necessary since the genomes in the RefSeq are highly redundant. The Bloom filter is dropped after final size of the database has been determined.
+        \item When the database gets filled, a second Bloom filter tracks the already stored $k$-mers. Since $L$ is not sorted at that point in time, the filter offers an efficient check.
+    \end{enumerate}
+
+    Beyond that, the Bloom filter from point 2 is \emph{also used at read classification time}: By default, it is consulted before $L$ to check whether a $k$-mer might be in $L$. \emph{A negative result avoids a considerably more expensive binary search in $L$ and therefore saves overall execution cost.} So, at read analysis time, that Bloom filter merely serves efficiency but does not cause false positives, since a hit in the filter is always backed via $L$. Employing the filter pays off because in practice, because many $k$-mers from reads are likely not stored in a small database.\footnote{For example, in the case of detecting infections, related samples typically contain a lot of host-DNA leading to many $k$-mers from the host in reads, whereas a related database typically would contain the pathogens’ $k$-mers only.}
 
     \begin{table}[h]
         \centering
@@ -158,9 +145,9 @@
             \verb|fillsize| & Determines the maximum size of the database in terms of number of $k$-mers by reading the respective reference genome files and including the genomes of selected organisms. This results in a conservative estimate where duplicates are double counted. \\
             \verb|tempindex| & Creates a Bloom filter filled with all $k$-mers of the genomes of selected organisms. The Bloom filter's size is initially set via the result from \verb|fillsize|. As the Bloom filter avoids double counting, its final number of entries serves as a more exact basis for the actual database size.\\
             \verb|filldb| & This \emph{entry phase} populates the database with all $k$-mers of genomes from selected organisms. The appropriate size of the database is a close but conservative estimate based on \verb|tempindex|.
-            Duplicate $k$-mer entries are avoided via a Boom filter that tracks the already stored $k$-mers. Finally, the stored $k$-mers are sorted in order to enable binary search at analysis time but also for the goal \verb|updatedb| from below.\\
+            Duplicate $k$-mer entries are avoided via a Bloom filter that tracks the already stored $k$-mers. Finally, the stored $k$-mers are sorted in order to enable binary search at analysis time but also for the goal \verb|updatedb| from below.\\
             \verb|updatedb| & This \emph{update phase} updates the populated database to account for common $k$-mers between organisms.
-            \emph{All} genomes from the RefSeq belonging to a set of preconfigurable taxonomic categories are considered during this phase. This ensures that a $k$-mer from a selected organism obtains the correct \taxon\ as the $k$-mer may also occur in the genome of another organism (which might be represented in the database or not). In the finished database, the respective $k$-mer is associated with the lowest common ancestor taxon as computed via all considered genomes that contain the $k$-mer.\\
+            \emph{All} genomes from the RefSeq belonging to a set of pre-configurable taxonomic categories are considered during this phase. This ensures that a $k$-mer from a selected organism obtains the correct \taxon\ as the $k$-mer may also occur in the genome of another organism (which might be represented in the database or not). In the finished database, the respective $k$-mer is associated with the lowest common ancestor taxon as computed via all considered genomes that contain the $k$-mer.\\
         \end{tabular}
         \caption{Genestrip's most relevant goals for database generation}\label{goals}
     \end{table}
@@ -169,27 +156,12 @@
 
     Regarding database generation, $k$-mers from contaminating sequences can be identified during the update phase: For example, the human genome can be included via configuration in the update phase only; thus, a $k$-mer from the human genome that is also found in the contaminated genome will be pushed to the lowest common ancestor taxon of both species. Still, as the human genome is employed during the update phase only, a resulting database does not include $k$-mers from the human genome (other than those from contaminating sequences). This ensures a small-sized database.
 
-    Of note, Genestrip allows for the exclusion of $k$-mers with low complexity known as genomic dust \citep{doi:10.1089/cmb.2006.13.1028}: As part of the entry phase, each $k$-mers's repetitiveness in terms of base pairs is measured via a fibonacci-based function. If the corresponding value exceeds a configurable threshold then the $k$-mer is dropped.
-    
-  \subsection{Bloom filter generation}
-\label{bloom}
+    Of note, Genestrip allows for the exclusion of $k$-mers with low complexity known as genomic dust \citep{doi:10.1089/cmb.2006.13.1028}: As part of the entry phase, each $k$-mers's repetitiveness in terms of base pairs is measured via a fibonacci-based function. If the corresponding value exceeds a configurable threshold then the $k$-mer is dropped. Section \ref{} in the Appendix presents our dust function in detail.
 
-    Besides $k$-mer matching and read classification, Genestrip supports filtering of fastq files via a Bloom filter in similarity to \citep{biobloom}. When generated via the goal \verb|index|, the Bloom filter gets stored in a separate file. The goal \verb|filter| loads the filter and processes fastq files accordingly. The standard configuration of the filtering process rewrites a read to the output if the read contains at least one $k$-mer that is recognized by the filter since because of this, the read may belong to a selected organism of interest.
-
- A Bloom filter is a probabilistic data structure to efficiently test whether or not a data object got stored \citep{bloomfilter}. It generally depends on $n$  hash functions $h_1, \ldots, h_n$ that ideally should be statistically independent from each other. In our case, the input to each hash function is a $k$-mer encoded as a long value $l$ and its output is an index of a bit in a large bit vector $b$ which forms the Bloom filter's store. When the value $l$ gets stored, the bits $b[h_1(l)],\ldots,b[h_n(l)]$ are set but any other bits in $b$ remain untouched. To test whether $l$ is contained in the filter, one simply checks whether $b[h_1(l)] \wedge \ldots \wedge b[h_n(l)]$ is true. False positives from this check may occur since the storing of values other than $l$ may have caused the corresponding bits to be set. If the number of data objects to be stored is known, then the false positive rate can be optimized via $n$ and the size of $b$, but this also demands the independence of the $h_i$ \citep{bloomfilter}.
-    
-    A typical challenge is to determine a method that generates an arbitrary number of $h_i$ which is needed since $n$ may vary: On the one hand, the computation of $h_i(l)$ should be very efficient but also, the Bloom filter's false positive rate must not suffer too much, if true independence cannot be guaranteed for the $h_i$. Regarding the storing of $k$-mers we found by trial and error that the simple generator method
-    \[h_i(l) = ((l \oplus s_i)\mod |b|) + 1\] 
-    works well in practice. Hereby, $\oplus$ is the bitwise xor-operator, $s_1, \ldots, s_n$ are randomly initialized long-valued salts and $|b|$ is the size of $b$. Functional testing showed that this method indeed keeps the false positive rate close to its theoretical expectation.  
-    
-    Genestrip benefits from the efficiency of the resulting 
-    Bloom filters when filtering fastq files but also during database generation and when classifying reads. It populates such filters as part of the goals \texttt{tempindex}, \texttt{filldb} and \texttt{index} from Table \ref{goals} and Figure \ref{goalgraph}, respectively.
-    
-  
     \subsection{Read classification}
 
-The goal \verb|match| loads a database and performs the read classification on fastq files.
-    The principal classification algorithm is similar to that from  Kraken 1 \citep{kraken} and equivalently KrakenUniq. When iterating over a read's $k$-mers, each $k$-mer is encoded as a long -- once by considering its regular order and once via its reverse complement order. For efficiency, only the larger of the two encoded values is looked up in the database. This is sufficient since, if at all, then only just the larger of two values got stored in the first place during database generation (see Section \ref{database}).
+    The goal \verb|match| loads a database and performs the read classification on fastq files.
+    The principal classification algorithm is similar to that from  Kraken 1 \citep{kraken} and equivalently KrakenUniq. When iterating over a read's $k$-mers, each $k$-mer is encoded as a long -- once by considering its canonical version and once via its reverse complement. For efficiency, only the larger of the two encoded values is looked up in the database. This is sufficient since, if at all, then only just the larger of two values got stored in the first place during database generation (see Section \ref{database}).
 
     Genestrip implements a multithreading enabled classification procedure following a producer consumer pattern, where a producer thread reads a fastq file and puts reads into an in-memory queue while consumer threads pick reads from the queue in order to classify them.
 
