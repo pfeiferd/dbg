@@ -50,7 +50,7 @@
 \begin{document}
 
 % Enter title:
-    \title{Supplements to "Genestrip: Space-efficient $k$-mer counting, read classification for selected groups of organisms"}
+    \title{Appendix to "Genestrip: Space-efficient $k$-mer counting, read classification for selected groups of organisms"}
 
     \author*[1]{\fnm{Daniel} \sur{Pfeifer}}\email{daniel.pfeifer@hs-heilbronn.de}
    
@@ -67,8 +67,37 @@
 
 
     \maketitle
+    
+\section{Genestrip's goal graph}
+\label{ggg}
 
-    \section{The dust function $d$}\label{dust function}
+    Figure \ref{goalgraph} depicts an extract of Genestrip's goal dependency graph: Several goals (prefixed with \verb|d:|) revolve around automatically downloading all necessary files of the RefSeq, Genbank and other data from the NCBI's Web site \citep{Sayers:2025aa}.
+    When required for database generation, the goal \verb|refseqfna| downloads the RefSeq genomes belonging to a matching category as a collection of zip files. The collection is one of NCBI's  standard offerings. By consulting the goal \verb|checksummap|, \verb|refseqfna| also performs an MD5 fingerprint check after each zip file download to ensure data integrity and reattempts the download in case the initial file appears to be corrupted.
+
+    Several object goals (prefixed with \verb|o:|) load files and create data structures or compute results in main memory for further processing. Most file goals (prefixed with \verb|f:|) write computational results to files.
+    Boxes with edged corners depict goals that are meant to be executed directly via the command line. For example,
+    the goal \verb|match| is for fastq file analysis but it would trigger a respective database generation goal if the corresponding database file was missing.
+
+    Solid edges symbolize ``eager" dependencies where the existence of a dependency's result is ensured prior to the execution of the dependent goal. In contrast, dotted edges symbolize ``lazy" dependencies where the existence of a dependency's result is ensured when first accessed during the execution of the dependent goal.
+    
+    \begin{figure}[h]
+        \centering
+        \includegraphics[width=135mm]{GoalGraphExtract.eps}
+        \caption{Extract of Genestrip's goal dependency graph}\label{goalgraph}
+    \end{figure}
+
+        Besides $k$-mer matching and read classification, Genestrip supports filtering of fastq files via a Bloom filter in similarity to \citep{biobloom}. When generated via the goal \verb|index|, the Bloom filter gets stored in a separate file. The goal \verb|filter| loads the filter and processes fastq files accordingly. The standard configuration of the filtering process rewrites a read to the output if the read contains at least one $k$-mer that is recognized by the filter since because of this, the read may belong to a selected organism of interest.
+
+\section{Bloom filter hashes}
+\label{blhashes}
+
+ A Bloom filter is a probabilistic data structure to efficiently test whether or not a data object got stored \citep{bloomfilter}. It generally depends on $n$  hash functions $h_1, \ldots, h_n$ that ideally should be statistically independent from each other. In our case, the input to each hash function is a $k$-mer encoded as a long value $l$ and its output is an index of a bit in a large bit vector $b$ which forms the Bloom filter's store. When the value $l$ gets stored, the bits $b[h_1(l)],\ldots,b[h_n(l)]$ are set but any other bits in $b$ remain untouched. To test whether $l$ is contained in the filter, one simply checks whether $b[h_1(l)] \wedge \ldots \wedge b[h_n(l)]$ is true. False positives from this check may occur since the storing of values other than $l$ may have caused the corresponding bits to be set. If the number of data objects to be stored is known, then the false positive rate can be optimized via $n$ and the size of $b$, but this also demands the independence of the $h_i$ \citep{bloomfilter}.
+    
+    A typical challenge is to determine a method that generates an arbitrary number of $h_i$ which is needed since $n$ may vary: On the one hand, the computation of $h_i(l)$ should be very efficient but also, the Bloom filter's false positive rate must not suffer too much, if true independence cannot be guaranteed for the $h_i$. Regarding the storing of $k$-mers we found that the simple generator method
+    \[h_i(l) = ((l \oplus s_i)\mod |b|) + 1\] 
+    works well in practice. Hereby, $\oplus$ is the bitwise xor-operator, $s_1, \ldots, s_n$ are randomly initialized long-valued salts and $|b|$ is the size of $b$. Functional testing showed that for uniformly distributed $k$-mers, this method indeed keeps the false positive rate close to its theoretical expectation. Note that $\mod$ from above may be replaced by any efficient mapping operator that fairly maps to the interval $1 \ldots |b|$.
+
+    \section{The dust function $d$}\label{dustfunction}
 We designed a simple dust function $d(s)$ that allows for recognizing and potentially excluding highly repetitive $k$-mers $s$ based on the following rationale:
 \begin{enumerate}
 	\item Simple repeats like \texttt{TTTTTT}, repeating pairs like \texttt{ATATAT} and repeating triplets like \texttt{ATCATC} should be recognized. (Triplets also form the basis of the approach in \cite{doi:10.1089/cmb.2006.13.1028}.)
@@ -171,36 +200,10 @@ The use of the Fibonacci function in $d$ accounts for point 3 from the above rat
         \end{tikzpicture}
         \caption{The ratio of $31$-mers $s$ selected via $d(s) \geq t$ for $c_{\max} = 2$ when increasing the threshold $t$ (based on a logarithmic scale for both axes). The data points are based on the $t$-values from Table \ref{kmertab} and were estimated via 10.000.000.000 uniform draws over all $31$-mers.}\label{dustfilterratio}
     \end{figure}
+
     
-\section{Genestrip' goal graph}
-
-    Figure \ref{goalgraph} depicts an extract of Genestrip's goal dependency graph: Several goals (prefixed with \verb|d:|) revolve around automatically downloading all necessary files of the RefSeq, Genbank and other data from the NCBI's Web site \citep{Sayers:2025aa}.
-    When required for database generation, the goal \verb|refseqfna| downloads the RefSeq genomes belonging to a matching category as a collection of zip files. The collection is one of NCBI's  standard offerings. By consulting the goal \verb|checksummap|, \verb|refseqfna| also performs an MD5 fingerprint check after each zip file download to ensure data integrity and reattempts the download in case the initial file appears to be corrupted.
-
-    Several object goals (prefixed with \verb|o:|) load files and create data structures or compute results in main memory for further processing. Most file goals (prefixed with \verb|f:|) write computational results to files.
-    Boxes with edged corners depict goals that are meant to be executed directly via the command line. For example,
-    the goal \verb|match| is for fastq file analysis but it would trigger a respective database generation goal if the corresponding database file was missing.
-
-    Solid edges symbolize ``eager" dependencies where the existence of a dependency's result is ensured prior to the execution of the dependent goal. In contrast, dotted edges symbolize ``lazy" dependencies where the existence of a dependency's result is ensured when first accessed during the execution of the dependent goal.
-    
-    \begin{figure}[h]
-        \centering
-        \includegraphics[width=135mm]{GoalGraphExtract.eps}
-        \caption{Extract of Genestrip's goal dependency graph}\label{goalgraph}
-    \end{figure}
-
-        Besides $k$-mer matching and read classification, Genestrip supports filtering of fastq files via a Bloom filter in similarity to \citep{biobloom}. When generated via the goal \verb|index|, the Bloom filter gets stored in a separate file. The goal \verb|filter| loads the filter and processes fastq files accordingly. The standard configuration of the filtering process rewrites a read to the output if the read contains at least one $k$-mer that is recognized by the filter since because of this, the read may belong to a selected organism of interest.
-
-
-\section{Bloom filter hashes}
-
- A Bloom filter is a probabilistic data structure to efficiently test whether or not a data object got stored \citep{bloomfilter}. It generally depends on $n$  hash functions $h_1, \ldots, h_n$ that ideally should be statistically independent from each other. In our case, the input to each hash function is a $k$-mer encoded as a long value $l$ and its output is an index of a bit in a large bit vector $b$ which forms the Bloom filter's store. When the value $l$ gets stored, the bits $b[h_1(l)],\ldots,b[h_n(l)]$ are set but any other bits in $b$ remain untouched. To test whether $l$ is contained in the filter, one simply checks whether $b[h_1(l)] \wedge \ldots \wedge b[h_n(l)]$ is true. False positives from this check may occur since the storing of values other than $l$ may have caused the corresponding bits to be set. If the number of data objects to be stored is known, then the false positive rate can be optimized via $n$ and the size of $b$, but this also demands the independence of the $h_i$ \citep{bloomfilter}.
-    
-    A typical challenge is to determine a method that generates an arbitrary number of $h_i$ which is needed since $n$ may vary: On the one hand, the computation of $h_i(l)$ should be very efficient but also, the Bloom filter's false positive rate must not suffer too much, if true independence cannot be guaranteed for the $h_i$. Regarding the storing of $k$-mers we found by trial and error that the simple generator method
-    \[h_i(l) = ((l \oplus s_i)\mod |b|) + 1\] 
-    works well in practice. Hereby, $\oplus$ is the bitwise xor-operator, $s_1, \ldots, s_n$ are randomly initialized long-valued salts and $|b|$ is the size of $b$. Functional testing showed that this method indeed keeps the false positive rate close to its theoretical expectation. Note that the $\mod$-operator may be replaced by more efficient mapping operators that map fairly to the interval $1 \ldots |b|$.
-    
-\section{Detailed results regarding correctness}
+\section{Details regarding correctness}
+\label{correctnessdet}
 
 Figure \ref{viraldbscatter} compares the structure of the two databases produced with KrakenUniq (with 373,250,262 $k$-mers in total) and Genestrip (with 374,412,041 $k$-mers in total).
 

@@ -19,12 +19,14 @@
 %\usepackage{xstring}
 %\usepackage{csquotes}
 \usepackage{pgfplots}
-\usepackage[l3]{csvsimple}
+\usepackage{csvsimple}
 %\usepackage{multirow}
 %\pgfplotsset{compat=1.5}
 %\bibliographystyle{bibliography}
 %\usepgfplotslibrary{external}
 %\tikzexternalize
+\usepackage{xr}
+\externaldocument{supplements}
 
 \usepackage{array}
 \newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
@@ -117,7 +119,7 @@
 
     Genestrip generates a database for a selected group of organisms primarily via
     genomes from the RefSeq \citep{refseq} but genomes from Genbank and additional genomic files may be included on top or instead.
-    To better handle the complexity of the generation process, it employs a goal-oriented approach similar to Make \citep{feldman1979make}: Upon access, each goal returns a file or an object in main memory. A goal is executed only if its result is not yet available. Goal execution may involve the access of other goals which in turn, may trigger their execution. Respective goal dependencies are explicitly specified in terms of a directed acyclic graph. Details on the system's goals and its dependencies can be found in Section \ref{??} of the Appendix.
+    To better handle the complexity of the generation process, it employs a goal-oriented approach similar to Make \citep{feldman1979make}: Upon access, each goal returns a file or an object in main memory. A goal is executed only if its result is not yet available. Goal execution may involve the access of other goals which in turn, may trigger their execution. Respective goal dependencies are explicitly specified in terms of a directed acyclic graph. Details on the system's goals and the goal graph can be found in Section \ref{ggg} of the Appendix.
 
     \subsection{Database generation}
     \label{database}
@@ -133,9 +135,9 @@
         \item When the database gets filled, a second Bloom filter tracks the already stored $k$-mers. Since $L$ is not sorted at that point in time, the filter offers an efficient check for the purpose.
     \end{enumerate}
 
-    Beyond that, the Bloom filter from point 2 is \emph{also used at read classification time}: By default, it is consulted before a $k$-mer lookup in $L$ to check whether the $k$-mer might be in $L$. \emph{A negative result avoids a considerably more expensive binary search in $L$ and therefore saves overall execution cost.} We compared the average access time to look up a random $k$-mer in Genestrip's $k$-mer store with  and without the Bloom filter being activated: Depending on the size of the database the Bloom filter brought an improvement of about factor 2 for very small databases to roughly factor 5 for larger databases.
+    Beyond that, the Bloom filter from point 2 is \emph{also used at read classification time}: By default, it is consulted before a $k$-mer lookup in $L$ to check whether the $k$-mer might be in $L$. \emph{A negative result avoids a considerably more expensive binary search in $L$ and therefore saves overall execution cost.} We compared the average access time to look up a random $k$-mer in Genestrip's $k$-mer store with and without the Bloom filter being activated: Depending on the size of the database the Bloom filter brought an improvement of about factor 2 for very small databases to roughly factor 5 for larger databases. 
     
-    So, at read analysis time, the Bloom filter from point 2 merely improves efficiency but does not cause false positives, since a hit in the filter is always backed via $L$. Employing the filter pays off because in practice, because many $k$-mers from reads are likely not stored in a small database.\footnote{For example, in the case of detecting infections, related samples typically contain a lot of host-DNA leading to many $k$-mers from the host in reads, whereas a related database typically would contain the pathogens $k$-mers only.}
+    So, at read analysis time, the Bloom filter from point 2 merely improves efficiency but does not cause false positives, since a hit in the filter is always backed via $L$. Employing the filter pays off because in practice, because many $k$-mers from reads are likely not stored in a small database.\footnote{For example, in the case of detecting infections, related samples typically contain a lot of host-DNA leading to many $k$-mers from the host in reads, whereas a related database typically would contain the pathogens $k$-mers only.} Our Bloom filter's particular hash function is detailed in Section \ref{blhashes} of the Appendix.
 
     \begin{table}[h]
         \centering
@@ -156,7 +158,7 @@
 
     Regarding database generation, $k$-mers from contaminating sequences can be identified during the update phase: For example, the human genome can be included via configuration in the update phase only; thus, a $k$-mer from the human genome that is also found in the contaminated genome will be pushed to the lowest common ancestor taxon of both species. Still, as the human genome is employed during the update phase only, a resulting database does not include $k$-mers from the human genome (other than those from contaminating sequences). This ensures a small-sized database.
 
-    Of note, Genestrip allows for the exclusion of $k$-mers with low complexity known as genomic dust \citep{doi:10.1089/cmb.2006.13.1028}: As part of the entry phase, each $k$-mers's repetitiveness in terms of base pairs is measured via a fibonacci-based function. If the corresponding value exceeds a configurable threshold then the $k$-mer is dropped. Section \ref{} in the Appendix presents our dust function in detail.
+    Of note, Genestrip allows for the exclusion of $k$-mers with low complexity known as genomic dust \citep{doi:10.1089/cmb.2006.13.1028}: As part of the entry phase, each $k$-mers's repetitiveness in terms of base pairs is measured via a fibonacci-based function. If the corresponding value exceeds a configurable threshold then the $k$-mer is dropped. Section \ref{dustfunction} in the Appendix presents our dust function in detail.
 
     \subsection{Read classification}
 
@@ -231,44 +233,23 @@
     \subsection{Correctness}
     \label{correctness}
 
-    To assess Genestrip's correctness with regard to $k$-mer counting and read classification, we compared example databases and respective analysis results directly and in detail with those from KrakenUniq. We consulted KrakenUniq because Genestrip aims to provide a similar $k$-mer based functionality while also enabling small databases without loss of precision and recall. Moreover, KrakenUniq and related tools are trusted by a large user base in bioinformatics \citep{Lu:2022aa}.
+    To assess Genestrip's correctness with regard to $k$-mer counting and read classification, we compared example databases and respective analysis results directly and in detail with those from KrakenUniq. We consulted KrakenUniq because Genestrip aims to provide a similar $k$-mer based functionality while also enabling small databases without substantial loss of precision and recall. Moreover, KrakenUniq and related tools are trusted by a large user base in bioinformatics \citep{Lu:2022aa}.
 
     As part of our test procedure, we created database contents under both systems that were identical in terms of their genomic basis and their stored $k$-mers.
     We then applied the created databases to suitable fastq files in order to compare the results between both systems. Highly similar results from this check mutually solidify the correctness of both systems since they had been developed completely independently. (In addition, Genestrip's correctness is also supported via extensive automated functional tests with high test coverage as part of its code base.)
 
     To create the databases, we chose all RefSeq genomes from the category ``Viral".  
-    The databases became completely identical in terms of the number of $k$-mers stored per taxon. In the following, we name the two databases \texttt{cv\_ku} and \texttt{cv\_g} with regard to KrakenUniq and Genestrip, respectively.
+    The databases turned out to be completely identical in terms of the number of $k$-mers stored per taxon. In the following, we name the two databases \texttt{cv\_ku} and \texttt{cv\_g} with regard to KrakenUniq and Genestrip, respectively.
 
-    We applied the \texttt{cv\_ku} and \texttt{cv\_g} to a simulated fastq file extracted from \cite{Wu:2024aa} where the file's reads were used to benchmark metagenomic pipelines aimed at the discovery of new viruses.
+    We applied \texttt{cv\_ku} and \texttt{cv\_g} to a simulated fastq file extracted from \cite{Wu:2024aa} where the file's reads were used to benchmark metagenomic pipelines aimed at the discovery of new viruses.
 The file contains 61,550 long reads extracted from 6,155 viral standard genomes from the RefSeq \citep{Wu:2024aa}.
-     The $k$-mer counts per taxon were identical for a total of 6,245 taxons and the classified read counts were also completely identical.
+     The $k$-mer counts per taxon were identical for all of the 6,245 taxons and the classified read counts were also completely identical.
       
-As real-world examples, we applied the two databases to short-read fastq files from DNA-sequencing human saliva of five different donors -- again with completely identical $k$-mer and read counts from both KrakenUniq and Genestrip. Details on these  comparisons can be found in Section \ref{} of the Appendix.
+As real-world examples, we applied the two databases to short-read fastq files from DNA-sequencing human saliva of five different donors -- again with completely identical $k$-mer and read counts from both KrakenUniq and Genestrip. Details on these  comparisons can be found in Section \ref{correctnessdet} of the Appendix.
     
-    As stated before, this high agreement mutually solidifies the correctness of both systems, but obviously, it does not yet highlight the advantages of Genestrip when creating and using small databases for selected groups of organisms.
+    As stated before, this perfect agreement mutually solidifies the correctness of both systems, but obviously, it does not yet highlight the advantages of Genestrip when creating and using small databases for selected groups of organisms.
     
-    \begin{table}[h]
-        \centering
-        \begin{tabular}{r|r|r|r|rr
-%|rr
-        }
-            \multicolumn{1}{c|}{\# } & \multicolumn{1}{c|}{Reads} & \multicolumn{1}{c|}{Avg. BPs per read} &
-            \multicolumn{1}{c|}{Data points} &
-            \multicolumn{2}{c}{Differing $k$-mer counts (\%)}
-%\multicolumn{2}{c}{Differing} \\
-%\multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} &
-%\multicolumn{1}{c|}{Points} &
-%\multicolumn{2}{c}{}
-% & \multicolumn{2}{c}{Read counts (\%)}
-            \csvreader[separator=semicolon,before filter=\\\hline]{results/viral_viral_db_errors_gs_ku_comp.csv}{}
-            { \csvcoli & \csvcoliii & \csvcoliv & \csvcolv & \csvcolx & (\csvcolxii)
-% & \csvcolxi & (\csvcolxiii)
-            }\\
-        \end{tabular}
-        \caption{Number of differences per number of data points for $k$-mer counts on the basis of real-world fastq files from DNA-sequencing five human saliva samples analyzed via the KrakenUniq viral database $\texttt{cv\_ku}$ and the Genestrip viral database $\texttt{cv\_g}$, as shown in Figure \ref{viraldbscatter}. A data point corresponds to a taxon for which at least one $k$-mer was counted via either KrakenUniq or Genestrip.}\label{errorsviral}
-    \end{table}
-
-    \subsection{Classification quality for databases with broad coverage}
+    \subsection{Classification under broad coverage databases}
 
 As the ground truth is known, this allowed for a similarity comparison but also for checking classification accuracy. 
 
@@ -290,8 +271,29 @@ As the ground truth is known, this allowed for a similarity comparison but also 
 \label{readqviral}
     \end{table}
 
+   \begin{table}[h]
+        \centering
+        \begin{tabular}{r|r|r|r|rr
+%|rr
+        }
+            \multicolumn{1}{c|}{\# } & \multicolumn{1}{c|}{Reads} & \multicolumn{1}{c|}{Avg. BPs per read} &
+            \multicolumn{1}{c|}{Data points} &
+            \multicolumn{2}{c}{Differing $k$-mer counts (\%)}
+%\multicolumn{2}{c}{Differing} \\
+%\multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} &
+%\multicolumn{1}{c|}{Points} &
+%\multicolumn{2}{c}{}
+% & \multicolumn{2}{c}{Read counts (\%)}
+            \csvreader[separator=semicolon,before filter=\\\hline]{results/viral_viral_db_errors_gs_ku_comp.csv}{}
+            { \csvcoli & \csvcoliii & \csvcoliv & \csvcolv & \csvcolx & (\csvcolxii)
+% & \csvcolxi & (\csvcolxiii)
+            }\\
+        \end{tabular}
+        \caption{Number of differences per number of data points for $k$-mer counts on the basis of real-world fastq files from DNA-sequencing five human saliva samples analyzed via the KrakenUniq viral database $\texttt{cv\_ku}$ and the Genestrip viral database $\texttt{cv\_g}$, as shown in Figure \ref{viraldbscatter}. A data point corresponds to a taxon for which at least one $k$-mer was counted via either KrakenUniq or Genestrip.}\label{errorsviral}
+    \end{table}
 
-    \subsection{Classification quality for small databases}
+
+    \subsection{Classification using small databases}
     \label{accuracy}
 
     The following results highlight the importance of the update phase according to Section \ref{background} in the context of small databases.
