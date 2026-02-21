@@ -236,10 +236,9 @@
     To assess Genestrip's correctness with regard to $k$-mer counting and read classification, we compared example databases and respective analysis results directly and in detail with those from KrakenUniq. We consulted KrakenUniq because Genestrip aims to provide a similar $k$-mer based functionality while also enabling small databases without substantial loss of precision and recall. Moreover, KrakenUniq and related tools are trusted by a large user base in bioinformatics \citep{Lu:2022aa}.
 
     As part of our test procedure, we created database contents under both systems that were identical in terms of their genomic basis and their stored $k$-mers.
-    We then applied the created databases to suitable fastq files in order to compare the results between both systems. Highly similar results from this check mutually solidify the correctness of both systems since they had been developed completely independently. (In addition, Genestrip's correctness is also supported via extensive automated functional tests with high test coverage as part of its code base.)
+    We then applied the databases to suitable fastq files in order to compare the results between both systems. Highly similar results from this check mutually solidify the correctness of both systems since they had been developed completely independently. (In addition, Genestrip's correctness is also supported via extensive automated functional tests with high test coverage as part of its code base.)
 
-    To create the databases, we chose all RefSeq genomes from the category ``Viral".  
-    The databases turned out to be completely identical in terms of the number of $k$-mers stored per taxon. In the following, we name the two databases \texttt{cv\_ku} and \texttt{cv\_g} with regard to KrakenUniq and Genestrip, respectively.
+    We chose all RefSeq genomes from the category ``Viral" for the databases. They turned out to be completely identical in terms of the number of $k$-mers stored per taxon. In the following, we name the two databases \texttt{cv\_ku} and \texttt{cv\_g} with regard to KrakenUniq and Genestrip, respectively.
 
     We applied \texttt{cv\_ku} and \texttt{cv\_g} to a simulated fastq file extracted from \cite{Wu:2024aa} where the file's reads were used to benchmark metagenomic pipelines aimed at the discovery of new viruses.
 The file contains 61,550 long reads extracted from 6,155 viral standard genomes from the RefSeq \citep{Wu:2024aa}.
@@ -251,7 +250,11 @@ As real-world examples, we applied the two databases to short-read fastq files f
     
     \subsection{Classification under broad coverage databases}
 
-As the ground truth is known, this allowed for a similarity comparison but also for checking classification accuracy. 
+Based on all genomes RefSeq genomes from the category ``Viral" we generated simulated fastq files via the tool InSilicoSeq \citep{10.1093/bioinformatics/bty630}: We applied the respective Illumina generation models ``MiSeq 300 bp" and ``HiSeq 125 bp" to produce two pairs of fastq files with one million reads per pair. As the ground truth is known, this allowed for comparing read classification precision and recall between different $k$-mer-based analysis tools.
+
+Table \ref{} shows the results: Regarding Ganon there exists an important hyper parameter \verb|bla| that controls the false positive probability for matching $k$-mers and must be set at database generation time. We tried Ganon's default value and alternatively an extremely low false positive rate of $10^{-8}$. Another peculiarity of Ganon is that only classifies on configurable predefined rank -- usually the species rank -- but performs multiple classifications for reads -- typically in less than 20 \% of the cases.
+
+We chose KrakenUniq, Kraken 2 and Ganon for comparision for the following reasons:
 
     Both tools scored a read classification accuracy of 99.4\% for the genus rank and 95.2\% for the species rank.
     
