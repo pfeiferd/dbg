@@ -248,7 +248,8 @@ As real-world examples, we applied the two databases to short-read fastq files f
     
     As stated before, this perfect agreement mutually solidifies the correctness of both systems, but obviously, it does not yet highlight the advantages of Genestrip when creating and using small databases for selected groups of organisms.
     
-    \subsection{Classification under broad coverage databases}
+    \subsection{Classification with broad coverage databases}
+    \label{broadcov}
 
 Based on all RefSeq genomes from the category ``Viral" we generated simulated fastq files via the tool InSilicoSeq \citep{10.1093/bioinformatics/bty630}: We applied the respective Illumina generation models ``MiSeq" and ``HiSeq" to produce two pairs of fastq files with one million reads per pair. In addition, we tested with data from \cite{Wu:2024aa} as introduced in Section \ref{correctness}. As the ground truth is known, this allowed for comparing read classification precision and recall across different $k$-mer-based analysis tools.
 
@@ -262,17 +263,33 @@ We chose KrakenUniq, Kraken 2 and Ganon for comparision for the following reason
     
         \begin{table}[h]
         \centering
-        \begin{tabular}{r|r|r|r|r}
-            \multicolumn{1}{c|}{System} & Database & \multicolumn{1}{c|}{Sensitivity} &
-            \multicolumn{1}{c|}{Precision} &
+        \begin{tabular}{c|c|r|r|r}
+            \multicolumn{1}{c|}{System} & Data & \multicolumn{1}{c|}{Precision} &
+            \multicolumn{1}{c|}{Recall} &
             \multicolumn{1}{c}{F1-Score} \\
             \hline
-            KrakenUniq & \texttt{cv\_ku} \\
-            Kraken 2 & Complete viral DB\\
-            Ganon & Complete viral DB \\
-            Genestrip  & \texttt{cv\_g} \\
+            KrakenUniq &  \\
+            Kraken 2 & \\
+            Kraken 2 w. high confidence & extracted from \cite{Wu:2024aa}, \\
+            Ganon &  see Section \ref{correctness} \\
+            Ganon w. low false pos. rate &  \\
+            Genestrip  & \\
+            \hline
+            KrakenUniq & \\
+            Kraken 2 & \\
+            Kraken 2 w. high confidence &  MiSeq, \\
+            Ganon & see Section \ref{broadcov} \\
+            Ganon w. low false pos. rate &  \\
+            Genestrip  & \\
+            \hline
+            KrakenUniq & \\
+            Kraken 2 & \\
+            Kraken 2 w. high confidence & HiSeq, \\
+            Ganon & see Section \ref{broadcov} \\
+            Ganon w. low false pos. rate &  \\
+            Genestrip  & \\
         \end{tabular}
-\caption{Read classification quality for a simulated viral fastq file from \cite{Wu:2024aa} analyzed with KrakenUniq, Kraken 2, Ganon2 and Genestrip. Regarding KrakenUniq und Genestrip the viral databases \texttt{cv\_ku} and  \texttt{cv\_g} from Figure \ref{viraldbscatter} were used. Similar (unnamed) viral databases were generated for Kraken 2 und Ganon.}
+\caption{Read classification quality for different simulated fastq files  analyzed with KrakenUniq, Kraken 2, Ganon and Genestrip. Regarding KrakenUniq und Genestrip the viral databases \texttt{cv\_ku} and  \texttt{cv\_g} from Section \ref{correctness} were used. Similar (unnamed) viral databases were generated for Kraken 2 und Ganon. The system's adaption for ``low false pos. rate" and ``high confidence" are explained in Section \ref{broadcov}.}
 \label{readqviral}
     \end{table}
 
