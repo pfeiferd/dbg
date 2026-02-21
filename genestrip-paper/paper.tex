@@ -256,10 +256,11 @@ Based on all RefSeq genomes from the category ``Viral" we generated simulated fa
 As for the databases, we reused \texttt{cv\_ku} and \texttt{cv\_g} from Section \ref{correctness} and generated analogous databases for Kraken 2 and Ganon, respectively. However, Ganon requires an important hyper-parameter \verb|max-fp| that controls the false positive probability for matching $k$-mers and must be set at database generation time. We used Ganon's default value of $0.01$ and alternatively tried a very low false positive rate of $10^{-7}$. Another hyper-parameter of Ganon is a predefined but configurable taxonomic level used when classifying reads. We set it to \verb|leaves| meaning that the taxons as originally associated with the RefSeq's viral genomes are used. Ganon performs multiple classifications for reads -- typically in less than 15\% of the cases. For a reasonably fair comparison, we computed the lowest common ancestor when Ganon produced multiple class taxons and refer to that outcome in the evaluation.
 Regarding Kraken 2, a real-valued classification confidence threshold between 0 and 1 can be set at classification time. We report results when using the default of 0 and alternatively for a threshold $0.8$.
 
-
+TODO in Intro:
 We chose KrakenUniq, Kraken 2 and Ganon for comparision for the following reasons:
 
-    Both tools scored a read classification accuracy of 99.4\% for the genus rank and 95.2\% for the species rank.
+
+TODO: Present and comment on results.
     
         \begin{table}[h]
         \centering
@@ -289,39 +290,18 @@ We chose KrakenUniq, Kraken 2 and Ganon for comparision for the following reason
             Ganon w. low false pos. rate &  \\
             Genestrip  & \\
         \end{tabular}
-\caption{Read classification quality for different simulated fastq files  analyzed with KrakenUniq, Kraken 2, Ganon and Genestrip. Regarding KrakenUniq und Genestrip the viral databases \texttt{cv\_ku} and  \texttt{cv\_g} from Section \ref{correctness} were used. Similar (unnamed) viral databases were generated for Kraken 2 und Ganon. The system's adaption for ``low false pos. rate" and ``high confidence" are explained in Section \ref{broadcov}.}
+\caption{Read classification quality for different simulated fastq files  analyzed with KrakenUniq, Kraken 2, Ganon and Genestrip. Regarding KrakenUniq und Genestrip the viral databases \texttt{cv\_ku} and  \texttt{cv\_g} from Section \ref{correctness} were used. Similar (unnamed) viral databases were generated for Kraken 2 und Ganon. The systems' adaptions for ``low false pos. rate" and ``high confidence" are explained in Section \ref{broadcov}.}
 \label{readqviral}
     \end{table}
-
-   \begin{table}[h]
-        \centering
-        \begin{tabular}{r|r|r|r|rr
-%|rr
-        }
-            \multicolumn{1}{c|}{\# } & \multicolumn{1}{c|}{Reads} & \multicolumn{1}{c|}{Avg. BPs per read} &
-            \multicolumn{1}{c|}{Data points} &
-            \multicolumn{2}{c}{Differing $k$-mer counts (\%)}
-%\multicolumn{2}{c}{Differing} \\
-%\multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} &
-%\multicolumn{1}{c|}{Points} &
-%\multicolumn{2}{c}{}
-% & \multicolumn{2}{c}{Read counts (\%)}
-            \csvreader[separator=semicolon,before filter=\\\hline]{results/viral_viral_db_errors_gs_ku_comp.csv}{}
-            { \csvcoli & \csvcoliii & \csvcoliv & \csvcolv & \csvcolx & (\csvcolxii)
-% & \csvcolxi & (\csvcolxiii)
-            }\\
-        \end{tabular}
-        \caption{Number of differences per number of data points for $k$-mer counts on the basis of real-world fastq files from DNA-sequencing five human saliva samples analyzed via the KrakenUniq viral database $\texttt{cv\_ku}$ and the Genestrip viral database $\texttt{cv\_g}$, as shown in Figure \ref{viraldbscatter}. A data point corresponds to a taxon for which at least one $k$-mer was counted via either KrakenUniq or Genestrip.}\label{errorsviral}
-    \end{table}
-
 
     \subsection{Classification using small databases}
     \label{accuracy}
 
     The following results highlight the importance of the update phase according to Section \ref{background} in the context of small databases.
 
-    As a first example, we created two small viral databases based on the RefSeq covering \emph{human viruses only}\footnote{The list of human viruses originates from \cite{viralzone}. Some human viruses known to be missing were manually added. All \taxon s were chosen on the species rank.}, again under both KrakenUniq and Genestrip.  In the following, we name the two databases \texttt{hv\_ku} and \texttt{hv\_g} with regard to KrakenUniq and Genestrip, respectively. We again assured that the databases were as identical as possible in terms of their genomic basis and their stored $k$-mers.
-    Figure \ref{viraldbscomp} compares the viral database contents for the databases from Section \ref{correctness} with the respective ``human virus only" database for (a) KrakenUniq and (b) Genestrip. The plots depict data points of the 407 taxa referenced in both databases.
+    As a first example, we created two small viral databases based on the RefSeq covering \emph{human viruses only}\footnote{The list of human viruses originates from \cite{viralzone}. Some human viruses known to be missing were manually added. All \taxon s were chosen on the species rank.}, again under both KrakenUniq and Genestrip.  In the following, we name the two databases \texttt{hv\_ku} and \texttt{hv\_g} with regard to KrakenUniq and Genestrip, respectively. We again assured that the databases were as identical in terms of their genomic basis and their stored $k$-mers. Moreover, we generated analogous human virus databases for Kraken 2 and Ganon with the same configurations for Ganon as described in Section \ref{broadcov}.
+    
+    Figure \ref{viraldbscomp} compares the viral database contents for the databases \texttt{cv\_ku} and \texttt{cv\_g} from Section \ref{correctness} against the respective ``human virus only" database for (a) KrakenUniq and (b) Genestrip. The plots depict data points of the 407 taxa referenced in both databases.
 
     Regarding Genestrip's databases from Figure \ref{viraldbscomp} (b), all $k$-mer counts on the species rank and below are identical per \taxon\ as an effect of the update phase (as discussed in Section \ref{background}). This is an important precondition met by Genestrip's \texttt{hv\_g} database to avoid false positives at read classification time. Nevertheless, data points from higher taxonomic ranks scatter because the complete viral database  \texttt{cv\_g} contains $k$-mers from many more nonhuman viruses, and these $k$-mers were pushed to higher ranks due to the lowest common ancestor update. Obviously, these additional $k$-mers are not required to classify reads accurately with respect to human viruses. The database \texttt{hv\_g} contains only 3,865,987 $k$-mers with a disk size of approximately 53 MB, whereas \texttt{cv\_g} has as disk size of 5.4 GB with almost 97 times as many $k$-mers.
 
@@ -383,6 +363,29 @@ We chose KrakenUniq, Kraken 2 and Ganon for comparision for the following reason
 
          \caption{Scatter plots of $k$-mers per \taxon\ in a complete viral database versus a ``human virus only" database both from the RefSeq created via (a) KrakenUniq and (b) Genestrip (based on a logarithmic scale with 1 added to each value to enable the representation of zero-counts).}\label{viraldbscomp}
     \end{figure}
+
+As real-world examples, we first applied the two databases to short-read fastq files from DNA-sequencing human saliva of five different donors.
+    Table \ref{errorsviral} shows statistics of the fastq files.       
+
+   \begin{table}[h]
+        \centering
+        \begin{tabular}{r|r|r
+%|rr
+        }
+            \multicolumn{1}{c|}{\# } & \multicolumn{1}{c|}{Reads} & \multicolumn{1}{c}{Avg. BPs per read}
+%\multicolumn{2}{c}{Differing} \\
+%\multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} &
+%\multicolumn{1}{c|}{Points} &
+%\multicolumn{2}{c}{}
+% & \multicolumn{2}{c}{Read counts (\%)}
+            \csvreader[separator=semicolon,before filter=\\\hline]{results/viral_viral_db_errors_gs_ku_comp.csv}{}
+            { \csvcoli & \csvcoliii & \csvcoliv 
+% & \csvcolxi & (\csvcolxiii)
+            }\\
+        \end{tabular}
+        \caption{Real-world fastq files from DNA-sequencing five human saliva samples to be analyzed via KrakenUniq, Kraken 2, Ganon and Genestrip.}\label{errorsviral}
+    \end{table}
+
 
     Figure \ref{salivascatter} (a,b) shows the scatter plots of $k$-mer counts and read counts from KrakenUniq on a logarithmic scale for the database \texttt{cv\_ku} versus \texttt{hv\_ku} when applied to the human saliva fastq file \#3 from Table \ref{errorsviral}.
     Figure \ref{salivascatter} (c,d) shows the corresponding results with respect to the Genestrip databases \texttt{cv\_g} versus \texttt{hv\_g}: While the small database under KrakenUniq led to massive overcounts of $k$-mers for the rank species and below, this did not occur under Genestrip. Moreover, KrakenUniq's overcounting of $k$-mers strongly influenced the counts of classified reads. Regarding Genestrip, the read counts on the species level and below are affected only by differing $k$-mer counts that occurred on the genus level and above. However, the impact remains moderate. The results for the other human saliva fastq files are similar (not shown).
@@ -487,6 +490,8 @@ We chose KrakenUniq, Kraken 2 and Ganon for comparision for the following reason
 
         \caption{Scatter plots of $k$-mer counts (a, c) and read counts (b, d) for the human saliva fastq file \#3 from Table \ref{errorsviral} analyzed with KrakenUniq (a, b) and Genestrip (c, d) using the complete viral databases versus the ``human virus only" databases, as both shown in Figure \ref{viraldbscomp} (based on a logarithmic scale with 1 added to each value to enable the representation of zero-counts).}\label{salivascatter}
     \end{figure}
+
+TODO: Precision Recall for systems...
 
     In addition to the results from Figure \ref{salivascatter}, we measured the mean absolute percentage error of $k$-mer counts for all of the five human saliva fastq files from Table \ref{errorsviral} between the complete viral database and the ``human virus only" database in a variant where both databases belong to KrakenUniq and another variant where they both belong to Genestrip.
 
