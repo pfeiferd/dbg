@@ -19,12 +19,14 @@
 %\usepackage{xstring}
 %\usepackage{csquotes}
 \usepackage{pgfplots}
-\usepackage[l3]{csvsimple}
+\usepackage{csvsimple}
 %\usepackage{multirow}
 %\pgfplotsset{compat=1.5}
 %\bibliographystyle{bibliography}
 %\usepgfplotslibrary{external}
 %\tikzexternalize
+\usepackage{xr}
+\externaldocument{paper}
 
 \colorlet{light-gray}{gray!20}
 
@@ -43,7 +45,7 @@
 % Workaround for faster compile without scatter plots:
 %
 \newif\ifscatter
-%\scattertrue
+\scattertrue
 
 \newcommand{\taxon}{taxon}
 
@@ -205,7 +207,7 @@ The use of the Fibonacci function in $d$ accounts for point 3 from the above rat
 \section{Details regarding correctness}
 \label{correctnessdet}
 
-Figure \ref{viraldbscatter} compares the structure of the two databases produced with KrakenUniq (with 373,250,262 $k$-mers in total) and Genestrip (with 374,412,041 $k$-mers in total).
+Figure \ref{viraldbscatter} highlights the identical structure of the two complete viral databases created via KrakenUniq and Genestrip with 379,181,604 $k$-mers in total.
 
     \begin{figure}[h]%
         \centering
@@ -240,81 +242,11 @@ Figure \ref{viraldbscatter} compares the structure of the two databases produced
         \ref{legend1}
 
         \fi
-        \includegraphics{fig2.pdf}
-        \caption{Scatter plot of $k$-mer counts for the RefSeq databases \texttt{cv\_ku} from KrakenUniq and \texttt{cv\_ku} from Genestrip covering the entire category ``Viral" (based on a logarithmic scale with 1 added to each value in order to enable the representation of zero-counts). The 16,087 depicted entries cover all of the taxa present in both databases.}\label{viraldbscatter}
+        \caption{Scatter plot of $k$-mer counts for the RefSeq databases \texttt{cv\_ku} from KrakenUniq and \texttt{cv\_g} from Genestrip covering the entire category ``Viral" (based on a logarithmic scale with 1 added to each value in order to enable the representation of zero-counts). The 16,513 depicted entries cover all of the taxa present in both databases.}\label{viraldbscatter}
     \end{figure}
-
-Figure \ref{viralscattersim} shows scatter plots for $k$-mer counts and read counts from both tools on a logarithmic scale.
-   Each data point represents a nonzero count from KrakenUniq or Genestrip with respect to a \taxon . As shown in (a), the $k$-mer counts only differ in 120 out of a total of 6,245 data points. The differences are rooted in the slightly different database contents as mentioned above. The classified read counts in (b) are nearly identical with just 14 differences. As stated before, this high agreement mutually solidifies the correctness of both systems, but obviously, it does not yet highlight the advantages of Genestrip when creating and using small databases for selected groups of organisms.
-    Both tools scored a read classification accuracy of 99.4\% for the genus rank and 95.2\% for the species rank.
-    
-    \begin{figure}[h]%
-        \centering
-        \begin{tikzpicture}
-            \begin{axis}[
-                title=(a) $k$-mer counts,
-                xlabel={\texttt{cv\_ku}},
-                ylabel={\texttt{cv\_g}},
-                xmode=log,
-                ymode=log,
-                width = 0.5\textwidth,
-                height = 0.5\textwidth,
-                legend columns=-1,
-                legend style={font=\small},
-                legend entries={{Species or below},{Genus},{Above genus}},
-                legend to name=legend3
-            ]
-                \addplot+ [scatter, only marks,mark size=1pt,
-                point meta=explicit symbolic,
-                scatter/classes={
-                        {species or below}={mark=*,blue},
-                    genus={mark=square,green},
-                    null={mark=triangle,red} %  <-- don't add comma
-                }
-                ]
-                table[col sep=semicolon, header=true, x = {kmers 2}, y = {kmers 1} , meta=rank] {results/viral_saliva3_gs_ku_comp.csv};
-            \end{axis}
-        \end{tikzpicture}
-        \begin{tikzpicture}
-            \begin{axis}[
-                title=(b) Read counts,
-                xlabel={\texttt{cv\_ku}},
-                ylabel={},
-                xmode=log,
-                ymode=log,
-                width = 0.5\textwidth,
-                height = 0.5\textwidth
-            ]
-                \addplot+ [scatter, only marks,mark size=1pt,
-                point meta=explicit symbolic,
-                scatter/classes={
-                        {species or below}={mark=*,blue},
-                    genus={mark=square,green},
-                    null={mark=triangle,red} %  <-- don't add comma
-                }
-                ]
-                table[col sep=semicolon, header=true, x = {reads 2}, y = {reads 1} , meta=rank] {results/viral_saliva3_gs_ku_comp.csv};
-                ]
-            \end{axis}
-        \end{tikzpicture}
-        \\
-
-        \ref{legend3}
-
-        \caption{Scatter plots of $k$-mer counts (a) and read counts (b) for fastq file \#3 from Table \ref{errorsviral} using the viral databases from Figure \ref{viraldbscatter} (based on a logarithmic scale with 1 added to each value to enable the representation of zero-counts).}\label{viralscatter}
-    \end{figure}
-
-    Table \ref{errorsviral} shows statistics of the fastq files and states the number of data points, i.e., the taxa for which at least one $k$-mer was counted via either KrakenUniq or Genestrip. The last column indicates where results differed by at least one between KrakenUniq and Genestrip. As can be seen, the counts of the very most $k$-mers are identical.
-    For visualization, Figure \ref{viralscatter} shows scatter plots of $k$-mer counts and read counts from KrakenUniq and Genestrip on a logarithmic scale for one of the fast files.
-
-        
- As real-world examples, we applied the two databases to short-read fastq files from DNA-sequencing human saliva of five different donors.
-    Table \ref{errorsviral} shows statistics of the fastq files and states the number of data points, i.e., the taxa for which at least one $k$-mer was counted via either KrakenUniq or Genestrip. The last column indicates where results differed by at least one between KrakenUniq and Genestrip. As can be seen, the counts of the very most $k$-mers are identical.
-    For visualization, Figure \ref{viralscatter} shows scatter plots of $k$-mer counts and read counts from KrakenUniq and Genestrip on a logarithmic scale for one of the fast files.        
-
-    
-    Table \ref{errorsviral} shows statistics of the fastq files and states the number of data points, i.e., the taxa for which at least one $k$-mer was counted via either KrakenUniq or Genestrip. The last column indicates where results differed by at least one between KrakenUniq and Genestrip. As can be seen, the counts of the very most $k$-mers are identical.
-    For visualization, Figure \ref{viralscatter} shows scatter plots of $k$-mer counts and read counts from KrakenUniq and Genestrip on a logarithmic scale for one of the fast files.
+            
+ As real-world examples, we applied the two viral databases to short-read fastq files from DNA-sequencing human saliva of five different donors according to Table \ref{errorsviral} of the main document.
+    To visualize the identity of the results, Figure \ref{viralscatter} shows scatter plots of respective $k$-mer counts and read counts from KrakenUniq and Genestrip for one of the fast files. 
 
     \begin{figure}[h]%
         \centering
@@ -369,8 +301,47 @@ Figure \ref{viralscattersim} shows scatter plots for $k$-mer counts and read cou
 
         \ref{legend3}
 
-        \caption{Scatter plots of $k$-mer counts (a) and read counts (b) for fastq file \#3 from Table \ref{errorsviral} using the viral databases from Figure \ref{viraldbscatter} (based on a logarithmic scale with 1 added to each value to enable the representation of zero-counts).}\label{viralscatter}
+        \caption{Scatter plots of $k$-mer counts (a) and read counts (b) for fastq file \#3 from Table \ref{errorsviral} of the main document using the complete viral databases from Figure \ref{viraldbscatter} (based on a logarithmic scale with 1 added to each value to enable the representation of zero-counts).}\label{viralscatter}
     \end{figure}
+    
+    \section{Complete results regarding ``human virus databases" on human saliva data}
+    \ref{humansalivacomplete}
+    
+    \section{Mean absolute error...}
+    
+    In addition to the results from Figure \ref{salivascatter}, we measured the mean absolute percentage error of $k$-mer counts for all of the five human saliva fastq files from Table \ref{errorsviral} between the complete viral database and the ``human virus only" database in a variant where both databases belong to KrakenUniq and another variant where they both belong to Genestrip.
+
+    More precisely, we used the following error measure:
+    Let $S_d$ be the list of all taxa \emph{for the rank species or below} in a database $d$.
+    The mean absolute percentage error $err_{f,d}(e)$ for a database $e$ with respect to fastq file $f$ and the ``ground truth" database $d$ is as follows:\footnote{The term ``$k_{t,f,d} + 1$" in the formula includes a Laplace correction to avoid a potential division by zero.}
+    \begin{equation}
+        err_{f,d}(e) := 100 / | S_{d} \cap S_{e} | \cdot \sum_{t \in S_{d} \cap S_{e}} |k_{t,f,d} - k_{t,f,e}| / (k_{t,f,d} + 1)
+    \end{equation}
+    Note that we limit the taxa to the rank species or below because, as discussed in the context of Figure \ref{viraldbscomp} and \ref{salivascatter}, we cannot expect $k$-mer counts and read counts to be close between $d$ and a corresponding smaller database $e$ for higher taxonomic ranks.
+    Analogously, we also measured the error with regard to the counts of classified reads.
+
+    As shown in Table \ref{errorscvhv}, the error rates for $k$-mer counts are zero under Genestrip, and for read counts, they are two orders of magnitude lower than those under KrakenUniq across all the examples. These findings solidify the usefulness of Genestrip's analysis results in the context of smaller databases.
+
+    \begin{table}[h]
+        \centering
+        \footnotesize
+        \begin{tabular}{r|rr|rr|rr|rr}
+
+            \multicolumn{1}{c|}{\#} &
+%\multicolumn{1}{c|}{Data-} &
+            \multicolumn{4}{c|}{$err_{f,\texttt{cv\_ku}}(\texttt{hv\_ku})$ for} &
+            \multicolumn{4}{c}{$err_{f,\texttt{cv\_g}}(\texttt{hv\_g})$ for}\\
+            %& points
+            & $k$-mers & (std.dev.) & Cl. reads &(std.dev.)&
+            $k$-mers & (std.dev.) & Cl. reads &(std.dev.)
+%no; key; reads; gs read len;
+%gs errs; gs kmer err; gs kmer err std dev; gs read err; gs read err std dev;
+%%ku errs; ku kmer err; ku kmer err std dev; ku read err; ku read err std dev;
+            \csvreader[separator=semicolon,before filter=\\\hline]{results/viral_human_virus_errors_gs_ku_comp.csv}{}
+            { \csvcoli & \csvcolxi & (\csvcolxii) & \csvcolxiii & (\csvcolxiv) & \csvcolvi & (\csvcolvii)  & \csvcolviii & (\csvcolix)}
+        \end{tabular}
+        \caption{Mean absolute percentage error of $k$-mer counts and read counts for five human saliva fastq files between the complete viral database and the ``human virus only" database where both databases either belong to KrakenUniq or Genestrip, respectively. Standard deviations for the errors are included in parentheses.}\label{errorscvhv}
+    \end{table}
 
         
 \bibliography{sn-bibliography}
