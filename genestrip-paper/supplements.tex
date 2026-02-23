@@ -242,7 +242,7 @@ Figure \ref{viraldbscatter} highlights the identical structure of the two comple
         \ref{legend1}
 
         \fi
-        \caption{Scatter plot of $k$-mer counts for the RefSeq databases \texttt{cv\_ku} from KrakenUniq and \texttt{cv\_g} from Genestrip covering the entire category ``Viral" (based on a logarithmic scale with 1 added to each value in order to enable the representation of zero-counts). The 16,513 depicted entries cover all of the taxa present in both databases.}\label{viraldbscatter}
+        \caption{Scatter plot of $k$-mer counts for the RefSeq databases \texttt{cv\_ku} from KrakenUniq and \texttt{cv\_g} from Genestrip covering the entire category ``Viral" (based on a logarithmic scale with 1 added to each value in order to enable the representation of zero-counts). The 16,513 depicted data points cover all of the taxa present in both databases.}\label{viraldbscatter}
     \end{figure}
             
  As real-world examples, we applied the two viral databases to short-read fastq files from DNA-sequencing human saliva of five different donors according to Table \ref{errorsviral} of the main document.
@@ -272,7 +272,7 @@ Figure \ref{viraldbscatter} highlights the identical structure of the two comple
                     null={mark=triangle,red} %  <-- don't add comma
                 }
                 ]
-                table[col sep=semicolon, header=true, x = {kmers 2}, y = {kmers 1} , meta=rank] {results/viral_saliva3_gs_ku_comp.csv};
+                table[col sep=semicolon, header=true, x = {kmers 2}, y = {kmers 1} , meta=rank] {results/viral_SRR5571991_gs_ku_comp.csv};
             \end{axis}
         \end{tikzpicture}
         \begin{tikzpicture}
@@ -293,7 +293,7 @@ Figure \ref{viraldbscatter} highlights the identical structure of the two comple
                     null={mark=triangle,red} %  <-- don't add comma
                 }
                 ]
-                table[col sep=semicolon, header=true, x = {reads 2}, y = {reads 1} , meta=rank] {results/viral_saliva3_gs_ku_comp.csv};
+                table[col sep=semicolon, header=true, x = {reads 2}, y = {reads 1} , meta=rank] {results/viral_SRR5571991_gs_ku_comp.csv};
                 ]
             \end{axis}
         \end{tikzpicture}
@@ -301,7 +301,7 @@ Figure \ref{viraldbscatter} highlights the identical structure of the two comple
 
         \ref{legend3}
 
-        \caption{Scatter plots of $k$-mer counts (a) and read counts (b) for fastq file \#3 from Table \ref{errorsviral} of the main document using the complete viral databases from Figure \ref{viraldbscatter} (based on a logarithmic scale with 1 added to each value to enable the representation of zero-counts).}\label{viralscatter}
+        \caption{Scatter plots of $k$-mer counts (a) and read counts (b) for fastq file \#3 from Table \ref{errorsviral} of the main document using the complete viral databases from Figure \ref{viraldbscatter} (1,851 data points, based on a logarithmic scale with 1 added to each value to enable the representation of zero-counts).}\label{viralscatter}
     \end{figure}
     
     \section{Complete results regarding ``human virus databases" on human saliva data}
