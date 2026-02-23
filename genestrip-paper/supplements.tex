@@ -97,7 +97,7 @@
     
     A typical challenge is to determine a method that generates an arbitrary number of $h_i$ which is needed since $n$ may vary: On the one hand, the computation of $h_i(l)$ should be very efficient but also, the Bloom filter's false positive rate must not suffer too much, if true independence cannot be guaranteed for the $h_i$. Regarding the storing of $k$-mers we found that the simple generator method
     \[h_i(l) = ((l \oplus s_i)\mod |b|) + 1\] 
-    works well in practice. Hereby, $\oplus$ is the bitwise xor-operator, $s_1, \ldots, s_n$ are randomly initialized long-valued salts and $|b|$ is the size of $b$. Functional testing showed that for uniformly distributed $k$-mers, this method indeed keeps the false positive rate close to its theoretical expectation. Note that $\mod$ from above may be replaced by any efficient mapping operator that fairly maps to the interval $1 \ldots |b|$.
+    works well in practice. Hereby, $\oplus$ is the bitwise xor-operator, $s_1, \ldots, s_n$ are randomly initialized long-valued salts and $|b|$ is the size of $b$. Functional testing showed that for uniformly distributed $k$-mers, this method indeed keeps the false positive rate close to its theoretical expectation. Note that the operator $\mod$ from above may be replaced by any other efficient mapping operator that fairly maps to the interval $0 \ldots |b| - 1$.
 
     \section{The dust function $d$}\label{dustfunction}
 We designed a simple dust function $d(s)$ that allows for recognizing and potentially excluding highly repetitive $k$-mers $s$ based on the following rationale:

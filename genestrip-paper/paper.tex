@@ -130,8 +130,11 @@ In order to avoid false positive classifications of reads, KrakenUniq resorts to
     Genestrip's database generation mandates the setting of groups of organisms whose genomes will be exclusively represented in a resulting database. Users choose the desired genera, species or strains via a configuration file by listing the corresponding taxa. If higher ranked taxa are entered, then by default, \emph{all} of the descending taxa will be included and $k$-mers of their genomes will be added to the database accordingly.
 
     Genestrip generates a database for a selected group of organisms primarily via
-    genomes from the RefSeq \citep{refseq} but genomes from Genbank and additional genomic files may be included on top or instead.
-    To better handle the complexity of the generation process, it employs a goal-oriented approach similar to Make \citep{feldman1979make}: Upon access, each goal returns a file or an object in main memory. A goal is executed only if its result is not yet available. Goal execution may involve the access of other goals which in turn, may trigger their execution. Respective goal dependencies are explicitly specified in terms of a directed acyclic graph. Details on the system's goals and the goal graph can be found in Section \ref{ggg} of the Appendix.
+    genomes from the RefSeq \citep{refseq} but genomes from Genbank and additional genomic files may be included on top or instead. By default, related genomic files are only downloaded once to a common folder and shared when different Genestrip databases are to be generated.
+    
+    To better handle the complexity of the generation process, it employs a goal-oriented approach similar to Make \citep{feldman1979make}: Upon access, each goal returns a file or an object in main memory. A goal is executed only if its result is not yet available. I.e., in case of a file goal, the system first checks whether the corresponding file is present and only if it is missing, the goal is executed to produce the file. 
+    
+    Goal execution may involve the access of other goals which in turn, may trigger their execution. Respective goal dependencies are explicitly specified in terms of a directed acyclic graph. Details on the system's goals and the goal graph can be found in Section \ref{ggg} of the Appendix.
 
     \subsection{Database generation}
     \label{database}
@@ -259,7 +262,7 @@ As stated in Section \ref{system}, Genestrip follows a goal-oriented approach in
 \end{enumerate}
 The generated database comprises $k$-mers for all viruses according to the tax id file \verb|./data/project/human_virus/taxids.txt|.
 
-To try out classification, the installation comes with the small fastq file \verb|sample.fastq.gz| in \verb|./data/projects/human_virus/fastq|. One may invoke its analysis via \verb|sh ./bin/genestrip.sh human_virus match -f ./data/projects/human_virus/fastq/sample.fastq.gz|. The resulting CSV file named \verb|human_virus_match_sample.csv| can then be found under \verb|./data/projects/human_virus/csv|.
+To try out classification, the installation comes with the small fastq file \verb|sample.fastq.gz| in \verb|./data/projects/human_virus/fastq|. One may trigger its analysis via \verb|sh ./bin/genestrip.sh human_virus match -f ./data/projects/human_virus/fastq/sample.fastq.gz|. The resulting CSV file named \verb|human_virus_match_sample.csv| can then be found under \verb|./data/projects/human_virus/csv|.
     
     \section{Results}\label{results}
 
