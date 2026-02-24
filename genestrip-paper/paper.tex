@@ -130,9 +130,9 @@ In order to avoid false positive classifications of reads, KrakenUniq resorts to
     Genestrip's database generation mandates the setting of groups of organisms whose genomes will be exclusively represented in a resulting database. Users choose the desired genera, species or strains via a configuration file by listing the corresponding taxa. If higher ranked taxa are entered, then by default, \emph{all} of the descending taxa will be included and $k$-mers of their genomes will be added to the database accordingly.
 
     Genestrip generates a database for a selected group of organisms primarily via
-    genomes from the RefSeq \citep{refseq} but genomes from Genbank and additional genomic files may be included on top or instead. By default, related genomic files are only downloaded once to a common folder and shared when different Genestrip databases are to be generated.
+    genomes from the RefSeq \citep{refseq} but genomes from Genbank and additional genomic files may be included on top or instead. By default, related genomic files are only downloaded once to a common folder and shared when further Genestrip databases are to be generated.
     
-    To better handle the complexity of the generation process, it employs a goal-oriented approach similar to Make \citep{feldman1979make}: Upon access, each goal returns a file or an object in main memory. A goal is executed only if its result is not yet available. I.e., in case of a file goal, the system first checks whether the corresponding file is present and only if it is missing, the goal is executed to produce the file. 
+    To better handle the complexity of the generation process, it employs a goal-oriented approach similar to Make \citep{feldman1979make}: Upon access, each goal returns a file or an object in main memory. A goal is executed only if its result is not yet available. I.e., in case of a file goal, the system first checks whether the corresponding file is present and only if it is missing, the corresponding goal is executed to produce the file. 
     
     Goal execution may involve the access of other goals which in turn, may trigger their execution. Respective goal dependencies are explicitly specified in terms of a directed acyclic graph. Details on the system's goals and the goal graph can be found in Section \ref{ggg} of the Appendix.
 
@@ -178,7 +178,7 @@ In order to avoid false positive classifications of reads, KrakenUniq resorts to
     \subsection{Read classification}
 
     The goal \verb|match| loads a database and performs the read classification on fastq files.
-    The principal classification algorithm is similar to that from  Kraken 1 \citep{kraken} and equivalently KrakenUniq. When iterating over a read's $k$-mers, each $k$-mer is encoded as a long -- once by considering its canonical version and once via its reverse complement. For efficiency, only the larger of the two encoded values is looked up in the database. This is sufficient since, if at all, then only just the larger of two values got stored in the first place during database generation (see Section \ref{database}).
+    The principal classification algorithm is similar to that from  Kraken 1 \citep{kraken} and equivalently KrakenUniq. When iterating over a read's $k$-mers, each $k$-mer is encoded as a long -- once by considering its canonical version and once via its reverse complement.\footnote{Considering both versions is necessary because sequenced reads may occur in either direction but also because genomes may be represented in reverse complement direction, such as in the case of circular DNA.} For efficiency, only the larger of the two encoded values is looked up in the database. This is sufficient since, if at all, then only just the larger of two values got stored in the first place during database generation (see Section \ref{database}).
 
     Genestrip implements a multithreading enabled classification procedure following a producer consumer pattern, where a producer thread reads a fastq file and puts reads into an in-memory queue while consumer threads pick reads from the queue in order to classify them.
 
@@ -260,7 +260,7 @@ As stated in Section \ref{system}, Genestrip follows a goal-oriented approach in
     \item
     create a CSV file \verb|human_virus_dbinfo.csv| under \verb|./data/projects/human_virus/csv|, which contains basic information about the database, i.e. the number of $k$-mers stored per taxon.
 \end{enumerate}
-The generated database comprises $k$-mers for all viruses according to the tax id file \verb|./data/project/human_virus/taxids.txt|.
+The generated database comprises $k$-mers for all viruses according to the configuration file \verb|./data/project/human_virus/taxids.txt|.
 
 To try out classification, the installation comes with the small fastq file \verb|sample.fastq.gz| in \verb|./data/projects/human_virus/fastq|. One may trigger its analysis via \verb|sh ./bin/genestrip.sh human_virus match -f ./data/projects/human_virus/fastq/sample.fastq.gz|. The resulting CSV file named \verb|human_virus_match_sample.csv| can then be found under \verb|./data/projects/human_virus/csv|.
     
@@ -475,7 +475,7 @@ As real-world examples, we first applied the ``human virus only"  databases to s
 
 
     Figure \ref{salivascatter} (a,b) shows the scatter plots of $k$-mer counts and read counts from KrakenUniq on a logarithmic scale for the database \texttt{cv\_ku} versus \texttt{hv\_ku} when applied to the human saliva fastq file \#3 from Table \ref{errorsviral}.
-    Figure \ref{salivascatter} (c,d) shows the corresponding results with respect to the Genestrip databases \texttt{cv\_g} versus \texttt{hv\_g}: While the small database under KrakenUniq led to massive overcounts of $k$-mers for the rank species and below, this did not occur under Genestrip. Moreover, KrakenUniq's overcounting of $k$-mers strongly influenced the counts of classified reads. Regarding Genestrip, the read counts on the species level and below are affected only by differing $k$-mer counts that occurred on the genus level and above. However, the impact remains moderate. The results for the other human saliva fastq files are similar (not shown).
+    Figure \ref{salivascatter} (c,d) shows the corresponding results with respect to the Genestrip databases \texttt{cv\_g} versus \texttt{hv\_g}: While the small database under KrakenUniq led to massive overcounts of $k$-mers for the rank species and below, this did not occur under Genestrip. Moreover, KrakenUniq's overcounting of $k$-mers strongly influenced the counts of classified reads. Regarding Genestrip, the read counts on the species level and below are affected only by differing $k$-mer counts that occurred on the genus level and above. However, the impact remains small. The results for the other human saliva fastq files are similar (not shown).
 
     \begin{figure}[h]%
         \centering
@@ -502,7 +502,7 @@ As real-world examples, we first applied the ``human virus only"  databases to s
                     null={mark=triangle,red} %  <-- don't add comma
                 }
                 ]
-                table[col sep=semicolon, header=true, x = {kmers 1}, y = {kmers 2} , meta={rank}] {results/viral_human_virus_saliva3_ku_ku_comp.csv};
+                table[col sep=semicolon, header=true, x = {kmers 1}, y = {kmers 2} , meta={rank}] {results/viral_human_virus_SRR5571991_ku_ku_comp.csv};
                 ]
             \end{axis}
         \end{tikzpicture}
@@ -523,7 +523,7 @@ As real-world examples, we first applied the ``human virus only"  databases to s
                     null={mark=triangle,red} %  <-- don't add comma
                 }
                 ]
-                table[col sep=semicolon, header=true, x = {reads 1}, y = {reads 2} , meta=rank] {results/viral_human_virus_saliva3_ku_ku_comp.csv};
+                table[col sep=semicolon, header=true, x = {reads 1}, y = {reads 2} , meta=rank] {results/viral_human_virus_SRR5571991_ku_ku_comp.csv};
             \end{axis}
         \end{tikzpicture}
         \\
@@ -546,7 +546,7 @@ As real-world examples, we first applied the ``human virus only"  databases to s
                     null={mark=triangle,red} %  <-- don't add comma
                 }
                 ]
-                table[col sep=semicolon, header=true, x = {kmers 1}, y = {kmers 2} , meta={rank}] {results/viral_human_virus_saliva3_gs_gs_comp.csv};
+                table[col sep=semicolon, header=true, x = {kmers 1}, y = {kmers 2} , meta={rank}] {results/viral_human_virus_SRR5571991_gs_gs_comp.csv};
                 ]
             \end{axis}
         \end{tikzpicture}
@@ -568,7 +568,7 @@ As real-world examples, we first applied the ``human virus only"  databases to s
                     null={mark=triangle,red} %  <-- don't add comma
                 }
                 ]
-                table[col sep=semicolon, header=true, x = {reads 1}, y = {reads 2} , meta=rank] {results/viral_human_virus_saliva3_gs_gs_comp.csv};
+                table[col sep=semicolon, header=true, x = {reads 1}, y = {reads 2} , meta=rank] {results/viral_human_virus_SRR5571991_gs_gs_comp.csv};
             \end{axis}
         \end{tikzpicture}
         \\
