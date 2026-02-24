@@ -44,7 +44,7 @@
 %
 % Workaround for faster compile without scatter plots:
 %
-\newif\ifscatter
+%\newif\ifscatter
 %\scattertrue
 
 \newcommand{\taxon}{taxon}
@@ -430,7 +430,7 @@ before line=\\\hline]{results/human_virus_human_virus_accuracy.csv}{}
             \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcolix}
             }\\                        
         \end{tabular}
-\caption{Read classification quality for different simulated fastq files analyzed with KrakenUniq, Kraken 2, Ganon and Genestrip using respective ``human virus only" databases but with a focus on human viruses only. The systems' adaptions for ``low FPP" and ``high conf." are explained in Section \ref{broadcov}.}
+\caption{Read classification quality for different simulated fastq files analyzed with KrakenUniq, Kraken 2, Ganon and Genestrip using respective ``human virus only" databases and with an evaluation focus on human viruses only. The systems' adaptions for ``low FPP" and ``high conf." are explained in Section \ref{broadcov}.}
 \label{smallcov}
     \end{table}
 
@@ -563,12 +563,12 @@ As real-world examples, we first applied the ``human virus only"  databases to s
         \caption{Scatter plots of $k$-mer counts (a, c) and read counts (b, d) for the human saliva fastq file \#3 from Table \ref{errorsviral} analyzed with KrakenUniq (a, b) and Genestrip (c, d) using the complete viral databases versus the ``human virus only" databases, as both shown in Figure \ref{viraldbscomp} (based on a logarithmic scale with 1 added to each value to enable the representation of zero-counts).}\label{salivascatter}
     \end{figure}
 
-    We also measured read classification quality for all of the five human saliva fastq files from Table \ref{errorsviral} well as for the simulated fastq files from Section \ref{correctness} and \ref{broadcov} as between the complete viral database and the respective ``human virus only" database under KrakenUniq, Kraken 2, Ganon and Genestrip again the a focus on human viruses only.
-    Although no ground truth is available for the human saliva fastq files, the comparison still tells how much classification quality suffers under each analysis tool when the corresponding database is created with just the genomes of interest -- i.e. the genomes of human viruses only instead of all viral genomes.
+    We also measured a relative read classification quality for all of the five human saliva fastq files from Table \ref{errorsviral} well as for the simulated fastq files from Section \ref{correctness} and \ref{broadcov} for the ``human virus only" database with respect to the corresponding complete viral database and under KrakenUniq, Kraken 2, Ganon and Genestrip again with an evaluation focus on human viruses only.
+    Although no ground truth is available for the human saliva fastq files, this comparison tells \emph{how much classification quality suffers under each analysis tool when the corresponding database is filled with just the genomes of interest -- i.e., the genomes of human viruses only instead of all viral genomes}.
     
-    Table \ref{humansalivarel} shows the results for the simualted fastq files and fastq file \#3 from Table \ref{errorsviral}. The results for the other four human saliva fastq files are similar and available in Section \ref{humansalivacomplete} of the Appendix.
+    Table \ref{humansalivarel} shows the results for the simualated fastq  file \#3 from Table \ref{errorsviral}. The results for the other four human saliva fastq files are similar and supplied in Section \ref{humansalivacomplete} of the Appendix.
     
-    While KrakenUniq, Kraken 2 and Ganon still achieve a mediocre to good F1-score on simulated data, their precision is completely insufficient on the real-world fastq files. This is due to massive false positive classifications of reads and a consequence of a missing consideration of non-human viral genomes. In contrast, Genestrip holds up in all of the cases because it did consider non-human viral genomes as part of its database update phase according to Section \ref{approach}.
+    While KrakenUniq, Kraken 2 and Ganon still achieve a mediocre to good F1-score on simulated data, their precision is completely insufficient on the human saliva fastq file. This is due to massive false positive classifications of reads, and is a consequence of a missing consideration of non-human viral genomes. In contrast, Genestrip's human virus database holds up in all of the cases because our tool does consider non-human viral genomes as part of the update phase according to Section \ref{approach}.
     
        \begin{table}[h]
         \centering
@@ -604,10 +604,9 @@ before line=\\\hline]{results/viral_saliva_rel_accuracy.csv}{}
             \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcolix}
             }\\
         \end{tabular}
-\caption{Read classification quality for the simulated fastq files from Section \ref{correctness} and \ref{broadcov} as well as the real-world fastq file \#3 from Table \ref{errorsviral} analyzed with KrakenUniq, Kraken 2, Ganon and Genestrip using respective ``human virus only" databases and with a focus on human viruses only. The systems' adaptions for ``low FPP" and ``high conf." are explained in Section \ref{broadcov}. Each system's results are compared against its own results obtained when applying the corresponding complete viral database introduced in Section \ref{broadcov}.}
+\caption{Read classification quality for the simulated fastq files from Section \ref{correctness} and \ref{broadcov} as well as the real-world fastq file \#3 from Table \ref{errorsviral} analyzed with KrakenUniq, Kraken 2, Ganon and Genestrip with an evaluation focus on human viruses only. The evaluation compares the classifications when using a ``human virus only" database against each system's own classifications obtained when using the corresponding complete viral database from Section \ref{broadcov}. The systems' adaptions for ``low FPP" and ``high conf." are explained in Section \ref{broadcov}. }
 \label{humansalivarel}
     \end{table}
-
 
     \subsection{Example: Tick-borne bacterial pathogens}
     \label{tickborne}

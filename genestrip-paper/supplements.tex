@@ -49,11 +49,20 @@
 \scattertrue
 
 \newcommand{\taxon}{taxon}
+\newcommand{\ku}{KrakenUniq}
+\newcommand{\ktwo}{Kraken 2}
+\newcommand{\ktwohf}{Kraken 2 high conf.}
+\newcommand{\ganon}{Ganon}
+\newcommand{\ganonlowfpr}{Ganon low FPP}
+\newcommand{\genestrip}{Genestrip}
+\newcommand{\hiseq}[1]{HiSeq}
+\newcommand{\lowseq}[1]{MiSeq}
+\newcommand{\fastqone}[1]{Extr. from \cite{Wu:2024aa}}
 
 \begin{document}
 
 % Enter title:
-    \title{Appendix to "Genestrip: Space-efficient $k$-mer counting, read classification for selected groups of organisms"}
+    \title{Appendix for "Genestrip: Space-efficient $k$-mer counting, read classification for selected groups of organisms"}
 
     \author*[1]{\fnm{Daniel} \sur{Pfeifer}}\email{daniel.pfeifer@hs-heilbronn.de}
    
@@ -305,7 +314,7 @@ Figure \ref{viraldbscatter} highlights the identical structure of the two comple
         \caption{Scatter plots of $k$-mer counts (a) and read counts (b) for fastq file \#3 from Table \ref{errorsviral} of the main document using the complete viral databases from Figure \ref{viraldbscatter} (1,851 data points, based on a logarithmic scale with 1 added to each value to enable the representation of zero-counts).}\label{viralscatter}
     \end{figure}
     
-    \section{Complete results regarding ``human virus databases" on human saliva data}
+    \section{Complete results regarding ``human virus only" databases on human saliva data}
     \label{humansalivacomplete}
     
        \begin{table}[h]
@@ -323,15 +332,15 @@ Figure \ref{viraldbscatter} highlights the identical structure of the two comple
 \csvreader[separator=semicolon,
 before line=\\\hline]{results/viral_saliva_rel_accuracy.csv}{}
             {\csvcolii & \csvcoli & 
-            \tablenum[table-format=1.3, round-mode = places,round-precision = 3]{\csvcolx} & 
-            \tablenum[table-format=1.3, round-mode = places,round-precision = 3]{\csvcolxi} & 
-            \tablenum[table-format=1.3, round-mode = places,round-precision = 3]{\csvcolxii} &
-            \tablenum[table-format=1.3, round-mode = places,round-precision = 3]{\csvcolvii} & 
-            \tablenum[table-format=1.3, round-mode = places,round-precision = 3]{\csvcolviii} & 
-            \tablenum[table-format=1.3, round-mode = places,round-precision = 3]{\csvcolix}
-            }                        
+            \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcolx} & 
+            \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcolxi} & 
+            \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcolxii} &
+            \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcolvii} & 
+            \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcolviii} & 
+            \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcolix}
+            }\\                       
         \end{tabular}
-\caption{Read classification quality for the real-world human saliva fastq files from Table \ref{errorsviral} analyzed with KrakenUniq, Kraken 2, Ganon and Genestrip using respective ``human virus only" databases and with a focus on human viruses only. The systems' adaptions for ``low false pos. rate" and ``high confidence" are explained in Section \ref{broadcov}. As no ground truth is available, each system's results are compared against its own results obtained when applying the corresponding complete viral database introduced in Section \ref{broadcov}.}
+\caption{Read classification quality for the the real-world fastq files from Table \ref{errorsviral} of the main document analyzed with KrakenUniq, Kraken 2, Ganon and Genestrip with an evaluation focus on human viruses only. The evaluation compares the classifications when using a ``human virus only" database against each system's own classifications obtained when using the corresponding complete viral database from Section \ref{broadcov} of the main document. The systems' adaptions for ``low FPP" and ``high conf." are explained in Section \ref{broadcov} of the main document. }
 \label{humansalivarelcompl}
     \end{table}
     
