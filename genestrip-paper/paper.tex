@@ -213,37 +213,10 @@ In order to avoid false positive classifications of reads, KrakenUniq resorts to
             \verb|max contig length| & The maximum length of all contiguous sequences of $k$-mers that are specific to $t$'s genome(s)  \\
             \verb|avg. read length| & The average length of reads for $t$ in base pairs \\
             \verb|db coverage| & $u_{t,f} / u_{t,d}$ \\
- %           \verb|exp. unique kmers| & $E(k_{t,f,d},u_{t,d})$ (see Equation \ref{E}) \\
- %           \verb|unique kmers / exp.| & The $k$-mer consistency ratio $r_{t,f,d}$ (see Equation \ref{r}) \\
             \verb|mean class error| & The mean ratio of $k$-mers from a read $r$ for $t$, where those $k$-mers are not consistent with $t$ per $r$'s total number of $k$-mers \\
         \end{tabular}
         \caption{Extract of columns from Genestrip's read analysis reports}\label{csvcolumns}
     \end{table}
-
-%    Genestrip introduces a novel, derived statistical measure --- the \emph{$k$-mer consistency ratio} --- as explained in the following: Given $k_{t,f,d}$, the apriori probability $p(t\ |\ k_{t,f,d})$ of a unique $k$-mer from $d$ belonging to $t$ to occur \emph{at least once} in $f$\ is approximately:\footnote{The approximation is based on the assumption that all $k$-mers in $d$ belonging to $t$ are equally likely to be found in $f$ (such as reported in \cite[Fig. 3]{nanoporeticks}). However, this assumption does not hold when special DNA library preparation protocols such as 16S or 18S amplification are used \citep{Wensel:2022aa,16srrnause}. In such cases the $k$-mer consistency ratio should therefore be disregarded.}
-%    \begin{equation}
-%        \label{ptk}
-%        p(t\ |\ k_{t,f,d}) = 1 - (1 - 1/u_{t,d})^{k_{t,f,d}}
-%    \end{equation}
-%    The corresponding \emph{expected number of unique $k$-mers} is as follows:
-%    \begin{equation}
-%        \label{E}
-%        E(k_{t,f,d},u_{t,d}) = u_{t,d} \cdot p(t\ |\ k_{t,f,d})
-%    \end{equation}
-%
-%    It is useful to compare $E(k_{t,f,d},u_{t,d})$ with the actual count $u_{t,f,d}$: If these quantities divert too much from each other, then the consistency of the $k$-mer counting results for $t$ in $f$ should be questioned. If on the other hand, these quantities are close, then this supports the consistency of the counting results. This leads to the \emph{$k$-mer consistency ratio}, which ideally is close to $1$:\footnote{A mathematically sounder approach is to consider the probability distribution
-%        $q(u_{t,f,d}\ |\ k_{t,f,d})$, i.e., the probability of obtaining exactly $u_{t,f,d}$ unique $k$-mers for a given (nonunique) $k$-mer count of $k_{t,f,d}$ by sampling with replacement as the underlying random process.
-%        Interestingly, this distribution is non-trivial and has been investigated in \cite{Mendelson2016WhatIT}. The authors have shown that the distribution can be approximated by a normal distribution $\mathcal{N}(E(k_{t,f,d},u_{t,d}),\sigma^2_q)$ under most practically relevant conditions. Moreover, they confirm the expectation $E(k_{t,f,d},u_{t,d})$ from above and give a formula for the variance $\sigma^2_q$ which in our case depends on $k_{t,f,d}$ and $u_{t,d}$.
-%        Although mathematically sound, the approach did not prove useful with respect to $k$-mer counts because $\mathcal{N}$ tends to be extremely peaked and so, even small deviations from $E(k_{t,f,d},u_{t,d})$ result in a $q(u_{t,f,d}\ |\ k_{t,f,d}) \approx 0$.}
-%%Expectation accounting for duplicate kmers in DB:
-%%Let $k_{t,d}(i)$ be the number of times a unique kmer $i$ occurs in the genome of $t$ with $1 \leq i \leq u_{t,d}$ and $\vec{k}_{t,d}$ the corresponding vector:
-%%\[ E_q(k_{t,f,d},\vec{k}_{t,d}) = \sum_{i = 1}^{u_{t,d}} k_{t,d}(i) \cdot (1 - (1 - 1/k_{t,d}(i))^{k_{t,f,d}}) \]
-%    \begin{equation}
-%        \label{r}
-%        r_{t,f,d} := u_{t,f,d} / E(k_{t,f,d},u_{t,d})
-%    \end{equation}
-%
-%    Section \ref{consistencyratio} discusses the results associated with the $k$-mer consistency ratio.
 
     \subsection{Example Usage}
     
@@ -1066,6 +1039,7 @@ DP developed the software, designed the evaluation and wrote the manuscript. CR 
 We thank Dr. Richard Zowalla, Simon Schweizer and Jochen Sch\"afer for providing server-based environments enabling the development and testing of Genestrip. We thank Dr. Robert Friedrich, Dr. Alexander Windberger and Lennart Elze for their feedback when initially applying the software. Many thanks also to Dr. Alois Heinz for proofreading parts of the manuscript.
 
     \clearpage
+    \nocite{Wensel:2022aa,16srrnause,Mendelson2016WhatIT}
     \bibliography{sn-bibliography}
 
 \end{document}
