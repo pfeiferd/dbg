@@ -297,7 +297,7 @@ As real-world examples, we applied the two databases to short-read fastq files f
 
 Based on all RefSeq genomes from the category ``Viral", we generated simulated fastq files via the tool InSilicoSeq \citep{10.1093/bioinformatics/bty630}: We applied the respective Illumina generation models ``MiSeq" and ``HiSeq" to produce two pairs of fastq files with one million reads per pair. In addition, we tested with data from \cite{Wu:2024aa} as introduced in Section \ref{correctness}. As the ground truth is known, this allowed for comparing read classification precision and recall across different $k$-mer-based analysis tools.
 
-As for the databases, we reused \texttt{cv\_ku} and \texttt{cv\_g} from Section \ref{correctness} and generated analogous databases for Kraken 2 and Ganon, respectively. Ganon depends on an important hyper-parameter \verb|max-fp| that controls the false positive probability  (FPP) for matching $k$-mers and must be set at database generation time. We used Ganon's default value of $0.01$ and alternatively tried a very low false positive rate of $10^{-7}$ (called ``Ganon low FPP"). Another hyper-parameter of Ganon is a predefined but configurable taxonomic level used when classifying reads. We set it to \verb|leaves| meaning that the taxons as originally associated with the RefSeq's viral genomes are used. Ganon performs multiple classifications for reads -- typically in less than 15\% of the cases. To enable a reasonably fair comparison, we computed the lowest common ancestor when Ganon produced multiple class taxons for a read and used the outcome in the evaluation.
+As for the databases, we reused \texttt{cv\_ku} and \texttt{cv\_g} from Section \ref{correctness} and generated analogous databases for Kraken 2 and Ganon, respectively. Ganon depends on an important hyper-parameter \verb|max-fp| that controls the false positive probability  (FPP) for matching $k$-mers and must be set at database generation time. We used Ganon's default value of $0.01$ and alternatively tried a very low false positive rate of $10^{-7}$ (called ``Ganon low FPP"). Another of Ganon's hyper-parameters, \verb|level|, sets the predefined but configurable taxonomic level used when classifying reads. We set it to \verb|leaves| meaning that the taxons as originally associated with the RefSeq's viral genomes are used. Ganon performs multiple classifications for reads -- typically in less than 15\% of the cases. To enable a reasonably fair comparison, we computed the lowest common ancestor when Ganon produced multiple class taxons for a read and used the outcome in the evaluation.
 Regarding Kraken 2, a real-valued classification confidence threshold between 0 and 1 can be set at classification time. We report results at the default confidence of 0 and at a high confidence of $0.8$ (called ``Kraken 2 high conf.").
 
 Table \ref{smallcov} shows that most systems perform within reason except for the configuration ``Kraken 2 high conf.". Irrespective of its configuration, Ganon appears to be sensitive to the higher error rates in ``MiSeq" as opposed to ``HiSeq".
@@ -338,12 +338,12 @@ before line=\\\hline]{results/viral_accuracy.csv}{}
 
     As a first example, we created two small viral databases based on the RefSeq covering \emph{human viruses only}\footnote{The list of human viruses originates from \cite{viralzone}. Some human viruses known to be missing were manually added. All \taxon s were chosen on the species rank.}, again under both KrakenUniq and Genestrip.  In the following, we name the two databases \texttt{hv\_ku} and \texttt{hv\_g} with regard to KrakenUniq and Genestrip, respectively. We again assured that the databases were identical in terms of their genomic basis and their stored $k$-mers. In addition, we generated analogous human virus databases for Kraken 2 and Ganon with the same configurations for Ganon as described in Section \ref{broadcov}.
         
-    Figure \ref{viraldbscomp} compares the viral database contents for the databases \texttt{cv\_ku} and \texttt{cv\_g} from Section \ref{correctness} against the respective ``human virus only" database for (a) KrakenUniq and (b) Genestrip. The plots depict data points of the 407 taxa referenced in both databases.
+    Figure \ref{viraldbscomp} compares the viral database contents for the databases \texttt{cv\_ku} and \texttt{cv\_g} from Section \ref{correctness} against the respective ``human virus only" database for (a) KrakenUniq and (b) Genestrip. In addition, (c) directly compares the $k$-mer counts of the two ``human virus only" databases \texttt{hv\_ku} and \texttt{hv\_g}. The plots each depict data points of the 422 taxa referenced in either of the two corresponding databases.
 
     Regarding Genestrip's databases from Figure \ref{viraldbscomp} (b), all $k$-mer counts on the species rank and below are identical per \taxon\ as an effect of the update phase (as discussed in Section \ref{background}). This is an important precondition met by Genestrip's \texttt{hv\_g} database to avoid false positives at read classification time. Nevertheless, data points from higher taxonomic ranks scatter because the complete viral database  \texttt{cv\_g} contains $k$-mers from many more nonhuman viruses, and these $k$-mers were pushed to higher ranks due to the lowest common ancestor update. Obviously, these additional $k$-mers are not required to classify reads accurately with respect to human viruses. The database \texttt{hv\_g} contains only 3,865,987 $k$-mers with a disk size of approximately 55 MB, whereas \texttt{cv\_g} has as disk size of 5.4 GB with 98 times as many $k$-mers.
 
-    KrakenUniq's corresponding $k$-mer counts from Figure \ref{viraldbscomp} (a) are not identical for the species rank and below. Although visually not well obvious in (a), this accounts for more than 150 scattering data points on the species rank and below. These differences offer the potential for more error and in particular false positives at read classification time as will be exemplified next.
-
+    KrakenUniq's corresponding $k$-mer counts from Figure \ref{viraldbscomp} (a) are not identical for the species rank and below. Although visually not well obvious in (a), this accounts for more than 150 scattering data points on the species rank and below. These differences offer the potential for more error and in particular false positives at read classification time as will be exemplified next. The plots (a) and (c) look similar because with regard to human virus taxa, \texttt{hv\_g} is similar to \texttt{cv\_ku} and \texttt{cv\_g}.
+     
     \begin{figure}[h]%
         \centering
         $k$-mers in Database\\
@@ -394,11 +394,37 @@ before line=\\\hline]{results/viral_accuracy.csv}{}
                 ]
             \end{axis}
         \end{tikzpicture}
+        \begin{tikzpicture}
+            \begin{axis}[
+                title=(c) KrakenUniq vs. Genestrip for ``human virus only",
+                xlabel={\texttt{hv\_g}},
+                ylabel={\texttt{hv\_ku}},
+                xmode=log,
+                ymode=log,
+                width = 0.45\textwidth,
+                height = 0.45\textwidth,
+                legend columns=-1,
+                legend style={font=\small},
+                legend entries={{Species or below},{Genus},{Above Genus}},
+                legend to name=legend4
+            ]
+                \addplot+ [scatter, only marks,mark size=1pt,
+                point meta=explicit symbolic,
+                scatter/classes={
+                        {species or below}={mark=*,blue},
+                    genus={mark=square,green},
+                    null={mark=triangle,red} %  <-- don't add comma
+                }
+                ]
+                table[col sep=semicolon, header=true, x = {kmers 1}, y = {kmers 2} , meta={rank}] {results/human_virus_gs_ku_dbcomp.csv};
+                ]
+            \end{axis}
+        \end{tikzpicture}
         \\
 
         \ref{legend4}
 
-         \caption{Scatter plots of $k$-mers per \taxon\ in a complete viral database versus a ``human virus only" database both from the RefSeq created via (a) KrakenUniq and (b) Genestrip (based on a logarithmic scale with 1 added to each value to enable the representation of zero-counts).}\label{viraldbscomp}
+         \caption{Scatter plots of $k$-mers per \taxon\ in a complete viral database versus a ``human virus only" database both from the RefSeq created via (a) KrakenUniq and (b) Genestrip (based on a logarithmic scale with 1 added to each value to enable the representation of zero-counts). In addition, (c) directly compares the $k$-mer counts of the two ``human virus only" databases \texttt{hv\_ku} and \texttt{hv\_g}.}\label{viraldbscomp}
     \end{figure}
 
 \subsubsection{Small databases on simulated data}
@@ -617,7 +643,7 @@ before line=\\\hline]{results/viral_saliva_rel_accuracy.csv}{}
     \label{mdbtb}
     \texttt{MicrobialDB} for KrakenUniq aims at the diagnosis of infectious diseases using metagenomics and contains 97.68 times as many $k$-mers as \texttt{tb}. It has a disk size of 574.31 GB excluding the taxonomy tree and additional mapping files. It covers a broad set of microbials including archaea, bacteria, viral genomes, the human genome and pathogenic eukaryotes with contaminants removed \citep{Lu:2018aa}.
 
-    The database \texttt{tb} for Genestrip is based on the RefSeq Release 230 and covers all RefSeq  genomes under the twelve bacterial genera Bartonella, Rickettsia, Anaplasma, Ehrlichia, Borrelia, Borreliella, Chlamydia, Mycoplasma, Malacoplasma, Mycoplasmoides, Metamycoplasma and Francisella as many included species are pathogenic to humans and known or assumed to occur in ticks \citep{Eisen:2018aa, JOHNSON20181499, Janecek:2012aa, Thomas:1990aa, 10.3389/fvets.2025.1522904}. To avoid contaminants from human DNA and black-legged tick DNA, we added corresponding genomes to Genestrip's update phase as explained at the end of Section \ref{database}. We also activated the genomic dust filter at high sensitivity: e.g., the $k$-mer \texttt{ATACGGCGCGCGCGCGCGCGCATATATATTC} would be dropped because its repetitiveness is just above the set threshold.
+    The database \texttt{tb} for Genestrip is based on the RefSeq Release 233 and covers all RefSeq genomes under the twelve bacterial genera Bartonella, Rickettsia, Anaplasma, Ehrlichia, Borrelia, Borreliella, Chlamydia, Mycoplasma, Malacoplasma, Mycoplasmoides, Metamycoplasma and Francisella as many included species are pathogenic to humans and known or assumed to occur in ticks \citep{Eisen:2018aa, JOHNSON20181499, Janecek:2012aa, Thomas:1990aa, 10.3389/fvets.2025.1522904}. To avoid contaminants from human DNA and black-legged tick DNA, we added corresponding genomes to Genestrip's update phase as explained at the end of Section \ref{database}. We also activated the genomic dust filter at high sensitivity: e.g., the $k$-mer \texttt{ATACGGCGCGCGCGCGCGCGCATATATATTC} would be dropped because its repetitiveness is just above the set threshold.
 
     \texttt{tb} contains 487,834,649 $k$-mers and has a disk size of just 5.87 GB including the accompanied Bloom filter and the matching extract of the NCBI taxonomy tree. \texttt{tb} has 1.96 times as many $k$-mers stored under the selected genera and below as \texttt{MicrobialDB}. The macro average increase across the chosen genera is a factor of 1.83 with a maximum factor of 3.25 for Bartonella and a minimum factor of 1.29 for Clamydia. The main reason behind this increase is the total growth of the RefSeq's number of prokaryotic genomes by a factor of over 1.39 between the generation of \texttt{MicrobialDB} in mid 2023 and the generation of \texttt{tb} \citep{10.1093/nar/gkae1038}.
 
@@ -849,7 +875,7 @@ before line=\\\hline]{results/viral_saliva_rel_accuracy.csv}{}
 
     Table \ref{dbdesc} lists six Genestrip databases used for assessing database generation performance. They refer to several categories and were designed with a potential use in medicine or agriculture in mind. Table \ref{dbperf} reports execution statistics for the generation of these databases from scratch via the goal \texttt{db} from Figure \ref{goalgraph}. The execution times and the maximum RAM remained moderate in all of the cases. (Times for downloading any of the necessary RefSeq or Genbank files from the NCBI are not included. Related files were downloaded upfront via the goals \texttt{refseqfna} and \texttt{fastasgenbankdl} from Figure \ref{goalgraph}.)
 
-    The different execution times in Table \ref{dbperf} depend on the size of the database itself but also on the RefSeq category, where ``Bacteria" is the largest of the five ones used with genomes in over 2,800 zip files with a total disk size of over 550 GB (in RefSeq Release 230).
+    The different execution times in Table \ref{dbperf} depend on the size of the database itself but also on the RefSeq category, where ``Bacteria" is the largest of the five ones used with genomes in over 2,800 zip files with a total disk size of over 550 GB (in RefSeq Release 233).
     The zip files must all be screened during each goal from Table \ref{goals} but the update phase, i.e., the goal \texttt{updatedb}, dominates the execution time.
 
     \begin{table}[h]
