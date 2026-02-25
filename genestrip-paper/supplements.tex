@@ -332,6 +332,7 @@ The additional results include Table \ref{broadhvcov} and Table \ref{humansaliva
             \multicolumn{1}{c|}{\textbf{Recall}} &
             \multicolumn{1}{c}{\textbf{F1}}            
 \csvreader[separator=semicolon,
+filter not equal={\csvcoli}{\fastqone{dontcare}},
 before line=\\\hline]{results/viral_human_virus_accuracy.csv}{}
             {\csvcolii & \csvcoli & 
             \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcolx} & 
@@ -342,10 +343,9 @@ before line=\\\hline]{results/viral_human_virus_accuracy.csv}{}
             \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcolix}
             }\\                        
         \end{tabular}
-\caption{Read classification quality for the simulated fastq files from Section \ref{correctness} and \ref{broadcov} of the main document analyzed with KrakenUniq, Kraken 2, Ganon and Genestrip using the complete viral databases from Section \ref{broadcov} of the main document but with an evaluation focus on human viruses only. The systems' adaptions for ``low FPP" and ``high conf." are explained in Section \ref{broadcov} of the main document.}
+\caption{Read classification quality for simulated fastq files from Section \ref{correctness} of the main document analyzed with KrakenUniq, Kraken 2, Ganon and Genestrip using the complete viral databases from Section \ref{broadcov} of the main document but with an evaluation focus on human viruses only. The systems' adaptions for ``low FPP" and ``high conf." are explained in Section \ref{broadcov} of the main document.}
 \label{broadhvcov}
     \end{table}
-
     
        \begin{table}[h]
         \centering
