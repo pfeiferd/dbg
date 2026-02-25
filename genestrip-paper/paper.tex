@@ -50,12 +50,12 @@
 \newcommand{\taxon}{taxon}
 \newcommand{\ku}{KrakenUniq}
 \newcommand{\ktwo}{Kraken 2}
-\newcommand{\ktwohf}{Kraken 2 high conf.}
+\newcommand{\ktwohc}{Kraken 2 high conf.}
 \newcommand{\ganon}{Ganon}
 \newcommand{\ganonlowfpr}{Ganon low FPP}
 \newcommand{\genestrip}{Genestrip}
 \newcommand{\hiseq}[1]{HiSeq}
-\newcommand{\lowseq}[1]{MiSeq}
+\newcommand{\miseq}[1]{MiSeq}
 \newcommand{\fastqone}[1]{Extr. from \cite{Wu:2024aa}}
 
 \begin{document}
@@ -191,7 +191,7 @@ In order to avoid false positive classifications of reads, KrakenUniq resorts to
         \item  Moreover, the classification threshold \verb|minKMersForClass| supports the reduction of potential false positive classifications. It can be set to adjust the minimal sum of $k$-mers under taxon $t$ required for a read to be classified to $t$. I.e., given a read $r$ and taxon $t_1$ on the genus rank with two $k$-mers in $r$ and taxon $t_2$ subordinate to $t_1$ on the species rank with one $k$-mer in $r$. Furthermore, $r$ shall contain no other $k$-mers matching any taxons. Then, if \verb|minKMersForClass=2|, $r$ would \emph{not} be classified to $t_1$ but to $t_2$ instead since the single $k$-mer under $t_1$ is below the threshold but the sum of three $k$-mers under $t_2$ is sufficient. 
     \end{enumerate}
     
-    The thresholds allow for playing off recall against precision in light of potentially high error rates of some sequencing devices \citep{Delahaye:2021aa,Liu-Wei:2024aa}. For all the experiments throughout this paper, the first two thresholds were left at the default of one $k$-mer which is the most sensitive level. For the correctness discussion in Section \ref{correctness}, we left \verb|minKMersForClass| at the default of one, but for all other experiments in this paper, we set \verb|minKMersForClass=4|.
+    The thresholds allow for playing off recall against precision in light of potentially high error rates of some sequencing devices \citep{Delahaye:2021aa,Liu-Wei:2024aa}. For all the experiments throughout this paper, the first two thresholds were left at the default of one $k$-mer which is the most sensitive level. For the correctness discussion in Section \ref{correctness}, we left \verb|minKMersForClass| at the default of one to ensure complete compatibility with KrakenUniq. However for all other experiments in this paper, we set \verb|minKMersForClass=4|.
     
     \subsection{Analysis reports} \label{measures}
 
@@ -300,7 +300,7 @@ Based on all RefSeq genomes from the category ``Viral", we generated simulated f
 As for the databases, we reused \texttt{cv\_ku} and \texttt{cv\_g} from Section \ref{correctness} and generated analogous databases for Kraken 2 and Ganon, respectively. Ganon depends on an important hyper-parameter \verb|max-fp| that controls the false positive probability  (FPP) for matching $k$-mers and must be set at database generation time. We used Ganon's default value of $0.01$ and alternatively tried a very low false positive rate of $10^{-7}$. Another hyper-parameter of Ganon is a predefined but configurable taxonomic level used when classifying reads. We set it to \verb|leaves| meaning that the taxons as originally associated with the RefSeq's viral genomes are used. Ganon performs multiple classifications for reads -- typically in less than 15\% of the cases. To enable a reasonably fair comparison, we computed the lowest common ancestor when Ganon produced multiple class taxons for a read and used the outcome in the evaluation.
 Regarding Kraken 2, a real-valued classification confidence threshold between 0 and 1 can be set at classification time. We report results at the default confidence of 0 and at a high confidence of $0.8$.
 
-TODO: Present and comment on results.
+Table \ref{smallcov} shows that most systems perform within reason except for the configuration ``Kraken 2 high conf.". Irrespective of its configuration, Ganon appears to be sensitive to the higher error rates in ``MiSeq" as opposed to ``HiSeq".
     
         \begin{table}[h]
         \centering
@@ -328,7 +328,7 @@ before line=\\\hline]{results/viral_accuracy.csv}{}
 \caption{Read classification quality for different simulated fastq files  analyzed with KrakenUniq, Kraken 2, Ganon and Genestrip. Regarding KrakenUniq and Genestrip the viral databases \texttt{cv\_ku} and  \texttt{cv\_g} from Section \ref{correctness} were used. Similar (unnamed) viral databases were generated for Kraken 2 und Ganon. The systems' adaptions for ``low FPP" and ``high conf." are explained in Section \ref{broadcov}.}
 \label{readqviral}
     \end{table}
-
+    
     \subsection{Classification via small databases}
     \label{accuracy}
 
@@ -337,7 +337,7 @@ before line=\\\hline]{results/viral_accuracy.csv}{}
 \subsubsection{Human virus vs. complete viral databases}
 
     As a first example, we created two small viral databases based on the RefSeq covering \emph{human viruses only}\footnote{The list of human viruses originates from \cite{viralzone}. Some human viruses known to be missing were manually added. All \taxon s were chosen on the species rank.}, again under both KrakenUniq and Genestrip.  In the following, we name the two databases \texttt{hv\_ku} and \texttt{hv\_g} with regard to KrakenUniq and Genestrip, respectively. We again assured that the databases were identical in terms of their genomic basis and their stored $k$-mers. In addition, we generated analogous human virus databases for Kraken 2 and Ganon with the same configurations for Ganon as described in Section \ref{broadcov}.
-    
+        
     Figure \ref{viraldbscomp} compares the viral database contents for the databases \texttt{cv\_ku} and \texttt{cv\_g} from Section \ref{correctness} against the respective ``human virus only" database for (a) KrakenUniq and (b) Genestrip. The plots depict data points of the 407 taxa referenced in both databases.
 
     Regarding Genestrip's databases from Figure \ref{viraldbscomp} (b), all $k$-mer counts on the species rank and below are identical per \taxon\ as an effect of the update phase (as discussed in Section \ref{background}). This is an important precondition met by Genestrip's \texttt{hv\_g} database to avoid false positives at read classification time. Nevertheless, data points from higher taxonomic ranks scatter because the complete viral database  \texttt{cv\_g} contains $k$-mers from many more nonhuman viruses, and these $k$-mers were pushed to higher ranks due to the lowest common ancestor update. Obviously, these additional $k$-mers are not required to classify reads accurately with respect to human viruses. The database \texttt{hv\_g} contains only 3,865,987 $k$-mers with a disk size of approximately 53 MB, whereas \texttt{cv\_g} has as disk size of 5.4 GB with almost 97 times as many $k$-mers.
@@ -403,9 +403,7 @@ before line=\\\hline]{results/viral_accuracy.csv}{}
 
 \subsubsection{Small databases on simulated data}
 
-We applied the ``human virus only" databases to the fastq files from Section \ref{correctness} and again measured precision and recall but only with respect to human viruses. So, this evaluation examines the quality of a small database on simulated data where the ground truth is known but with a focus on just the genomes and taxons used to create the small databases. In this respect, reads from other, non-human viruses which are also contained in respective fastq files constitute noise.
-
-Table \ref{smallcov} ...
+We applied the ``human virus only" databases to the fastq files from Section \ref{correctness} and again measured precision and recall but with respect to human viruses only. So, this evaluation examines the quality of a small database on simulated data where the ground truth is known but with a focus on just the genomes and taxons used to create the small databases. In this respect, reads from other, non-human viruses which are also contained in respective fastq files constitute noise. Table \ref{smallcov} shows that all systems still perform within reason on the simulated data but with Genestrip clearly in the lead.
 
        \begin{table}[h]
         \centering
@@ -430,11 +428,11 @@ before line=\\\hline]{results/human_virus_human_virus_accuracy.csv}{}
             \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcolix}
             }\\                        
         \end{tabular}
-\caption{Read classification quality for different simulated fastq files analyzed with KrakenUniq, Kraken 2, Ganon and Genestrip using respective ``human virus only" databases and with an evaluation focus on human viruses only. The systems' adaptions for ``low FPP" and ``high conf." are explained in Section \ref{broadcov}.}
+\caption{Read classification quality the simulated fastq files from Section \ref{correctness} and \ref{broadcov} analyzed with KrakenUniq, Kraken 2, Ganon and Genestrip using respective ``human virus only" databases and with an evaluation focus on human viruses only. The systems' adaptions for ``low FPP" and ``high conf." are explained in Section \ref{broadcov}.}
 \label{smallcov}
     \end{table}
 
-\subsubsection{Human virus databases on real-world data}
+\subsubsection{Small databases on real-world data}
 
 As real-world examples, we first applied the ``human virus only"  databases to short-read fastq files from DNA-sequencing human saliva of five different donors.
     Table \ref{errorsviral} shows statistics of the fastq files.       
@@ -563,13 +561,11 @@ As real-world examples, we first applied the ``human virus only"  databases to s
         \caption{Scatter plots of $k$-mer counts (a, c) and read counts (b, d) for the human saliva fastq file \#3 from Table \ref{errorsviral} analyzed with KrakenUniq (a, b) and Genestrip (c, d) using the complete viral databases versus the ``human virus only" databases, as both shown in Figure \ref{viraldbscomp} (based on a logarithmic scale with 1 added to each value to enable the representation of zero-counts).}\label{salivascatter}
     \end{figure}
 
-    We also measured a relative read classification quality for all of the five human saliva fastq files from Table \ref{errorsviral} well as for the simulated fastq files from Section \ref{correctness} and \ref{broadcov} for the ``human virus only" database with respect to the corresponding complete viral database and under KrakenUniq, Kraken 2, Ganon and Genestrip again with an evaluation focus on human viruses only.
-    Although no ground truth is available for the human saliva fastq files, this comparison tells \emph{how much classification quality suffers under each analysis tool when the corresponding database is filled with just the genomes of interest -- i.e., the genomes of human viruses only instead of all viral genomes}.
+    We also measured a relative read classification quality for all of the five human saliva fastq files from Table \ref{errorsviral} well as for the simulated fastq files from Section \ref{correctness} and \ref{broadcov} by comparing the ``human virus only" database against the corresponding complete viral database and under KrakenUniq, Kraken 2, Ganon and Genestrip -- again with an evaluation focus on human viruses only.
+    Although no ground truth is available for the human saliva fastq files, this comparison tells \emph{how much classification quality suffers under each analysis tool when the corresponding database is filled with just the genomes of interest -- i.e., the genomes of human viruses only instead of all viral genomes}. The result represents a relative factorial change where an approximate baseline for the simulated data is given in Table \ref{readqviral} and in Table \ref{broadhvcov} of the Appendix.
     
-    Table \ref{humansalivarel} shows the results for the simualated fastq  file \#3 from Table \ref{errorsviral}. The results for the other four human saliva fastq files are similar and supplied in Section \ref{humansalivacomplete} of the Appendix.
-    
-    While KrakenUniq, Kraken 2 and Ganon still achieve a mediocre to good F1-score on simulated data, their precision is completely insufficient on the human saliva fastq file. This is due to massive false positive classifications of reads, and is a consequence of a missing consideration of non-human viral genomes. In contrast, Genestrip's human virus database holds up in all of the cases because our tool does consider non-human viral genomes as part of the update phase according to Section \ref{approach}.
-    
+    Table \ref{humansalivarel} shows the results for the simulated data and fastq file \#3 from Table \ref{errorsviral}. The results for the other four human saliva fastq files are similar and supplied in Section \ref{humansalivacomplete} of the Appendix.
+        
        \begin{table}[h]
         \centering
         \begin{tabular}{l|l|r|r|r|r|r|r}
@@ -607,6 +603,8 @@ before line=\\\hline]{results/viral_saliva_rel_accuracy.csv}{}
 \caption{Read classification quality for the simulated fastq files from Section \ref{correctness} and \ref{broadcov} as well as the real-world fastq file \#3 from Table \ref{errorsviral} analyzed with KrakenUniq, Kraken 2, Ganon and Genestrip with an evaluation focus on human viruses only. The evaluation compares the classifications when using a ``human virus only" database against each system's own classifications obtained when using the corresponding complete viral database from Section \ref{broadcov}. The systems' adaptions for ``low FPP" and ``high conf." are explained in Section \ref{broadcov}. }
 \label{humansalivarel}
     \end{table}
+
+   While KrakenUniq, Ganon still achieve a mediocre to good F1-score on simulated data, their precision is completely insufficient on the human saliva fastq file. This is due to massive false positive classifications of reads, and is a consequence of a missing consideration of non-human viral genomes. Although speculative, we assume that the real-world data has a different error profile than the simulated data, which may contribute to the stark difference. Also, reads of human host DNA may cause critical noise with respect to KrakenUniq's and Ganon's classifications. The configuration ``Kraken 2 high conf." withstands the challenge but as shown in Table \ref{readqviral}, its baseline is low to begin with. In contrast, Genestrip comes from a good baseline, and its human virus database holds up in all of the cases because the tool does consider non-human viral genomes as part of the update phase according to Section \ref{approach}.
 
     \subsection{Example: Tick-borne bacterial pathogens}
     \label{tickborne}
@@ -995,10 +993,10 @@ $u_{t,d}$& Number of $k$-mers stored under taxon $t$ in database $d$ \\
 % $r_{t,f,d}$ &$k$-mer consistency ratio for $k$-mers found for taxon $t$ in fastq file $f$ with respect to database $d$ \\
 \texttt{cv\_ku} & Complete viral database for KrakenUniq \\
 \texttt{cv\_g} & Complete viral database for Genestrip \\
-BPs & Base pairs \\
 \texttt{hv\_ku} & Human virus database for KrakenUniq \\
 \texttt{hv\_g} & Human virus database for Genestrip \\
 FPP & False positive probability of a probabilistic filter \\
+BPs & Base pairs \\
 \texttt{MicrobialDB} & Large, comprehensive microbial database for KrakenUniq \\
 \texttt{tb} & Tick-borne bacterial pathogens database for Genestrip \\
 DB & Database
