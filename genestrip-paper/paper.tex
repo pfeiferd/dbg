@@ -148,16 +148,16 @@ In order to avoid false positive classifications of reads, KrakenUniq resorts to
     All parts of the NCBI taxonomy tree \citep{taxonomy} required at analysis time are also included in  the database. The taxonomy extract comprises entries for the selected organisms and all of their ancestors. At analysis time, a bit vector with the same size as $L$ indicates which $k$-mers from $L$ were found at least once. This is sufficient for exact unique $k$-mer counting and is space-efficient, as it requires only about 1.6\% of additional main memory with respect to $L$.
 
     Table \ref{goals} describes the most important goals for database generation in their typical execution order. All of these goals are multithreading-enabled for faster database generation. Genestrip employs a Bloom filters \citep{bloomfilter} at \emph{database generation time}:\footnote{More recent probabilistic filters such as Xor filters \citep{10.1145/3376122} or a Ribbon filters \citep{9920402} do not apply there since their construction demands all $k$-mers to be known upfront, whereas at database generation time, the $k$-mers stream in one by one from the genomic files being read.}
-        When the database gets filled, it tracks the already stored $k$-mers. Since $L$ is not sorted at that point in time, the filter offers an efficient check.
+        When the database gets filled, it tracks the already stored $k$-mers. Since $L$ is not sorted at that point in time, the filter offers an efficient containment check.
 
-    The same Bloom filter is \emph{reused at read classification time}: By default, it is consulted before a $k$-mer lookup in $L$ to check whether the $k$-mer might be in $L$. \emph{A negative result avoids a considerably more expensive binary search in $L$ and therefore saves overall execution cost.} We compared the average access time to look up a random $k$-mer in Genestrip's $k$-mer store with and without the Bloom filter being activated: Depending on the size of the database the Bloom filter brought an improvement of about factor 2 for very small databases to roughly factor 5 for larger databases. So, at read analysis time, the Bloom filter merely improves efficiency but does not cause false positives, since a hit in the filter is always backed via $L$. Employing the filter pays off because in practice, because many $k$-mers from reads are likely not stored in a small database.\footnote{For example, in the case of detecting infections, related samples typically contain a lot of host-DNA leading to many $k$-mers from the host in reads, whereas a related database typically would contain the pathogens $k$-mers only.} Our Bloom filter's particular hash function is detailed in Section \ref{blhashes} of the Appendix.
+    The same Bloom filter is \emph{reused at read classification time}: By default, it is consulted before a $k$-mer lookup in $L$ to check whether the $k$-mer might be in $L$. \emph{A negative result avoids a considerably more expensive binary search in $L$ and therefore saves overall execution cost.} We compared the average access time to look up a random $k$-mer in Genestrip's $k$-mer store with and without the Bloom filter being activated: Depending on the size of the database the Bloom filter brought an improvement of about factor 2 for very small databases to roughly factor 5 for larger databases. So, at read analysis time, the Bloom filter merely improves efficiency but does not cause false positives, since a hit in the filter is always backed via $L$. Employing the filter pays off because in practice, many $k$-mers from reads are likely not stored in a small database.\footnote{For example, in the case of detecting infections, related samples typically contain a lot of host-DNA leading to many $k$-mers from the host in reads, whereas a related database typically would contain the pathogens $k$-mers only.} Our Bloom filter's particular hash function is detailed in Section \ref{blhashes} of the Appendix.
 
     \begin{table}[h]
         \centering
         \begin{tabular}{l|p{10.5cm}}
             \textbf{Goal name} & \textbf{Description} \\
             \hline
-            \verb|fillsize| & Determines the size of the database in terms of number of $k$-mers by reading the respective reference genome files and including the genomes of selected organisms. Employing the HyperLogLog algorithm from \cite{Flajolet07hyperloglog}, this results in a cardinality estimate of \emph{deduplicated} $k$-mers. \\
+            \verb|fillsize| & Determines the size of the database in terms of the number of $k$-mers by reading the respective reference genome files and including the genomes of selected organisms. By employing the HyperLogLog algorithm from \cite{Flajolet07hyperloglog}, this results in a cardinality estimate of \emph{deduplicated} $k$-mers. \\
             \verb|filldb| & This \emph{entry phase} populates the database with all $k$-mers of genomes from selected organisms. The appropriate size of the database is based on \verb|fillsize|.
             Duplicate $k$-mer entries are avoided via a Bloom filter that tracks the already stored $k$-mers. Finally, the stored $k$-mers are sorted in order to enable binary search at analysis time but also for the goal \verb|updatedb| from below.\\
             \verb|updatedb| & This \emph{update phase} updates the populated database to account for common $k$-mers between organisms.
@@ -258,7 +258,26 @@ The file contains 61,550 long reads extracted from 6,155 viral standard genomes 
 Furthermore, we generated simulated fastq files based on all RefSeq genomes from the category ``Viral" via the tool InSilicoSeq \citep{10.1093/bioinformatics/bty630}: We applied the respective Illumina generation models ``MiSeq" and ``HiSeq" to produce two pairs of fastq files with one million reads per pair. Then, we analyzed these files via \texttt{cv\_ku} and \texttt{cv\_g} as well.
 In all of the cases the $k$-mer counts per taxon were identical between KrakenUniq and Genestrip and the classified read counts were also identical.
      
-As real-world examples, we applied the two databases to short-read fastq files from DNA-sequencing human saliva of five different donors -- again with completely identical $k$-mer and read counts between KrakenUniq and Genestrip. Details on some of these comparisons can be found in Section \ref{correctnessdet} of the Appendix.
+As real-world examples, we applied the two databases to short-read fastq files from DNA-sequencing human saliva of five different donors. Table \ref{errorsviral} shows basic statistics of these files as downloaded from the Sequence Read Archive \cite{10.1093/nar/gkab1053}. Again, we achieved completely identical $k$-mer and read counts between KrakenUniq and Genestrip. Details on some of these comparisons can be found in Section \ref{correctnessdet} of the Appendix.
+           
+   \begin{table}[h]
+        \centering
+        \begin{tabular}{r|r|r|r
+%|rr
+        }
+            \multicolumn{1}{c|}{\textbf{\#} } & \multicolumn{1}{c|}{\textbf{Base file name}} & \multicolumn{1}{c|}{\textbf{Reads}} & \multicolumn{1}{c}{\textbf{Avg. BPs per read}}
+%\multicolumn{2}{c}{Differing} \\
+%\multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} &
+%\multicolumn{1}{c|}{Points} &
+%\multicolumn{2}{c}{}
+% & \multicolumn{2}{c}{Read counts (\%)}
+            \csvreader[separator=semicolon,before filter=\\\hline]{results/viral_viral_db_errors_gs_ku_comp.csv}{}
+            { \csvcoli & \csvcolii & \csvcoliii & \csvcoliv 
+% & \csvcolxi & (\csvcolxiii)
+            }\\
+        \end{tabular}
+        \caption{Real-world fastq files from DNA-sequencing five human saliva samples as used throughout the evaluation.}\label{errorsviral}
+    \end{table}
     
     As previously stated, this perfect agreement mutually solidifies the correctness of both systems, but obviously, it does not yet highlight the advantages of Genestrip when creating and using small databases for selected groups of organisms.
     
@@ -431,28 +450,7 @@ before line=\\\hline]{results/human_virus_human_virus_accuracy.csv}{}
 
 \subsubsection{Small databases on real-world data}
 
-As real-world examples, we first applied the ``human virus only"  databases to short-read fastq files from DNA-sequencing human saliva of five different donors.
-    Table \ref{errorsviral} shows statistics of the fastq files.       
-
-   \begin{table}[h]
-        \centering
-        \begin{tabular}{r|r|r
-%|rr
-        }
-            \multicolumn{1}{c|}{\# } & \multicolumn{1}{c|}{\textbf{Reads}} & \multicolumn{1}{c}{\textbf{Avg. BPs per read}}
-%\multicolumn{2}{c}{Differing} \\
-%\multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} &
-%\multicolumn{1}{c|}{Points} &
-%\multicolumn{2}{c}{}
-% & \multicolumn{2}{c}{Read counts (\%)}
-            \csvreader[separator=semicolon,before filter=\\\hline]{results/viral_viral_db_errors_gs_ku_comp.csv}{}
-            { \csvcoli & \csvcoliii & \csvcoliv 
-% & \csvcolxi & (\csvcolxiii)
-            }\\
-        \end{tabular}
-        \caption{Real-world fastq files from DNA-sequencing five human saliva samples to be analyzed via KrakenUniq, Kraken 2, Ganon and Genestrip.}\label{errorsviral}
-    \end{table}
-
+As real-world examples, we first applied the ``human virus only"  databases to the short-read fastq files from Table \ref{errorsviral} (and introduced in Section \ref{correctness}).       
 
     Figure \ref{salivascatter} (a,b) shows the scatter plots of $k$-mer counts and read counts from KrakenUniq on a logarithmic scale for the database \texttt{cv\_ku} versus \texttt{hv\_ku} when applied to the human saliva fastq file \#3 from Table \ref{errorsviral}.
     Figure \ref{salivascatter} (c,d) shows the corresponding results with respect to the Genestrip databases \texttt{cv\_g} versus \texttt{hv\_g}: While the small database under KrakenUniq led to massive overcounts of $k$-mers for the rank species and below, this did not occur under Genestrip. Moreover, KrakenUniq's overcounting of $k$-mers strongly influenced the counts of classified reads. Regarding Genestrip, the read counts on the species level and below are affected only by differing $k$-mer counts that occurred on the genus level and above. However, the impact remains small. The results for the other human saliva fastq files are similar (not shown).
