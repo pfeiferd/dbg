@@ -100,15 +100,15 @@
 
         Besides $k$-mer matching and read classification, Genestrip supports filtering of fastq files via a Bloom filter in similarity to \citep{biobloom}. When generated via the goal \verb|index|, the Bloom filter gets stored in a separate file. The goal \verb|filter| loads the filter and processes fastq files accordingly. The standard configuration of the filtering process rewrites a read to the output if the read contains at least one $k$-mer that is recognized by the filter since because of this, the read may belong to a selected organism of interest.
 
-\section{Bloom filter hashes}
-\label{blhashes}
-
- A Bloom filter is a probabilistic data structure to efficiently test whether or not a data object got stored \citep{bloomfilter}. It generally depends on $n$  hash functions $h_1, \ldots, h_n$ that ideally should be statistically independent from each other. In our case, the input to each hash function is a $k$-mer encoded as a long value $l$ and its output is an index of a bit in a large bit vector $b$ which forms the Bloom filter's store. When the value $l$ gets stored, the bits $b[h_1(l)],\ldots,b[h_n(l)]$ are set but any other bits in $b$ remain untouched. To test whether $l$ is contained in the filter, one simply checks whether $b[h_1(l)] \wedge \ldots \wedge b[h_n(l)]$ is true. False positives from this check may occur since the storing of values other than $l$ may have caused the corresponding bits to be set. If the number of data objects to be stored is known, then the false positive rate can be optimized via $n$ and the size of $b$, but this also demands the independence of the $h_i$ \citep{bloomfilter}.
-    
-    A typical challenge is to determine a method that generates an arbitrary number of $h_i$ which is needed since $n$ may vary: On the one hand, the computation of $h_i(l)$ should be very efficient but also, the Bloom filter's false positive rate must not suffer too much, if true independence cannot be guaranteed for the $h_i$. Regarding the storing of $k$-mers we found that the simple generator method
-    \[h_i(l) = ((l \oplus s_i)\mod |b|) + 1\] 
-    works well in practice. Hereby, $\oplus$ is the bitwise xor-operator, $s_1, \ldots, s_n$ are randomly initialized long-valued salts and $|b|$ is the size of $b$. Functional testing showed that for uniformly distributed $k$-mers, this method indeed keeps the false positive rate close to its theoretical expectation. Note that the operator $\mod$ from above may be replaced by any other efficient mapping operator that fairly maps to the interval $0 \ldots |b| - 1$.
-
+%\section{Bloom filter hashes}
+%\label{blhashes}
+%
+% A Bloom filter is a probabilistic data structure to efficiently test whether or not a data object got stored \citep{bloomfilter}. It generally depends on $n$  hash functions $h_1, \ldots, h_n$ that ideally should be statistically independent from each other. In our case, the input to each hash function is a $k$-mer encoded as a long value $l$ and its output is an index of a bit in a large bit vector $b$ which forms the Bloom filter's store. When the value $l$ gets stored, the bits $b[h_1(l)],\ldots,b[h_n(l)]$ are set but any other bits in $b$ remain untouched. To test whether $l$ is contained in the filter, one simply checks whether $b[h_1(l)] \wedge \ldots \wedge b[h_n(l)]$ is true. False positives from this check may occur since the storing of values other than $l$ may have caused the corresponding bits to be set. If the number of data objects to be stored is known, then the false positive rate can be optimized via $n$ and the size of $b$, but this also demands the independence of the $h_i$ \citep{bloomfilter}.
+%    
+%    A typical challenge is to determine a method that generates an arbitrary number of $h_i$ which is needed since $n$ may vary: On the one hand, the computation of $h_i(l)$ should be very efficient but also, the Bloom filter's false positive rate must not suffer too much, if true independence cannot be guaranteed for the $h_i$. Regarding the storing of $k$-mers we found that the simple generator method
+%    \[h_i(l) = ((l \oplus s_i)\mod |b|) + 1\] 
+%    works well in practice. Hereby, $\oplus$ is the bitwise xor-operator, $s_1, \ldots, s_n$ are randomly initialized long-valued salts and $|b|$ is the size of $b$. Functional testing showed that for uniformly distributed $k$-mers, this method indeed keeps the false positive rate close to its theoretical expectation. Note that the operator $\mod$ from above may be replaced by any other efficient mapping operator that fairly maps to the interval $0 \ldots |b| - 1$.
+%
     \section{The dust function $d$}\label{dustfunction}
 We designed a simple dust function $d(s)$ that allows for recognizing and potentially excluding highly repetitive $k$-mers $s$ based on the following rationale:
 \begin{enumerate}
