@@ -54,6 +54,7 @@
 \newcommand{\ganon}{Ganon}
 \newcommand{\ganonlowfpr}{Ganon low FPP}
 \newcommand{\genestrip}{Genestrip}
+\newcommand{\genestriphs}{Genestrip high sens.}
 \newcommand{\hiseq}[1]{HiSeq}
 \newcommand{\miseq}[1]{MiSeq}
 \newcommand{\fastqone}[1]{Extr. from \cite{Wu:2024aa}}
@@ -604,7 +605,7 @@ before line=\\\hline]{results/viral_saliva_rel_accuracy.csv}{}
 
     The database \texttt{tb} for Genestrip is based on the RefSeq Release 233 and covers all RefSeq genomes under the twelve bacterial genera Bartonella, Rickettsia, Anaplasma, Ehrlichia, Borrelia, Borreliella, Chlamydia, Mycoplasma, Malacoplasma, Mycoplasmoides, Metamycoplasma and Francisella as many included species are pathogenic to humans and known or assumed to occur in ticks \citep{Eisen:2018aa, JOHNSON20181499, Janecek:2012aa, Thomas:1990aa, 10.3389/fvets.2025.1522904}. To avoid contaminants from human DNA and black-legged tick DNA, we added corresponding genomes to Genestrip's update phase as explained at the end of Section \ref{database}. We also activated the genomic dust filter at high sensitivity -- e.g., the $k$-mer \texttt{TTTTTTTTTTTTTCGGTGTTTTTTTGTTACT} would be dropped because its repetitiveness is just above the set threshold.
 
-    \texttt{tb} contains 524,530,554 $k$-mers and has a disk size of just 5.87 GB including the accompanied Bloom filter and the matching extract of the NCBI taxonomy tree. \texttt{tb} has 1.96 times as many $k$-mers stored under the selected genera and below as \texttt{MicrobialDB}. The macro average increase across the chosen genera is a factor of 1.83 with a maximum factor of 3.25 for Bartonella and a minimum factor of 1.29 for Clamydia. The main reason behind this increase is the total growth of the RefSeq's number of prokaryotic genomes by a factor of over 1.39 between the generation of \texttt{MicrobialDB} in mid 2023 and the generation of \texttt{tb} \citep{10.1093/nar/gkae1038}.
+    \texttt{tb} contains about 525 million uncompressed $k$-mers and has a disk size of just 3.91 GB including the accompanied Bloom filter and the matching extract of the NCBI taxonomy tree. \texttt{tb} has 1.96 times as many $k$-mers stored under the selected genera and below as \texttt{MicrobialDB}. The macro average increase across the chosen genera is a factor of 1.83 with a maximum factor of 3.25 for Bartonella and a minimum factor of 1.29 for Clamydia. The main reason behind this increase is the total growth of the RefSeq's number of prokaryotic genomes by a factor of over 1.39 between the generation of \texttt{MicrobialDB} in mid 2023 and the generation of \texttt{tb} \citep{10.1093/nar/gkae1038}.
 
     The generation of \texttt{tb} revealed that its included genomes from the RefSeq have a high overlap: On average each stored $k$-mer occurred 11.0 times in these genomes. Only 0.0079 \% of all $k$-mers considered for storing were dropped as ``dust". The update phase pushed 26.3 \% of the stored $k$-mers to ranks above genus. 0.027 \% of the stored $k$-mers had been pushed to the taxon of ``cellular organisms" because tick DNA and human DNA were included on purpose during the update phase for the sake for contaminant detection.
 %Finally, 2.891 $k$-mers landed on the taxonomic root because of plasmids included in the bacterial part of RefSeq that overlap with the genomes of the selected genera.
