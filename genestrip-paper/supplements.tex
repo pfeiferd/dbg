@@ -98,7 +98,23 @@
         \caption{Extract of Genestrip's goal dependency graph}\label{goalgraph}
     \end{figure}
 
-        Besides $k$-mer matching and read classification, Genestrip supports filtering of fastq files via a Bloom filter in similarity to \citep{biobloom}. When generated via the goal \verb|index|, the Bloom filter gets stored in a separate file. The goal \verb|filter| loads the filter and processes fastq files accordingly. The standard configuration of the filtering process rewrites a read to the output if the read contains at least one $k$-mer that is recognized by the filter since because of this, the read may belong to a selected organism of interest.
+    Table \ref{goals} describes the most important goals for database generation in their typical execution order. All of these goals are multithreading-enabled for faster database generation.
+    
+    \begin{table}[h]
+        \centering
+        \begin{tabular}{l|p{10.5cm}}
+            \textbf{Goal name} & \textbf{Description} \\
+            \hline
+            \verb|fillsize| & This goal determines the size of the database as its number of unique $k$-mers by reading the respective reference genome files and including the genomes of selected organisms. We employ the HyperLogLog algorithm from \cite{Flajolet07hyperloglog} to compute a cardinality estimate of \emph{deduplicated}, i.e. unique, $k$-mers. Alternatively and for a more precise estimate, an additional temporary Bloom filter suits the same purpose.\\
+            \verb|filldb| & This \emph{entry phase} populates the database with all $k$-mers of genomes from selected organisms. The appropriate size of the database is based on \verb|fillsize|.
+            Duplicate $k$-mer entries are avoided via a Bloom filter that tracks the already stored $k$-mers. Finally, the stored $k$-mers are sorted in order to enable binary search at analysis time but also for the goal \verb|updatedb| from below.\\
+            \verb|updatedb| & This \emph{update phase} updates the populated database to account for common $k$-mers between organisms.
+            \emph{All} genomes from the RefSeq belonging to a set of pre-configurable taxonomic categories are considered during this phase. This ensures that a $k$-mer from a selected organism obtains the correct \taxon\ as the $k$-mer may also occur in the genome of another organism (which might be represented in the database or not). In the finished database, the respective $k$-mer is associated with the lowest common ancestor taxon as computed via all considered genomes that contain the $k$-mer.\\
+        \end{tabular}
+        \caption{Genestrip's most relevant goals for database generation}\label{goals}
+    \end{table}
+
+        Besides $k$-mer matching and read classification, Genestrip supports filtering of fastq files via a probabilistic filter in similarity to \citep{biobloom}. When generated via the goal \verb|index|, the filter gets stored in a separate file. The goal \verb|filter| loads the filter and processes fastq files accordingly. The standard configuration of the filtering process rewrites a read to the output if the read contains at least one $k$-mer that is recognized by the filter as potentially belonging to a selected organism of interest.
 
 %\section{Bloom filter hashes}
 %\label{blhashes}
