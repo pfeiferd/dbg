@@ -612,11 +612,11 @@ before line=\\\hline]{results/viral_saliva_rel_accuracy.csv}{}
 
 \subsection{Analysis on simulated data}
 
-To assess classification quality for this case, we generated ground truth data via the eight real-world fastq files from \cite{nanoporeticks} mentioned above. For this, we employed the tool NanoSim from \cite{10.1093/gigascience/gix010, 10.1093/gigascience/giad013} which is capable of generating realistic long reads based on a set genomes and a sample fastq files used for training. The tool tries to reflect the abundance of organisms whose genomes are given as represented in the training fastq file. Moreover, it imitates long read sequencing errors from Nanopore technology via an error model also estimated on the basis of the training fastq file.
+To assess classification quality for this case, we first generated ground truth data via the eight real-world fastq files from \cite{nanoporeticks} mentioned above. For this, we employed the tool NanoSim from \cite{10.1093/gigascience/gix010, 10.1093/gigascience/giad013} which is capable of generating realistic long reads based on a set genomes and a sample fastq file used for training. The tool tries to reflect the genomic abundance of organisms from the training fastq file. Moreover, it imitates long read sequencing errors resulting from Nanopore technology via an error model which is also estimated on the basis of the training fastq file.
 
-We supplied NanoSim with all the RefSeq genomes from the twelve bacterial genera mentioned in Section \ref{mdbtb} and used each the eight tick-related real-world fastq files to generate eight corresponding \emph{simulated} tick-related fastq files. Table \ref{} shows the basic statistics of both file types.
+We supplied NanoSim with all the RefSeq genomes from the twelve bacterial genera mentioned in Section \ref{mdbtb} and used each the eight tick-related real-world fastq files to generate eight corresponding \emph{simulated} tick-related fastq files. The number of reads per file ranges between ?? and ?? with a ?? reads in total an average read length of ?? BPs.
 
-    We applied the analysis systems with their respective databases to the eight simulated fastq files: Table \ref{} shows the results.
+    We applied the analysis systems with their respective databases to the eight simulated fastq files: Table \ref{} shows the marco-averaged results across the eight simulated tick files for each system.
     
     \subsubsection{Explorative tick analysis}
     \label{tickanalysis}
