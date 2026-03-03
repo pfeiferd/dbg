@@ -132,7 +132,7 @@ We designed a simple dust function $d(s)$ that allows for recognizing and potent
 	\item The function should be based on the number of times a single base, a pair or a triplet is repeated. E.g. \texttt{AT} is repeated twice in \texttt{ATATAT} and \texttt{ATC} is repeated once in \texttt{ATCATC}. 
 	\item A repeat's contribution to $d$ should grow more than linearly with the repeat's length. E.g., \texttt{AAAACA} should obtain at least the $d$-value of \texttt{AACAAA} (or more). 
 	\item $d$ should be symmetrical. This is because a $k$-mer and its reverse complement should obtain the same dust value \citep{doi:10.1089/cmb.2006.13.1028}.
-	\item $d(s)$ should be computable in $O(|s|)$ and should lend itself for streaming computation. I.e., if $d(s) = d(s_1 \ldots s_k)$ is known, then $d(s') = d(s_2 \ldots s_k s'_{k+1})$ should be computable in constant time.
+	\item $d(s)$ should be computable in $O(|s|)$ and should lend itself for streaming computation. I.e., after $d(s) = d(s_1 \ldots s_k)$ has been computed, $d(s') = d(s_2 \ldots s_k s'_{k+1})$ should be computable in constant time.
 \end{enumerate}
 
 To specify the dust function $d$, we first define the \emph{skip-$c$-repeat length} at position $i$ in a string $s$ where  $1 \leq i \leq |s|$ and $c \geq 0$:    
@@ -233,7 +233,7 @@ The use of the Fibonacci function in $d$ accounts for point 3 from the above rat
 \section{Details regarding correctness}
 \label{correctnessdet}
 
-Figure \ref{viraldbscatter} highlights the identical structure of the two complete viral databases created via KrakenUniq and Genestrip with 379,181,604 $k$-mers in total.
+The scatter plot in Figure \ref{viraldbscatter} visualizes the identical structure of the two complete viral databases created via KrakenUniq and Genestrip with 379,181,604 $k$-mers in total.
 
     \begin{figure}[h]%
         \centering
