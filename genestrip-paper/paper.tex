@@ -405,7 +405,9 @@ before line=\\\hline]{results/viral_accuracy.csv}{}
 
 \subsubsection{Small databases on simulated data}
 
-We applied the ``human virus only" databases to the ``MiSeq" and ``HiSeq" data from Section \ref{correctness} and again measured precision and recall but with respect to human viruses only.\footnote{In this context, we do not present the results for the extracted fastq file from \cite{Wu:2024aa} since the file contains only 240 reads from human viruses which caused low precision outliers under KrakenUniq and Kraken 2. We therefore omit the file also below when focusing the evaluation on human viruses.} So, this evaluation examines the quality of a small database on simulated data where the ground truth is known but with a focus on just the genomes and taxons used to create the small databases. In this respect, reads from other, non-human viruses which are also contained in respective fastq files constitute noise. Table \ref{smallcov} shows that all systems still perform within reason on the simulated data but with Genestrip clearly in the lead.
+We applied the ``human virus only" databases to the ``MiSeq" and ``HiSeq" data from Section \ref{correctness} and again measured precision and recall but with respect to human viruses only.\footnote{In this context, we do not present the results for the extracted fastq file from \cite{Wu:2024aa} since the file contains only 240 reads from human viruses which caused low precision outliers under KrakenUniq and Kraken 2. We therefore omit the file also below when focusing the evaluation on human viruses.} So, this evaluation examines the quality of a small database on simulated data where the ground truth is known but with a focus on just the genomes and taxons used to create the small databases. Since about 98\% of the reads in ``MiSeq" and ``HiSeq" data are from non-human-related viruses, they constitute noise in this context.
+
+ Table \ref{smallcov} shows that all systems still perform within reason on the simulated data but with Genestrip clearly in the lead.
 
        \begin{table}[h]
         \centering
@@ -546,7 +548,7 @@ As real-world examples, we first applied the ``human virus only"  databases to t
     We also measured a relative read classification quality for all of the five human saliva fastq files from Table \ref{errorsviral} well as for simulated fastq files from Section \ref{correctness} by comparing the ``human virus only" database against the corresponding complete viral database and under KrakenUniq, Kraken 2, Ganon and Genestrip -- again with an evaluation focus on human viruses only.
     Although no ground truth is available for the human saliva fastq files, this comparison tells \emph{how much classification quality suffers under each analysis tool when the corresponding database is filled with just the genomes of interest -- i.e., the genomes of human viruses only instead of all viral genomes}. The result represents a relative factorial change where an approximate baseline for the simulated data is given in Table \ref{readqviral} and in Table \ref{broadhvcov} of the Appendix.
     
-    Table \ref{humansalivarel} shows the results for simulated data and fastq file \#3 from Table \ref{errorsviral}. The results for the other four human saliva fastq files are similar and supplied in Section \ref{humansalivacomplete} of the Appendix.
+    Table \ref{humansalivarel} shows the results for simulated data and fastq file \#3 from Table \ref{errorsviral}. The results for the other four human saliva fastq files are similar and supplied in Table \ref{humansalivarelcompl} of the Appendix.
         
        \begin{table}[h]
         \centering
@@ -587,7 +589,7 @@ before line=\\\hline]{results/viral_saliva_rel_accuracy.csv}{}
 \label{humansalivarel}
     \end{table}
 
-   While KrakenUniq and Ganon still achieve a mediocre to good F1-score on simulated data, their precision is completely insufficient for the human saliva fastq file. This is due to massive false positive classifications of reads, and is a consequence of a missing consideration of non-human viral genomes. Although speculative, we assume that the real-world data has a different error profile than the simulated data, which may contribute to the stark difference. Also, reads belonging to host DNA may cause critical noise with respect to KrakenUniq's and Ganon's classifications. The configuration ``Kraken 2 high conf." withstands the challenge but, as shown in Table \ref{readqviral}, its baseline is low there. In contrast, Genestrip starts from a good baseline in Table \ref{readqviral}, and its human virus database holds up in all of the cases because it does consider non-human viral genomes as part of the update phase according to Section \ref{approach}.
+   While KrakenUniq and Ganon still achieve a mediocre to good F1-score on simulated data, their precision is completely insufficient for the human saliva fastq file. This is due to massive false positive classifications of reads, and is a consequence of a missing consideration of non-human-related viral genomes. Although speculative, we assume that the real-world data has a different error profile than the simulated data, which may contribute to the stark difference. Also, reads belonging to host DNA may cause critical noise with respect to KrakenUniq's and Ganon's classifications. The configuration ``Kraken 2 high conf." withstands the challenge but, as shown in Table \ref{readqviral}, its baseline is low there. In contrast, Genestrip starts from a good baseline in Table \ref{readqviral}, and its human virus database holds up in all of the cases because it does consider non-human-related viral genomes as part of the update phase according to Section \ref{approach}.
 
     \subsection{Example: Tick-borne bacterial pathogens}
     \label{tickborne}
@@ -614,13 +616,15 @@ before line=\\\hline]{results/viral_saliva_rel_accuracy.csv}{}
 
 To assess classification quality for this case, we first generated ground truth data via the eight real-world fastq files from \cite{nanoporeticks} mentioned above. For this purpose, we employed the tool NanoSim from \cite{10.1093/gigascience/gix010, 10.1093/gigascience/giad013} which is capable of generating realistic long reads based on a set genomes and a sample fastq file used for training. The tool tries to reflect the genomic abundance of organisms from the training fastq file. Moreover, it imitates long read sequencing errors resulting from Nanopore technology via an error model which is also estimated on the basis of the training fastq file.
 
-We supplied NanoSim with all the RefSeq genomes from the twelve bacterial genera mentioned in Section \ref{mdbtb} as well as the black-legged tick's genome and used each of the eight tick-related real-world fastq files to generate  corresponding \emph{simulated} fastq files. The number of reads per simulated file ranges between ?? and ?? with a ?? reads in total an average read length of ?? BPs.
+We supplied NanoSim with all the RefSeq genomes from the twelve bacterial genera mentioned in Section \ref{mdbtb} and used each of the eight tick-related real-world fastq files to generate  corresponding \emph{simulated} fastq files.
+\todo{what about the black-legged tick's genome?}
+ The number of reads per simulated file ranges between ?? and ?? with a ?? reads in total an average read length of ?? BPs.
 
     We applied the analysis systems with their respective databases to the eight simulated fastq files: Table \ref{} shows the marco-averaged results across the eight simulated tick files for each system.
     
     \subsubsection{Explorative tick analysis}
     \label{tickanalysis}
-    We applied the systems with their respective databases to the eight fastq files from \cite{nanoporeticks} mentioned above.
+    We applied KrakenUniq and Genestrip with their respective databases to the eight fastq files from \cite{nanoporeticks} mentioned above.
 %Four of the files had been produced using an enrichment %technology that drops reads during base calling if they %are likely from the host \citep{nanoporeticks}.
 
     As an example result, Figure \ref{genusestick6} shows the five most frequent $k$-mer counts and reads counts for ``Tick 6" accumulated up to the genus rank. In all the cases but ``138" (Borrelia), the aggregated counts for the genera under \texttt{tb} are mildly to considerably higher than those achieved with \texttt{MicrobialDB}. Since we established the high quality of Genestrip's results in Section \ref{correctness}, this increase may be attributed with high confidence to the quality of the database \texttt{tb}, which is deeper than \texttt{MicrobialDB} for its included genera as described above.
@@ -836,15 +840,15 @@ We supplied NanoSim with all the RefSeq genomes from the twelve bacterial genera
 
     As mentioned in Section \ref{background}, Genestrip's focus is on generating and using potentially small but also deep $k$-mer databases for accurate metagenomic analysis of selected organisms of interest. This implies that users must be empowered to flexibly create new databases -- ideally on their own devices. We therefore verify that Genestrip's database generation performance adheres to this requirement. Moreover, we report on read classification performance in comparison with KrakenUniq, Kraken 2 and Ganon.
 
-    The following experiments were all performed on a modern PC with 32 GB of RAM, 8 CPU cores and a 2 TB solid state disk.\footnote{We ensured that as few competing processes as possible were running during the experiments and OS disk swapping was disabled. Platform details: AMD Ryzen 7 2700X, Linux 6.12.37, OpenJDK 21.0.7 64-Bit Server VM.}
+  The following experiments were all performed on a modern PC with 128 GB of RAM, 10 CPU cores and a 8 TB solid state disk. Although for Genestrip 32 GB of RAM would have sufficed, we needed the additional RAM for the competing analysis tools.\footnote{We ensured that as few competing processes as possible were running during the experiments and OS disk swapping was disabled. Platform details: Intel Xeon W-2255 CPU @3.70 GHz, Ubuntu 24.04.4 LTS, Java Oracle 23.0.1 64-Bit Server VM.}
 
     \subsection{Database generation}
     \label{genperformance}
 
-    Table \ref{dbdesc} lists six Genestrip databases used for assessing database generation performance. They refer to several categories and were designed with a potential use in medicine or agriculture in mind. Table \ref{dbperf} reports execution statistics for the generation of these databases from scratch. The execution times and the maximum RAM remained moderate in all of the cases.\footnote{Times for downloading any of the necessary RefSeq or Genbank files from the NCBI are not included. Related files were downloaded upfront via the goals \texttt{refseqfna} and \texttt{fastasgenbankdl} from Figure \ref{goalgraph} of the Appendix. The databases were generated via the goal \texttt{db} from Figure \ref{goalgraph} from the Appendix.}
+    Table \ref{dbdesc} lists six Genestrip databases used for assessing database generation performance. They refer to several categories and were designed with a potential use in medicine or agriculture in mind. Table \ref{dbperf} reports execution statistics for the generation of these databases from scratch. The execution times and the maximum RAM remained moderate in all of the cases.\footnote{Times for downloading any of the necessary RefSeq or Genbank files from the NCBI are not included. Related files were downloaded upfront via the goals \texttt{refseqfna} and \texttt{fastasgenbankdl} from Figure \ref{goalgraph} of the Appendix. The databases were generated via the goal \texttt{db} from Figure \ref{goalgraph} of the Appendix.}
 
-    The different execution times in Table \ref{dbperf} depend on the size of the database itself but also on the RefSeq category, where ``Bacteria" is the largest of the five ones used with genomes in over 2,800 zip files with a total disk size of over 550 GB (in RefSeq Release 233).
-    The zip files must all be screened during each goal from Table \ref{goals} but the update phase, i.e., the goal \texttt{updatedb}, dominates the execution time.
+    The different execution times in Table \ref{dbperf} depend on the size of the database itself but also on the RefSeq category, where ``Bacteria" is the largest of the five ones used with genomes in over 3,250 zip files with a total disk size of over 575 GB (in RefSeq Release 233).
+    The zip files must all be screened during each goal from Table \ref{goals} of the Appendix but the update phase, i.e., the goal \texttt{updatedb}, dominates the total execution time.
 
     \begin{table}[h]
         \centering
@@ -867,14 +871,14 @@ We supplied NanoSim with all the RefSeq genomes from the twelve bacterial genera
         \begin{tabular}{c|r|r|r|r}
             DB name & Stored $k$-mers & Disk size (MB) & Wall time (min) & Max. RAM (MB) \\
             \hline
-            \texttt{cv\_g} & 374,412,041 & 5,370 & 39 & 7,354 \\
-            \texttt{hv\_g} &   3,865,987 & 53 & 5 & 1,014 \\
-            \texttt{tb} & 487,834,649 & 6,008 & 840 & 17,762 \\
-            \texttt{protozoa} & 1,279,065,780 & 15,915 & 88 & 22,148 \\
-            \texttt{vineyard} & 663,541,745 & 7,973 & 100 & 16,143 \\
-            \texttt{parasites} & 1,629,142,488 & 19,761 & 402 & 27,183 \\
+            \texttt{cv\_g} & 379,165,091 & 5,370 & 47 & 7,918 \\
+            \texttt{hv\_g} &   3,865,987 & 4 & 5 & 1,114 \\
+            \texttt{tb} & 524,530,554 & 6,008 & 489 & 23,003 \\
+            \texttt{protozoa} & 211,294,014 1,279,065,780 & 15,915 & 27 & 4,554 \\
+            \texttt{vineyard} & 192,387,305 663,541,745 & 7,973 & 28 & 7,524 \\
+            \texttt{parasites} & 397,957,988 1,629,142,488 & 19,761 & 97 & 8,149 \\
         \end{tabular}
-        \caption{Execution statistics for generating the six Genestrip databases from Table \ref{dbdesc} using 10 threads and a maximum allowed JVM heap size of 24 GB.}\label{dbperf}
+        \caption{Execution statistics for generating the six Genestrip databases from Table \ref{dbdesc} using 20 threads and a maximum allowed JVM heap size of 28 GB.}\label{dbperf}
     \end{table}
 
     \subsection{Read classification}
@@ -884,14 +888,13 @@ We supplied NanoSim with all the RefSeq genomes from the twelve bacterial genera
 
     For the first comparison we applied the viral databases from  Section \ref{broadcov} to the human saliva fastq files from Table \ref{errorsviral}. Scenario (a) of Table \ref{analysisperf} summarizes the analysis performance across all five fastq files.
     
-     In scenario (b) of Table \ref{analysisperf} we used the databases bacterial databases like \texttt{MicrobialDB} and \texttt{Standard} from Section \ref{mdbtb} vs. \texttt{tb} to analyze the eight tick-related fastq files from Section \ref{tickanalysis}. Since \texttt{MicrobialDB} is so large, we had to make use of KrakenUniq's database processing in chunks which broke down each run into 9 rounds. The chunk processing caused considerably longer run times. On the one hand, comparing the tools this way may be considered ``unfair" because of unequally sized database sizes. But for KrakenUniq, Kraken 2 and Ganon, there is no good alternative to employing broad-coverage bacterial databases for the purpose (of detecting tick-related bacterial pathogens) because, as examined in Section \ref{accuracy}, a corresponding small database bares the high risk of many false positives.
+     In scenario (b) of Table \ref{analysisperf} we used the databases bacterial databases like \texttt{MicrobialDB} and \texttt{Standard} from Section \ref{mdbtb} vs. \texttt{tb} to analyze the eight tick-related fastq files from Section \ref{tickanalysis}. On the one hand, comparing the tools this way may be considered ``unfair" because of unequally sized database. But for KrakenUniq, Kraken 2 and Ganon, there is no good alternative to employing broad-coverage bacterial databases for the purpose (of detecting tick-related bacterial pathogens) because, as examined in Section \ref{accuracy}, a corresponding small database bares the high risk of many false positives.
+     Since \texttt{MicrobialDB} is so large, we had to make use of KrakenUniq's database processing in chunks which broke down each run into 9 rounds. This caused considerably longer run times under KrakenUniq.
      
      In scenario (c) we had the fastq files from (b) jointly analyzed. In this case, Genestrip performed even better because the database had to be loaded only once, whereas in scenario (b), it got loaded separately for each fastq file.
 
-    Regarding main memory, all the tools' analysis performance is dominated by the size of the database. \todo{Rework this text:} In both cases, the required memory did not vary much across runs when the same database was used. Since \texttt{MicrobialDB} did not fit into memory, we set KrakenUniq's preload size such that in total, it allocated most of the available memory. In case of the viral database, KrakenUniq still needs more RAM than Genestrip. 
- %   
-    %We suspect this is because KrakenUniq loads the entire NCBI taxonomy tree whereas Genestrip represents only those parts of the tree in main memory that are needed for the analysis.
-
+    Regarding main memory, all the tools' analysis performance is dominated by the size of the database and the required memory did not vary much across runs when the same database was used.
+    
     Overall, the results from both comparisons suggest that depending on the use case, Genestrip  and its small databases offer competitive to highly favorable analysis performance.
 
     \begin{table}[h]
@@ -929,7 +932,7 @@ We supplied NanoSim with all the RefSeq genomes from the twelve bacterial genera
             & & & \\
 
         \end{tabular}
-        \caption{Read analysis performance comparison between KrakenUniq and Genestrip using both tools with 10 threads. For \texttt{MicrobialDB} we set the parameter \texttt{--preload-size 65G} to limit KrakenUniq's main memory according to \cite{lowmemkraken}. (Otherwise, the analysis with KrakenUniq would have not been possible on the given PC.)}\label{analysisperf}
+        \caption{Read analysis performance comparison between KrakenUniq, Kraken 2, Ganon and Genestrip with 10 threads for each tool. For \texttt{MicrobialDB} we set the parameter \texttt{--preload-size 64G} to limit KrakenUniq's main memory according to \cite{lowmemkraken}. (Otherwise, the analysis with KrakenUniq would have not been possible on the given PC.)}\label{analysisperf}
     \end{table}
 
 
