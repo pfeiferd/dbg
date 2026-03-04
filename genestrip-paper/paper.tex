@@ -613,6 +613,7 @@ before line=\\\hline]{results/viral_saliva_rel_accuracy.csv}{}
 %Finally, 2.891 $k$-mers landed on the taxonomic root because of plasmids included in the bacterial part of RefSeq that overlap with the genomes of the selected genera.
 
 \subsection{Analysis on simulated data}
+\label{ticksim}
 
 To assess classification quality for this case, we first generated ground truth data via the eight real-world fastq files from \cite{nanoporeticks} mentioned above. For this purpose, we employed the tool NanoSim from \cite{10.1093/gigascience/gix010, 10.1093/gigascience/giad013} which is capable of generating realistic long reads based on a set genomes and a sample fastq file used for training. The tool tries to reflect the genomic abundance of organisms from the training fastq file. Moreover, it imitates long read sequencing errors resulting from Nanopore technology via an error model which is also estimated on the basis of the training fastq file.
 
@@ -620,9 +621,7 @@ We supplied NanoSim with all the RefSeq genomes from the twelve bacterial genera
 %\todo{what about the black-legged tick's genome?}
  The number of reads per simulated file ranges between 13,000 and 160,000 with a 319,531 reads in total an average read length of 4,480 BPs.
 
-    We applied the analysis systems with their respective databases to the eight simulated fastq files: Table \ref{tickmares} shows the marco-averaged results across the eight simulated tick files for each system. 
-    
-    All systems struggle with the high error present in long reads from Nanopore devices but Genestrip's configuration performs far better than the competing configurations. We attribute this to the deep coverage genomic representation of the organisms of interest in \texttt{tb} combined with loss-less storing related $k$-mers as well as a through least common ancestor update.
+    We applied the analysis tools with their respective databases to the eight simulated fastq files: Table \ref{tickmares} shows the marco-averaged results for each system. Apparently, they all struggle with the high error present in long reads from Nanopore devices but Genestrip's configurations perform far better than the others. We attribute this to the deep genomic coverage of the organisms of interest in \texttt{tb} combined with a loss-less storing of related $k$-mers and Genestrip's thorough least common ancestor update.
     
        \begin{table}[h]
         \centering
@@ -647,7 +646,7 @@ before line=\\\hline]{results/tick-borne_tick-borne_ma_accuracy.csv}{}
             \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcoliv}
             }\\
         \end{tabular}
-\caption{Macro averaged read classification quality for simulated fastq files relating to bacterial pathogen analysis in ticks. The results are based on eight fastq files with known ground truth generated using NanoSim \cite{} on the basis of eight corresponding real-world tick-related fastq files. Section \ref{} details the databases used and in Section \ref{} describes the analyzed data. }
+\caption{Macro averaged read classification quality for simulated data  derived from bacterial pathogen analysis in ticks. The results are based on eight fastq files with known ground truth generated using NanoSim \cite{10.1093/gigascience/gix010, 10.1093/gigascience/giad013} on the basis of eight corresponding real-world, tick-related fastq files. Section \ref{mdbtb} describes the databases used and Section \ref{ticksim} discusses the analyzed data.}
 \label{tickmares}
     \end{table}
     
