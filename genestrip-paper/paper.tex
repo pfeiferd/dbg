@@ -603,7 +603,7 @@ before line=\\\hline]{results/viral_saliva_rel_accuracy.csv}{}
     
     We discuss the databases used in conjunction with each system but with an emphasis on Genestrip's database \texttt{tb}.
     
-    \texttt{MicrobialDB} \cite{microbialdb} for KrakenUniq aims at the diagnosis of infectious diseases using metagenomics and contains about 98 times as many $k$-mers as \texttt{tb}. It has a disk size of 574.31 GB and  covers a broad set of microbials including bacteria and the human genome with contaminants removed \citep{Lu:2018aa}. Regarding Kraken 2 we used the latest \texttt{Standard} database from \cite{microbialdb} covering the entire RefSeq category ``Bacteria", the human genome and more with a disk size of 72.5 GB and with about 18 billion compressed $k$-mers. For Ganon, we generated a database covering the genomes of entire RefSeq category ``Bacteria". Just like in Section \ref{broadcov}, we tried two database variants: one with Ganon's default false positive rate but also a ``Ganon low FPP" variant. 
+    \texttt{MicrobialDB} \cite{microbialdb} for KrakenUniq aims at the diagnosis of infectious diseases using metagenomics and contains about 98 times as many $k$-mers as \texttt{tb}. It has a disk size of 574.31 GB and  covers a broad set of microbials including bacteria and the human genome with contaminants removed \citep{Lu:2018aa}. Regarding Kraken 2 we used the latest \texttt{Standard} database from \cite{microbialdb} covering the entire RefSeq category ``Bacteria", the human genome and more with a disk size of 72.5 GB and with about 18 billion compressed $k$-mers. For Ganon, we generated a database covering all the genomes of entire RefSeq category ``Bacteria". Just like in Section \ref{broadcov}, we tried two database variants: one with Ganon's default false positive rate but also a ``Ganon low FPP" variant. 
 
     The database \texttt{tb} for Genestrip is based on the RefSeq Release 233 and covers all RefSeq genomes under the twelve bacterial genera Bartonella, Rickettsia, Anaplasma, Ehrlichia, Borrelia, Borreliella, Chlamydia, Mycoplasma, Malacoplasma, Mycoplasmoides, Metamycoplasma and Francisella as many included species are pathogenic to humans and known or assumed to occur in ticks \citep{Eisen:2018aa, JOHNSON20181499, Janecek:2012aa, Thomas:1990aa, 10.3389/fvets.2025.1522904}. To avoid contaminants from human DNA and black-legged tick DNA, we added corresponding genomes to Genestrip's update phase as explained at the end of Section \ref{database}. We also activated the genomic dust filter at moderate sensitivity -- e.g., the $k$-mer \texttt{TTTTTTTTTTTTTCGGTGTTTTTTTGTTACT} would be dropped because its repetitiveness is just above the set threshold.
 
@@ -617,10 +617,39 @@ before line=\\\hline]{results/viral_saliva_rel_accuracy.csv}{}
 To assess classification quality for this case, we first generated ground truth data via the eight real-world fastq files from \cite{nanoporeticks} mentioned above. For this purpose, we employed the tool NanoSim from \cite{10.1093/gigascience/gix010, 10.1093/gigascience/giad013} which is capable of generating realistic long reads based on a set genomes and a sample fastq file used for training. The tool tries to reflect the genomic abundance of organisms from the training fastq file. Moreover, it imitates long read sequencing errors resulting from Nanopore technology via an error model which is also estimated on the basis of the training fastq file.
 
 We supplied NanoSim with all the RefSeq genomes from the twelve bacterial genera mentioned in Section \ref{mdbtb} and used each of the eight tick-related real-world fastq files to generate  corresponding \emph{simulated} fastq files.
-\todo{what about the black-legged tick's genome?}
- The number of reads per simulated file ranges between ?? and ?? with a ?? reads in total an average read length of ?? BPs.
+%\todo{what about the black-legged tick's genome?}
+ The number of reads per simulated file ranges between 13,000 and 160,000 with a 319,531 reads in total an average read length of 4,480 BPs.
 
-    We applied the analysis systems with their respective databases to the eight simulated fastq files: Table \ref{} shows the marco-averaged results across the eight simulated tick files for each system.
+    We applied the analysis systems with their respective databases to the eight simulated fastq files: Table \ref{tickmares} shows the marco-averaged results across the eight simulated tick files for each system. 
+    
+    All systems struggle with the high error present in long reads from Nanopore devices but Genestrip's configuration performs far better than the competing configurations. We attribute this to the deep coverage genomic representation of the organisms of interest in \texttt{tb} combined with loss-less storing related $k$-mers as well as a through least common ancestor update.
+    
+       \begin{table}[h]
+        \centering
+        \begin{tabular}{l|r|r|r|r|r|r}
+             &  \multicolumn{3}{c|}{\textbf{Species}} &
+            \multicolumn{3}{c}{\textbf{Genus}} \\
+            \textbf{System} & 
+            \multicolumn{1}{c|}{\textbf{Prec.}} &
+            \multicolumn{1}{c|}{\textbf{Recall}} &
+            \multicolumn{1}{c|}{\textbf{F1}} &
+            \multicolumn{1}{c|}{\textbf{Prec.}} &
+            \multicolumn{1}{c|}{\textbf{Recall}} &
+            \multicolumn{1}{c}{\textbf{F1}}            
+\csvreader[separator=semicolon,
+before line=\\\hline]{results/tick-borne_tick-borne_ma_accuracy.csv}{}
+            {\csvcoli & 
+            \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcolv} & 
+            \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcolvi} & 
+            \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcolvii} &
+            \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcolii} & 
+            \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcoliii} & 
+            \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcoliv}
+            }\\
+        \end{tabular}
+\caption{Macro averaged read classification quality for simulated fastq files relating to bacterial pathogen analysis in ticks. The results are based on eight fastq files with known ground truth generated using NanoSim \cite{} on the basis of eight corresponding real-world tick-related fastq files. Section \ref{} details the databases used and in Section \ref{} describes the analyzed data. }
+\label{tickmares}
+    \end{table}
     
     \subsubsection{Explorative tick analysis}
     \label{tickanalysis}
@@ -840,7 +869,7 @@ We supplied NanoSim with all the RefSeq genomes from the twelve bacterial genera
 
     As mentioned in Section \ref{background}, Genestrip's focus is on generating and using potentially small but also deep $k$-mer databases for accurate metagenomic analysis of selected organisms of interest. This implies that users must be empowered to flexibly create new databases -- ideally on their own devices. We therefore verify that Genestrip's database generation performance adheres to this requirement. Moreover, we report on read classification performance in comparison with KrakenUniq, Kraken 2 and Ganon.
 
-  The following experiments were all performed on a modern PC with 128 GB of RAM, 10 CPU cores and a 8 TB solid state disk. Although for Genestrip 32 GB of RAM would have sufficed, we needed the additional RAM for the competing analysis tools.\footnote{We ensured that as few competing processes as possible were running during the experiments and OS disk swapping was disabled. Platform details: Intel Xeon W-2255 CPU @3.70 GHz, Ubuntu 24.04.4 LTS, Java Oracle 23.0.1 64-Bit Server VM.}
+  The following experiments were all performed on a modern PC with 128 GB of RAM, 10 CPU cores and a 8 TB solid state disk. Although for Genestrip about 32 GB of RAM would have sufficed, we needed the additional RAM for the competing analysis tools.\footnote{We ensured that as few competing processes as possible were running during the experiments and OS disk swapping was disabled. Platform details: Intel Xeon W-2255 CPU @3.70 GHz, Ubuntu 24.04.4 LTS, Java Oracle 23.0.1 64-Bit Server VM.}
 
     \subsection{Database generation}
     \label{genperformance}
@@ -876,9 +905,9 @@ We supplied NanoSim with all the RefSeq genomes from the twelve bacterial genera
             \texttt{tb} & 524,530,554 & 6,008 & 489 & 23,003 \\
             \texttt{protozoa} & 211,294,014 1,279,065,780 & 15,915 & 27 & 4,554 \\
             \texttt{vineyard} & 192,387,305 663,541,745 & 7,973 & 28 & 7,524 \\
-            \texttt{parasites} & 397,957,988 1,629,142,488 & 19,761 & 97 & 8,149 \\
+            \texttt{parasites} & 1,661,492,164 1,629,142,488 & 19,761 & 97 & 8,149 \\
         \end{tabular}
-        \caption{Execution statistics for generating the six Genestrip databases from Table \ref{dbdesc} using 20 threads and a maximum allowed JVM heap size of 28 GB.}\label{dbperf}
+        \caption{Execution statistics for generating the six Genestrip databases from Table \ref{dbdesc} using 20 threads and a maximum allowed JVM heap size of 32 GB.}\label{dbperf}
     \end{table}
 
     \subsection{Read classification}
