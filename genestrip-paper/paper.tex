@@ -656,10 +656,9 @@ before line=\\\hline]{results/tick-borne_tick-borne_ma_accuracy.csv}{}
     
     \subsubsection{Explorative tick analysis}
     \label{tickanalysis}
-    To explore the potential of databases with deep genomic coverage, we applied KrakenUniq and Genestrip and their corresponding databases to the eight real-world fastq files from \cite{nanoporeticks} mentioned above, whereby the ground truth is unknown.
+    In order to explore the effect of databases with deep genomic coverage, we applied KrakenUniq and Genestrip along with \texttt{MicrobialDB} and \texttt{tb} to the eight \emph{real-world} fastq files from \cite{nanoporeticks} mentioned above. For this comparison we take advantage of the compatibility of Genestrip and KrakenUniq as established in Section \ref{correctness}. Based on Genestrip's default settings, differences of classification results then solely originate in the databases -- but as explained in Section \ref{mdbtb}, \texttt{tb} is deeper than \texttt{MicrobialDB} as it has almost twice as many $k$-mers stored for its included genera.
 
-    As an example result, Figure \ref{genusestick6} shows the five most frequent $k$-mer counts and reads counts for ``Tick 6" accumulated up to the genus rank. In all the cases but ``138" (Borrelia), the aggregated counts for the genera under \texttt{tb} are mildly to considerably higher than those achieved with \texttt{MicrobialDB}. Since we established the compatibility of Genestrip and KrakenUniq in Section \ref{correctness}, this increase must be attributed to the quality of the database \texttt{tb}, which is deeper than \texttt{MicrobialDB} for its included genera as described above.
-    We observed similar improvements in terms of $k$-mers and reads with respect to Ehrlichia, Rickettsia and partly to Anaplasma in all of the eight ticks' fastq files whenever the corresponding organisms showed presence via \texttt{MicrobialDB}.
+    As an example result, Figure \ref{genusestick6} shows the five most frequent $k$-mer counts and reads counts for ``Tick 6" accumulated up to the genus rank. In all the cases but ``138" (Borrelia), the aggregated counts for the genera under \texttt{tb} are mildly to considerably higher than those achieved with \texttt{MicrobialDB}. We observed similar improvements in terms of $k$-mers and reads with respect to Ehrlichia, Rickettsia and partly to Anaplasma in all of the eight ticks' fastq files whenever the corresponding organisms showed presence via \texttt{MicrobialDB}. The effect is consistent with Genestrip's higher recall on the simulated data from Table \ref{tickmares}.
 
     \begin{figure}[h]%
         \centering
@@ -712,7 +711,8 @@ before line=\\\hline]{results/tick-borne_tick-borne_ma_accuracy.csv}{}
     % The high $k$-mer consistency ratios shown in Figure \ref{ehrlichiatick6} also suggest that the respective $k$-mer counts for Tick 6 are no false positives.
 
     Again, we observed similar results, particularly with respect to Ehrlichia, Rickettsia and partly to Anaplasma, in all of the eight ticks' fastq files whenever corresponding organisms were present via \texttt{MicrobialDB}.
-    These findings form a general trend when $k$-mer databases with a lowest common ancestor representation become deeper. The effect was first discovered and studied in \cite{Nasko:2018aa}. Note that this is beneficial since such deeper $k$-mer databases tend to protect read classification from potentially falsely assigning a too low-ranked taxon.
+%It matches with the simulated data from Table \ref{tickmares} where Genestrip returns higher species-related precision despite higher recall.   
+    These findings form a general trend when $k$-mer databases with a lowest common ancestor representation become deeper. The effect was first discovered and studied in \cite{Nasko:2018aa}. Note that this is beneficial since such deeper $k$-mer databases tend to protect read classification from potentially falsely assigning a too low-ranked taxon. 
 
     \begin{figure}[h]%
         \centering
