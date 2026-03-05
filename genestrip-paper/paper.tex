@@ -160,6 +160,7 @@ In order to avoid false positive classifications of reads, KrakenUniq resorts to
     Of note, Genestrip allows for the exclusion of $k$-mers with low complexity known as genomic dust \citep{doi:10.1089/cmb.2006.13.1028}: As part of the entry phase, each $k$-mers's repetitiveness in terms of base pairs is measured via a fibonacci-based function. If the corresponding value exceeds a configurable threshold then the $k$-mer is dropped. Section \ref{dustfunction} in the Appendix presents our dust function in detail.
 
     \subsection{Read classification}
+\label{readclassification}
 
     The goal \verb|match| loads a database and performs the read classification on fastq files.
     The principal classification algorithm is similar to that from  Kraken 1 \citep{kraken} and equivalently KrakenUniq. When iterating over a read's $k$-mers, each $k$-mer is encoded as a long -- once by considering its canonical version and once via its reverse complement.\footnote{Considering both versions is necessary because sequenced reads may occur in either direction but also because genomes may be represented in reverse complement direction, such as in the case of circular DNA.} For efficiency, only the larger of the two encoded values is looked up in the database. This is sufficient since, if at all, then only just the larger of two values got stored in the first place during database generation (see Section \ref{database}).
@@ -173,7 +174,7 @@ In order to avoid false positive classifications of reads, KrakenUniq resorts to
         \item  Moreover, the classification threshold \verb|minKMersForClass| supports the reduction of potential false positive classifications. It can be set to adjust the minimal sum of $k$-mers under taxon $t$ required for a read to be classified to $t$. I.e., given a read $r$ and taxon $t_1$ on the genus rank with two $k$-mers in $r$ and taxon $t_2$ subordinate to $t_1$ on the species rank with one $k$-mer in $r$. Furthermore, $r$ shall contain no other $k$-mers matching any taxons. Then, if \verb|minKMersForClass=2|, $r$ would \emph{not} be classified to $t_1$ but to $t_2$ instead since the single $k$-mer under $t_1$ is below the threshold but the sum of three $k$-mers under $t_2$ is sufficient. 
     \end{enumerate}
     
-    The thresholds allow for playing off recall against precision in light of potentially high error rates of some sequencing devices \citep{Delahaye:2021aa,Liu-Wei:2024aa}. For all the experiments throughout this paper, the first two thresholds were left at the default of one $k$-mer which is the most sensitive level. For the correctness discussion in Section \ref{correctness}, we left \verb|minKMersForClass| at the default of \verb|1| to ensure complete compatibility with KrakenUniq. However for all other experiments in this paper, we set \verb|minKMersForClass=4|.
+    The thresholds allow for playing off recall against precision in light of potentially high error rates of some sequencing devices \citep{Delahaye:2021aa,Liu-Wei:2024aa}. For all the experiments throughout this paper, the first two thresholds were left at the default of one $k$-mer which is the most sensitive level. For the correctness discussion in Section \ref{correctness}, we left \verb|minKMersForClass| at the default of \verb|1| to ensure complete compatibility with KrakenUniq. For all other experiments in this paper, we set \verb|minKMersForClass=4| and indicate additional settings if given.
     
     \subsection{Analysis reports} \label{measures}
 
@@ -620,11 +621,11 @@ To assess classification quality for this case, we first generated ground truth 
 We supplied NanoSim with all the RefSeq genomes from the twelve bacterial genera mentioned in Section \ref{mdbtb} and used each of the eight tick-related real-world fastq files to generate  corresponding \emph{simulated} fastq files.
 %\todo{what about the black-legged tick's genome?}
  The number of reads per simulated file ranges between 13,000 and 160,000 with a 319,531 reads in total an average read length of 4,480 BPs.
- It is important to know that both, real-world data and the simulated data have a high error in their bases: Using on Genestrip itself, we assessed a mean error of ?? \% per $k$-mer which is the ratio of $k$-mers that could not be assigned to any taxon.
+ It is important to know that both, the real-world data and the simulated data have a high error in their bases: As determined with Genestrip itself, the mean ratio of $k$-mers that could not be assigned to any taxon was ?? \% -- although the simulated data was generated just via the genomes also represented in \texttt{tb}.
 
-    We applied the analysis tools with their respective databases to the eight simulated fastq files: Apparently due to high error rates in the data, Ganon initially did not classify any reads. We lowered the classification threshold via the option \verb|-rel-cutoff 0 --rel-filter 0| which caused ?? \% of the reads to be classified. In addition, we lowered the threshold to the max via \verb|--fpr-query 1e-0| and report both results (the second named ``Ganon all'').
+    We applied the analysis tools with their respective databases to the eight simulated fastq files. Apparently due to the high error in the data, Ganon initially did not classify any reads. We lowered the classification threshold via the option \verb|-rel-cutoff 0 --rel-filter 0| which caused ?? \% of the reads to be classified. In addition, we lowered the threshold to further to zero via \verb|--fpr-query 1e-0| and report both types of results with the second named ``Ganon all''. Regarding Genestrip, we also report results under the setting \verb|minKMersForClass=1| (see Section \ref{readclassification}) which is indicated by ``Genestrip high sens.".
     
-    Table \ref{tickmares} shows the marco-averaged results for each system. Apparently, they all struggle with the high error present in long reads from Nanopore devices but Genestrip's configurations perform far better than the others. We attribute this to the deep genomic coverage of the organisms of interest in \texttt{tb} combined with a loss-less storing of related $k$-mers and Genestrip's thorough least common ancestor update.
+    Table \ref{tickmares} shows the marco-averaged results for each system. Apparently, they all struggle with the high error from Nanopore devices but Genestrip's configurations perform far better than the others. We attribute this to the deep genomic coverage of the organisms of interest in \texttt{tb} combined with a loss-less storing of related $k$-mers and Genestrip's thorough least common ancestor update.
     
        \begin{table}[h]
         \centering
@@ -649,16 +650,15 @@ before line=\\\hline]{results/tick-borne_tick-borne_ma_accuracy.csv}{}
             \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcoliv}
             }\\
         \end{tabular}
-\caption{Macro averaged read classification quality for simulated data  derived from bacterial pathogen analysis in ticks. The results are based on eight fastq files with known ground truth generated using NanoSim \cite{10.1093/gigascience/gix010, 10.1093/gigascience/giad013} on the basis of eight corresponding real-world, tick-related fastq files. Section \ref{mdbtb} describes the databases used and Section \ref{ticksim} discusses the analyzed data.}
+\caption{Macro averaged read classification quality for simulated data  derived from analysis of bacterial pathogens in ticks \cite{nanoporeticks}. The results are based on eight fastq files with known ground truth and generated using NanoSim \cite{10.1093/gigascience/gix010, 10.1093/gigascience/giad013} on the basis of eight corresponding real-world, tick-related fastq files. Section \ref{mdbtb} describes the databases used and Section \ref{ticksim} discusses the analyzed data.}
 \label{tickmares}
     \end{table}
     
     \subsubsection{Explorative tick analysis}
     \label{tickanalysis}
-    We applied KrakenUniq and Genestrip with their respective databases to the eight fastq files from \cite{nanoporeticks} mentioned above.
-%Four of the files had been produced using an enrichment %technology that drops reads during base calling if they %are likely from the host \citep{nanoporeticks}.
+    To explore the potential of databases with deep genomic coverage, we applied KrakenUniq and Genestrip and their corresponding databases to the eight real-world fastq files from \cite{nanoporeticks} mentioned above, whereby the ground truth is unknown.
 
-    As an example result, Figure \ref{genusestick6} shows the five most frequent $k$-mer counts and reads counts for ``Tick 6" accumulated up to the genus rank. In all the cases but ``138" (Borrelia), the aggregated counts for the genera under \texttt{tb} are mildly to considerably higher than those achieved with \texttt{MicrobialDB}. Since we established the high quality of Genestrip's results in Section \ref{correctness}, this increase may be attributed with high confidence to the quality of the database \texttt{tb}, which is deeper than \texttt{MicrobialDB} for its included genera as described above.
+    As an example result, Figure \ref{genusestick6} shows the five most frequent $k$-mer counts and reads counts for ``Tick 6" accumulated up to the genus rank. In all the cases but ``138" (Borrelia), the aggregated counts for the genera under \texttt{tb} are mildly to considerably higher than those achieved with \texttt{MicrobialDB}. Since we established the compatibility of Genestrip and KrakenUniq in Section \ref{correctness}, this increase must be attributed to the quality of the database \texttt{tb}, which is deeper than \texttt{MicrobialDB} for its included genera as described above.
     We observed similar improvements in terms of $k$-mers and reads with respect to Ehrlichia, Rickettsia and partly to Anaplasma in all of the eight ticks' fastq files whenever the corresponding organisms showed presence via \texttt{MicrobialDB}.
 
     \begin{figure}[h]%
@@ -848,28 +848,10 @@ before line=\\\hline]{results/tick-borne_tick-borne_ma_accuracy.csv}{}
         \label{ehrlichiatick6}
     \end{figure}
 
-%    \subsection{$k$-Mer consistency ratio}
-%    \label{consistencyratio}
-%
-%    Based on the previously used fastq files and the Genestrip database \texttt{tb}, we provide anecdotal evidence of the usefulness of the $k$-mer consistency ratio $r_{t,f,d}$ as introduced in Section \ref{measures}.
-%
-%    Table \ref{ratiosamples} reports the five hits with the highest unique $k$-mer counts $u_{t,f,d}$ on the ranks species or below for the human saliva fast files \#1, \#3 and \#5 from Table \ref{errorsviral} analyzed via \texttt{tb} from Section \ref{mdbtb}: Since $r_{t,f,d}$ relates the parameters $k_{t,f,d}$, $u_{t,f,d}$ and $u_{t,d}$ accordingly, it tends to be aligned with biomedical expectations for true and false hits. For example, species like ``" (Metamycoplasma salivarium) under the genus ``" (Metamycoplasma) are also included in \texttt{tb} and typically occur in the oral microbiome \citep{}. In contrast, the hits ``" (Francisella tularensis) and ``" (Borreliella garinii) are implausible and also have a low $k$-mer Consistency ratio. Note that the unique $k$-mer count, the $k$-mer count or the classified read count alone occur to be inconclusive. Results for the other three human saliva fastq files from Table \ref{errorsviral} are similar in nature (not reported).
-%
-%    \begin{table}[h]
-%        \centering
-%        \begin{tabular}{c|c|c|c|c|c|c|c}
-%            \# & $t$ & $u_{t,f,d}$ & $k_{t,f,d}$ & Read  & $u_{t,f,d} / u_{t,d}$ & $r_{t,f,d}$ & Biomedically \\
-%            &  &  &  & count &  &  & plausible \\
-%            \hline
-%        \end{tabular}
-%        \caption{Analysis results for the five hits with the highest unique $k$-mer counts $u_{t,f,d}$ on the ranks species or below for the human saliva fast files \#1, \#3 and \#5 from Table \ref{errorsviral} analyzed via the Genestrip database \texttt{tb} from Section \ref{mdbtb}.}
-%        \label{ratiosamples}
-%    \end{table}
-
     \subsection{Performance}
     \label{performance}
 
-    As mentioned in Section \ref{background}, Genestrip's focus is on generating and using potentially small but also deep $k$-mer databases for accurate metagenomic analysis of selected organisms of interest. This implies that users must be empowered to flexibly create new databases -- ideally on their own devices. We therefore verify that Genestrip's database generation performance adheres to this requirement. Moreover, we report on read classification performance in comparison with KrakenUniq, Kraken 2 and Ganon.
+    As mentioned in Section \ref{background}, Genestrip's focus is on generating and using potentially small but also deep $k$-mer databases for metagenomic analysis of selected organisms of interest. This implies that users must be empowered to flexibly create new databases -- ideally on their own devices. We therefore verify that Genestrip's database generation performance adheres to this requirement. Moreover, we report on read classification performance in comparison with KrakenUniq, Kraken 2 and Ganon.
 
   The following experiments were all performed on a modern PC with 128 GB of RAM, 10 CPU cores and a 8 TB solid state disk. Although for Genestrip about 32 GB of RAM would have sufficed, we needed the additional RAM for the competing analysis tools.\footnote{We ensured that as few competing processes as possible were running during the experiments and OS disk swapping was disabled. Platform details: Intel Xeon W-2255 CPU @3.70 GHz, Ubuntu 24.04.4 LTS, Java Oracle 23.0.1 64-Bit Server VM.}
 
