@@ -1,55 +1,19 @@
-[INFO] Scanning for projects...
-[INFO] 
-[INFO] -------------------< org.metagene:genestrip-db-exp >--------------------
-[INFO] Building genestrip-db-exp 1.5
-[INFO]   from pom.xml
-[INFO] --------------------------------[ jar ]---------------------------------
-[INFO] 
-[INFO] --- exec:3.1.0:exec (db) @ genestrip-db-exp ---
-[INFO] project vineyard - Loading config file './data/projects/vineyard/config.properties'.
-[INFO] project vineyard - Loading config file './data/config.properties'.
-[INFO] project vineyard - Effective param map: {genbank.fastaQualities=[COMPLETE_LATEST, COMPLETE, CHROMOSOME_LATEST, CHROMOSOME, CONTIG_LATEST, CONTIG, SCAFFOLD_LATEST, SCAFFOLD], logProgressUpdateCycle=1000000, posRatioFilter=0.2, maxReadTaxErrorCount=-1.0, maxKMerResCounts=0, removeTempDB=true, maxPerTaxidRank=null, stepSize=1, initialReadSizeBytes=4096, krakenDB=krakenuniq, logLevel=info, maxDust=20, refseq.updateWithCompleteGenomesOnly=false, classifyReads=true, countUniqueKMers=true, refseq.filldb=true, httpBaseURL=https://ftp.ncbi.nlm.nih.gov, krakenBin=./ku/krakenuniq/krakenuniq, ftpBaseURL=ftp.ncbi.nih.gov, xorBloomHash=true, rankCompletionDepth=null, refseq.ftpBaseURL=ftp.ncbi.nih.gov, alwaysAssumeGzip=true, ignoreMissingFastas=false, refseq.completeGenomesOnly=false, bloomFilterFpp=1.0E-11, minPosCountFilter=1, refseq.httpBaseURL=https://ftp.ncbi.nlm.nih.gov/refseq, fastaLineSizeBytes=4096, refSeq.limitForGenbankAccess=10000000, minUpdate=false, kMerSize=31, writeFilteredFastq=false, useBloomFilterForMatch=true, genbank.referenceOnly=false, maxKMersPerTaxid=9223372036854775807, maxClassificationPaths=10, checkSumCacheFile=true, maxReadClassErrorCount=-1.0, krakenExecExpr={0} --threads 10 -db {1} {2}, useInlined=false, seqType=GENOMIC, maxDownloadTries=5, threadQueueSize=1000, maxGenomesPerTaxid=2147483647, refSeq.limitForGenbankRank=species, progressBarUpdateMs=300000, withProbs=false, threads=-1, genbank.maxPerTaxid=-1, progressBar=true, useHttp=true, tempBloomFilterFpp=0.001, writeDumpedFastq=false, writeKrakenStyleOut=false}
-Executing target make for goal db...
-taxnodes   0% [                                     ]     32768/203283278 bytes (0:00:00 / 0:03:59) taxnodes 100% [=====================================] 203283277/203283277 bytes (0:00:01 / 0:00:00) taxnodes 100% [=====================================] 203283277/203283277 bytes (0:00:01 / 0:00:00) 
-taxnames   0% [                                     ]     32768/269666161 bytes (0:00:00 / 0:00:02) taxnames 100% [=====================================] 269666160/269666160 bytes (0:00:01 / 0:00:00) taxnames 100% [=====================================] 269666160/269666160 bytes (0:00:01 / 0:00:00) 
-accmapsize   0% [                                 ]      32562/3099701052 bytes (0:00:00 / 0:00:30) accmapsize 100% [=================================] 3099701052/3099701052 bytes (0:01:55 / 0:00:00) accmapsize 100% [=================================] 3099701052/3099701052 bytes (0:01:55 / 0:00:00) 
-accmap   0% [                                     ]      32562/3099701052 bytes (0:00:00 / 0:00:30) accmap 100% [=====================================] 3099701052/3099701052 bytes (0:01:53 / 0:00:00) accmap 100% [=====================================] 3099701052/3099701052 bytes (0:01:53 / 0:00:00) 
->[INFO] accmap - Total heap size: 3408 MB
->[INFO] accmap - Used heap size: 613 MB
-fillsize   0% [                                                       ]   0/163 files (0:00:00 / ?) fillsize 100% [=================================================] 163/163 files (0:00:17 / 0:00:00) fillsize 100% [=================================================] 163/163 files (0:00:17 / 0:00:00) 
->[INFO] fillsize - All included kmers with duplicates: 5858188789
->[INFO] fillsize - Estimated DB size in MB (without Bloom filter, with duplicates): 55868
->[INFO] fillsize - Dust ratio: 0.01330074256069187
->[INFO] tempindex - Total heap size: 15728 MB
->[INFO] tempindex - Used heap size: 10646 MB
-tempindex   0% [                                                      ]   0/163 files (0:00:00 / ?) tempindex  20% [=========                                       ]  33/163 files (0:01:00 / 0:03:56) tempindex  28% [=============                                   ]  47/163 files (0:02:00 / 0:04:56) tempindex  36% [=================                               ]  59/163 files (0:03:00 / 0:05:17) tempindex  53% [=========================                       ]  88/163 files (0:04:00 / 0:03:24) tempindex  73% [===================================             ] 119/163 files (0:05:00 / 0:01:50) tempindex  89% [==========================================      ] 146/163 files (0:06:00 / 0:00:41) tempindex 100% [================================================] 163/163 files (0:06:48 / 0:00:00) tempindex 100% [================================================] 163/163 files (0:06:48 / 0:00:00) 
->[INFO] tempindex - Bloom filter size in kmers: 663541745
->[INFO] tempindex - Duplication factor: 8.828666520446276
->[INFO] tempindex - Total heap size: 17744 MB
->[INFO] tempindex - Used heap size: 10593 MB
->[INFO] filldb - Store size in kmers: 664205950
->[INFO] filldb - DB Size in MB (without Bloom filter): 6334
-filldb   0% [                                                         ]   0/163 files (0:00:00 / ?) filldb  20% [==========                                         ]  33/163 files (0:01:00 / 0:03:56) filldb  20% [==========                                         ]  33/163 files (0:02:00 / 0:07:52) filldb  20% [==========                                         ]  33/163 files (0:03:00 / 0:11:49) filldb  20% [==========                                         ]  34/163 files (0:04:00 / 0:15:10) filldb  27% [==============                                     ]  45/163 files (0:05:00 / 0:13:06) filldb  30% [===============                                    ]  49/163 files (0:06:00 / 0:13:57) filldb  33% [=================                                  ]  55/163 files (0:07:00 / 0:13:44) filldb  38% [===================                                ]  63/163 files (0:08:00 / 0:12:41) filldb  44% [======================                             ]  72/163 files (0:09:00 / 0:11:22) filldb  46% [=======================                            ]  76/163 files (0:10:00 / 0:11:26) filldb  52% [==========================                         ]  85/163 files (0:11:00 / 0:10:05) filldb  55% [============================                       ]  91/163 files (0:12:00 / 0:09:29) filldb  61% [===============================                    ] 100/163 files (0:13:00 / 0:08:11) filldb  66% [=================================                  ] 108/163 files (0:14:00 / 0:07:07) filldb  73% [=====================================              ] 119/163 files (0:15:00 / 0:05:32) filldb  76% [=======================================            ] 125/163 files (0:16:00 / 0:04:51) filldb  80% [=========================================          ] 132/163 files (0:17:00 / 0:03:59) filldb  87% [============================================       ] 142/163 files (0:18:00 / 0:02:39) filldb  90% [==============================================     ] 148/163 files (0:19:00 / 0:01:55) filldb  96% [=================================================  ] 158/163 files (0:20:00 / 0:00:37) filldb  99% [================================================== ] 162/163 files (0:21:00 / 0:00:07) filldb 100% [===================================================] 163/163 files (0:21:06 / 0:00:00) filldb 100% [===================================================] 163/163 files (0:21:06 / 0:00:00) 
->[INFO] filldb - Unused kmers spots: 664205 (corresponds to 0.0999998569720732 %)
->[INFO] filldb - Sorting kmers ...
->[INFO] filldb - Total heap size: 15952 MB
->[INFO] filldb - Used heap size: 11217 MB
->[INFO] tempdb - Saving database ./data/projects/vineyard/db/vineyard_tempdb.zip along with index ...
-updatedb   0% [                                                       ]   0/163 files (0:00:00 / ?) updatedb   0% [                                                       ]   0/163 files (0:01:00 / ?) updatedb   0% [                                                       ]   0/163 files (0:02:00 / ?) updatedb   4% [==                                               ]   7/163 files (0:03:00 / 1:06:51) updatedb   4% [==                                               ]   8/163 files (0:04:00 / 1:17:30) updatedb   9% [====                                             ]  15/163 files (0:05:00 / 0:49:20) updatedb  12% [======                                           ]  21/163 files (0:06:00 / 0:40:34) updatedb  14% [=======                                          ]  24/163 files (0:07:00 / 0:40:32) updatedb  17% [========                                         ]  28/163 files (0:08:00 / 0:38:34) updatedb  20% [=========                                        ]  33/163 files (0:09:00 / 0:35:27) updatedb  23% [===========                                      ]  39/163 files (0:10:00 / 0:31:47) updatedb  27% [=============                                    ]  45/163 files (0:11:00 / 0:28:50) updatedb  28% [==============                                   ]  47/163 files (0:12:00 / 0:29:37) updatedb  32% [===============                                  ]  53/163 files (0:13:00 / 0:26:58) updatedb  35% [=================                                ]  58/163 files (0:14:00 / 0:25:20) updatedb  38% [==================                               ]  62/163 files (0:15:00 / 0:24:26) updatedb  41% [====================                             ]  68/163 files (0:16:00 / 0:22:21) updatedb  45% [======================                           ]  74/163 files (0:17:00 / 0:20:26) updatedb  47% [=======================                          ]  77/163 files (0:18:00 / 0:20:06) updatedb  52% [=========================                        ]  85/163 files (0:19:00 / 0:17:26) updatedb  53% [==========================                       ]  87/163 files (0:20:00 / 0:17:28) updatedb  57% [===========================                      ]  93/163 files (0:21:00 / 0:15:48) updatedb  60% [=============================                    ]  99/163 files (0:22:00 / 0:14:13) updatedb  63% [==============================                   ] 103/163 files (0:23:00 / 0:13:23) updatedb  65% [===============================                  ] 106/163 files (0:24:00 / 0:12:54) updatedb  69% [==================================               ] 114/163 files (0:25:00 / 0:10:44) updatedb  73% [====================================             ] 120/163 files (0:26:00 / 0:09:19) updatedb  76% [=====================================            ] 124/163 files (0:27:00 / 0:08:29) updatedb  76% [=====================================            ] 125/163 files (0:28:00 / 0:08:30) updatedb  80% [=======================================          ] 131/163 files (0:29:00 / 0:07:05) updatedb  85% [==========================================       ] 140/163 files (0:30:00 / 0:04:55) updatedb  87% [==========================================       ] 143/163 files (0:31:00 / 0:04:20) updatedb  90% [============================================     ] 148/163 files (0:32:00 / 0:03:14) updatedb  94% [==============================================   ] 154/163 files (0:33:00 / 0:01:55) updatedb  98% [================================================ ] 160/163 files (0:34:00 / 0:00:38) updatedb 100% [=================================================] 163/163 files (0:34:37 / 0:00:00) updatedb 100% [=================================================] 163/163 files (0:34:37 / 0:00:00) 
-[INFO] updatedb - KMers moved via update: 79093130
-[INFO] db - Saving database ./data/projects/vineyard/db/vineyard_db.zip along with index ...
-[INFO] tempdb - Deleting file ./data/projects/vineyard/db/vineyard_tempdb.zip
-[INFO] tempdbinfo - Deleting file ./data/projects/vineyard/csv/vineyard_tempdbinfo.csv
-Done with target make for goal db
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD SUCCESS
-[INFO] ------------------------------------------------------------------------
-[INFO] Total time:  01:31 h
-[INFO] Finished at: 2025-07-19T00:24:25+02:00
-[INFO] ------------------------------------------------------------------------
+[[1;34mINFO[m] Scanning for projects...
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m-------------------< [0;36morg.metagene:genestrip-db-exp[0;1m >--------------------[m
+[[1;34mINFO[m] [1mBuilding genestrip-db-exp 1.6[m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mexec-maven-plugin:3.1.0:exec[m [1m(db)[m @ [36mgenestrip-db-exp[0;1m ---[m
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1;32mBUILD SUCCESS[m
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] Total time:  01:26 h
+[[1;34mINFO[m] Finished at: 2026-03-04T16:31:29+01:00
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
 
-user: 49237.287 s
-sys:  237.188 s
-wall: 5481.305 s
-child_RSS_high:   16530460 KiB
-group_mem_high:   28070556 KiB
+user: 42515.303 s
+sys:  148.333 s
+wall: 5190.397 s
+child_RSS_high:   25273228 KiB
+group_mem_high:   42514288 KiB

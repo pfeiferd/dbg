@@ -899,14 +899,14 @@ before line=\\\hline]{results/tick-borne_tick-borne_ma_accuracy.csv}{}
         \begin{tabular}{c|r|r|r|r}
             DB name & Stored $k$-mers & Disk size (MB) & Wall time (min) & Max. RAM (MB) \\
             \hline
-            \texttt{cv\_g} & 379,165,091 & 5,370 & 47 & 7,918 \\
-            \texttt{hv\_g} &   3,865,987 & 4 & 5 & 1,114 \\
-            \texttt{tb} & 524,530,554 & 6,008 & 489 & 23,003 \\
-            \texttt{protozoa} & 211,294,014 1,279,065,780 & 15,915 & 27 & 4,554 \\
-            \texttt{vineyard} & 192,387,305 663,541,745 & 7,973 & 28 & 7,524 \\
-            \texttt{parasites} & 1,661,492,164 1,629,142,488 & 19,761 & 97 & 8,149 \\
+            \texttt{cv\_g} & 379,165,091 & 3,218 & 47 & 7,918 \\
+            \texttt{hv\_g} &   3,865,987 & 32 & 5 & 1,114 \\
+            \texttt{tb} & 524,530,554 & 3,731 & 489 & 23,003 \\
+            \texttt{protozoa} & 1,332,774,884 & 9,621 & 138 & 25,306 \\
+            \texttt{vineyard} & 688,413,684 & 4,662 & 87 & 24,681 \\
+            \texttt{parasites} & 1,659,904,652 & 11,509 & 278 & 30,636 \\
         \end{tabular}
-        \caption{Execution statistics for generating the six Genestrip databases from Table \ref{dbdesc} using 20 threads and a maximum allowed JVM heap size of 32 GB.}\label{dbperf}
+        \caption{Statistics for generating the six Genestrip databases from Table \ref{dbdesc} using 20 threads and a maximum allowed JVM heap size of 32 GB.}\label{dbperf}
     \end{table}
 
     \subsection{Read classification}

@@ -1,54 +1,19 @@
-[INFO] Scanning for projects...
-[INFO] 
-[INFO] -------------------< org.metagene:genestrip-db-exp >--------------------
-[INFO] Building genestrip-db-exp 1.5
-[INFO]   from pom.xml
-[INFO] --------------------------------[ jar ]---------------------------------
-[INFO] 
-[INFO] --- exec:3.1.0:exec (db) @ genestrip-db-exp ---
-[INFO] project viral - Loading config file './data/projects/viral/config.properties'.
-[INFO] project viral - Loading config file './data/config.properties'.
-[INFO] project viral - Effective param map: {genbank.fastaQualities=[COMPLETE_LATEST, CHROMOSOME_LATEST], logProgressUpdateCycle=1000000, posRatioFilter=0.2, maxReadTaxErrorCount=-1.0, maxKMerResCounts=0, removeTempDB=true, maxPerTaxidRank=null, stepSize=1, initialReadSizeBytes=4096, krakenDB=./ku/viral_db, logLevel=info, maxDust=-1, refseq.updateWithCompleteGenomesOnly=false, classifyReads=true, countUniqueKMers=true, refseq.filldb=true, httpBaseURL=https://ftp.ncbi.nlm.nih.gov, krakenBin=./ku/krakenuniq/krakenuniq, ftpBaseURL=ftp.ncbi.nih.gov, xorBloomHash=true, rankCompletionDepth=null, refseq.ftpBaseURL=ftp.ncbi.nih.gov, alwaysAssumeGzip=true, ignoreMissingFastas=false, refseq.completeGenomesOnly=false, bloomFilterFpp=1.0E-11, minPosCountFilter=1, refseq.httpBaseURL=https://ftp.ncbi.nlm.nih.gov/refseq, fastaLineSizeBytes=4096, refSeq.limitForGenbankAccess=0, minUpdate=false, kMerSize=31, writeFilteredFastq=false, useBloomFilterForMatch=true, genbank.referenceOnly=false, maxKMersPerTaxid=9223372036854775807, maxClassificationPaths=10, checkSumCacheFile=true, maxReadClassErrorCount=-1.0, krakenExecExpr={0} --threads 10 -db {1} {2}, useInlined=false, seqType=GENOMIC, maxDownloadTries=5, threadQueueSize=1000, maxGenomesPerTaxid=2147483647, refSeq.limitForGenbankRank=species, progressBarUpdateMs=300000, withProbs=false, threads=-1, genbank.maxPerTaxid=1, progressBar=true, useHttp=true, tempBloomFilterFpp=0.001, writeDumpedFastq=false, writeKrakenStyleOut=false}
-Executing target make for goal db...
-taxnodes   0% [                                     ]     32768/203283278 bytes (0:00:00 / 0:03:21) taxnodes 100% [=====================================] 203283277/203283277 bytes (0:00:01 / 0:00:00) taxnodes 100% [=====================================] 203283277/203283277 bytes (0:00:01 / 0:00:00) 
-taxnames   0% [                                     ]     32768/269666161 bytes (0:00:00 / 0:00:04) taxnames 100% [=====================================] 269666160/269666160 bytes (0:00:01 / 0:00:00) taxnames 100% [=====================================] 269666160/269666160 bytes (0:00:01 / 0:00:00) 
-accmapsize   0% [                                 ]      32562/3099701052 bytes (0:00:00 / 0:00:30) accmapsize 100% [=================================] 3099701052/3099701052 bytes (0:01:56 / 0:00:00) accmapsize 100% [=================================] 3099701052/3099701052 bytes (0:01:56 / 0:00:00) 
-accmap   0% [                                     ]      32562/3099701052 bytes (0:00:00 / 0:00:37) accmap 100% [=====================================] 3099701052/3099701052 bytes (0:01:53 / 0:00:00) accmap 100% [=====================================] 3099701052/3099701052 bytes (0:01:53 / 0:00:00) 
->[INFO] accmap - Total heap size: 6304 MB
->[INFO] accmap - Used heap size: 605 MB
-fillsize   0% [                                                           ] 0/1 files (0:00:00 / ?) fillsize 100% [=====================================================] 1/1 files (0:00:05 / 0:00:00) fillsize 100% [=====================================================] 1/1 files (0:00:05 / 0:00:00) 
->[INFO] fillsize - All included kmers with duplicates: 556926802
->[INFO] fillsize - Estimated DB size in MB (without Bloom filter, with duplicates): 5311
->[INFO] tempindex - Total heap size: 6304 MB
->[INFO] tempindex - Used heap size: 1652 MB
-tempindex   0% [                                                          ] 0/1 files (0:00:00 / ?) tempindex   0% [                                                          ] 0/1 files (0:01:00 / ?) tempindex   0% [                                                          ] 0/1 files (0:02:00 / ?) tempindex 100% [====================================================] 1/1 files (0:02:46 / 0:00:00) tempindex 100% [====================================================] 1/1 files (0:02:46 / 0:00:00) 
->[INFO] tempindex - Bloom filter size in kmers: 374832571
->[INFO] tempindex - Duplication factor: 1.4858015153651094
->[INFO] tempindex - Total heap size: 5232 MB
->[INFO] tempindex - Used heap size: 1512 MB
->[INFO] filldb - Store size in kmers: 375207778
->[INFO] filldb - DB Size in MB (without Bloom filter): 3578
-filldb   0% [                                                             ] 0/1 files (0:00:00 / ?) filldb   0% [                                                             ] 0/1 files (0:01:00 / ?) filldb   0% [                                                             ] 0/1 files (0:02:00 / ?) filldb   0% [                                                             ] 0/1 files (0:03:00 / ?) filldb   0% [                                                             ] 0/1 files (0:04:00 / ?) filldb   0% [                                                             ] 0/1 files (0:05:00 / ?) filldb   0% [                                                             ] 0/1 files (0:06:00 / ?) filldb   0% [                                                             ] 0/1 files (0:07:00 / ?) filldb 100% [=======================================================] 1/1 files (0:07:33 / 0:00:00) filldb 100% [=======================================================] 1/1 files (0:07:33 / 0:00:00) 
->[INFO] filldb - Unused kmers spots: 372841 (corresponds to 0.09936920870547625 %)
->[INFO] filldb - Sorting kmers ...
->[INFO] filldb - Total heap size: 10464 MB
->[INFO] filldb - Used heap size: 6585 MB
->[INFO] tempdb - Saving database ./data/projects/viral/db/viral_tempdb.zip along with index ...
-updatedb   0% [                                                           ] 0/1 files (0:00:00 / ?) updatedb   0% [                                                           ] 0/1 files (0:01:00 / ?) updatedb   0% [                                                           ] 0/1 files (0:02:00 / ?) updatedb   0% [                                                           ] 0/1 files (0:03:00 / ?) updatedb   0% [                                                           ] 0/1 files (0:04:00 / ?) updatedb   0% [                                                           ] 0/1 files (0:05:00 / ?) updatedb   0% [                                                           ] 0/1 files (0:06:00 / ?) updatedb   0% [                                                           ] 0/1 files (0:07:00 / ?) updatedb   0% [                                                           ] 0/1 files (0:08:00 / ?) updatedb   0% [                                                           ] 0/1 files (0:09:00 / ?) updatedb   0% [                                                           ] 0/1 files (0:10:00 / ?) updatedb   0% [                                                           ] 0/1 files (0:11:00 / ?) updatedb   0% [                                                           ] 0/1 files (0:12:00 / ?) updatedb 100% [=====================================================] 1/1 files (0:12:04 / 0:00:00) updatedb 100% [=====================================================] 1/1 files (0:12:04 / 0:00:00) 
-[INFO] updatedb - KMers moved via update: 61630422
-[INFO] db - Saving database ./data/projects/viral/db/viral_db.zip along with index ...
-[INFO] tempdb - Deleting file ./data/projects/viral/db/viral_tempdb.zip
-[INFO] tempdbinfo - Deleting file ./data/projects/viral/csv/viral_tempdbinfo.csv
-Done with target make for goal db
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD SUCCESS
-[INFO] ------------------------------------------------------------------------
-[INFO] Total time:  38:50 min
-[INFO] Finished at: 2025-07-19T21:27:15+02:00
-[INFO] ------------------------------------------------------------------------
+[[1;34mINFO[m] Scanning for projects...
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m-------------------< [0;36morg.metagene:genestrip-db-exp[0;1m >--------------------[m
+[[1;34mINFO[m] [1mBuilding genestrip-db-exp 1.6[m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mexec-maven-plugin:3.1.0:exec[m [1m(db)[m @ [36mgenestrip-db-exp[0;1m ---[m
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1;32mBUILD SUCCESS[m
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] Total time:  47:00 min
+[[1;34mINFO[m] Finished at: 2026-03-04T00:02:40+01:00
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
 
-user: 2307.451 s
-sys:   36.437 s
-wall: 2331.347 s
-child_RSS_high:    7531100 KiB
-group_mem_high:   18229348 KiB
+user: 2828.686 s
+sys:   14.430 s
+wall: 2821.196 s
+child_RSS_high:    8107844 KiB
+group_mem_high:   14618156 KiB
