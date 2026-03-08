@@ -53,6 +53,7 @@
 \newcommand{\ktwohc}{Kraken 2 (C)}
 \newcommand{\ganon}{Ganon (S)}
 \newcommand{\ganonlowfpr}{Ganon (C)}
+\newcommand{\ganonall}{Ganon (A)}
 \newcommand{\genestrip}{Genestrip (C)}
 \newcommand{\genestriphs}{Genestrip (S)}
 \newcommand{\hiseq}[1]{HiSeq}
@@ -644,7 +645,7 @@ We supplied NanoSim with all the RefSeq genomes from the twelve bacterial genera
  The number of reads per simulated file ranges between 13,000 and 160,000 with 319,531 reads in total and an average read length of 4,480 BPs.
  It is important to know that both, the real-world data and the simulated data are subject to high error in their bases: As determined with Genestrip itself, the mean ratio of $k$-mers that could not be assigned to any taxon in classified reads was 83 \% and 88 \%, respectively. Regarding the simulated data, the error cannot be attributed to missing $k$-mers in \texttt{tb}, since the simulated data was generated only via genomes also represented in \texttt{tb}.
 
-    We applied the analysis tools with their respective databases to the eight simulated fastq files. Apparently due to the high error rates in the data, Ganon did not classify any reads under the variant ``Ganon (C)" -- hence, we show no results for this case. Instead, we present the additional variant ``Ganon (A)" where thresholding is completely turned off via the combined options \verb|-rel-cutoff 0|, \verb|--rel-filter 0| and \verb|--fpr-query 1e-0| causing all reads to be classified.
+    We applied the analysis tools with their respective databases to the eight simulated fastq files. Apparently due to the high error rates in the data, Ganon did not classify any reads under the variant ``\ganonlowfp" -- hence, we show no results for this case. Instead, we present the additional variant ``\ganonall" where thresholding is completely turned off via the combined options \verb|-rel-cutoff 0|, \verb|--rel-filter 0| and \verb|--fpr-query 1e-0| causing every read to be classified.
     
     Table \ref{tickmares} shows the marco-averaged results for each system. Apparently, they all struggle with the high error from the modeled Nanopore device but Genestrip's configurations perform far better than the others. We attribute this to the deep genomic coverage of the organisms of interest in \texttt{tb} combined with a loss-less storing of related $k$-mers and Genestrip's thorough least common ancestor update.
     
@@ -671,7 +672,7 @@ before line=\\\hline]{results/tick-borne_tick-borne_ma_accuracy.csv}{}
             \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcoliv}
             }\\
         \end{tabular}
-\caption{Macro averaged read classification quality for simulated data  derived from analysis of bacterial pathogens in ticks \cite{nanoporeticks}. The results are based on eight fastq files with known ground truth and generated using NanoSim \cite{10.1093/gigascience/gix010, 10.1093/gigascience/giad013} on the basis of eight corresponding real-world, tick-related fastq files. Section \ref{mdbtb} describes the databases used and Section \ref{ticksim} discusses the analyzed data.}
+\caption{Macro averaged read classification quality for simulated data  derived from analysis of bacterial pathogens in ticks \cite{nanoporeticks}. The results are based on eight simulated fastq files generated using NanoSim \cite{10.1093/gigascience/gix010, 10.1093/gigascience/giad013} on the basis of eight corresponding real-world, tick-related fastq files. Section \ref{mdbtb} describes the databases used and Section \ref{ticksim} discusses the analyzed data.  The systems' adaptions for ``(S)" and ``(C)" are based on Table \ref{toolvariants}, ``Ganon (A)" is described in Section \ref{ticksim}.}
 \label{tickmares}
     \end{table}
     
