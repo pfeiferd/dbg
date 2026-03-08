@@ -50,11 +50,12 @@
 
 \newcommand{\taxon}{taxon}
 \newcommand{\ku}{KrakenUniq}
-\newcommand{\ktwo}{Kraken 2}
-\newcommand{\ktwohc}{Kraken 2 high conf.}
-\newcommand{\ganon}{Ganon}
-\newcommand{\ganonlowfpr}{Ganon low FPP}
-\newcommand{\genestrip}{Genestrip}
+\newcommand{\ktwo}{Kraken 2 (S)}
+\newcommand{\ktwohc}{Kraken 2 (C)}
+\newcommand{\ganon}{Ganon (S)}
+\newcommand{\ganonlowfpr}{Ganon (C)}
+\newcommand{\genestrip}{Genestrip (C)}
+\newcommand{\genestriphs}{Genestrip (S)}
 \newcommand{\hiseq}[1]{HiSeq}
 \newcommand{\miseq}[1]{MiSeq}
 \newcommand{\fastqone}[1]{Extr. from \cite{Wu:2024aa}}
@@ -359,7 +360,7 @@ before line=\\\hline]{results/viral_human_virus_accuracy.csv}{}
             \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcolix}
             }\\                        
         \end{tabular}
-\caption{Read classification quality for simulated fastq files from Section \ref{correctness} of the main document analyzed with KrakenUniq, Kraken 2, Ganon and Genestrip using the complete viral databases from Section \ref{broadcov} of the main document but with an evaluation focus on human viruses only. The systems' adaptions for ``low FPP" and ``high conf." are explained in Section \ref{broadcov} of the main document.}
+\caption{Read classification quality for simulated fastq files from Section \ref{correctness} of the main document analyzed with KrakenUniq, Kraken 2, Ganon and Genestrip using the complete viral databases from Section \ref{broadcov} of the main document but with an evaluation focus on human viruses only. The systems' adaptions for ``(S)" and ``(C)" are based on Table \ref{toolvariants} of the main document.}
 \label{broadhvcov}
     \end{table}
     
@@ -386,7 +387,7 @@ before line=\\\hline]{results/viral_saliva_rel_accuracy.csv}{}
             \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcolix}
             }\\                       
         \end{tabular}
-\caption{Read classification quality for the the real-world fastq files from Table \ref{errorsviral} of the main document analyzed with KrakenUniq, Kraken 2, Ganon and Genestrip with an evaluation focus on human viruses only. The evaluation compares the classifications when using a ``human virus only" database against each system's own classifications obtained when using the corresponding complete viral database from Section \ref{broadcov} of the main document. The systems' adaptions for ``low FPP" and ``high conf." are explained in Section \ref{broadcov} of the main document. }
+\caption{Read classification quality for the the real-world fastq files from Table \ref{errorsviral} of the main document analyzed with KrakenUniq, Kraken 2, Ganon and Genestrip with an evaluation focus on human viruses only. The evaluation compares the classifications when using a ``human virus only" database against each system's own classifications obtained when using the corresponding complete viral database from Section \ref{broadcov} of the main document. The systems' adaptions for ``(S)" and ``(C)" are based on Table \ref{toolvariants} of the main document. }
 \label{humansalivarelcompl}
     \end{table}
     

@@ -49,12 +49,12 @@
 
 \newcommand{\taxon}{taxon}
 \newcommand{\ku}{KrakenUniq}
-\newcommand{\ktwo}{Kraken 2}
-\newcommand{\ktwohc}{Kraken 2 high conf.}
-\newcommand{\ganon}{Ganon}
-\newcommand{\ganonlowfpr}{Ganon low FPP}
-\newcommand{\genestrip}{Genestrip}
-\newcommand{\genestriphs}{Genestrip high sens.}
+\newcommand{\ktwo}{Kraken 2 (S)}
+\newcommand{\ktwohc}{Kraken 2 (C)}
+\newcommand{\ganon}{Ganon (S)}
+\newcommand{\ganonlowfpr}{Ganon (C)}
+\newcommand{\genestrip}{Genestrip (C)}
+\newcommand{\genestriphs}{Genestrip (S)}
 \newcommand{\hiseq}[1]{HiSeq}
 \newcommand{\miseq}[1]{MiSeq}
 \newcommand{\fastqone}[1]{Extr. from \cite{Wu:2024aa}}
@@ -109,7 +109,7 @@ In order to avoid false positive classifications of reads, KrakenUniq resorts to
     
     Even though Kraken 2 offers more memory efficient $k$-mer databases, \emph{it is not a suitable alternative in fields such as medical diagnostics where precision of read classification is paramount} \citep{lowmemkraken}. This is because in comparison with Kraken 1 and KrakenUniq, Kraken 2 produces smaller databases, but it compresses stored $k$-mers under loss of information, therefore facilitating false positive $k$-mer counts \citep{kraken2, lowmemkraken}. Many recent $k$-mer analysis tools such as Ganon follow this idea and trade $k$-mer compression against potentially false positive $k$-mer matches.
 
-    We focus on a comparison with KrakenUniq because Genestrip aims to provide a similar $k$-mer based functionality by avoiding $k$-mer compression altogether while still enabling small databases without substantial loss of precision and recall. In addition, we include Kraken 2 and Ganon (Version 2) in our evaluations as representatives of $k$-mer compressing systems.
+    We focus on a comparison with KrakenUniq because Genestrip aims to provide a similar $k$-mer based functionality by avoiding $k$-mer compression altogether while still enabling small databases without substantial loss of precision and recall. In addition, we include Kraken 2 and Ganon (Version 2.1) in our evaluations as representatives of $k$-mer compressing systems.
   
     \subsection{Approach}
     \label{approach}
@@ -172,7 +172,7 @@ With Genestrip, $k$-mers from contaminating sequences can be identified during t
         \item  Moreover, the classification threshold \verb|minKMersForClass| supports the reduction of potential false positive classifications. It can be set to adjust the minimal sum of $k$-mers under taxon $t$ required for a read to be classified to $t$. I.e., given a read $r$ and taxon $t_1$ on the genus rank with two $k$-mers in $r$ and taxon $t_2$ subordinate to $t_1$ on the species rank with one $k$-mer in $r$. Furthermore, $r$ shall contain no other $k$-mers matching any taxons. Then, if \verb|minKMersForClass=2|, $r$ would \emph{not} be classified to $t_1$ but to $t_2$ instead since the single $k$-mer under $t_1$ is below the threshold but the sum of three $k$-mers under $t_2$ is sufficient. 
     \end{enumerate}
     
-    The thresholds allow for playing off recall against precision in light of potentially high error rates of some sequencing devices \citep{Delahaye:2021aa,Liu-Wei:2024aa}. For all the experiments throughout this paper, the first two thresholds were left at the default of one $k$-mer which is the most sensitive level. For the correctness discussion in Section \ref{correctness}, we left \verb|minKMersForClass| at the default of \verb|1| to ensure complete compatibility with KrakenUniq. For all other experiments in this paper, we set \verb|minKMersForClass=4| or else, indicate additional settings.
+    The thresholds allow for playing off recall against precision in light of potentially high error rates of some sequencing devices \citep{Delahaye:2021aa,Liu-Wei:2024aa}. For all the experiments throughout this paper, the first two thresholds were left at the default of one $k$-mer which is the most sensitive level.
     
     \subsection{Analysis reports} \label{measures}
 
@@ -235,7 +235,7 @@ The resulting CSV file named \verb|human_virus_match_sample.csv| can then be fou
 
     To assess Genestrip's correctness with regard to $k$-mer counting and read classification, we compared example databases and respective analysis results directly and in detail with those from KrakenUniq. 
     As part of our test procedure, we created database contents under both systems that were identical in terms of their genomic basis and their stored $k$-mers.
-    We then applied the databases to suitable fastq files in order to compare the results between both systems. Highly similar results from this check mutually solidify the correctness of both systems since they had been developed completely independently. (In addition, Genestrip's correctness is also supported via extensive automated functional tests with high test coverage as part of its code base.)
+    We then applied the databases to suitable fastq files in order to compare the results between both systems.\footnote{For compatibility with KrakenUniq, we kept \texttt{minKMersForClass} from Section \ref{readclassification} at the default of \texttt{1}.} Highly similar results from this check mutually solidify the correctness of both systems since they had been developed completely independently. (In addition, Genestrip's correctness is also supported via extensive automated functional tests with high test coverage as part of its code base.)
 
     We chose all RefSeq genomes from the category ``Viral" for the databases. The latter turned out to be completely identical in terms of the number of $k$-mers stored per taxon. In the following, we name the two databases \texttt{cv\_ku} and \texttt{cv\_g} with regard to KrakenUniq and Genestrip, respectively.
 
@@ -272,10 +272,30 @@ As real-world examples, we applied the two databases to short-read fastq files f
 
 As a baseline, we tested read classification quality using all of the simulated data introduced in Section \ref{correctness}. With the ground truth known, this allowed for comparing precision and recall across different $k$-mer-based analysis tools.
 
-Regarding the databases, we reused \texttt{cv\_ku} and \texttt{cv\_g} from Section \ref{correctness} and generated analogous databases for Kraken 2 and Ganon, respectively. Ganon depends on an important hyper-parameter \verb|max-fp| that controls the false positive probability (FPP) for matching $k$-mers and must be set at database generation time. (A lowered FPP incurs a larger database.) We used Ganon's default value of $0.01$ and alternatively tried a lowered false positive rate of $0.001$ (called ``Ganon low FPP"). Another of Ganon's hyper-parameters, \verb|level|, sets the predefined but configurable taxonomic level used when classifying reads. We set it to \verb|leaves| meaning that the taxons as originally associated with the RefSeq's viral genomes are used. Ganon performs multiple classifications for reads -- typically in less than 15\% of the cases. To enable a reasonably fair comparison, we computed the lowest common ancestor when Ganon produced multiple class taxons for a read and used the outcome in the evaluation.
-Regarding Kraken 2, a real-valued classification confidence threshold between 0 and 1 can be set at classification time. We report results at the default confidence of 0 and at a high confidence of $0.4$ (called ``Kraken 2 high conf.").
+Regarding the databases, we reused \texttt{cv\_ku} and \texttt{cv\_g} from Section \ref{correctness} and generated analogous databases for Kraken 2 and Ganon, respectively. All analysis tools but KrakenUniq offer classification time options to trade sensitivity against confidence. As described in Table \ref{toolvariants}, we  therefore examined two variants for each tool -- a variant with higher sensitivity indicated by ``(S)" (which is the default setting for Kraken 2 and Genestrip) and a variant with higher confidence indicated by ``(C)''.
 
-Table \ref{smallcov} shows that most systems perform within reason except for the configuration ``Kraken 2 high conf.". Irrespective of its configuration, Ganon appears to be sensitive to the higher error rates in ``MiSeq" as opposed to ``HiSeq".
+        \begin{table}[h]
+        \centering
+        \begin{tabular}{l|l|l}
+        \textbf{System Variant} & \textbf{Descripton} & \textbf{Option settings} \\ 
+        \hline
+        KrakenUniq & High sensitivity (default) & N/A \\
+        Kraken 2 (S) & High sensitivity (default) & N/A \\
+        Kraken 2 (C) & High confidence & \verb|--confidence 0.5| \\
+        Ganon (S) & High sensitivity & \verb|--rel-cutoff 0 --rel-filter 0| \\
+        Ganon (C) & High confidence (default) & N/A \\
+        Genestrip (S) & High sensitivity (default) & N/A \\
+        Genestrip (C) & High confidence  & \verb|minKMersForClass=4| \\
+        \end{tabular}
+\caption{Considered settings at classification runtime for each tool. A higher sensitivity and a higher confidence variant are examined in most of the experiments from Section \ref{results}. KrakenUniq does not offer related options, therefore the variant name carries does not ``(S)" or ``(C)". }
+\label{toolvariants}
+    \end{table}
+
+
+Moreover, Ganon depends on an important hyper-parameter \verb|max-fp| that controls the false positive probability (FPP) for matching $k$-mers and must be set at database generation time. (A lowered FPP incurs a larger database.) We used Ganon's default value of $0.01$ which is documented as high sensitivity in Ganons online manual. Another of Ganon's hyper-parameters, \verb|level|, sets the predefined but configurable taxonomic level used when classifying reads. We set it to \verb|leaves| meaning that the taxons as originally associated with the RefSeq's viral genomes are used. Ganon performs multiple classifications for reads -- typically in less than 15\% of the cases. To enable a reasonably fair comparison, we computed the lowest common ancestor when Ganon produced multiple class taxons for a read and used the outcome in the evaluation.
+%Regarding Kraken 2, a real-valued classification confidence threshold between 0 and 1 can be set at classification time. We report results at the default confidence of 0 and at a high confidence of $0.4$ (called ``Kraken 2 high conf.").
+
+Table \ref{smallcov} shows that most systems perform within reason except for the configuration ``Kraken 2 (C)". Irrespective of its configuration, Ganon appears to be sensitive to the higher error rates in ``MiSeq" as opposed to ``HiSeq".
     
         \begin{table}[h]
         \centering
@@ -300,7 +320,7 @@ before line=\\\hline]{results/viral_accuracy.csv}{}
             \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcolix}
             }\\                        
         \end{tabular}
-\caption{Read classification quality for different simulated fastq files  analyzed with KrakenUniq, Kraken 2, Ganon and Genestrip. Regarding KrakenUniq and Genestrip the viral databases \texttt{cv\_ku} and  \texttt{cv\_g} from Section \ref{correctness} were used. Similar (unnamed) viral databases were generated for Kraken 2 und Ganon. The systems' adaptions for ``low FPP" and ``high conf." are explained in Section \ref{broadcov}.}
+\caption{Read classification quality for different simulated fastq files  analyzed with KrakenUniq, Kraken 2, Ganon and Genestrip. Regarding KrakenUniq and Genestrip the viral databases \texttt{cv\_ku} and  \texttt{cv\_g} from Section \ref{correctness} were used. Similar (unnamed) viral databases were generated for Kraken 2 und Ganon. The systems' adaptions for ``(S)" and ``(C)" are based on Table \ref{toolvariants}.}
 \label{readqviral}
     \end{table}
     
@@ -432,7 +452,7 @@ before line=\\\hline]{results/human_virus_human_virus_accuracy.csv}{}
             \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcolix}
             }\\                        
         \end{tabular}
-\caption{Read classification quality for simulated fastq files from Section \ref{correctness} analyzed with KrakenUniq, Kraken 2, Ganon and Genestrip using respective ``human virus only" databases and with an evaluation focus on human viruses only. The systems' adaptions for ``low FPP" and ``high conf." are explained in Section \ref{broadcov}.}
+\caption{Read classification quality for simulated fastq files from Section \ref{correctness} analyzed with KrakenUniq, Kraken 2, Ganon and Genestrip using respective ``human virus only" databases and with an evaluation focus on human viruses only. The systems' adaptions for ``(S)" and ``(C)" are based on Table \ref{toolvariants}.}
 \label{smallcov}
     \end{table}
 
@@ -584,11 +604,11 @@ before line=\\\hline]{results/viral_saliva_rel_accuracy.csv}{}
             \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcolix}
             }\\
         \end{tabular}
-\caption{Read classification quality for simulated fastq files from Section \ref{correctness} as well as the real-world fastq file \#3 from Table \ref{errorsviral} analyzed with KrakenUniq, Kraken 2, Ganon and Genestrip with an evaluation focus on human viruses only. The evaluation compares the classifications when using a ``human virus only" database against each system's own classifications obtained when using the corresponding complete viral database from Section \ref{broadcov}. The systems' adaptions for ``low FPP" and ``high conf." are explained in Section \ref{broadcov}. }
+\caption{Read classification quality for simulated fastq files from Section \ref{correctness} as well as the real-world fastq file \#3 from Table \ref{errorsviral} analyzed with KrakenUniq, Kraken 2, Ganon and Genestrip with an evaluation focus on human viruses only. The evaluation compares the classifications when using a ``human virus only" database against each system's own classifications obtained when using the corresponding complete viral database from Section \ref{broadcov}. The systems' adaptions for ``(S)" and ``(C)" are based on Table \ref{toolvariants}. }
 \label{humansalivarel}
     \end{table}
 
-   While KrakenUniq and Ganon still achieve a mediocre to good F1-score on simulated data, their precision is completely insufficient for the human saliva fastq file. This is due to massive false positive classifications of reads, and is a consequence of a missing consideration of non-human-related viral genomes. Although speculative, we assume that the real-world data has a different error profile than the simulated data, which may contribute to the stark difference. Also, reads belonging to host DNA may cause critical noise with respect to KrakenUniq's and Ganon's classifications. The configuration ``Kraken 2 high conf." withstands the challenge but, as shown in Table \ref{readqviral}, its baseline is low there. In contrast, Genestrip starts from a good baseline in Table \ref{readqviral}, and its human virus database holds up in all of the cases because it does consider non-human-related viral genomes as part of the update phase according to Section \ref{approach}.
+   While KrakenUniq and Ganon still achieve a mediocre to good F1-score on simulated data, their precision is completely insufficient for the human saliva fastq file. This is due to massive false positive classifications of reads, and is a consequence of a missing consideration of non-human-related viral genomes. Although speculative, we assume that the real-world data has a different error profile than the simulated data, which may contribute to the stark difference. Also, reads belonging to host DNA may cause critical noise with respect to KrakenUniq's and Ganon's classifications. The configuration ``Kraken 2 (C)" withstands the challenge but, as shown in Table \ref{readqviral}, its baseline is low there. In contrast, Genestrip starts from a good baseline in Table \ref{readqviral}, and its human virus database holds up in all of the cases because it does consider non-human-related viral genomes as part of the update phase according to Section \ref{approach}.
 
     \subsection{Example: Tick-borne bacterial pathogens}
     \label{tickborne}
@@ -621,7 +641,7 @@ We supplied NanoSim with all the RefSeq genomes from the twelve bacterial genera
  The number of reads per simulated file ranges between 13,000 and 160,000 with 319,531 reads in total and an average read length of 4,480 BPs.
  It is important to know that both, the real-world data and the simulated data are subject to high error in their bases: As determined with Genestrip itself, the mean ratio of $k$-mers that could not be assigned to any taxon in classified reads was 83 \% and 88 \%, respectively. Regarding the simulated data, the error cannot be attributed to missing $k$-mers in \texttt{tb}, since the simulated data was generated only via genomes also represented in \texttt{tb}.
 
-    We applied the analysis tools with their respective databases to the eight simulated fastq files. Apparently due to the high error in the data, Ganon initially did not classify any reads. We lowered the classification threshold via the options \verb|-rel-cutoff 0| and \verb|--rel-filter 0| which caused ?? \% of the reads to be classified. As a second step, we turned off thresholding by adding \verb|--fpr-query 1e-0| which caused all reads to be classified. We report both types of related results with the second named ``Ganon all''. Regarding Genestrip, we also report results under the setting \verb|minKMersForClass=1| (see Section \ref{readclassification}) which is indicated by ``Genestrip high sens.".
+    We applied the analysis tools with their respective databases to the eight simulated fastq files. Apparently due to the high error in the data, Ganon did not classify any reads under the variant ``Ganon (C)" -- therefore, we show no results for this case. Instead, we present the variant ``Ganon (C)" where thresholding is completely turned off via the combined options \verb|-rel-cutoff 0| and \verb|--rel-filter 0| and \verb|--fpr-query 1e-0| which caused all reads to be classified.
     
     Table \ref{tickmares} shows the marco-averaged results for each system. Apparently, they all struggle with the high error from the modeled Nanopore device but Genestrip's configurations perform far better than the others. We attribute this to the deep genomic coverage of the organisms of interest in \texttt{tb} combined with a loss-less storing of related $k$-mers and Genestrip's thorough least common ancestor update.
     
@@ -654,7 +674,7 @@ before line=\\\hline]{results/tick-borne_tick-borne_ma_accuracy.csv}{}
     
     \subsubsection{Explorative tick analysis}
     \label{tickanalysis}
-    In order to investigate the effect of databases with deep genomic coverage, we applied KrakenUniq and Genestrip along with \texttt{MicrobialDB} and \texttt{tb} to the eight \emph{real-world} fastq files from \cite{nanoporeticks} mentioned above. For this comparison we take advantage of the compatibility of Genestrip and KrakenUniq as established in Section \ref{correctness}. Based on Genestrip's default settings, differences of classification results then solely originate in the databases -- but as explained in Section \ref{mdbtb}, \texttt{tb} is deeper than \texttt{MicrobialDB} as it has almost twice as many $k$-mers stored for its included genera.
+    In order to investigate the effect of databases with deep genomic coverage, we applied KrakenUniq and Genestrip along with \texttt{MicrobialDB} and \texttt{tb} to the eight \emph{real-world} fastq files from \cite{nanoporeticks} mentioned above. For this comparison we take advantage of the compatibility of Genestrip and KrakenUniq as established in Section \ref{correctness}.\footnote{For the desired compatibility, we set \texttt{minKMersForClass=1} (see Section \ref{readclassification}).} Based on Genestrip's default settings, differences of classification results then solely originate in the databases -- but as explained in Section \ref{mdbtb}, \texttt{tb} is deeper than \texttt{MicrobialDB} as it has almost twice as many $k$-mers stored for its included genera.
 
     As an example result, Figure \ref{genusestick6} shows the five most frequent $k$-mer counts and reads counts for ``Tick 6" accumulated up to the genus rank. In all the cases but ``138" (Borrelia), the aggregated counts for the genera under \texttt{tb} are mildly to considerably higher than those achieved with \texttt{MicrobialDB}. We observed similar improvements in terms of $k$-mers and reads with respect to Ehrlichia, Rickettsia and partly to Anaplasma in all of the eight ticks' fastq files whenever the corresponding organisms showed presence via \texttt{MicrobialDB}. The effect is consistent with Genestrip's higher recall on the simulated data from Table \ref{tickmares}.
 
