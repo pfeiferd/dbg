@@ -274,9 +274,9 @@ As real-world examples, we applied the two databases to short-read fastq files f
 As a baseline, we tested read classification quality using all of the simulated data introduced in Section \ref{correctness}. With the ground truth known, this allowed for comparing precision and recall across different $k$-mer-based analysis tools.
 
 Regarding the databases, we reused \texttt{cv\_ku} and \texttt{cv\_g} from Section \ref{correctness} and generated analogous databases for Kraken 2 and Ganon, respectively. 
-Ganon depends on an important hyper-parameter \verb|max-fp| that controls the false positive probability (FPP) for matching $k$-mers and must be set at database generation time. (A lowered FPP incurs a larger database.) We used a value of 1 \% which is documented as a default for high sensitivity in Ganons online manual.\footnote{See \url{https://pirovc.github.io/ganon/default_databases/#filter-type-ibf-and-hibf}}
+Ganon depends on an important hyper-parameter \verb|max-fp| that controls the false positive probability (FPP) for matching $k$-mers and must be set at database generation time. (A lowered FPP incurs a larger database.) We used the default value of 0.001 (combined with \verb|--filter-type hibf|) which is documented as highly sensitive in Ganon's online manual.\footnote{See \url{https://pirovc.github.io/ganon/default_databases/#filter-type-ibf-and-hibf}}
 
-All analysis tools but KrakenUniq offer classification time options to trade sensitivity against confidence. As described in Table \ref{toolvariants}, we examined two variants for each tool -- a variant with higher sensitivity indicated by ``(S)" (which is the default setting for Kraken 2 and Genestrip) and a variant with higher confidence indicated by ``(C)''.
+All analysis tools but KrakenUniq offer classification time options to trade sensitivity against confidence. As listed in Table \ref{toolvariants}, we examined two variants for each tool -- a variant with higher sensitivity indicated by ``(S)" (which is the default setting for Kraken 2 and Genestrip) and a variant with higher confidence indicated by ``(C)''.
 Ganon performs multiple classifications for reads -- typically in less than 15\% of the cases. To enable a reasonably fair comparison, we computed the lowest common ancestor when Ganon produced multiple class taxons for a read and used the outcome in the evaluations.
 
         \begin{table}[h]
@@ -284,15 +284,15 @@ Ganon performs multiple classifications for reads -- typically in less than 15\%
         \begin{tabular}{l|l|l}
         \textbf{System Variant} & \textbf{Descripton} & \textbf{Option settings} \\ 
         \hline
-        KrakenUniq & High sensitivity (default) & N/A \\
-        Kraken 2 (S) & High sensitivity (default) & N/A \\
+        KrakenUniq & High sensitivity (default) & none \\
+        Kraken 2 (S) & High sensitivity (default) & none \\
         Kraken 2 (C) & High confidence & \verb|--confidence 0.5| \\
         Ganon (S) & High sensitivity & \verb|--rel-cutoff 0 --rel-filter 0| \\
-        Ganon (C) & High confidence (default) & N/A \\
-        Genestrip (S) & High sensitivity (default) & N/A \\
+        Ganon (C) & High confidence (default) & none \\
+        Genestrip (S) & High sensitivity (default) & none \\
         Genestrip (C) & High confidence  & \verb|minKMersForClass=4| \\
         \end{tabular}
-\caption{Considered settings at classification runtime for each tool. A higher sensitivity and a higher confidence variant are examined in most of the experiments from Section \ref{results}. KrakenUniq does not offer related options, therefore the variant name carries does not ``(S)" or ``(C)". }
+\caption{Classification time settings for each tool: A higher sensitivity and a higher confidence variant are examined in most of the experiments from Section \ref{results}. KrakenUniq does not offer related options and therefore, its variant name carries no ``(S)" or ``(C)". }
 \label{toolvariants}
     \end{table}
 
@@ -635,7 +635,7 @@ before line=\\\hline]{results/viral_saliva_rel_accuracy.csv}{}
     The generation of \texttt{tb} revealed that its included genomes from the RefSeq have a high overlap: On average each stored $k$-mer occurred 11 times in these genomes. Only 0.0079 \% of all $k$-mers considered for storing were dropped as ``dust". The update phase pushed 26.3 \% of the stored $k$-mers to ranks above genus. 0.027 \% of the stored $k$-mers had been pushed to the taxon of ``cellular organisms" because tick DNA and human DNA were included on purpose during the update phase for the sake for contaminant detection.
 %Finally, 2.891 $k$-mers landed on the taxonomic root because of plasmids included in the bacterial part of RefSeq that overlap with the genomes of the selected genera.
 
-\subsection{Analysis of simulated data}
+\subsubsection{Analysis of simulated data}
 \label{ticksim}
 
 To assess classification quality for this case, we first generated ground truth data via the eight real-world fastq files from \cite{nanoporeticks} mentioned above. For this purpose, we employed the tool NanoSim from \cite{10.1093/gigascience/gix010, 10.1093/gigascience/giad013} which is capable of generating realistic long reads based on a set genomes and a sample fastq file used for training. The tool tries to reflect the genomic abundance of organisms from the training fastq file. Moreover, it imitates long read sequencing errors resulting from Nanopore technology via an error model which is also estimated on the basis of the training fastq file.
