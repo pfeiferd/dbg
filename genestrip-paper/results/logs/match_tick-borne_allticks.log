@@ -1,82 +1,0 @@
-[INFO] Scanning for projects...
-[INFO] 
-[INFO] -------------------< org.metagene:genestrip-db-exp >--------------------
-[INFO] Building genestrip-db-exp 1.5
-[INFO]   from pom.xml
-[INFO] --------------------------------[ jar ]---------------------------------
-[INFO] 
-[INFO] --- exec:3.1.0:exec (match) @ genestrip-db-exp ---
-[INFO] project tick-borne - Loading config file './data/projects/tick-borne/config.properties'.
-[INFO] project tick-borne - Loading config file './data/config.properties'.
-[INFO] project tick-borne - Effective param map: {maxPerTaxidRank=null, tempBloomFilterFpp=0.001, maxReadTaxErrorCount=-1.0, removeTempDB=true, logProgressUpdateCycle=1000000, genbank.referenceOnly=false, ignoreMissingFastas=false, maxDust=500, writeFilteredFastq=false, useInlined=false, refseq.filldb=true, posRatioFilter=0.2, krakenDB=./ku/microbial_db, genbank.fastaQualities=[COMPLETE_LATEST, CHROMOSOME_LATEST], bloomFilterFpp=1.0E-11, xorBloomHash=true, minPosCountFilter=1, seqType=GENOMIC, maxKMerResCounts=0, logLevel=info, refSeq.limitForGenbankRank=species, ftpBaseURL=ftp.ncbi.nih.gov, progressBar=true, maxDownloadTries=5, kMerSize=31, rankCompletionDepth=null, refSeq.limitForGenbankAccess=0, withProbs=false, useBloomFilterForMatch=true, krakenExecExpr={0} --threads 10 -db {1} {2}, threads=-1, refseq.status=[NA, UNKNOWN, REVIEWED, VALIDATED, PROVISIONAL, PREDICTED, INFERRED, MODEL], checkSumCacheFile=true, genbank.maxPerTaxid=1, maxClassificationPaths=10, fastaLineSizeBytes=4096, refseq.updateWithCompleteGenomesOnly=false, alwaysAssumeGzip=true, useHttp=true, writeKrakenStyleOut=false, refseq.httpBaseURL=https://ftp.ncbi.nlm.nih.gov/refseq, stepSize=1, threadQueueSize=1000, initialReadSizeBytes=4096, classifyReads=true, httpBaseURL=https://ftp.ncbi.nlm.nih.gov, extractKey=, countUniqueKMers=true, refseq.ftpBaseURL=ftp.ncbi.nih.gov, maxGenomesPerTaxid=2147483647, maxReadClassErrorCount=-1.0, maxKMersPerTaxid=9223372036854775807, progressBarUpdateMs=300000, refseq.completeGenomesOnly=false, krakenBin=./ku/krakenuniq/krakenuniq, writeAll=true, minUpdate=false, writeDumpedFastq=false}
-Executing target make for goal match...
-[INFO] fastqmap - Derived fastq / fasta map: {allticks=StreamingResourceListStream:[Streaming File: ./data/fastq/tick1.fastq.gz, Streaming File: ./data/fastq/tick2.fastq.gz, Streaming File: ./data/fastq/tick3.fastq.gz, Streaming File: ./data/fastq/tick4.fastq.gz, Streaming File: ./data/fastq/tick5.fastq.gz, Streaming File: ./data/fastq/tick6.fastq.gz, Streaming File: ./data/fastq/tick7.fastq.gz, Streaming File: ./data/fastq/tick8.fastq.gz]}
-loaddb   0% [                                           ]          0/6515276831 bytes (0:00:00 / ?) loaddb 100% [=====================================] 6515276831/6515276831 bytes (0:00:34 / 0:00:00) loaddb 100% [=====================================] 6515276831/6515276831 bytes (0:00:34 / 0:00:00) 
-[INFO] loaddb - Total heap size: 11328 MB
-[INFO] loaddb - Used heap size: 8039 MB
-[INFO] fastqreader - Number of consumer threads: 15
-[INFO] fastqreader - Processing fastq file (1/8): Streaming File: ./data/fastq/tick1.fastq.gz
-matchres   0% [                                     ]        10/146074147 bytes (0:00:00 / 1:14:50) matchres 100% [=====================================] 146074147/146074147 bytes (0:00:06 / 0:00:00) matchres 100% [=====================================] 146074147/146074147 bytes (0:00:06 / 0:00:00) 
-[INFO] fastqreader - Done with fastq: Streaming File: ./data/fastq/tick1.fastq.gz
-[INFO] fastqreader - Hours: 0.0
-[INFO] fastqreader - Bytes: 146074147
-[INFO] fastqreader - Reads: 1154447
-[INFO] fastqreader - Processing fastq file (2/8): Streaming File: ./data/fastq/tick2.fastq.gz
-matchres   0% [                                     ]        10/420293788 bytes (0:00:00 / 4:58:28) matchres 100% [=====================================] 420293788/420293788 bytes (0:00:06 / 0:00:00) matchres 100% [=====================================] 420293788/420293788 bytes (0:00:06 / 0:00:00) 
-[INFO] fastqreader - Done with fastq: Streaming File: ./data/fastq/tick2.fastq.gz
-[INFO] fastqreader - Hours: 0.0
-[INFO] fastqreader - Bytes: 420293788
-[INFO] fastqreader - Reads: 1115550
-[INFO] fastqreader - Processing fastq file (3/8): Streaming File: ./data/fastq/tick3.fastq.gz
-matchres   0% [                                       ]       10/80749583 bytes (0:00:00 / 0:54:36) matchres 100% [=======================================] 80749583/80749583 bytes (0:00:03 / 0:00:00) matchres 100% [=======================================] 80749583/80749583 bytes (0:00:03 / 0:00:00) 
-[INFO] fastqreader - Done with fastq: Streaming File: ./data/fastq/tick3.fastq.gz
-[INFO] fastqreader - Hours: 0.0
-[INFO] fastqreader - Bytes: 80749583
-[INFO] fastqreader - Reads: 644767
-[INFO] fastqreader - Processing fastq file (4/8): Streaming File: ./data/fastq/tick4.fastq.gz
-matchres   0% [                                     ]        10/229554794 bytes (0:00:00 / 1:29:55) matchres 100% [=====================================] 229554794/229554794 bytes (0:00:09 / 0:00:00) matchres 100% [=====================================] 229554794/229554794 bytes (0:00:09 / 0:00:00) 
-[INFO] fastqreader - Done with fastq: Streaming File: ./data/fastq/tick4.fastq.gz
-[INFO] fastqreader - Hours: 0.0
-[INFO] fastqreader - Bytes: 229554794
-[INFO] fastqreader - Reads: 1853677
-[INFO] fastqreader - Processing fastq file (5/8): Streaming File: ./data/fastq/tick5.fastq.gz
-matchres   0% [                                     ]        10/240046306 bytes (0:00:00 / 2:34:17) matchres 100% [=====================================] 240046306/240046306 bytes (0:00:09 / 0:00:00) matchres 100% [=====================================] 240046306/240046306 bytes (0:00:09 / 0:00:00) 
-[INFO] fastqreader - Done with fastq: Streaming File: ./data/fastq/tick5.fastq.gz
-[INFO] fastqreader - Hours: 0.0
-[INFO] fastqreader - Bytes: 240046306
-[INFO] fastqreader - Reads: 2233967
-[INFO] fastqreader - Processing fastq file (6/8): Streaming File: ./data/fastq/tick6.fastq.gz
-matchres   0% [                                     ]        10/154056647 bytes (0:00:00 / 1:16:56) matchres 100% [=====================================] 154056647/154056647 bytes (0:00:06 / 0:00:00) matchres 100% [=====================================] 154056647/154056647 bytes (0:00:06 / 0:00:00) 
-[INFO] fastqreader - Done with fastq: Streaming File: ./data/fastq/tick6.fastq.gz
-[INFO] fastqreader - Hours: 0.0
-[INFO] fastqreader - Bytes: 154056647
-[INFO] fastqreader - Reads: 1494667
-[INFO] fastqreader - Processing fastq file (7/8): Streaming File: ./data/fastq/tick7.fastq.gz
-matchres   0% [                                     ]        10/191454629 bytes (0:00:00 / 1:44:21) matchres 100% [=====================================] 191454629/191454629 bytes (0:00:03 / 0:00:00) matchres 100% [=====================================] 191454629/191454629 bytes (0:00:03 / 0:00:00) 
-[INFO] fastqreader - Done with fastq: Streaming File: ./data/fastq/tick7.fastq.gz
-[INFO] fastqreader - Hours: 0.0
-[INFO] fastqreader - Bytes: 191454629
-[INFO] fastqreader - Reads: 712929
-[INFO] fastqreader - Processing fastq file (8/8): Streaming File: ./data/fastq/tick8.fastq.gz
-matchres   0% [                                     ]        10/251516826 bytes (0:00:00 / 1:43:18) matchres 100% [=====================================] 251516826/251516826 bytes (0:00:04 / 0:00:00) matchres 100% [=====================================] 251516826/251516826 bytes (0:00:04 / 0:00:00) 
-[INFO] fastqreader - Done with fastq: Streaming File: ./data/fastq/tick8.fastq.gz
-[INFO] fastqreader - Hours: 0.0
-[INFO] fastqreader - Bytes: 251516826
-[INFO] fastqreader - Reads: 837779
-[INFO] fastqreader - All done with fastqs.
-[INFO] fastqreader - Total hours: 0.0
-[INFO] fastqreader - Total bytes: 1713746720
-[INFO] fastqreader - Total reads: 10047783
-Done with target make for goal match
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD SUCCESS
-[INFO] ------------------------------------------------------------------------
-[INFO] Total time:  01:27 min
-[INFO] Finished at: 2025-07-31T11:02:17+02:00
-[INFO] ------------------------------------------------------------------------
-
-user: 726.664 s
-sys:    8.224 s
-wall:  88.454 s
-child_RSS_high:    8605184 KiB
-group_mem_high:   16880600 KiB

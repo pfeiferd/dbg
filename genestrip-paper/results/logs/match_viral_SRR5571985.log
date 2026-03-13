@@ -1,40 +1,19 @@
-[INFO] Scanning for projects...
-[INFO] 
-[INFO] -------------------< org.metagene:genestrip-db-exp >--------------------
-[INFO] Building genestrip-db-exp 1.5
-[INFO]   from pom.xml
-[INFO] --------------------------------[ jar ]---------------------------------
-[INFO] 
-[INFO] --- exec:3.1.0:exec (singlematch) @ genestrip-db-exp ---
-[INFO] project viral - Loading config file './data/projects/viral/config.properties'.
-[INFO] project viral - Loading config file './data/config.properties'.
-[INFO] project viral - Effective param map: {maxPerTaxidRank=null, tempBloomFilterFpp=0.001, maxReadTaxErrorCount=-1.0, removeTempDB=true, logProgressUpdateCycle=1000000, genbank.referenceOnly=false, ignoreMissingFastas=false, maxDust=-1, writeFilteredFastq=false, useInlined=false, refseq.filldb=true, posRatioFilter=0.2, krakenDB=./ku/viral_db, genbank.fastaQualities=[COMPLETE_LATEST, CHROMOSOME_LATEST], bloomFilterFpp=1.0E-11, xorBloomHash=true, minPosCountFilter=1, seqType=GENOMIC, maxKMerResCounts=0, logLevel=info, refSeq.limitForGenbankRank=species, ftpBaseURL=ftp.ncbi.nih.gov, progressBar=true, maxDownloadTries=5, kMerSize=31, rankCompletionDepth=null, refSeq.limitForGenbankAccess=0, withProbs=false, useBloomFilterForMatch=true, krakenExecExpr={0} --threads 10 -db {1} {2}, threads=-1, refseq.status=[NA, UNKNOWN, REVIEWED, VALIDATED, PROVISIONAL, PREDICTED, INFERRED, MODEL], checkSumCacheFile=true, genbank.maxPerTaxid=1, maxClassificationPaths=10, fastaLineSizeBytes=4096, refseq.updateWithCompleteGenomesOnly=false, alwaysAssumeGzip=true, useHttp=true, writeKrakenStyleOut=false, refseq.httpBaseURL=https://ftp.ncbi.nlm.nih.gov/refseq, stepSize=1, threadQueueSize=1000, initialReadSizeBytes=4096, classifyReads=true, httpBaseURL=https://ftp.ncbi.nlm.nih.gov, extractKey=, countUniqueKMers=true, refseq.ftpBaseURL=ftp.ncbi.nih.gov, maxGenomesPerTaxid=2147483647, maxReadClassErrorCount=-1.0, maxKMersPerTaxid=9223372036854775807, progressBarUpdateMs=300000, refseq.completeGenomesOnly=false, krakenBin=./ku/krakenuniq/krakenuniq, writeAll=true, minUpdate=false, writeDumpedFastq=false}
-Executing target make for goal match...
-[INFO] fastqmap - Derived fastq / fasta map: {SRR5571985_1=StreamingResourceListStream:[Streaming File: ./data/fastq/SRR5571985_1.fastq.gz]}
-loaddb   0% [                                           ]          0/5375347086 bytes (0:00:00 / ?) loaddb 100% [=====================================] 5375347086/5375347086 bytes (0:00:25 / 0:00:00) loaddb 100% [=====================================] 5375347086/5375347086 bytes (0:00:25 / 0:00:00) 
-[INFO] loaddb - Total heap size: 8400 MB
-[INFO] loaddb - Used heap size: 5971 MB
-[INFO] fastqreader - Number of consumer threads: 15
-[INFO] fastqreader - Processing fastq file (1/1): Streaming File: ./data/fastq/SRR5571985_1.fastq.gz
-matchres   0% [                               ]          29/59576055694 bytes (0:00:00 / 162:18:41) matchres  16% [=====                            ]  9779564837/59576055694 bytes (0:05:00 / 0:24:53) matchres  32% [==========                       ] 19530711749/59576055694 bytes (0:10:00 / 0:20:01) matchres  49% [================                 ] 29309430205/59576055694 bytes (0:15:00 / 0:15:07) matchres  65% [=====================            ] 39140003997/59576055694 bytes (0:20:00 / 0:10:13) matchres  83% [===========================      ] 49573733797/59576055694 bytes (0:25:00 / 0:05:00) matchres 100% [=================================] 59576055694/59576055694 bytes (0:29:40 / 0:00:00) matchres 100% [=================================] 59576055694/59576055694 bytes (0:29:40 / 0:00:00) 
-[INFO] fastqreader - Done with fastq: Streaming File: ./data/fastq/SRR5571985_1.fastq.gz
-[INFO] fastqreader - Hours: 0.5
-[INFO] fastqreader - Bytes: 59576055694
-[INFO] fastqreader - Reads: 812085208
-[INFO] fastqreader - All done with fastqs.
-[INFO] fastqreader - Total hours: 0.5
-[INFO] fastqreader - Total bytes: 59576055694
-[INFO] fastqreader - Total reads: 812085208
-Done with target make for goal match
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD SUCCESS
-[INFO] ------------------------------------------------------------------------
-[INFO] Total time:  30:09 min
-[INFO] Finished at: 2025-07-27T15:48:09+02:00
-[INFO] ------------------------------------------------------------------------
+[[1;34mINFO[m] Scanning for projects...
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m-------------------< [0;36morg.metagene:genestrip-db-exp[0;1m >--------------------[m
+[[1;34mINFO[m] [1mBuilding genestrip-db-exp 1.6[m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mexec-maven-plugin:3.1.0:exec[m [1m(singlematch)[m @ [36mgenestrip-db-exp[0;1m ---[m
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1;32mBUILD SUCCESS[m
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] Total time:  31:26 min
+[[1;34mINFO[m] Finished at: 2026-03-12T17:27:49+01:00
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
 
-user: 15270.909 s
-sys:  626.062 s
-wall: 1810.170 s
-child_RSS_high:    6441692 KiB
-group_mem_high:   28956544 KiB
+user: 10972.679 s
+sys:  382.428 s
+wall: 1887.590 s
+child_RSS_high:    4679752 KiB
+group_mem_high:   64461772 KiB

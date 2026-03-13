@@ -4,16 +4,16 @@
 [[1;34mINFO[m] [1mBuilding genestrip-db-exp 1.6[m
 [[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
 [[1;34mINFO[m] 
-[[1;34mINFO[m] [1m--- [0;32mexec-maven-plugin:3.1.0:exec[m [1m(singlematch)[m @ [36mgenestrip-db-exp[0;1m ---[m
+[[1;34mINFO[m] [1m--- [0;32mexec-maven-plugin:3.1.0:exec[m [1m(match)[m @ [36mgenestrip-db-exp[0;1m ---[m
 [[1;34mINFO[m] [1m------------------------------------------------------------------------[m
 [[1;34mINFO[m] [1;32mBUILD SUCCESS[m
 [[1;34mINFO[m] [1m------------------------------------------------------------------------[m
-[[1;34mINFO[m] Total time:  37:14 min
-[[1;34mINFO[m] Finished at: 2026-03-12T16:29:34+01:00
+[[1;34mINFO[m] Total time:  01:29 min
+[[1;34mINFO[m] Finished at: 2026-03-12T15:17:48+01:00
 [[1;34mINFO[m] [1m------------------------------------------------------------------------[m
 
-user: 13008.689 s
-sys:  467.433 s
-wall: 2235.570 s
-child_RSS_high:    4669176 KiB
-group_mem_high:   62613036 KiB
+user: 471.617 s
+sys:    5.938 s
+wall:  90.223 s
+child_RSS_high:    6337628 KiB
+group_mem_high:    6580012 KiB

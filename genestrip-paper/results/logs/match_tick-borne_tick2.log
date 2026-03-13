@@ -1,40 +1,0 @@
-[INFO] Scanning for projects...
-[INFO] 
-[INFO] -------------------< org.metagene:genestrip-db-exp >--------------------
-[INFO] Building genestrip-db-exp 1.5
-[INFO]   from pom.xml
-[INFO] --------------------------------[ jar ]---------------------------------
-[INFO] 
-[INFO] --- exec:3.1.0:exec (singlematch) @ genestrip-db-exp ---
-[INFO] project tick-borne - Loading config file './data/projects/tick-borne/config.properties'.
-[INFO] project tick-borne - Loading config file './data/config.properties'.
-[INFO] project tick-borne - Effective param map: {maxPerTaxidRank=null, tempBloomFilterFpp=0.001, maxReadTaxErrorCount=-1.0, removeTempDB=true, logProgressUpdateCycle=1000000, genbank.referenceOnly=false, ignoreMissingFastas=false, maxDust=500, writeFilteredFastq=false, useInlined=false, refseq.filldb=true, posRatioFilter=0.2, krakenDB=./ku/microbial_db, genbank.fastaQualities=[COMPLETE_LATEST, CHROMOSOME_LATEST], bloomFilterFpp=1.0E-11, xorBloomHash=true, minPosCountFilter=1, seqType=GENOMIC, maxKMerResCounts=0, logLevel=info, refSeq.limitForGenbankRank=species, ftpBaseURL=ftp.ncbi.nih.gov, progressBar=true, maxDownloadTries=5, kMerSize=31, rankCompletionDepth=null, refSeq.limitForGenbankAccess=0, withProbs=false, useBloomFilterForMatch=true, krakenExecExpr={0} --threads 10 -db {1} {2}, threads=-1, refseq.status=[NA, UNKNOWN, REVIEWED, VALIDATED, PROVISIONAL, PREDICTED, INFERRED, MODEL], checkSumCacheFile=true, genbank.maxPerTaxid=1, maxClassificationPaths=10, fastaLineSizeBytes=4096, refseq.updateWithCompleteGenomesOnly=false, alwaysAssumeGzip=true, useHttp=true, writeKrakenStyleOut=false, refseq.httpBaseURL=https://ftp.ncbi.nlm.nih.gov/refseq, stepSize=1, threadQueueSize=1000, initialReadSizeBytes=4096, classifyReads=true, httpBaseURL=https://ftp.ncbi.nlm.nih.gov, extractKey=, countUniqueKMers=true, refseq.ftpBaseURL=ftp.ncbi.nih.gov, maxGenomesPerTaxid=2147483647, maxReadClassErrorCount=-1.0, maxKMersPerTaxid=9223372036854775807, progressBarUpdateMs=300000, refseq.completeGenomesOnly=false, krakenBin=./ku/krakenuniq/krakenuniq, writeAll=true, minUpdate=false, writeDumpedFastq=false}
-Executing target make for goal match...
-[INFO] fastqmap - Derived fastq / fasta map: {tick2=StreamingResourceListStream:[Streaming File: ./data/fastq/tick2.fastq.gz]}
-loaddb   0% [                                           ]          0/6515276831 bytes (0:00:00 / ?) loaddb 100% [=====================================] 6515276831/6515276831 bytes (0:00:35 / 0:00:00) loaddb 100% [=====================================] 6515276831/6515276831 bytes (0:00:35 / 0:00:00) 
-[INFO] loaddb - Total heap size: 11328 MB
-[INFO] loaddb - Used heap size: 8038 MB
-[INFO] fastqreader - Number of consumer threads: 15
-[INFO] fastqreader - Processing fastq file (1/1): Streaming File: ./data/fastq/tick2.fastq.gz
-matchres   0% [                                     ]        10/420293788 bytes (0:00:00 / 2:53:43) matchres 100% [=====================================] 420293788/420293788 bytes (0:00:08 / 0:00:00) matchres 100% [=====================================] 420293788/420293788 bytes (0:00:08 / 0:00:00) 
-[INFO] fastqreader - Done with fastq: Streaming File: ./data/fastq/tick2.fastq.gz
-[INFO] fastqreader - Hours: 0.0
-[INFO] fastqreader - Bytes: 420293788
-[INFO] fastqreader - Reads: 1115550
-[INFO] fastqreader - All done with fastqs.
-[INFO] fastqreader - Total hours: 0.0
-[INFO] fastqreader - Total bytes: 420293788
-[INFO] fastqreader - Total reads: 1115550
-Done with target make for goal match
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD SUCCESS
-[INFO] ------------------------------------------------------------------------
-[INFO] Total time:  46.786 s
-[INFO] Finished at: 2025-07-27T12:46:28+02:00
-[INFO] ------------------------------------------------------------------------
-
-user: 143.879 s
-sys:    5.141 s
-wall:  47.866 s
-child_RSS_high:    8553200 KiB
-group_mem_high:   10522220 KiB
