@@ -283,7 +283,7 @@ Ganon performs multiple classifications for reads -- typically in less than 15\%
         \begin{table}[h]
         \centering
         \begin{tabular}{l|l|l}
-        \textbf{System Variant} & \textbf{Descripton} & \textbf{Option settings} \\ 
+        \textbf{System variant} & \textbf{Descripton} & \textbf{Option settings} \\ 
         \hline
         KrakenUniq & High sensitivity (default) & none \\
         Kraken 2 (S) & High sensitivity (default) & none \\
@@ -309,10 +309,10 @@ Table \ref{smallcov} shows that most systems perform within reason except for th
             \textbf{System} & \textbf{Data} & 
             \multicolumn{1}{c|}{\textbf{Prec.}} &
             \multicolumn{1}{c|}{\textbf{Recall}} &
-            \multicolumn{1}{c|}{\textbf{F1}} &
+            \multicolumn{1}{c|}{\textbf{F$_1$}} &
             \multicolumn{1}{c|}{\textbf{Prec.}} &
             \multicolumn{1}{c|}{\textbf{Recall}} &
-            \multicolumn{1}{c}{\textbf{F1}}            
+            \multicolumn{1}{c}{\textbf{F$_1$}}            
 \csvreader[separator=semicolon,
 before line=\\\hline]{results/viral_accuracy.csv}{}
             {\csvcolii & \csvcoli & 
@@ -440,10 +440,10 @@ We applied the ``human virus only" databases to the ``MiSeq" and ``HiSeq" data f
             \textbf{System} & \textbf{Data} & 
             \multicolumn{1}{c|}{\textbf{Prec.}} &
             \multicolumn{1}{c|}{\textbf{Recall}} &
-            \multicolumn{1}{c|}{\textbf{F1}} &
+            \multicolumn{1}{c|}{\textbf{F$_1$}} &
             \multicolumn{1}{c|}{\textbf{Prec.}} &
             \multicolumn{1}{c|}{\textbf{Recall}} &
-            \multicolumn{1}{c}{\textbf{F1}}            
+            \multicolumn{1}{c}{\textbf{F$_1$}}            
 \csvreader[separator=semicolon,
 filter not equal={\csvcoli}{\fastqone{dontcare}},
 before line=\\\hline]{results/human_virus_human_virus_accuracy.csv}{}
@@ -582,10 +582,10 @@ As real-world examples, we first applied the ``human virus only"  databases to t
             \textbf{System} & \textbf{Data} & 
             \multicolumn{1}{c|}{\textbf{Prec.}} &
             \multicolumn{1}{c|}{\textbf{Recall}} &
-            \multicolumn{1}{c|}{\textbf{F1}} &
+            \multicolumn{1}{c|}{\textbf{F$_1$}} &
             \multicolumn{1}{c|}{\textbf{Prec.}} &
             \multicolumn{1}{c|}{\textbf{Recall}} &
-            \multicolumn{1}{c}{\textbf{F1}}            
+            \multicolumn{1}{c}{\textbf{F$_1$}}            
 \csvreader[separator=semicolon,
 filter not equal={\csvcoli}{\fastqone{dontcare}},
 before line=\\\hline]{results/viral_sim_rel_accuracy.csv}{}
@@ -613,7 +613,7 @@ before line=\\\hline]{results/viral_saliva_rel_accuracy.csv}{}
 \label{humansalivarel}
     \end{table}
 
-   While KrakenUniq and Ganon still achieve a mediocre to good F1-score on simulated data, their precision is completely insufficient for the human saliva fastq file. This is due to massive false positive classifications of reads, and is a consequence of a missing consideration of non-human-related viral genomes. Although speculative, we assume that the real-world data has a different error profile than the simulated data, which may contribute to the stark difference. Also, reads belonging to host DNA may cause critical noise with respect to KrakenUniq's and Ganon's classifications. The configuration ``Kraken 2 (C)" withstands the challenge but, as shown in Table \ref{readqviral}, its baseline is low there. In contrast, Genestrip starts from a good baseline in Table \ref{readqviral}, and its human virus database holds up in all of the cases because it does consider non-human-related viral genomes as part of the update phase according to Section \ref{approach}.
+   While KrakenUniq and Ganon still achieve a mediocre to good F$_1$-score on simulated data, their precision is insufficient regarding the human saliva fastq files. This is due to massive false positive classifications of reads, and is a consequence of a missing consideration of non-human-related viral genomes during database generation. Although speculative, we assume that the real-world data has a different error profile than the simulated data, which may contribute to the stark difference. Also, reads belonging to host DNA may cause critical noise. ``Kraken 2 (C)" offers reasonable results, but ``Genestrip (C)" starts from a better baseline in Table \ref{readqviral}, and its human virus database holds up because it does consider non-human-related viral genomes as part of the update phase according to Section \ref{approach}.
 
     \subsection{Example: Tick-borne bacterial pathogens}
     \label{tickborne}
@@ -659,10 +659,10 @@ We supplied NanoSim with all the RefSeq genomes from the twelve bacterial genera
             \textbf{System} & 
             \multicolumn{1}{c|}{\textbf{Prec.}} &
             \multicolumn{1}{c|}{\textbf{Recall}} &
-            \multicolumn{1}{c|}{\textbf{F1}} &
+            \multicolumn{1}{c|}{\textbf{F$_1$}} &
             \multicolumn{1}{c|}{\textbf{Prec.}} &
             \multicolumn{1}{c|}{\textbf{Recall}} &
-            \multicolumn{1}{c}{\textbf{F1}}            
+            \multicolumn{1}{c}{\textbf{F$_1$}}            
 \csvreader[separator=semicolon,
 before line=\\\hline]{results/tick-borne_tick-borne_ma_accuracy.csv}{}
             {\csvcoli & 
@@ -674,13 +674,13 @@ before line=\\\hline]{results/tick-borne_tick-borne_ma_accuracy.csv}{}
             \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcoliv}
             }\\
         \end{tabular}
-\caption{Macro averaged read classification quality for simulated data  derived from analysis of bacterial pathogens in ticks \cite{nanoporeticks}. The results are based on eight simulated fastq files generated using NanoSim \cite{10.1093/gigascience/gix010, 10.1093/gigascience/giad013} on the basis of eight corresponding real-world, tick-related fastq files. Section \ref{mdbtb} describes the databases used and Section \ref{ticksim} discusses the analyzed data.  The systems' adaptions for ``(S)" and ``(C)" are based on Table \ref{toolvariants}, ``Ganon (A)" is described in Section \ref{ticksim}.}
+\caption{Macro averaged read classification quality for simulated data  derived from analysis of bacterial pathogens in ticks \cite{nanoporeticks}. The results are based on eight simulated fastq files generated using NanoSim \cite{10.1093/gigascience/gix010, 10.1093/gigascience/giad013} on the basis of eight corresponding real-world, tick-related fastq files. Section \ref{mdbtb} describes the databases used and Section \ref{ticksim} discusses the analyzed data.  The systems' adaptions for ``(S)" and ``(C)" are based on Table \ref{toolvariants}; ``Ganon (A)" is described in Section \ref{ticksim}.}
 \label{tickmares}
     \end{table}
     
     \subsubsection{Explorative analysis of tick-related data}
     \label{tickanalysis}
-    In order to investigate the effect of databases with deep genomic coverage, we applied KrakenUniq and Genestrip along with \texttt{MicrobialDB} and \texttt{tb} to the eight \emph{real-world} fastq files from \cite{nanoporeticks} mentioned above. For this comparison we take advantage of the compatibility of Genestrip and KrakenUniq as established in Section \ref{correctness}.\footnote{To ensure compatibility, we set \texttt{minKMersForClass=1} for Genestrip (see Section \ref{readclassification}).} Then, differences of classification results solely originate in the databases -- but as explained in Section \ref{mdbtb}, \texttt{tb} is deeper than \texttt{MicrobialDB} as it has almost twice as many $k$-mers stored for its included genera.
+    In order to investigate the effect of databases with deep genomic coverage, we applied KrakenUniq and Genestrip along with \texttt{MicrobialDB} and \texttt{tb} to the eight \emph{real-world} fastq files from \cite{nanoporeticks} mentioned above. For this comparison we take advantage of the compatibility of Genestrip and KrakenUniq as established in Section \ref{correctness}.\footnote{To ensure compatibility for this experiment, we set \texttt{minKMersForClass=1} under Genestrip (see Section \ref{readclassification}).} Then, differences of classification results solely originate in the databases -- but as explained in Section \ref{mdbtb}, \texttt{tb} is deeper than \texttt{MicrobialDB} as it has almost twice as many $k$-mers stored for its included genera.
 
     As an example result, Figure \ref{genusestick6} shows the five most frequent $k$-mer counts and reads counts for ``Tick 6" accumulated up to the genus rank. In all the cases but ``138" (Borrelia), the aggregated counts for the genera under \texttt{tb} are mildly to considerably higher than those achieved with \texttt{MicrobialDB}. We observed similar improvements in terms of $k$-mers and reads with respect to Ehrlichia, Rickettsia and partly to Anaplasma in all of the eight ticks' fastq files whenever the corresponding organisms showed presence via \texttt{MicrobialDB}. The effect is consistent with Genestrip's higher recall on the simulated data from Table \ref{tickmares}.
 
@@ -928,12 +928,13 @@ before line=\\\hline]{results/tick-borne_tick-borne_ma_accuracy.csv}{}
      In scenario (b) of Table \ref{analysisperf} we used the  bacterial databases like \texttt{MicrobialDB} and \texttt{Standard} from Section \ref{mdbtb} vs. \texttt{tb} to analyze the eight tick-related fastq files from Section \ref{tickanalysis}. On the one hand, comparing the tools this way may be considered ``unfair" because of unequally sized databases. But for KrakenUniq, Kraken 2 and Ganon, there is no good alternative to employing broad-coverage bacterial databases for the purpose (of detecting tick-related bacterial pathogens) because, as examined in Section \ref{accuracy}, a corresponding small database bares the high risk of many false positives.
      Since \texttt{MicrobialDB} is so large, we had to make use of KrakenUniq's database processing in chunks which broke down each run into 6 rounds. This caused considerably longer run times under KrakenUniq.
      
-     In scenario (c) we had the fastq files from (b) jointly analyzed. In this case, in particular Kraken 2 and Genestrip performed better because the database had to be loaded only once, whereas in scenario (b), it got loaded separately for each fastq file.
+     In scenario (c) we had the fastq files from (b) jointly analyzed.
+     In this case,, Kraken 2 and Genestrip both benefitted considerably from loading the database just once for all eight fastq file, whereas Ganon profited only mildly and KrakenUniq not at all.
 
-    Regarding main memory, all the tools' analysis performance is dominated by the size of the database. The required memory did not vary much across runs when the same database was used.
+      Genestrip dominates across all three scenarios with respect to classification speed.     
+
+    Regarding main memory, all the tools' analysis performance is dominated by the size of the database. The required memory did not vary much across runs when the same database was used. Scenario (a) fairly compares the memory footprint of each tool since all databases where generated via the same set of genomes: As expected Kraken 2 and Ganon need less space than KrakenUniq and Genestrip because of their compressed representation of $k$-mers. Interestingly, Genestrip needs much less space than KrakenUniq still, although they both work with a similar, uncompressed representation of $k$-mers.
     
-  Overall, Genestrip clearly dominates across all three scenarios regarding throughput and memory consumption.
-
     \begin{table}[h]
         \centering
 \sisetup{table-format = 6.2, table-alignment-mode = format, group-minimum-digits=1, group-separator = {,},table-number-alignment = right}
@@ -944,10 +945,10 @@ before line=\\\hline]{results/tick-borne_tick-borne_ma_accuracy.csv}{}
             \multirow{6}{2.6cm}{(a) Viral DBs from Section \ref{broadcov} on the 5 human saliva fastq files from Table \ref{errorsviral}} 
             & Avg. reads per fastq file & \multicolumn{4}{r}{824,743,085\parbox{3cm}{\ }} \\
             & Avg. BPs per read & \multicolumn{4}{r}{101\parbox{3cm}{\ }} \\
-            & Avg. RAM (MB) & 10600 & & & 6301  \\
-            &  Max. wall time (min) & 28 & & & 41 \\
-            &  Avg. wall time (min) & 23 & & & 34  \\
-            &  Avg. speed (reads / s) & 597639 & & & 404285  \\
+            & Avg. RAM (MB) & 10617 & 1410 & 2472 & 4560  \\
+            &  Max. wall time (min) & 38 & 40 & 147 & 37 \\
+            &  Avg. wall time (min) & 31 & 34 & 124 & 30  \\
+            &  Avg. speed (reads / s) & 442221 & 402313 & 110852 & 458190  \\
             \hline
             \multirow{8}{2.6cm}{(b) broad-coverage bacterial DBs from Section \ref{mdbtb} vs. \texttt{tb}  on the 8 tick-related fastq files from Section \ref{tickanalysis}} 
             & Min. reads per fastq file & \multicolumn{4}{r}{644,767\parbox{3cm}{\ }} \\
@@ -1053,11 +1054,9 @@ Not applicable
 \subsection{Availability of data and materials}
 
 The exact code base for this publication is available under\\
-\url{https://github.com/pfeiferd/genestrip/releases/tag/v2.2} and\\
-\url{https://doi.org/10.5281/zenodo.16758120}.\\
+\url{https://github.com/pfeiferd/genestrip/releases/tag/v2.5}.\\
 The code base used to generate all of the results from this publication is available under:\\
-\url{https://github.com/pfeiferd/genestrip-db-exp/tag/v1.6} and \\
-\url{https://doi.org/10.5281/zenodo.16812481}.\\
+\url{https://github.com/pfeiferd/genestrip-db-exp/tag/v1.7}.\\
 Following \cite{Samson:2020aa}, the human saliva fastq files were acquired from the Sequence Read Archive (SRA) under the entries: ERX1462737, ERX1462740, SRX2830683, SRX2830684, and SRX2830689.
 Following \cite{nanoporeticks}, the tick-related fastq files were acquired from the Sequence Read Archive (SRA) under the entries SRX13458610, SRX13458622, SRX13458624, SRX13458626, SRX13458627, SRX13458628, SRX13458611 and SRX13458612.
 

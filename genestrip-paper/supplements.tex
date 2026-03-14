@@ -345,10 +345,10 @@ The additional results include Table \ref{broadhvcov} and Table \ref{humansaliva
             \textbf{System} & \textbf{Data} & 
             \multicolumn{1}{c|}{\textbf{Prec.}} &
             \multicolumn{1}{c|}{\textbf{Recall}} &
-            \multicolumn{1}{c|}{\textbf{F1}} &
+            \multicolumn{1}{c|}{\textbf{F$_1$}} &
             \multicolumn{1}{c|}{\textbf{Prec.}} &
             \multicolumn{1}{c|}{\textbf{Recall}} &
-            \multicolumn{1}{c}{\textbf{F1}}            
+            \multicolumn{1}{c}{\textbf{F$_1$}}            
 \csvreader[separator=semicolon,
 filter not equal={\csvcoli}{\fastqone{dontcare}},
 before line=\\\hline]{results/viral_human_virus_accuracy.csv}{}
@@ -373,10 +373,10 @@ before line=\\\hline]{results/viral_human_virus_accuracy.csv}{}
             \textbf{System} & \textbf{Base file name} & 
             \multicolumn{1}{c|}{\textbf{Prec.}} &
             \multicolumn{1}{c|}{\textbf{Recall}} &
-            \multicolumn{1}{c|}{\textbf{F1}} &
+            \multicolumn{1}{c|}{\textbf{F$_1$}} &
             \multicolumn{1}{c|}{\textbf{Prec.}} &
             \multicolumn{1}{c|}{\textbf{Recall}} &
-            \multicolumn{1}{c}{\textbf{F1}}            
+            \multicolumn{1}{c}{\textbf{F$_1$}}            
 \csvreader[separator=semicolon,
 before line=\\\hline]{results/viral_saliva_rel_accuracy.csv}{}
             {\csvcolii & \csvcoli & 
