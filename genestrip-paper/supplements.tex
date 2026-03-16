@@ -393,7 +393,8 @@ before line=\\\hline]{results/viral_saliva_rel_accuracy.csv}{}
     \end{table}
     
 \section{The $k$-mer consistency ratio}
-    Genestrip introduces a novel, derived statistical measure --- the \emph{$k$-mer consistency ratio} --- as explained in the following: Given $k_{t,f,d}$, the apriori probability $p(t\ |\ k_{t,f,d})$ of a unique $k$-mer from $d$ belonging to $t$ to occur \emph{at least once} in $f$\ is approximately:\footnote{The approximation is based on the assumption that all $k$-mers in $d$ belonging to $t$ are equally likely to be found in $f$ (such as reported in \cite[Fig. 3]{nanoporeticks}). However, this assumption does not hold for $k$-mers with high duplicity in genomes (such as caused by genomic dust) or when special DNA library preparation protocols (such as 16S or 18S amplification) are used \citep{Wensel:2022aa,16srrnause}. In these cases, the $k$-mer consistency ratio should therefore be disregarded.}
+\label{kcratio}
+    Genestrip introduces a novel, derived statistical measure, the \emph{$k$-mer consistency ratio}, as explained in the following: Given $k_{t,f,d}$, the apriori probability $p(t\ |\ k_{t,f,d})$ of a unique $k$-mer from $d$ belonging to $t$ to occur \emph{at least once} in $f$\ is approximately:\footnote{The approximation is based on the assumption that all $k$-mers in $d$ belonging to $t$ are equally likely to be found in $f$ (such as reported in \cite[Fig. 3]{nanoporeticks}). However, this assumption does not hold for $k$-mers with high duplicity in genomes (such as caused by genomic dust) or when special DNA library preparation protocols (such as 16S or 18S amplification) are used \citep{Wensel:2022aa,16srrnause}. In these cases, the $k$-mer consistency ratio should therefore be disregarded.}
     \begin{equation}
         \label{ptk}
         p(t\ |\ k_{t,f,d}) = 1 - (1 - 1/u_{t,d})^{k_{t,f,d}}

@@ -195,6 +195,8 @@ With Genestrip, $k$-mers from contaminating sequences can be identified during t
             \verb|avg. read length| & The average length of reads for $t$ in base pairs \\
             \verb|db coverage| & $u_{t,f} / u_{t,d}$ \\
             \verb|mean class error| & The mean ratio of $k$-mers from a read $r$ for $t$, where those $k$-mers are not consistent with $t$ per $r$'s total number of $k$-mers \\
+            \verb|exp. unique kmers| & The expected unique $k$-mers $E(k_{t,f,d},u_{t,d})$ (see Section \ref{kcratio} in the Appendix for details)\\
+            \verb|unique kmers / exp.| & The $k$-mer consistency ratio $r_{t,f,d}$ (see Section \ref{kcratio} in the Appendix for details)\\
         \end{tabular}
         \caption{Extract of columns from Genestrip's read analysis reports}\label{csvcolumns}
     \end{table}
@@ -584,10 +586,10 @@ As real-world examples, we first applied the ``human virus only"  databases to t
             \multicolumn{1}{c|}{\textbf{F$_1$}} &
             \multicolumn{1}{c|}{\textbf{Prec.}} &
             \multicolumn{1}{c|}{\textbf{Recall}} &
-            \multicolumn{1}{c}{\textbf{F$_1$}}            
+            \multicolumn{1}{c}{\textbf{F$_1$}}         
 \csvreader[separator=semicolon,
 filter not equal={\csvcoli}{\fastqone{dontcare}},
-before line=\\\hline]{results/viral_sim_rel_accuracy.csv}{}
+before line=\\ \hline]{results/viral_sim_rel_accuracy.csv}{}
             {\csvcolii & \csvcoli & 
             \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcolx} & 
             \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcolxi} & 
@@ -595,10 +597,10 @@ before line=\\\hline]{results/viral_sim_rel_accuracy.csv}{}
             \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcolvii} & 
             \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcolviii} & 
             \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcolix}
-            }                        
+            }                      
 \csvreader[separator=semicolon,
 filter strcmp = {\csvcoli}{SRR5571991},
-before line=\\\hline]{results/viral_saliva_rel_accuracy.csv}{}
+before line= \\ \hline]{results/viral_saliva_rel_accuracy.csv}{}
             {\csvcolii & \#3 from Table \ref{errorsviral} & 
             \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcolx} & 
             \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcolxi} & 
