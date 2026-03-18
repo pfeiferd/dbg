@@ -255,6 +255,18 @@ The use of the Fibonacci function in $d$ accounts for point 3 from the above rat
         \label{r}
         r_{t,f,d} := u_{t,f,d} / E(k_{t,f,d},u_{t,d})
     \end{equation}
+Table \ref{ebv} gives a brief, real-world example where $r_{t,f,d}$ proves useful.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{c|c|c|c|c|c|c}
+$t$ & $u_{t,d}$ & $k_{t,f,d}$ & $u_{t,f,d}$ & $E(k_{t,f,d},u_{t,d})$ & $r(k_{t,f,d}, u_{t,f,d})$ & Coverage $u_{t,f,d} / u_{t,d}$  \\
+  \hline
+  10376 & $139502$ & $4151610$ & $120419$ & $139514$ & $0.8631$ & $0.8632$
+\end{tabular}
+\caption{Real extract of Genestrip analysis results for Human Gammaherpesvirus 4 from sequencing a human saliva sample: The $k$-mer count is over 34 times higher than the unique $k$-mer count but due to the short viral genome this is still close to the expectation as indicated by the high $k$-mer consistency score.}\label{ebv}
+\end{table}
+
 
  $E(k_{t,f,d},u_{t,d})$ is included in Genestrip's analysis reports as a column named \verb|exp. unique kmers|. The $k$-mer consistency ratio $r_{t,f,d}$ is represented via the column \verb|unique kmers / exp.|.
     
