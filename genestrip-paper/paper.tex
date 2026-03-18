@@ -14,7 +14,6 @@
 \usepackage{algorithmicx}%
 \usepackage{algpseudocode}%
 \usepackage{listings}%
-\usepackage{todonotes}
 %\usepackage{paper}
 %
 %\usepackage{xstring}
@@ -142,7 +141,9 @@ It is written in Java, has a small code base and enables command-line-based as w
     
     To better handle the complexity of the generation process, it employs a goal-oriented approach similar to Make \citep{feldman1979make}: Upon access, each goal returns a file or an object in main memory. A goal is executed only if its result is not yet available. I.e., in case of a file goal, the system first checks whether the corresponding file is present and only if it is missing, the corresponding goal is executed to produce the file. 
     
-    Goal execution may involve the access of other goals which in turn, may trigger their execution. Respective goal dependencies are explicitly specified in terms of a directed acyclic graph. Details on the system's goals and the goal graph can be found in Section \ref{ggg} of the Appendix.
+    Goal execution may involve the access of other goals which in turn, may trigger their execution. Respective goal dependencies are explicitly specified in terms of a directed acyclic graph. Details on the system's goals and the goal graph can be found in Section 1
+    %\ref{ggg} 
+    of the Appendix.
 
     \subsection{Database generation}
     \label{database}
@@ -159,7 +160,9 @@ It is written in Java, has a small code base and enables command-line-based as w
     Regarding database generation, additional genomes can be manually added either to create deeper databases or, else, to filter out contaminating sequences that are mistakenly included in the genome of an organism of interest. For example, \cite{Breitwieser:2019aa} reported that human DNA fragments often  contaminate bacterial genomes for various reasons whereas \cite{Lu:2018aa} discussed a pipeline to remove contaminants from genomes of eukaryotic pathogens.
 With Genestrip, $k$-mers from contaminating sequences can be identified during the update phase as introduced in Section \ref{approach}: For example, the human genome can be included via configuration in the update phase only; thus, a $k$-mer from the human genome that is also found in the contaminated genome will be pushed to the lowest common ancestor taxon of both species. Still, as the human genome is employed during the update phase only, a resulting database does not include $k$-mers from the human genome (other than those from contaminating sequences). This ensures a small-sized database.
 
-    Of note, Genestrip allows for the exclusion of $k$-mers with low complexity known as genomic dust \citep{doi:10.1089/cmb.2006.13.1028}: As part of the entry phase, each $k$-mers's repetitiveness in terms of base pairs is measured via a fibonacci-based function. If the corresponding value exceeds a configurable threshold then the $k$-mer is dropped. Section \ref{dustfunction} of the Appendix presents our dust function in detail.
+    Of note, Genestrip allows for the exclusion of $k$-mers with low complexity known as genomic dust \citep{doi:10.1089/cmb.2006.13.1028}: As part of the entry phase, each $k$-mers's repetitiveness in terms of base pairs is measured via a fibonacci-based function. If the corresponding value exceeds a configurable threshold then the $k$-mer is dropped. Section 2
+    %\ref{dustfunction} 
+    of the Appendix presents our dust function in detail.
 
     \subsection{Read classification}
 \label{readclassification}
@@ -199,8 +202,10 @@ With Genestrip, $k$-mers from contaminating sequences can be identified during t
             \verb|avg. read length| & The average length of reads for $t$ in base pairs \\
             \verb|db coverage| & $u_{t,f} / u_{t,d}$ \\
             \verb|mean class error| & The mean ratio of $k$-mers from a read $r$ for $t$, where those $k$-mers are not consistent with $t$ per $r$'s total number of $k$-mers \\
-            \verb|exp. unique kmers| & The expected unique $k$-mers $E(k_{t,f,d},u_{t,d})$ (see Section \ref{kcratio} of the Appendix for details)\\
-            \verb|unique kmers / exp.| & The $k$-mer consistency ratio $r_{t,f,d}$ (see Section \ref{kcratio} of the Appendix for details)\\
+            \verb|exp. unique kmers| & The expected unique $k$-mers $E(k_{t,f,d},u_{t,d})$ (see Section 3 %\ref{kcratio}
+             of the Appendix for details)\\
+            \verb|unique kmers / exp.| & The $k$-mer consistency ratio $r_{t,f,d}$ (see Section 3 %\ref{kcratio}
+             of the Appendix for details)\\
         \end{tabular}
         \caption{Extract of columns from Genestrip's read analysis reports}\label{csvcolumns}
     \end{table}
@@ -250,7 +255,8 @@ The file contains 61,550 long reads extracted from 6,155 viral standard genomes 
 Furthermore, we generated simulated fastq files based on all RefSeq genomes from the category ``Viral" via the tool InSilicoSeq \citep{10.1093/bioinformatics/bty630}: We applied the respective Illumina generation models ``MiSeq" and ``HiSeq" to produce two pairs of fastq files with one million reads per pair. Then, we analyzed these files via \texttt{cv\_ku} and \texttt{cv\_g} as well.
 In all of the cases the $k$-mer counts per taxon were identical between KrakenUniq and Genestrip and the classified read counts were also identical.
      
-As real-world examples, we applied the two databases to short-read fastq files from DNA-sequencing human saliva of five different donors. Table \ref{errorsviral} shows basic statistics of these files as downloaded from the Sequence Read Archive \cite{10.1093/nar/gkab1053}. Again, we achieved completely identical $k$-mer and read counts between KrakenUniq and Genestrip. Details on some of these comparisons can be found in Section \ref{correctnessdet} of the Appendix.
+As real-world examples, we applied the two databases to short-read fastq files from DNA-sequencing human saliva of five different donors. Table \ref{errorsviral} shows basic statistics of these files as downloaded from the Sequence Read Archive \cite{10.1093/nar/gkab1053}. Again, we achieved completely identical $k$-mer and read counts between KrakenUniq and Genestrip. Details on some of these comparisons can be found in Section 4 %\ref{correctnessdet}
+ of the Appendix.
            
    \begin{table}[h]
         \centering
@@ -576,9 +582,11 @@ As real-world examples, we first applied the ``human virus only"  databases to t
     \end{figure}
 
     We also measured a relative read classification quality for all of the five human saliva fastq files from Table \ref{errorsviral} well as for simulated fastq files from Section \ref{correctness} by comparing the ``human virus only" database against the corresponding complete viral database and under KrakenUniq, Kraken 2, Ganon and Genestrip -- again with an evaluation focus on human viruses only.
-    Although no ground truth is available for the human saliva fastq files, this comparison tells \emph{how much classification quality suffers under each analysis tool when the corresponding database is filled with just the genomes of interest -- i.e., the genomes of human viruses only instead of all viral genomes}. The result represents a relative factorial change where an approximate baseline for the simulated data is given by Table \ref{readqviral} and by Table \ref{broadhvcov} of the Appendix.
+    Although no ground truth is available for the human saliva fastq files, this comparison tells \emph{how much classification quality suffers under each analysis tool when the corresponding database is filled with just the genomes of interest -- i.e., the genomes of human viruses only instead of all viral genomes}. The result represents a relative factorial change where an approximate baseline for the simulated data is given by Table \ref{readqviral} and by Table 4 %\ref{broadhvcov} 
+    of the Appendix.
     
-    Table \ref{humansalivarel} shows the results for simulated data and fastq file \#3 from Table \ref{errorsviral}. The results for the other four human saliva fastq files are similar and supplied in Table \ref{humansalivarelcompl} of the Appendix.  While KrakenUniq and Ganon still achieve a mediocre to good F$_1$-score on simulated data, their precision is insufficient regarding the human saliva fastq files. This is due to massive false positive classifications of reads, and is a consequence of a missing consideration of non-human-related viral genomes during database generation. Although speculative, we assume that the real-world data has a different error profile than the simulated data, which may contribute to the stark difference. Also, reads belonging to host DNA may cause critical noise. ``Kraken 2 (C)" offers reasonable results, but ``Genestrip (C)" starts from a better baseline in Table \ref{readqviral}, and its human virus database holds up because it does consider non-human-related viral genomes as part of the update phase according to Section \ref{approach}.
+    Table \ref{humansalivarel} shows the results for simulated data and fastq file \#3 from Table \ref{errorsviral}. The results for the other four human saliva fastq files are similar and supplied in Table 5 %\ref{humansalivarelcompl} 
+    of the Appendix.  While KrakenUniq and Ganon still achieve a mediocre to good F$_1$-score on simulated data, their precision is insufficient regarding the human saliva fastq files. This is due to massive false positive classifications of reads, and is a consequence of a missing consideration of non-human-related viral genomes during database generation. Although speculative, we assume that the real-world data has a different error profile than the simulated data, which may contribute to the stark difference. Also, reads belonging to host DNA may cause critical noise. ``Kraken 2 (C)" offers reasonable results, but ``Genestrip (C)" starts from a better baseline in Table \ref{readqviral}, and its human virus database holds up because it does consider non-human-related viral genomes as part of the update phase according to Section \ref{approach}.
         
        \begin{table}[h]
         \centering
@@ -648,11 +656,13 @@ To assess classification quality for this case, we first generated ground truth 
 We supplied NanoSim with all RefSeq genomes from the twelve bacterial genera mentioned in Section \ref{mdbtb} and used each of the eight tick-related real-world fastq files to generate  corresponding \emph{simulated} fastq files.
 %\todo{what about the black-legged tick's genome?}
  The number of reads per simulated file ranges between 116,315 and 1,361,189 with 330,046 reads on average and a mean read length of 3,926 BPs.
- It is important to know that both, the real-world data and the simulated data are subject to high error in their bases: As measured via ``Genestrip (S)", the mean ratio of $k$-mers that could not be assigned to any taxon in classified reads was 83 \% and 88 \%, respectively. Regarding the simulated data, the error cannot be attributed to missing $k$-mers in \texttt{tb}, since the simulated data was generated only via genomes also represented in \texttt{tb}. In fact, the measured error is consistent with a per-base-error between 5 \% and 15 \% as reported in \cite{nanoporeerror} for Nanopore devices.\footnote{E.g. with a per-base-error of $e_b = 0.06$, the  probability for an erroneous $31$-mer is $1-(1-e_b)^{31} \approx 0.85$.}
+ 
+ It is important to know that both, the real-world data and the simulated data are subject to high error in their bases: As measured via ``Genestrip (S)", the mean ratio of $k$-mers that could not be assigned to any taxon in classified reads was 83 \% and 88 \%, respectively. Regarding the simulated data, the error cannot be attributed to missing $k$-mers in \texttt{tb}, since the simulated data was generated only via genomes also represented in \texttt{tb}. In fact, the measured error is consistent with a per-base error between 5 \% and 15 \% as reported in \cite{nanoporeerror} for Nanopore devices.\footnote{E.g. with a per-base error of $e_b = 0.06$, the  probability for an erroneous $31$-mer is $1-(1-e_b)^{31} \approx 0.85$.}
 
     We applied the analysis tools with their respective databases to the eight simulated fastq files. Apparently due to high error rates in the data, Ganon did not classify any reads under the variant ``\ganonlowfpr" -- hence, we show no results for this case. Instead, we present an additional variant, ``\ganonall", where thresholding was completely turned off via the combined options \verb|-rel-cutoff 0|, \verb|--rel-filter 0| and \verb|--fpr-query 1e-0| causing all reads to be classified.
     
-    Table \ref{tickmares} shows the macro-averaged results for each system. (Detailed results for the first five of the eight simulated fastq files are listed in Table \ref{tickdetres} of the Appendix.) Apparently, all analysis tools struggle with the high error from the modeled Nanopore device but Genestrip's configurations perform far better than the others. We attribute this to the deep genomic coverage of the organisms of interest in \texttt{tb} combined with a loss-less storing of related $k$-mers and Genestrip's thorough least common ancestor update.
+    Table \ref{tickmares} shows the macro-averaged results for each system. (Detailed results for the first five of the eight simulated fastq files are listed in Table 6 %\ref{tickdetres}
+     of the Appendix.) Apparently, all analysis tools struggle with the high error from the modeled Nanopore device but Genestrip's configurations perform far better than the others. We attribute this to the deep genomic coverage of the organisms of interest in \texttt{tb} combined with a loss-less storing of related $k$-mers and Genestrip's thorough least common ancestor update.
     
        \begin{table}[h]
         \centering
@@ -885,10 +895,13 @@ before line=\\\hline]{results/tick-borne_tick-borne_ma_accuracy.csv}{}
     \subsubsection{Database generation}
     \label{genperformance}
 
-    Table \ref{dbdesc} lists six Genestrip databases used for assessing database generation performance. They refer to several categories and were designed with a potential use in medicine or agriculture in mind. Table \ref{dbperf} reports execution statistics for the generation of these databases from scratch. Execution times and maximum RAM remained moderate in all cases.\footnote{Times for downloading any of the necessary base files from the NCBI are not included. RefSeq and Genbank files were downloaded upfront via the goals \texttt{refseqfna} and \texttt{fastasgenbankdl} from Figure \ref{goalgraph} of the Appendix. The databases were generated via the goal \texttt{db} from Figure \ref{goalgraph} of the Appendix.}
+    Table \ref{dbdesc} lists six Genestrip databases used for assessing database generation performance. They refer to several categories and were designed with a potential use in medicine or agriculture in mind. Table \ref{dbperf} reports execution statistics for the generation of these databases from scratch. Execution times and maximum RAM remained moderate in all cases.\footnote{Times for downloading any of the necessary base files from the NCBI are not included. RefSeq and Genbank files were downloaded upfront via the goals \texttt{refseqfna} and \texttt{fastasgenbankdl} from Figure 1 %\ref{goalgraph}
+     of the Appendix. The databases were generated via the goal \texttt{db} from Figure 1 %\ref{goalgraph}
+      of the Appendix.}
 
     The different execution times in Table \ref{dbperf} depend on the size of the database itself but also on the RefSeq category, where ``Bacteria" is the largest of the five ones used with genomes in over 3,250 zip files with a total disk size of over 575 GB (in RefSeq Release 233).
-    The zip files must all be screened during each goal from Table \ref{goals} of the Appendix but the update phase, i.e., the goal \texttt{updatedb}, dominates the total execution time.
+    The zip files must all be screened during each goal from Table 1 %\ref{goals} 
+    of the Appendix but the update phase, i.e., the goal \texttt{updatedb}, dominates the total execution time.
 
     \begin{table}[h]
         \centering
@@ -997,7 +1010,8 @@ before line=\\\hline]{results/tick-borne_tick-borne_ma_accuracy.csv}{}
    Regarding main memory, Genestrip's analysis performance is dominated by the size of the database itself. E.g, memory consumption remained at about 6 GB of RAM under the database \texttt{tb} which has a disk size of 3.7 GB. In case of the other three analysis tools, memory consumption was also dictated by the database size. However, these tools called for broad coverage databases in scenario (b) and (c) which led to a memory consumption of 57 GB under Ganon and far more under Kraken 2 and KrakenUniq.
    
     Unlike Kraken 2 and Ganon, Genestrip eliminates the potential for false positive $k$-mer counts because it does not compress $k$-mers under loss of information. This renders our tool suitable in fields such as medical diagnostics where precision of $k$-mer counting and read classification is paramount --- which was also a motive for evolving Kraken 1 into KrakenUniq \citep{lowmemkraken} after the same research group had already authored Kraken 2 \citep{kraken2}. However, as mentioned in Section \ref{problem}, \cite{Nasko:2018aa} stated that generating a full bacterial database for Kraken 1 and so equivalently for KrakenUniq from RefSeq ``required ca. 2.5 TB of RAM and ca. 11 days" on a suitable computer. But since then, RefSeq's number of prokaryotic genomes alone has increased up by a factor of 5.8 to over 48 Mio. \citep{10.1093/nar/gkae1038}. Overall, this suggests that $k$-mer databases with very broad and comprehensive coverage (such as by including \emph{all} genomes from the RefSeq category ``Bacteria") have reached a ``dead-end" when combined with lossless storing of $k$-mers.
-    In light of this problem, different $k$-mer compressing analysis tools have been developed including Kraken 2, Ganon and others. Unfortunately, our results suggest that compression comes at the price of lowered classification quality. The drawback was evident in experiments focusing on real-world data or on simulated data with certain real-world error rates (see Tables \ref{humansalivarel} and \ref{tickmares} but also Table \ref{humansalivarelcompl} of the Appendix).
+    In light of this problem, different $k$-mer compressing analysis tools have been developed including Kraken 2, Ganon and others. Unfortunately, our results suggest that compression comes at the price of lowered classification quality. The drawback was evident in experiments focusing on real-world data or on simulated data with certain real-world error rates (see Tables \ref{humansalivarel} and \ref{tickmares} but also Table 5 %\ref{humansalivarelcompl}
+     of the Appendix).
     
     Our contribution offers an alternative approach by generating small databases that focus on organisms of interest in the context of a specific application scenario. Due to this focus, $k$-mer compression becomes unnecessary. We have shown that our solution offers high classification quality and supports efficient analysis. However, as a precondition, the least common ancestor update must consider many remotely to closely related organisms whose genomes may not even be represented in the resulting database. Genestrip's update phase from Section \ref{approach} fulfills this demand and is incorporated in an efficient database generation procedure.
 
