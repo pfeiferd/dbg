@@ -85,7 +85,7 @@
 \section{Genestrip's goal graph}
 \label{ggg}
 
-    Figure \ref{goalgraph} depicts an extract of Genestrip's goal dependency graph: Several goals (prefixed with \verb|d:|) revolve around automatically downloading all necessary files of the RefSeq, Genbank and other data from the NCBI's Web site \citep{Sayers:2025aa}.
+    Figure \ref{goalgraph} depicts an extract of Genestrip's goal dependency graph: Several goals (prefixed with \verb|d:|) revolve around automatically downloading all necessary files of RefSeq, Genbank and other data from the NCBI's Web site \citep{Sayers:2025aa}.
     When required for database generation, the goal \verb|refseqfna| downloads the RefSeq genomes belonging to a matching category as a collection of zip files. The collection is one of NCBI's  standard offerings. By consulting the goal \verb|checksummap|, \verb|refseqfna| also performs an MD5 fingerprint check after each zip file download to ensure data integrity and reattempts the download in case the initial file appears to be corrupted.
 
     Several object goals (prefixed with \verb|o:|) load files and create data structures or compute results in main memory for further processing. Most file goals (prefixed with \verb|f:|) write computational results to files.
@@ -111,7 +111,7 @@
             \verb|filldb| & This \emph{entry phase} populates the database with all $k$-mers of genomes from selected organisms. The appropriate size of the database is based on \verb|fillsize|.
             Duplicate $k$-mer entries are avoided via a Bloom filter that tracks the already stored $k$-mers. Finally, the stored $k$-mers are sorted in order to enable binary search at analysis time but also for the goal \verb|updatedb| from below.\\
             \verb|updatedb| & This \emph{update phase} updates the populated database to account for common $k$-mers between organisms.
-            \emph{All} genomes from the RefSeq belonging to a set of pre-configurable taxonomic categories are considered during this phase. This ensures that a $k$-mer from a selected organism obtains the correct \taxon\ as the $k$-mer may also occur in the genome of another organism (which might be represented in the database or not). In the finished database, the respective $k$-mer is associated with the lowest common ancestor taxon as computed via all considered genomes that contain the $k$-mer.\\
+            \emph{All} genomes from RefSeq belonging to a set of pre-configurable taxonomic categories are considered during this phase. This ensures that a $k$-mer from a selected organism obtains the correct \taxon\ as the $k$-mer may also occur in the genome of another organism (which might be represented in the database or not). In the finished database, the respective $k$-mer is associated with the lowest common ancestor taxon as computed via all considered genomes that contain the $k$-mer.\\
         \end{tabular}
         \caption{Genestrip's most relevant goals for database generation}\label{goals}
     \end{table}
