@@ -64,7 +64,7 @@
 \begin{document}
 
 % Enter title:
-    \title{Appendix for "Genestrip: Space-efficient $k$-mer counting, read classification for selected groups of organisms"}
+    \title{Appendix for "Genestrip: Efficient $k$-mer counting, read classification for selected groups of organisms"}
 
     \author*[1]{\fnm{Daniel} \sur{Pfeifer}}\email{daniel.pfeifer@hs-heilbronn.de}
    
@@ -231,6 +231,33 @@ The use of the Fibonacci function in $d$ accounts for point 3 from the above rat
         \caption{The ratio of $31$-mers $s$ selected via $d(s) \geq t$ for $c_{\max} = 2$ when increasing the threshold $t$ (based on a logarithmic scale for both axes). The data points are based on the $t$-values from Table \ref{kmertab} and were estimated via 10.000.000.000 uniform draws over all $31$-mers.}\label{dustfilterratio}
     \end{figure}
 
+\section{The $k$-mer consistency ratio}
+\label{kcratio}
+    Genestrip introduces a novel, derived statistical measure, the \emph{$k$-mer consistency ratio}, as explained in the following: Given $k_{t,f,d}$, the apriori probability $p(t\ |\ k_{t,f,d})$ of a unique $k$-mer from $d$ belonging to $t$ to occur \emph{at least once} in $f$\ is approximately:\footnote{The approximation is based on the assumption that all $k$-mers in $d$ belonging to $t$ are equally likely to be found in $f$ (such as reported in \cite[Fig. 3]{nanoporeticks}). However, this assumption does not hold for $k$-mers with high duplicity in genomes (such as caused by genomic dust) or when special DNA library preparation protocols (such as 16S or 18S amplification) are used \citep{Wensel:2022aa,16srrnause}. In these cases, the $k$-mer consistency ratio should therefore be disregarded.}
+    \begin{equation}
+        \label{ptk}
+        p(t\ |\ k_{t,f,d}) = 1 - (1 - 1/u_{t,d})^{k_{t,f,d}}
+    \end{equation}
+    The corresponding \emph{expected number of unique $k$-mers} is as follows:
+    \begin{equation}
+        \label{E}
+        E(k_{t,f,d},u_{t,d}) = u_{t,d} \cdot p(t\ |\ k_{t,f,d})
+    \end{equation}
+
+    It is useful to compare $E(k_{t,f,d},u_{t,d})$ with the actual count $u_{t,f,d}$: If these quantities divert too much from each other, then the consistency of the $k$-mer counting results for $t$ in $f$ should be questioned. If on the other hand, these quantities are close, then this supports the consistency of the counting results. This leads to the \emph{$k$-mer consistency ratio}, which ideally is close to $1$:\footnote{A mathematically sounder approach is to consider the probability distribution
+        $q(u_{t,f,d}\ |\ k_{t,f,d})$, i.e., the probability of obtaining exactly $u_{t,f,d}$ unique $k$-mers for a given (nonunique) $k$-mer count of $k_{t,f,d}$ by sampling with replacement as the underlying random process.
+        Interestingly, this distribution is non-trivial and has been investigated in \cite{Mendelson2016WhatIT}. The authors have shown that the distribution can be approximated by a normal distribution $\mathcal{N}(E(k_{t,f,d},u_{t,d}),\sigma^2_q)$ under most practically relevant conditions. Moreover, they confirm the expectation $E(k_{t,f,d},u_{t,d})$ from above and give a formula for the variance $\sigma^2_q$ which in our case depends on $k_{t,f,d}$ and $u_{t,d}$.
+        Although mathematically sound, the approach did not prove useful with respect to $k$-mer counts because $\mathcal{N}$ tends to be extremely peaked and so, even small deviations from $E(k_{t,f,d},u_{t,d})$ result in a $q(u_{t,f,d}\ |\ k_{t,f,d}) \approx 0$.}
+%%Expectation accounting for duplicate kmers in DB:
+%%Let $k_{t,d}(i)$ be the number of times a unique kmer $i$ occurs in the genome of $t$ with $1 \leq i \leq u_{t,d}$ and $\vec{k}_{t,d}$ the corresponding vector:
+%%\[ E_q(k_{t,f,d},\vec{k}_{t,d}) = \sum_{i = 1}^{u_{t,d}} k_{t,d}(i) \cdot (1 - (1 - 1/k_{t,d}(i))^{k_{t,f,d}}) \]
+    \begin{equation}
+        \label{r}
+        r_{t,f,d} := u_{t,f,d} / E(k_{t,f,d},u_{t,d})
+    \end{equation}
+
+ $E(k_{t,f,d},u_{t,d})$ is included in Genestrip's analysis reports as a column named \verb|exp. unique kmers|. The $k$-mer consistency ratio $r_{t,f,d}$ is represented via the column \verb|unique kmers / exp.|.
+%\bibliography{sn-bibliography}
     
 \section{Details regarding correctness}
 \label{correctnessdet}
@@ -391,33 +418,36 @@ before line=\\\hline]{results/viral_saliva_rel_accuracy.csv}{}
 \caption{Read classification quality for the the real-world fastq files from Table \ref{errorsviral} of the main document analyzed with KrakenUniq, Kraken 2, Ganon and Genestrip with an evaluation focus on human viruses only. The evaluation compares the classifications when using a ``human virus only" database against each system's own classifications obtained when using the corresponding complete viral database from Section \ref{broadcov} of the main document. The systems' adaptions for ``(S)" and ``(C)" are based on Table \ref{toolvariants} of the main document. }
 \label{humansalivarelcompl}
     \end{table}
-    
-\section{The $k$-mer consistency ratio}
-\label{kcratio}
-    Genestrip introduces a novel, derived statistical measure, the \emph{$k$-mer consistency ratio}, as explained in the following: Given $k_{t,f,d}$, the apriori probability $p(t\ |\ k_{t,f,d})$ of a unique $k$-mer from $d$ belonging to $t$ to occur \emph{at least once} in $f$\ is approximately:\footnote{The approximation is based on the assumption that all $k$-mers in $d$ belonging to $t$ are equally likely to be found in $f$ (such as reported in \cite[Fig. 3]{nanoporeticks}). However, this assumption does not hold for $k$-mers with high duplicity in genomes (such as caused by genomic dust) or when special DNA library preparation protocols (such as 16S or 18S amplification) are used \citep{Wensel:2022aa,16srrnause}. In these cases, the $k$-mer consistency ratio should therefore be disregarded.}
-    \begin{equation}
-        \label{ptk}
-        p(t\ |\ k_{t,f,d}) = 1 - (1 - 1/u_{t,d})^{k_{t,f,d}}
-    \end{equation}
-    The corresponding \emph{expected number of unique $k$-mers} is as follows:
-    \begin{equation}
-        \label{E}
-        E(k_{t,f,d},u_{t,d}) = u_{t,d} \cdot p(t\ |\ k_{t,f,d})
-    \end{equation}
 
-    It is useful to compare $E(k_{t,f,d},u_{t,d})$ with the actual count $u_{t,f,d}$: If these quantities divert too much from each other, then the consistency of the $k$-mer counting results for $t$ in $f$ should be questioned. If on the other hand, these quantities are close, then this supports the consistency of the counting results. This leads to the \emph{$k$-mer consistency ratio}, which ideally is close to $1$:\footnote{A mathematically sounder approach is to consider the probability distribution
-        $q(u_{t,f,d}\ |\ k_{t,f,d})$, i.e., the probability of obtaining exactly $u_{t,f,d}$ unique $k$-mers for a given (nonunique) $k$-mer count of $k_{t,f,d}$ by sampling with replacement as the underlying random process.
-        Interestingly, this distribution is non-trivial and has been investigated in \cite{Mendelson2016WhatIT}. The authors have shown that the distribution can be approximated by a normal distribution $\mathcal{N}(E(k_{t,f,d},u_{t,d}),\sigma^2_q)$ under most practically relevant conditions. Moreover, they confirm the expectation $E(k_{t,f,d},u_{t,d})$ from above and give a formula for the variance $\sigma^2_q$ which in our case depends on $k_{t,f,d}$ and $u_{t,d}$.
-        Although mathematically sound, the approach did not prove useful with respect to $k$-mer counts because $\mathcal{N}$ tends to be extremely peaked and so, even small deviations from $E(k_{t,f,d},u_{t,d})$ result in a $q(u_{t,f,d}\ |\ k_{t,f,d}) \approx 0$.}
-%%Expectation accounting for duplicate kmers in DB:
-%%Let $k_{t,d}(i)$ be the number of times a unique kmer $i$ occurs in the genome of $t$ with $1 \leq i \leq u_{t,d}$ and $\vec{k}_{t,d}$ the corresponding vector:
-%%\[ E_q(k_{t,f,d},\vec{k}_{t,d}) = \sum_{i = 1}^{u_{t,d}} k_{t,d}(i) \cdot (1 - (1 - 1/k_{t,d}(i))^{k_{t,f,d}}) \]
-    \begin{equation}
-        \label{r}
-        r_{t,f,d} := u_{t,f,d} / E(k_{t,f,d},u_{t,d})
-    \end{equation}
+ \section{Additional results regarding tick-related analysis}
+ The additional results can be found in Table \ref{tickdetres}.   
 
- $E(k_{t,f,d},u_{t,d})$ is included in Genestrip's analysis reports as a column named \verb|exp. unique kmers|. The $k$-mer consistency ratio $r_{t,f,d}$ is represented via the column \verb|unique kmers / exp.|.
-%\bibliography{sn-bibliography}
- 
+  \begin{table}[h]
+        \centering
+        \begin{tabular}{l|l|r|r|r|r|r|r}
+             &  & \multicolumn{3}{c|}{\textbf{Species}} &
+            \multicolumn{3}{c}{\textbf{Genus}} \\
+            \textbf{System} & \textbf{Data} & 
+            \multicolumn{1}{c|}{\textbf{Prec.}} &
+            \multicolumn{1}{c|}{\textbf{Recall}} &
+            \multicolumn{1}{c|}{\textbf{F$_1$}} &
+            \multicolumn{1}{c|}{\textbf{Prec.}} &
+            \multicolumn{1}{c|}{\textbf{Recall}} &
+            \multicolumn{1}{c}{\textbf{F$_1$}}            
+\csvreader[separator=semicolon,
+filter not equal={\csvcoli}{\fastqone{dontcare}},
+before line=\\\hline]{results/tick-borne_tick-borne_accuracy_short.csv}{}
+            {\csvcolii & \csvcoli & 
+            \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcolx} & 
+            \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcolxi} & 
+            \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcolxii} &
+            \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcolvii} & 
+            \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcolviii} & 
+            \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcolix}
+            }\\                        
+        \end{tabular}
+\caption{Read classification quality for simulated data derived from an analysis of bacterial pathogens in ticks \cite{nanoporeticks}. The results are based on five simulated fastq files generated using NanoSim \cite{10.1093/gigascience/gix010, 10.1093/gigascience/giad013} on the basis of five corresponding real-world, tick-related fastq files. Section \ref{mdbtb} of the main document describes the databases used and Section \ref{ticksim} of the main document discusses the analyzed data.  The systems' adaptions for ``(S)" and ``(C)" are based on Table \ref{toolvariants} (main document); ``Ganon (A)" is described in Section \ref{ticksim} (main document).}
+\label{tickdetres}
+    \end{table}
+     
 \end{document}
