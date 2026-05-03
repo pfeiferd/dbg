@@ -1,0 +1,253 @@
+\documentclass[pdflatex,sn-vancouver-num]{sn-jnl}
+
+\usepackage{graphicx}%
+\usepackage{multirow}%
+\usepackage{amsmath,amssymb,amsfonts}%
+\usepackage{amsthm}%
+\usepackage{mathrsfs}%
+\usepackage[title]{appendix}%
+\usepackage{xcolor}%
+\usepackage{textcomp}%
+\usepackage{manyfoot}%
+\usepackage{booktabs}%
+\usepackage{algorithm}%
+\usepackage{algorithmicx}%
+\usepackage{algpseudocode}%
+\usepackage{listings}%
+%\usepackage{paper}
+%
+%\usepackage{xstring}
+%\usepackage{csquotes}
+\usepackage{pgfplots}
+\usepackage{csvsimple}
+\usepackage{listings}
+\usepackage{siunitx}
+%\usepackage{multirow}
+%\pgfplotsset{compat=1.5}
+%\bibliographystyle{bibliography}
+%\usepgfplotslibrary{external}
+%\tikzexternalize
+\usepackage{xr}
+\usepackage{todonotes}
+\externaldocument{supplements}
+
+\usepackage{array}
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+
+%
+% Workaround for local / relative path problems in conjunction with reading csv file.
+%
+%\newcommand{\csvpath}{}
+
+%
+% Workaround for faster compile without scatter plots:
+%
+%\newif\ifscatter
+%\scattertrue
+
+\newcommand{\taxon}{taxon}
+\newcommand{\ku}{KrakenUniq}
+\newcommand{\ktwo}{Kraken 2 (S)}
+\newcommand{\ktwohc}{Kraken 2 (C)}
+\newcommand{\ganon}{Ganon (S)}
+\newcommand{\ganonlowfpr}{Ganon (C)}
+\newcommand{\ganonall}{Ganon (A)}
+\newcommand{\genestrip}{Genestrip (C)}
+\newcommand{\genestriphs}{Genestrip (S)}
+\newcommand{\hiseq}[1]{HiSeq}
+\newcommand{\miseq}[1]{MiSeq}
+\newcommand{\fastqone}[1]{Extr. from \cite{Wu:2024aa}}
+
+\begin{document}
+
+% Enter title:
+    \title{Genestrip-FT: Optimized $k$-mer databases through refined taxonomies}
+
+    \author*[1]{\sur{Daniel} \fnm{Pfeifer}}\email{daniel.pfeifer@hs-heilbronn.de}
+
+    \author*[1]{\sur{Helai} \fnm{Zahelzai}}\email{hzahelzai@stud.hs-heilbronn.de}
+    
+    \author*[1]{\sur{Anton} \fnm{Atanasov}}\email{atanasov@stud.hs-heilbronn.de}
+    
+    \affil*[1]{\orgdiv{IT Faculty}, \orgname{Heilbronn University}, \orgaddress{\street{Max-Planck-Str. 39}, \city{Heilbronn}, \postcode{74081}, \state{Baden-W\"urttemberg}, \country{Germany}}}
+
+% Enter date:
+    \date{August 2026}
+
+
+    \abstract{\textbf{Background:} 
+
+    \textbf{Results:}
+    
+    \textbf{Conclusions:}     }
+
+    \keywords{Metagenomics, $k$-mer counting, read classification, small $k$-mer database, high precision, high recall, high performance}
+
+    \maketitle
+
+    \section{Background}\label{background}
+
+    \subsection{Introduction}
+\label{problem}
+    
+    \begin{figure}[h]%
+        \centering
+
+         \caption{Box-plot histogram of relative $k$-mer distributions across ranks macro-averaged on a per species-basis for ?? different bacterial species. The distribution is based on all respectiv bacterial genomes in Refseq where the $k$-mers have been pushed to the ranks due to Genestrip's LCA update.}\label{kmerongenusborrelia}
+    \end{figure}
+    
+    \begin{figure}[h]%
+        \centering
+
+         \caption{Histogram of relative $k$-mer distributions across species on the rank genus for the genus Borrelia (138) with ?? subordinate species. The distribution is based on all ?? $k$-mers of Borrelia-genomes in Refseq where the $k$-mers have been pushed to the rank genus due to Genestrip's LCA update.}\label{kmerongenusborrelia}
+    \end{figure}
+
+    \begin{figure}[h]%
+        \centering
+
+         \caption{Box-plot histogram of relative $k$-mer distributions across species on the rank genus averaged across ?? bacterial genera with an average of ?? subordinate species. The distribution is based on all ?? $k$-mers of respective genomes in Refseq where the $k$-mers have been pushed to the rank genus due to Genestrip's LCA update.}\label{kmeronbacterialgenera}
+    \end{figure}
+    
+    \begin{figure}[h]%
+        \centering
+
+         \caption{Box-plot histogram of relative $k$-mer distributions across species on the rank genus averaged across ?? protozoan genera with ?? subordinate species. The distribution is based on all ?? $k$-mers of respective genomes in Refseq where the $k$-mers have been pushed to the rank genus due to Genestrip's LCA update.}\label{kmerviaranks}
+    \end{figure}
+    
+    \subsection{Approach}
+    \label{approach}
+
+  \begin{figure}[h]%
+        \centering
+
+         \caption{Conceptualized sketch of the lowest common ancestor update in a simplified $k$-mer database.}\label{lcasketch}
+    \end{figure}   
+
+  \begin{figure}[h]%
+        \centering
+
+         \caption{Conceptualized sketch of the taxonomic refinement performed by Genestrip-FT.}\label{ftsketch}
+    \end{figure}   
+   
+   
+    \section{Implementation}\label{methods}
+
+  \begin{figure}[h]%
+        \centering
+
+         \caption{Conceptualized sketch of the lowest common ancestor update in a simplified $k$-mer database.}\label{lcasketch}
+    \end{figure}   
+
+  \begin{figure}[h]%
+        \centering
+
+         \caption{Intersection counts between Borrelia species for $k$-mers pushed to the genus Borrelia via the LCA updated according to Figure \ref{lcasketch}}\label{intersectioncounts}
+    \end{figure}
+    
+  \begin{figure}[h]%
+        \centering
+
+         \caption{Dendrogram of Borrelia species obtained via agglomerative clustering on the basis of Jaccard-index over the intersection counts from Figure \ref{intersectioncounts}}\label{dendrogram}
+    \end{figure}
+    
+
+  \begin{figure}[h]%
+        \centering
+
+         \caption{Comparison of original database contents and the resulting refined database contents for Borrelia according to the dendrogram from Figure \ref{dendrogram}. The database contents is depicted as part of taxonomy tree extract in both cases.}\label{dendrogram}
+    \end{figure}
+    
+    
+    \section{Results}\label{results}
+    
+    \subsection{Intrinsic quality measures}
+    
+    Path-precision, Path-recall
+    
+    \subsection{Validation against other tools}
+    
+    \subsection{Improvement of classification quality}
+    
+    Refinement at each level and node of the taxonomy tree.
+    
+    Branching-precision vs. rank-based precision
+    
+    \subsection{Use for phylogenic analysis}
+    
+    \subsection{Principle arguments in favour of the approach}
+    
+    \subsubsection{Comparison with established phyloegeny trees}
+    
+    Example candidates: Borrelia, Babesia, Malaria, Orthoxosvirus
+    
+    \subsubsection{Database refinement rerformance}
+    
+    \section{Conclusions}\label{discussion}
+
+
+\section{Availability and requirements}
+
+\textbf{Project name:} Genestrip\\
+\textbf{Project home page:} \url{https://github.com/pfeiferd/genestrip}\\
+\textbf{Operating system(s):} Platform independent\\
+\textbf{Programming language:} Java\\
+\textbf{Execution requirements:} JRE 11 or higher \\
+\textbf{Build requirements:} JDK 11 or higher and Maven 2 or 3\\
+\textbf{License:} Apache 2.0 subject to the Commons Clause License Condition v1.0 \\
+\textbf{Any restrictions to use by non-academics:} License needed for commercial use\\
+
+\section{List of abbreviations}
+
+\begin{tabular}{lp{10cm}}
+$t$ & Placeholder for taxon \\
+$f$ & Placeholder for fastq file \\
+$d$ & Placeholder for $k$-mer database \\
+$k_{t,f,d}$& Number of $k$-mers found for taxon $t$ in fastq file $f$ via database $d$\\
+$u_{t,f,d}$& Number of unique $k$-mers found for taxon $t$ in fastq file $f$  via database $d$\\
+$u_{t,d}$& Number of $k$-mers stored under taxon $t$ in database $d$ \\
+% $r_{t,f,d}$ &$k$-mer consistency ratio for $k$-mers found for taxon $t$ in fastq file $f$ with respect to database $d$ \\
+\texttt{cv\_ku} & Complete viral database for KrakenUniq \\
+\texttt{cv\_g} & Complete viral database for Genestrip \\
+\texttt{hv\_ku} & Human virus database for KrakenUniq \\
+\texttt{hv\_g} & Human virus database for Genestrip \\
+FPP & False positive probability of a probabilistic filter \\
+BPs & Base pairs \\
+\texttt{MicrobialDB} & Large, comprehensive microbial database for KrakenUniq \\
+\texttt{tb} & Tick-borne bacterial pathogens database for Genestrip \\
+DB & Database
+\end{tabular}
+
+\section{Declarations}
+
+\subsection{Ethics approval and consent to participate}
+
+Not applicable
+
+\subsection{Consent for publication}
+
+Not applicable
+
+\subsection{Availability of data and materials}
+
+The exact code base for this publication is available under\\
+\url{https://github.com/pfeiferd/genestrip/releases/tag/v2.7}.\\
+
+\subsection{Competing interests}
+
+The authors declare that they have no competing interests.
+
+\subsection{Funding}
+
+The work behind this publication was not funded.
+
+\subsection{Authors' contributions}
+
+DP developed the software, designed the evaluation and wrote the manuscript. \todo{What else?}
+
+\subsection{Acknowledgements}
+
+\clearpage
+    
+\end{document}
