@@ -122,13 +122,13 @@
   \begin{figure}[h]%
         \centering
 
-         \caption{Conceptualized sketch of the lowest common ancestor update in a simplified $k$-mer database.}\label{lcasketch}
+         \caption{}\label{lcasketch}
     \end{figure}   
 
   \begin{figure}[h]%
         \centering
 
-         \caption{Conceptualized sketch of the taxonomic refinement performed by Genestrip-FT.}\label{ftsketch}
+         \caption{(1) to (3): Schematic representation of the lowest common ancestor update in a simplified $k$-mer database. (4): Genestrip-FT's taxonomic refinement the $k$-mer database from (3).}\label{ftsketch}
     \end{figure}   
    
    
@@ -137,7 +137,7 @@
   \begin{figure}[h]%
         \centering
 
-         \caption{Conceptualized sketch of the lowest common ancestor update in a simplified $k$-mer database.}\label{lcasketch}
+         \caption{Schematic representation of the lowest common ancestor update in a simplified $k$-mer database.}\label{lcasketch}
     \end{figure}   
 
   \begin{figure}[h]%
@@ -164,7 +164,22 @@
     
     \subsection{Intrinsic quality measures}
     
-    Path-precision, Path-recall
+    Measuring the quality of the taxonomic refinement irrespective of read analysis and classification.
+    
+    \textbf{True positive plus false positive counts $TP + FP$ for taxon $t$ in database $d$:} The number of unique $k$-mers in $d$ associated with any taxon on the path from $t$ to taxonomic root including $t$ itself.
+    
+    \textbf{True positive counts $TP$ for taxon $t$ in database $d$:} The number of unique $k$-mers in $d$ that occur in genomic files associated with $t$ or in genomic files of taxons subordinate to $t$ whereby such $k$-mers are associated with any taxon on the path from $t$ to taxonomic root including $t$ itself.
+    
+    \textbf{False negative counts $FN$ for taxon $t$ in database $d$:} The number of unique $k$-mers in $d$ that occur in genomic files associated with $t$ or in genomic files of taxons subordinate to $t$ whereby such $k$-mers are \emph{not} associated with any taxon on the path from $t$ to taxonomic root including $t$ itself.
+    
+    Based on these counts, the quality of the taxonomic refinement can assessed per taxon $t$ via precision (as $TP / (TP + FP)$) and recall (as $TP / (TP + FN)$).
+    We report macro-averaged precision and recall for all species-ranked taxons under the same genus.
+    
+    Note that in for a taxonomy tree with branching factor $\geq 2$ (which is the standard case) a high average precision ensures the a $k$-mer $h$ in $d$ is pushed down the taxonomy tree to be located as closely as possible to taxons whose genomic files contain $h$ (but not below). Otherwise, if $h$ was located higher up in the taxonomy, then $h$ would potentially also be on the path to the root starting from taxon $s$ whose genomic files do not contain $h$. But this would contribute to the $FP$-count of $s$ which would in turn lower the average precision.
+    
+    Likewise, a high average recall ensures that a $k$-mer $h$ in $d$ is assigned to a tree node such that \emph{as many taxons as possible} which contain $h$ in their genomic files are subordinate to that node. Otherwise, the $k$-mer $h$ would not be on the path to root for such a taxon. But this would contribute to the $FN$-count of that taxons which would in turn lower the average recall.
+    
+    So together, both, a high average precision and recall reflect that $k$-mers are located at an near optimal position in the taxonomy tree -- not too far down and not too high up.
     
     \subsection{Validation against other tools}
     
@@ -172,8 +187,12 @@
     
     Refinement at each level and node of the taxonomy tree.
     
-    Branching-precision vs. rank-based precision
+    Taxon-based positive counts versus path-based positive counts for read classification:
     
+    Taxon-based positive count for rank $r$: $1$ if the class taxon is equal to the correct taxon for rank $r$. Else $0$.
+    
+    Path-based positive count for rank $r$: If the class taxon is on the path between the taxonomic root and the correct taxon for rank $r$: $1$ divided by the number of taxons of rank $r$ that are subordinate or identical to the class taxon for rank $r$. Else $0$.
+        
     \subsection{Use for phylogenic analysis}
     
     \subsection{Principle arguments in favour of the approach}
