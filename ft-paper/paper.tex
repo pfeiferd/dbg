@@ -1,7 +1,7 @@
 \documentclass[pdflatex,sn-vancouver-num]{sn-jnl}
 
 \usepackage{graphicx}%
-\usepackage{multirow}%
+\usexpackage{multirow}%
 \usepackage{amsmath,amssymb,amsfonts}%
 \usepackage{amsthm}%
 \usepackage{mathrsfs}%
@@ -17,7 +17,7 @@
 %\usepackage{paper}
 %
 %\usepackage{xstring}
-%\usepackage{csquotes}
+\usepackage{csquotes}
 \usepackage{pgfplots}
 \usepackage{csvsimple}
 \usepackage{listings}
@@ -95,13 +95,13 @@
     \begin{figure}[h]%
         \centering
 
-         \caption{Box-plot histogram of relative $k$-mer distributions across ranks macro-averaged on a per species-basis for ?? different bacterial species. The distribution is based on all respectiv bacterial genomes in Refseq where the $k$-mers have been pushed to the ranks due to Genestrip's LCA update.}\label{kmerongenusborrelia}
+         \caption{Box-plot histogram of relative $k$-mer distributions across ranks macro-averaged on a per species-basis for ?? different bacterial species. The distribution is based on all respective bacterial genomes in Refseq where $k$-mers shared with other any other bacterial species from RefSeq have been pushed up the ranks accordingly due to Genestrip's LCA update.}\label{kmerongenusborrelia}
     \end{figure}
     
     \begin{figure}[h]%
         \centering
 
-         \caption{Histogram of relative $k$-mer distributions across species on the rank genus for the genus Borrelia (138) with ?? subordinate species. The distribution is based on all ?? $k$-mers of Borrelia-genomes in Refseq where the $k$-mers have been pushed to the rank genus due to Genestrip's LCA update.}\label{kmerongenusborrelia}
+         \caption{Histogram of relative $k$-mer distributions across species for the genus Borrelia (138) with ?? subordinate species. The distribution is based on all ?? $k$-mers of all Borrelia genomes in Refseq where such $k$-mers are shared between any two Borrelia species and have been pushed up at just to the rank genus due to Genestrip's LCA update.}\label{kmerongenusborrelia}
     \end{figure}
 
     \begin{figure}[h]%
@@ -113,7 +113,7 @@
     \begin{figure}[h]%
         \centering
 
-         \caption{Box-plot histogram of relative $k$-mer distributions across species on the rank genus averaged across ?? protozoan genera with ?? subordinate species. The distribution is based on all ?? $k$-mers of respective genomes in Refseq where the $k$-mers have been pushed to the rank genus due to Genestrip's LCA update.}\label{kmerviaranks}
+         \caption{Box-plot histogram of relative $k$-mer distribution across species on the rank genus averaged across ?? protozoan genera with ?? subordinate species. The distribution is based on all ?? $k$-mers of respective genomes in Refseq where the $k$-mers have been pushed to the rank genus due to Genestrip's LCA update.}\label{kmerviaranks}
     \end{figure}
     
     \subsection{Approach}
@@ -164,22 +164,24 @@
     
     \subsection{Intrinsic quality measures}
     
-    Measuring the quality of the taxonomic refinement irrespective of read analysis and classification.
+    In this section we measure the quality of the taxonomic refinement irrespective of read analysis and read classification. For this purpose, we define precision and recall only with respect to a $k$-mer database $d$ that has a taxonomy tree associated where $k$-mers have taxons, i.e. nodes, assigned from that tree.
     
-    \textbf{True positive plus false positive counts $TP + FP$ for taxon $t$ in database $d$:} The number of unique $k$-mers in $d$ associated with any taxon on the path from $t$ to taxonomic root including $t$ itself.
+    Let $t$ be a \emph{species taxon}, i.e. a taxon on the rank \enquote{species} with genomic files directly associated. For example in RefSeq, genomic files are usually associated with species taxons. We assume that $d$'s taxonomy tree is compact in sense that any leaf node in the tree represents a species taxon with one or more genomic files that contain at least one $k$-mer stored in $d$. If genomic files are associated with taxons below a species taxon $t$ and we simply consider these files as belonging to $t$ itself.\footnote{Note, that this is a simplification made for the adequacy of the intrinsic quality measures from below -- it is not a restriction that matters outside of this section.}
     
-    \textbf{True positive counts $TP$ for taxon $t$ in database $d$:} The number of unique $k$-mers in $d$ that occur in genomic files associated with $t$ or in genomic files of taxons subordinate to $t$ whereby such $k$-mers are associated with any taxon on the path from $t$ to taxonomic root including $t$ itself.
+    \textbf{True positive plus false positive counts $TP + FP$ per species taxon $t$ in database $d$:} The number of unique $k$-mers in $d$ associated with any taxon on the path from $t$ to the taxonomic root including $t$ itself.
     
-    \textbf{False negative counts $FN$ for taxon $t$ in database $d$:} The number of unique $k$-mers in $d$ that occur in genomic files associated with $t$ or in genomic files of taxons subordinate to $t$ whereby such $k$-mers are \emph{not} associated with any taxon on the path from $t$ to taxonomic root including $t$ itself.
+    \textbf{True positive counts $TP$ per species taxon $t$ in database $d$:} The number of unique $k$-mers in $d$ that occur in genomic files associated with $t$ where in $d$, such $k$-mers are associated with some taxon on the path from $t$ to the taxonomic root including $t$ itself.
     
-    Based on these counts, the quality of the taxonomic refinement can assessed per taxon $t$ via precision (as $TP / (TP + FP)$) and recall (as $TP / (TP + FN)$).
-    We report macro-averaged precision and recall for all species-ranked taxons under the same genus.
+    \textbf{False negative counts $FN$ per species taxon $t$ in database $d$:} The number of unique $k$-mers in $d$ that occur in genomic files associated with $t$ where in $d$, such $k$-mers are \emph{not} associated with any taxon on the path from $t$ to taxonomic root including $t$ itself.
     
-    Note that in for a taxonomy tree with branching factor $\geq 2$ (which is the standard case) a high average precision ensures the a $k$-mer $h$ in $d$ is pushed down the taxonomy tree to be located as closely as possible to taxons whose genomic files contain $h$ (but not below). Otherwise, if $h$ was located higher up in the taxonomy, then $h$ would potentially also be on the path to the root starting from taxon $s$ whose genomic files do not contain $h$. But this would contribute to the $FP$-count of $s$ which would in turn lower the average precision.
+    Based on these counts, the quality of the taxonomic refinement per species taxon $t$ in $d$ can be assessed via \emph{node precision} (equal to $TP / (TP + FP)$) and \emph{node recall} (equal to $TP / (TP + FN)$).
+    We report average precision and average recall by averaging over all species taxons or subsets thereof. In particular, we also report averages over all species taxons under the same genus.
+            
+    Note that for a taxonomy tree with branching factor $\geq 2$ (which is the standard case) a high average precision ensures the a $k$-mer $h$ in $d$ is located as closely as possible above or right at species taxons whose genomic files contain $h$. Otherwise, if $h$ was located higher up in the taxonomy, then $h$ would also be on the path to the root starting from a species taxon $s$ whose genomic files do not contain $h$. But this would increase the $FP$-count of $s$ and in turn lower the average precision.
     
-    Likewise, a high average recall ensures that a $k$-mer $h$ in $d$ is assigned to a tree node such that \emph{as many taxons as possible} which contain $h$ in their genomic files are subordinate to that node. Otherwise, the $k$-mer $h$ would not be on the path to root for such a taxon. But this would contribute to the $FN$-count of that taxons which would in turn lower the average recall.
+    Likewise, a high average recall ensures that a $k$-mer $h$ in $d$ is assigned to a tree node such that \emph{as many species taxons as possible} which contain $h$ in their genomic files are subordinate or equal to that node. Otherwise, the $k$-mer $h$ would not be on the path to the root for such a taxon. But this would increase the $FN$-count of that taxon and in turn lower the average recall.
     
-    So together, both, a high average precision and recall reflect that $k$-mers are located at an near optimal position in the taxonomy tree -- not too far down and not too high up.
+    So together, both, a high average precision and a high average recall suggest that $k$-mers are located at a near optimal position in the taxonomy tree -- not too high up to lower precision but also not too far down to lower recall.
     
     \subsection{Validation against other tools}
     
