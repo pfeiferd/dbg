@@ -164,9 +164,9 @@
     
     \subsection{Intrinsic quality measures}
     
-    In this section we measure the quality of the taxonomic refinement irrespective of read analysis and read classification. For this purpose, we define precision and recall only with respect to a $k$-mer database $d$ that has a taxonomy tree associated where $k$-mers have taxons, i.e. nodes, assigned from that tree.
+    In this section we measure the quality of the taxonomic refinement irrespective of read analysis and read classification. For this purpose, we define path precision and path recall for a $k$-mer database $d$ that has a taxonomy tree associated where stored $k$-mers have taxons, i.e. nodes, assigned from that tree.
     
-    Let $t$ be a \emph{species taxon}, i.e. a taxon on the rank \enquote{species} with genomic files directly associated. For example in RefSeq, genomic files are usually associated with species taxons. We assume that $d$'s taxonomy tree is compact in sense that any leaf node in the tree represents a species taxon with one or more genomic files that contain at least one $k$-mer stored in $d$. If genomic files are associated with taxons below a species taxon $t$ and we simply consider these files as belonging to $t$ itself.\footnote{Note, that this is a simplification made for the adequacy of the intrinsic quality measures from below -- it is not a restriction that matters outside of this section.}
+    Let $t$ be a \emph{species taxon}, i.e. a taxon on the rank \enquote{species}, with genomic files directly associated. For example in RefSeq, genomic files are usually associated with species taxons. We assume that the database $d$'s taxonomy tree is compact in sense that any leaf node in the tree represents a species taxon with one or more genomic files that contain at least one $k$-mer also stored in $d$. If genomic files are associated with taxons below a species taxon $t$ and we simply consider these files as belonging to $t$ itself.\footnote{Note, that this is a simplification made for the adequacy of the intrinsic quality measures from below -- it is not a general restriction for database that matters outside of this section.}
     
     \textbf{True positive plus false positive counts $TP + FP$ per species taxon $t$ in database $d$:} The number of unique $k$-mers in $d$ associated with any taxon on the path from $t$ to the taxonomic root including $t$ itself.
     
@@ -174,14 +174,14 @@
     
     \textbf{False negative counts $FN$ per species taxon $t$ in database $d$:} The number of unique $k$-mers in $d$ that occur in genomic files associated with $t$ where in $d$, such $k$-mers are \emph{not} associated with any taxon on the path from $t$ to taxonomic root including $t$ itself.
     
-    Based on these counts, the quality of the taxonomic refinement per species taxon $t$ in $d$ can be assessed via \emph{node precision} (equal to $TP / (TP + FP)$) and \emph{node recall} (equal to $TP / (TP + FN)$).
-    We report average precision and average recall by averaging over all species taxons or subsets thereof. In particular, we also report averages over all species taxons under the same genus.
+    Based on these counts, the quality of the taxonomic refinement per species taxon $t$ in $d$ can be assessed via \emph{path precision} (equal to $TP / (TP + FP)$) and \emph{path recall} (equal to $TP / (TP + FN)$).
+    We report average path precision and average path recall by averaging over all species taxons or subsets thereof. In particular, we also report averages over all species taxons under the same genus.
             
-    Note that for a taxonomy tree with branching factor $\geq 2$ (which is the standard case) a high average precision ensures the a $k$-mer $h$ in $d$ is located as closely as possible above or right at species taxons whose genomic files contain $h$. Otherwise, if $h$ was located higher up in the taxonomy, then $h$ would also be on the path to the root starting from a species taxon $s$ whose genomic files do not contain $h$. But this would increase the $FP$-count of $s$ and in turn lower the average precision.
+    Note that for a taxonomy tree with a branching factor $\geq 2$ (which is the standard case) a high average path precision ensures the a $k$-mer $h$ in $d$ is located as closely as possible above or right at species taxons whose genomic files contain $h$. Otherwise, if $h$ was located higher up in the taxonomy, then $h$ would also be on the path to the root starting from a species taxon $s$ whose genomic files do not contain $h$. But this would increase the $FP$-count of $s$ and in turn lower the average path precision.
     
-    Likewise, a high average recall ensures that a $k$-mer $h$ in $d$ is assigned to a tree node such that \emph{as many species taxons as possible} which contain $h$ in their genomic files are subordinate or equal to that node. Otherwise, the $k$-mer $h$ would not be on the path to the root for such a taxon. But this would increase the $FN$-count of that taxon and in turn lower the average recall.
+    Likewise, a high average path recall ensures that a $k$-mer $h$ in $d$ is assigned to a tree node such that \emph{as many species taxons as possible} which contain $h$ in their genomic files are subordinate or equal to that node. Otherwise, the $k$-mer $h$ would not be on the path to the root for such a taxon. But this would increase the $FN$-count of that taxon and in turn lower the average path recall.
     
-    So together, both, a high average precision and a high average recall suggest that $k$-mers are located at a near optimal position in the taxonomy tree -- not too high up to lower precision but also not too far down to lower recall.
+    So together, both, a high average path precision and a high average path recall suggest that $k$-mers are located at a near optimal position in the taxonomy tree -- not too high up to lower precision but also not too far down to lower recall.
     
     \subsection{Validation against other tools}
     
@@ -189,13 +189,13 @@
     
     Refinement at each level and node of the taxonomy tree.
     
-    Taxon-based positive counts versus path-based positive counts for read classification:
+    Boolean positive counts versus ratio-based positive counts for read classification regarding the rank \enquote{species}:
     
-    Taxon-based positive count for rank $r$: $1$ if the class taxon is equal to the correct taxon for rank $r$. Else $0$.
+    Boolean positive count: $1$ if the class taxon is equal to or below the correct species taxon and $0$ otherwise.
     
-    Path-based positive count for rank $r$: If the class taxon is on the path between the taxonomic root and the correct taxon for rank $r$: $1$ divided by the number of taxons of rank $r$ that are subordinate or identical to the class taxon for rank $r$. Else $0$.
+    Ratio-based positive count: If the class taxon is on the path between the taxonomic root and the correct species taxon: $1$ divided by the number of species taxons that are subordinate, above or identical to the class taxon; $0$ otherwise.
         
-    \subsection{Use for phylogenic analysis}
+    \subsection{Application in phylogeny}
     
     \subsection{Principle arguments in favour of the approach}
     
