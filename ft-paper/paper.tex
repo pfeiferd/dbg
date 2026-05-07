@@ -1,7 +1,7 @@
 \documentclass[pdflatex,sn-vancouver-num]{sn-jnl}
 
 \usepackage{graphicx}%
-\usexpackage{multirow}%
+\usepackage{multirow}%
 \usepackage{amsmath,amssymb,amsfonts}%
 \usepackage{amsthm}%
 \usepackage{mathrsfs}%
@@ -118,17 +118,20 @@
     
     \subsection{Approach}
     \label{approach}
+Figure \ref{ftsketch} captures our approach with regard to simplistic $k$-mer database 
+with $k = 2$:
+\begin{itemize}
+	\item Species $X$, $Y$, $Z$ are given with a common genus $W$ and genomes as in (1).
+	\item After filling the database $2$-mers are assigned to their genomes. The figure simplifies the state of the database after that step.
+	\item The lowest common ancestor updated pushes the $2$-mer $CT$ up to $W$ because it occurs in the genomse of both $X$ and $Y$. However it does not occur in $Z$. According to this database a read $CT$ would be classified as $W$ although $Z$ is not a candidate species for $CT$.
+	\item Genestrip-FT's refinement adds an artificial node $h$ in the taxonomy with $X$ and $Y$ as children but not $W$. $CT$ gets moved down from $W$ to $h$. According to this database, a read $CT$ would be classified as $h$ and therefore $Z$ is then excluded as candidate species for $CT$.
+\end{itemize}
+ So in general, this type refinement potentially improves classification precision: If a read was classified under a genus taxon in a non-refined database, then the corresponding refined database may allow for narrowing down the candidate species to a lot less species than originially listed under that genus. 
 
   \begin{figure}[h]%
         \centering
 
-         \caption{}\label{lcasketch}
-    \end{figure}   
-
-  \begin{figure}[h]%
-        \centering
-
-         \caption{(1) to (3): Schematic representation of the lowest common ancestor update in a simplified $k$-mer database. (4): Genestrip-FT's taxonomic refinement the $k$-mer database from (3).}\label{ftsketch}
+         \caption{(1) to (3): Schematic representation of the lowest common ancestor update for highly a simplified $2$-mer database. (4): Genestrip-FT's taxonomic refinement for the $2$-mer database depicted in (3).}\label{ftsketch}
     \end{figure}   
    
    
@@ -166,20 +169,23 @@
     
     In this section we measure the quality of the taxonomic refinement irrespective of read analysis and read classification. For this purpose, we define path precision and path recall for a $k$-mer database $d$ that has a taxonomy tree associated where stored $k$-mers have taxons, i.e. nodes, assigned from that tree.
     
-    Let $t$ be a \emph{species taxon}, i.e. a taxon on the rank \enquote{species}, with genomic files directly associated. For example in RefSeq, genomic files are usually associated with species taxons. We assume that the database $d$'s taxonomy tree is compact in sense that any leaf node in the tree represents a species taxon with one or more genomic files that contain at least one $k$-mer also stored in $d$. If genomic files are associated with taxons below a species taxon $t$ and we simply consider these files as belonging to $t$ itself.\footnote{Note, that this is a simplification made for the adequacy of the intrinsic quality measures from below -- it is not a general restriction for database that matters outside of this section.}
+    Let $t$ be a \emph{species taxon}, i.e. a taxon on the rank \enquote{species}, with genomic files directly associated. For example in RefSeq, genomic files are usually associated with species taxons. We assume that the database $d$'s taxonomy tree is compact in sense that any leaf node in the tree represents a species taxon with one or more genomic files that contain at least one $k$-mer also stored in $d$. If genomic files are associated with taxons below a species taxon $t$, we simply consider these files as belonging to $t$ itself.\footnote{Note, that this is a simplification made for the adequacy of the intrinsic quality measures from below -- it is not a general restriction for database that matters outside of this section.}
     
-    \textbf{True positive plus false positive counts $TP + FP$ per species taxon $t$ in database $d$:} The number of unique $k$-mers in $d$ associated with any taxon on the path from $t$ to the taxonomic root including $t$ itself.
+Based on the following counts, the quality of the taxonomic refinement per species taxon $t$ in $d$ can be assessed:
+\begin{description}
+    \item \textbf{Positive counts $P$ per species taxon $t$ in database $d$:} The number of unique $k$-mers in $d$ that occur in genomic files associated with $t$.
+
+    \item \textbf{True positive counts $TP$ per species taxon $t$ in database $d$:} The number of unique $k$-mers in $d$ that occur in genomic files associated with $t$ where in $d$, such $k$-mers are associated with some taxon on the path from $t$ to the taxonomic root including $t$ itself.
     
-    \textbf{True positive counts $TP$ per species taxon $t$ in database $d$:} The number of unique $k$-mers in $d$ that occur in genomic files associated with $t$ where in $d$, such $k$-mers are associated with some taxon on the path from $t$ to the taxonomic root including $t$ itself.
+    \item \textbf{True positive plus false positive counts $TP + FP$ per species taxon $t$ in database $d$:} The number of unique $k$-mers in $d$ associated with any taxon on the path from $t$ to the taxonomic root including $t$ itself.
+\end{description}
     
-    \textbf{False negative counts $FN$ per species taxon $t$ in database $d$:} The number of unique $k$-mers in $d$ that occur in genomic files associated with $t$ where in $d$, such $k$-mers are \emph{not} associated with any taxon on the path from $t$ to taxonomic root including $t$ itself.
-    
-    Based on these counts, the quality of the taxonomic refinement per species taxon $t$ in $d$ can be assessed via \emph{path precision} (equal to $TP / (TP + FP)$) and \emph{path recall} (equal to $TP / (TP + FN)$).
+   These counts allow for defining \emph{path precision} as $TP / (TP + FP)$ and \emph{path recall} as $TP / P$.     
     We report average path precision and average path recall by averaging over all species taxons or subsets thereof. In particular, we also report averages over all species taxons under the same genus.
             
-    Note that for a taxonomy tree with a branching factor $\geq 2$ (which is the standard case) a high average path precision ensures the a $k$-mer $h$ in $d$ is located as closely as possible above or right at species taxons whose genomic files contain $h$. Otherwise, if $h$ was located higher up in the taxonomy, then $h$ would also be on the path to the root starting from a species taxon $s$ whose genomic files do not contain $h$. But this would increase the $FP$-count of $s$ and in turn lower the average path precision.
+    Note that for a taxonomy tree with a branching factor $\geq 2$ (which is the standard case) a high average path precision ensures the a $k$-mer $h$ in $d$ is located as closely as possible above or right at species taxon(s) whose genomic files contain $h$. Otherwise, if $h$ was located higher up in the taxonomy, then $h$ would also be on the path to the root starting from a species taxon $s$ whose genomic files do not contain $h$. But this would increase the $FP$-count of $s$ and in turn lower the average path precision.
     
-    Likewise, a high average path recall ensures that a $k$-mer $h$ in $d$ is assigned to a tree node such that \emph{as many species taxons as possible} which contain $h$ in their genomic files are subordinate or equal to that node. Otherwise, the $k$-mer $h$ would not be on the path to the root for such a taxon. But this would increase the $FN$-count of that taxon and in turn lower the average path recall.
+    Likewise, a high average path recall ensures that a $k$-mer $h$ in $d$ is assigned to a tree node such that \emph{as many species taxons as possible} which contain $h$ in their genomic files are subordinate or equal to that node. Otherwise, the $k$-mer $h$ would not be on the path to the root for such a taxon. But this would decrease the $TP$-count of that taxon and in turn lower the average path recall.
     
     So together, both, a high average path precision and a high average path recall suggest that $k$-mers are located at a near optimal position in the taxonomy tree -- not too high up to lower precision but also not too far down to lower recall.
     
