@@ -133,8 +133,8 @@ with $k = 2$:
 \begin{figure}[h]%
 \centering
 \small
-\begin{minipage}[c]{0.2\textwidth}
-\begin{flushleft}(1) $k = 2$; 3 species $X$, $Y$, $Z$ with genus $W$ and the following genomes:\\
+\begin{minipage}[c]{0.25\textwidth}
+\begin{flushleft}(1) Given $k = 2$ and 3 species $X$, $Y$, $Z$ under the genus $W$ and the following genomes:\\
 $X$: \texttt{CCT}, $Y$: \texttt{CTT}, $Z$: \texttt{TCA}
 \end{flushleft}
 \end{minipage}
@@ -144,36 +144,33 @@ $X$: \texttt{CCT}, $Y$: \texttt{CTT}, $Z$: \texttt{TCA}
 \Tree [.$W$ $X$ $Y$ $Z$ ]
 \end{tikzpicture}
 \end{minipage}
-\hspace{0.02\textwidth}
-\begin{minipage}[c]{0.2\textwidth}
+\begin{minipage}[c]{0.25\textwidth}
 \begin{flushleft}(2) After filling the database, but before the LCA-update\end{flushleft}
 \end{minipage}
 \begin{minipage}[c]{0.2\textwidth}
 \begin{tikzpicture}
 \tikzset{every tree node/.style={align=center,anchor=north}}
-\Tree [.$W$ {$X$\\ \texttt{CC},\texttt{CT}} {$Y$\\ \texttt{CT},\texttt{TT}} {$Z$\\ \texttt{TC},\texttt{CA}} ]
+\Tree [.$W$ {$X$\\\texttt{CC},\texttt{CT}} {$Y$\\\texttt{CT},\texttt{TT}} {$Z$\\ \texttt{TC},\texttt{CA}} ]
 \end{tikzpicture}
 \end{minipage}
-\vspace{0.25cm}
-\begin{minipage}[c]{0.2\textwidth}
+\begin{minipage}[c]{0.25\textwidth}
 \begin{flushleft}(3) After the LCA-Update: $2$-mer \texttt{CT} got pushed up to $W$
 \end{flushleft}
 \end{minipage}
 \begin{minipage}[c]{0.2\textwidth}
 \begin{tikzpicture}
 \tikzset{every tree node/.style={align=center,anchor=north}}
-\Tree [.{$W$\\ \texttt{CT}} {$X$\\ \texttt{CC}} {$Y$\\ \texttt{TT}} {$Z$\\ \texttt{TC},\texttt{CA}} ]
+\Tree [.{$W$\\\texttt{CT}} {$X$\\\texttt{CC}} {$Y$\\\texttt{TT}} {$Z$\\\texttt{TC},\texttt{CA}} ]
 \end{tikzpicture}
 \end{minipage}
-\hspace{0.02\textwidth}
-\begin{minipage}[c]{0.2\textwidth}
+\begin{minipage}[c]{0.25\textwidth}
 \begin{flushleft}(4) After the refinement of the taxonomy tree with node $h$ added and \texttt{CT} push down to $h$
 \end{flushleft}
 \end{minipage}
 \begin{minipage}[c]{0.2\textwidth}
 \begin{tikzpicture}
 \tikzset{every tree node/.style={align=center,anchor=north}}
-\Tree [.$W$ [{$X$\\ \texttt{CC},\texttt{CT}} {$Y$\\ \texttt{CT},\texttt{TT}} ].$h$ {$Z$\\ \texttt{TC},\texttt{CA}} ]
+\Tree [.$W$ [{$X$\\\texttt{CC}} {$Y$\\\texttt{TT}} ].{$h$\\\texttt{CT}} {$Z$\\ \texttt{TC},\texttt{CA}} ]
 \end{tikzpicture}
 \end{minipage}
 \caption{(1) to (3): Schematic representation of the lowest common ancestor update for a highly simplified $2$-mer database. (4): Genestrip-FT's refinement the $2$-mer database from (3) including the taxonomy tree.}\label{ftsketch}
@@ -209,7 +206,7 @@ $X$: \texttt{CCT}, $Y$: \texttt{CTT}, $Z$: \texttt{TCA}
         
     \section{Results}\label{results}
     
-    \subsection{Intrinsic quality measures}
+    \subsection{Intrinsic quality}
     
     In this section we measure the quality of the taxonomic refinement irrespective of read analysis and read classification. For this purpose, we define path precision and path recall for a $k$-mer database $d$ that has a taxonomy tree associated where stored $k$-mers have taxons, i.e. nodes, assigned from that tree.
     
@@ -226,9 +223,9 @@ Based on the following counts, the quality of the taxonomic refinement per speci
     
    These counts allow for defining \emph{path precision} as $TP / (TP + FP)$ and \emph{path recall} as $TP / P$.
    
-   Figure \ref{ftsketch} allows for considering simple examples of path precision and path recall: In the database of case (3) the path precision of $Z$ is $2/3$ because there are three $2$-mers on the path from $Z$ to the root $W$ but one of them, \texttt{CT}, is not in $W$'s genome. In (3), $X$ and $Y$ both have a path precision of $1$. The refined database in (4) has a precision of 1 for $X$, $Y$ \emph{and} $Z$. Path recall equals $1$ in all of the cases from (3) and (4). 
+   Figure \ref{ftsketch} allows for considering simple examples of path precision and path recall: In the database in (3), the path precision of $Z$ is $2/3$ because there are three $2$-mers on the path from $Z$ to the root $W$ but one of them, \texttt{CT}, is not in $W$'s genome. In (3), $X$ and $Y$ both have a path precision of $1$. The refined database in (4) has a precision of 1 for $X$, $Y$ \emph{and} $Z$. Path recall is $1$ for all of the cases in (3) and (4). 
         
-    We report average path precision and average path recall by averaging over all species taxons or subsets thereof. In particular, we also report averages over all species taxons under the same genus. E.g. for Figure \ref{ftsketch} (3), the average path precision of $W$ is 8/9.
+    We report average path precision and average path recall by averaging over all species taxons or subsets thereof. In particular, we also report averages over all species taxons under the same genus. E.g. in (3) of Figure \ref{ftsketch}, the average path precision of $W$ is 8/9.
             
     Note that for a taxonomy tree with a branching factor $\geq 2$ (which is the standard case) a high average path precision ensures the a $k$-mer $h$ in $d$ is located as closely as possible above or right at species taxon(s) whose genomic files contain $h$. Otherwise, if $h$ was located higher up in the taxonomy, then $h$ would also be on the path to the root starting from a species taxon $s$ whose genomic files do not contain $h$. But this would increase the $FP$-count of $s$ and in turn lower the average path precision.
     
