@@ -128,7 +128,7 @@ with $k = 2$:
 	\item The lowest common ancestor update pushes the $2$-mer \texttt{CT} up to $W$ because it occurs in the genome of both $X$ and $Y$. However, it does not occur in $Z$. So, according to this database a read \texttt{CT} would just be classified as $W$ although $Z$ is not even a candidate species for \texttt{CT}.
 	\item Genestrip-FT's refinement adds an artificial node $h$ in the taxonomy with $X$ and $Y$ as children but not $Z$. Also, the refinement \emph{pushes down} \texttt{CT} from $W$ to $h$. According to this refined database, a read \texttt{CT} would be classified as $h$ and so, $Z$ is excluded as candidate species for \texttt{CT}.
 \end{enumerate}
- So in general, this type refinement potentially improves classification precision: If a read was classified under a genus taxon in a non-refined database, then the corresponding refined database may allow for narrowing down the candidate species to less species than originally listed under that genus. 
+ So in general, this type refinement potentially improves classification precision: E.g., if a read was classified under a genus taxon in a non-refined database, then the corresponding refined database may allow for narrowing down the candidate species to less species than originally listed under that genus. 
 
 \begin{figure}[h]%
 \centering
@@ -173,7 +173,7 @@ $X$: \texttt{CCT}, $Y$: \texttt{CTT}, $Z$: \texttt{TCA}
 \Tree [.$W$ [{$X$\\\texttt{CC}} {$Y$\\\texttt{TT}} ].{$h$\\\texttt{CT}} {$Z$\\ \texttt{TC},\texttt{CA}} ]
 \end{tikzpicture}
 \end{minipage}
-\caption{(1) to (3): Schematic representation of the lowest common ancestor update for a highly simplified $2$-mer database. (4): Genestrip-FT's refinement the $2$-mer database from (3) including the taxonomy tree.}\label{ftsketch}
+\caption{(1) to (3): Schematic representation of the lowest common ancestor update for a highly simplified $2$-mer database. (4): Genestrip-FT's refinement of the $2$-mer database from (3) based on the refined taxonomy tree.}\label{ftsketch}
 \end{figure}   
    
    
@@ -206,13 +206,13 @@ $X$: \texttt{CCT}, $Y$: \texttt{CTT}, $Z$: \texttt{TCA}
         
     \section{Results}\label{results}
     
-    \subsection{Intrinsic quality}
+    \subsection{Measuring intrinsic quality}
     
     In this section we measure the quality of the taxonomic refinement irrespective of read analysis and read classification. For this purpose, we define path precision and path recall for a $k$-mer database $d$ that has a taxonomy tree associated where stored $k$-mers have taxons, i.e. nodes, assigned from that tree.
     
-    Let $t$ be a \emph{species taxon}, i.e. a taxon on the rank \enquote{species}, with genomic files directly associated. For example in RefSeq, genomic files are usually associated with species taxons. We assume that the database $d$'s taxonomy tree is compact in sense that any leaf node in the tree represents is a species taxon with one or more genomic files that contain at least one $k$-mer also stored in $d$. If genomic files are associated with taxons below a species taxon $t$, we simply consider these files as belonging to $t$ itself.\footnote{Note, that this is a simplification made for the adequacy of the intrinsic quality measures from below -- it is not a general restriction for database that matters outside of this section.}
+    Let $t$ be a \emph{data taxon}, i.e. a taxon with genomic sequences directly associated. For example in RefSeq, sequences are often associated with taxons of the rank species or below. We require that each data taxon must be a leaf node in taxonomy tree of database $d$ whereby at least one $k$-mer from some sequence of that data taxon is stored in $d$. The leaf node requirement can be easily enforced by the tree transformation from Figure \ref{}. Note that it has no effect on the phylogenetic structure of the given taxonomy.\footnote{The assumption is made for the adequacy of the quality measures introduced below -- it is not a general restriction for database that matters outside of this section.}
     
-Based on the following counts, the quality of the taxonomic refinement per species taxon $t$ in $d$ can be assessed:
+Based on the following counts, the quality of the taxonomic refinement can be assessed per data taxon $t$ in $d$:
 \begin{description}
     \item \textbf{Positive counts $P$ per species taxon $t$ in database $d$:} The number of unique $k$-mers in $d$ that occur in genomic files associated with $t$.
 
@@ -225,11 +225,11 @@ Based on the following counts, the quality of the taxonomic refinement per speci
    
    Figure \ref{ftsketch} allows for considering simple examples of path precision and path recall: In the database in (3), the path precision of $Z$ is $2/3$ because there are three $2$-mers on the path from $Z$ to the root $W$ but one of them, \texttt{CT}, is not in $W$'s genome. In (3), $X$ and $Y$ both have a path precision of $1$. The refined database in (4) has a precision of 1 for $X$, $Y$ \emph{and} $Z$. Path recall is $1$ for all of the cases in (3) and (4). 
         
-    We report average path precision and average path recall by averaging over all species taxons or subsets thereof. In particular, we also report averages over all species taxons under the same genus. E.g. in (3) of Figure \ref{ftsketch}, the average path precision of $W$ is 8/9.
+    We report average path precision and average path recall by averaging over all data taxons in $d$ or subsets thereof. In particular, we report averages over all taxons under the same species or the same genus, respectively. E.g. in (3) of Figure \ref{ftsketch}, the average path precision of the genus $W$ is 8/9.
             
-    Note that for a taxonomy tree with a branching factor $\geq 2$ (which is the standard case) a high average path precision ensures the a $k$-mer $h$ in $d$ is located as closely as possible above or right at species taxon(s) whose genomic files contain $h$. Otherwise, if $h$ was located higher up in the taxonomy, then $h$ would also be on the path to the root starting from a species taxon $s$ whose genomic files do not contain $h$. But this would increase the $FP$-count of $s$ and in turn lower the average path precision.
+    Note that for a taxonomy tree with a branching factor $\geq 2$ (which is the standard case) a high average path precision ensures the a $k$-mer $h$ in $d$ is located as closely as possible above or right at a data taxon(s) whose sequences contain $h$. Otherwise, if $h$ was located higher up in the taxonomy, then $h$ would also be on the path to the root starting from a data taxon $s$ whose sequences do not contain $h$. But this would increase the $FP$-count of $s$ and in turn lower the average path precision.
     
-    Likewise, a high average path recall ensures that a $k$-mer $h$ in $d$ is assigned to a tree node such that \emph{as many species taxons as possible} which contain $h$ in their genomic files are subordinate or equal to that node. Otherwise, the $k$-mer $h$ would not be on the path to the root for such a taxon. But this would decrease the $TP$-count of that taxon and in turn lower the average path recall.
+    Likewise, a high average path recall ensures that a $k$-mer $h$ in $d$ is assigned to a tree node such that \emph{as many data taxons as possible} which contain $h$ in their sequences are subordinate or equal to that node. Otherwise, the $k$-mer $h$ would not be on the path to the root for such a taxon. But this would decrease the $TP$-count of that taxon and in turn lower the average path recall.
     
     So together, both, a high average path precision and a high average path recall suggest that $k$-mers are located at a near optimal position in the taxonomy tree -- not too high up to lower precision but also not too far down to lower recall.
       
@@ -247,13 +247,13 @@ Based on the following counts, the quality of the taxonomic refinement per speci
         
     \subsection{Application in phylogeny}
     
-    \subsection{Principle arguments in favour of the approach}
+    \subsubsection{Principle arguments in favour of the approach}
     
     \subsubsection{Comparison with established phyloegeny trees}
     
-    Example candidates: Borrelia, Babesia, Malaria, Orthoxosvirus
+    Example candidates: Borrelia, Babesia, Malaria, Orthopoxsvirus
     
-    \subsubsection{Database refinement rerformance}
+    \subsubsection{Database refinement performance}
     
     \section{Conclusions}\label{discussion}
 
