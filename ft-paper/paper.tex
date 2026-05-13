@@ -224,7 +224,7 @@ $X$: \texttt{CCT}, $Y$: \texttt{CTT}, $Z$: \texttt{TCA}
    
    As an example, consider Figure \ref{ftsketch}: In (3), the path precision of $Z$ is $2/3$ because there are three $2$-mers on the path from $Z$ to the root $W$ but one of them, \texttt{CT}, is not in $W$'s sequence. In (3), $X$ and $Y$ both have a path precision of $1$. The refined database in (4) has a precision of 1 for $X$, $Y$ \emph{and} $Z$. Path recall is $1$ for all of the cases in (3) and (4). 
         
-We require that each data taxon must be a leaf node in taxonomy tree of database $d$. This can be easily be enforced by a tree transformation explained via (3) and (4) in Figure \ref{fttrans}. If the requirement was not met, then two data taxons on the same path may result in an inadequately lowered path precision (see Figure Figure \ref{fttrans} (1) and (2)). Note that the described tree transformation does not impact the fundamental phylogenetic structure of a given taxonomy.
+We require that each data taxon must be a leaf node in taxonomy tree of database $d$. This can be easily be enforced by a tree transformation explained via (3) and (4) in Figure \ref{fttrans}. If the requirement was not met, then two data taxons on the same path may result in an inadequately lowered path precision (as in Figure \ref{fttrans} (1) and (2)). Note that the described transformation leaves the phylogenetic structure of a given taxonomy intact.
 
 \begin{figure}[h]%
 \centering
@@ -255,13 +255,13 @@ So $X$, $Y$, $Z$ are data taxons but $X$ is not a leaf node.
 \vspace{0.2cm}
 
 \begin{minipage}[c]{0.25\textwidth}
-\begin{flushleft}3) The taxonomy transformation introduces the node $h_X$ under $X$ and moves \texttt{CCT} away from $X$ to $h_X$. So $X$ is no data taxon anymore but $h_x$ is.
+\begin{flushleft}3) The taxonomy transformation introduces the node $h$ under $X$ and moves \texttt{CCT} away from $X$ to $h$. So $X$ is no data taxon anymore but $h$ is.
 \end{flushleft}
 \end{minipage}
 \begin{minipage}[c]{0.2\textwidth}
 \begin{tikzpicture}
 \tikzset{every tree node/.style={align=center,anchor=north}}
-\Tree [.$W$ [.$X$ $h_X$ $Y$ ] $Z$ ]
+\Tree [.$W$ [.$X$ $h$ $Y$ ] $Z$ ]
 \end{tikzpicture}
 \end{minipage}
 \begin{minipage}[c]{0.25\textwidth}
@@ -270,7 +270,7 @@ So $X$, $Y$, $Z$ are data taxons but $X$ is not a leaf node.
 \begin{minipage}[c]{0.2\textwidth}
 \begin{tikzpicture}
 \tikzset{every tree node/.style={align=center,anchor=north}}
-\Tree [.$W$ [{$h_X$\\\texttt{CC}} {$Y$\\\texttt{TT}} ].{$X$\\\texttt{CT}} {$Z$\\ \texttt{TC},\texttt{CA}} ]
+\Tree [.$W$ [{$h$\\\texttt{CC}} {$Y$\\\texttt{TT}} ].{$X$\\\texttt{CT}} {$Z$\\ \texttt{TC},\texttt{CA}} ]
 \end{tikzpicture}
 \end{minipage}
 
