@@ -123,9 +123,9 @@
 Figure \ref{ftsketch} captures our approach with regard to a simplistic $k$-mer database 
 with $k = 2$:
 \begin{enumerate}
-	\item Species $X$, $Y$, $Z$ with respective genomes are given under a common genus $W$. 
+	\item Species $X$, $Y$, $Z$ under a common genus $W$ have respective sequences associated. 
 	\item After filling the database, the $2$-mers are assigned to their species. The figure simplifies the state of the database after this step.
-	\item The lowest common ancestor update pushes the $2$-mer \texttt{CT} up to $W$ because it occurs in the genome of both $X$ and $Y$. However, it does not occur in $Z$. So, according to this database a read \texttt{CT} would just be classified as $W$ although $Z$ is not even a candidate species for \texttt{CT}.
+	\item The lowest common ancestor update pushes the $2$-mer \texttt{CT} up to $W$ because it occurs in the sequence of both $X$ and $Y$. However, it does not occur in $Z$. So, according to this database a read \texttt{CT} would just be classified as $W$ although $Z$ is not even a candidate species for \texttt{CT}.
 	\item Genestrip-FT's refinement adds an artificial node $h$ in the taxonomy with $X$ and $Y$ as children but not $Z$. Also, the refinement \emph{pushes down} \texttt{CT} from $W$ to $h$. According to this refined database, a read \texttt{CT} would be classified as $h$ and so, $Z$ is excluded as candidate species for \texttt{CT}.
 \end{enumerate}
  So in general, this type refinement potentially improves classification precision: E.g., if a read was classified under a genus taxon in a non-refined database, then the corresponding refined database may allow for narrowing down the candidate species to less species than originally listed under that genus. 
@@ -134,7 +134,7 @@ with $k = 2$:
 \centering
 \small
 \begin{minipage}[c]{0.25\textwidth}
-\begin{flushleft}(1) Given $k = 2$ and 3 species $X$, $Y$, $Z$ under the genus $W$ and the following genomes:\\
+\begin{flushleft}(1) Given $k = 2$ and 3 species $X$, $Y$, $Z$ under the genus $W$ and the following sequences:\\
 $X$: \texttt{CCT}, $Y$: \texttt{CTT}, $Z$: \texttt{TCA}
 \end{flushleft}
 \end{minipage}
@@ -210,22 +210,76 @@ $X$: \texttt{CCT}, $Y$: \texttt{CTT}, $Z$: \texttt{TCA}
     
     In this section we measure the quality of the taxonomic refinement irrespective of read analysis and read classification. For this purpose, we define path precision and path recall for a $k$-mer database $d$ that has a taxonomy tree associated where stored $k$-mers have taxons, i.e. nodes, assigned from that tree.
     
-    Let $t$ be a \emph{data taxon}, i.e. a taxon with genomic sequences directly associated. For example in RefSeq, sequences are often associated with taxons of the rank species or below. We require that each data taxon must be a leaf node in taxonomy tree of database $d$ whereby at least one $k$-mer from some sequence of that data taxon is stored in $d$. The leaf node requirement can be easily enforced by the tree transformation from Figure \ref{}. Note that it has no effect on the phylogenetic structure of the given taxonomy.\footnote{The assumption is made for the adequacy of the quality measures introduced below -- it is not a general restriction for database that matters outside of this section.}
-    
-Based on the following counts, the quality of the taxonomic refinement can be assessed per data taxon $t$ in $d$:
+    Let $t$ be a \emph{data taxon}, i.e. a taxon with genomic sequences directly associated whereby at least one $k$-mer from such a sequences is also stored in $d$. For example in RefSeq, sequences are often associated with taxons of the rank species or below. 
+    Based on the following counts, the quality of the taxonomic refinement can be assessed per data taxon $t$ in $d$:
 \begin{description}
-    \item \textbf{Positive counts $P$ per species taxon $t$ in database $d$:} The number of unique $k$-mers in $d$ that occur in genomic files associated with $t$.
+    \item \textbf{Positive counts $P$ per data taxon $t$ in database $d$:} The number of unique $k$-mers in $d$ that occur in sequences associated with $t$.
 
-    \item \textbf{True positive counts $TP$ per species taxon $t$ in database $d$:} The number of unique $k$-mers in $d$ that occur in genomic files associated with $t$ where in $d$, such $k$-mers are associated with some taxon on the path from $t$ to the taxonomic root including $t$ itself.
+    \item \textbf{True positive counts $TP$ per data taxon $t$ in database $d$:} The number of unique $k$-mers in $d$ that occur in sequences associated with $t$ where in $d$, such $k$-mers are associated with some taxon on the path from $t$ to the taxonomic root including $t$ itself.
     
-    \item \textbf{True positive plus false positive counts $TP + FP$ per species taxon $t$ in database $d$:} The number of unique $k$-mers in $d$ associated with any taxon on the path from $t$ to the taxonomic root including $t$ itself.
+    \item \textbf{True positive plus false positive counts $TP + FP$ per data taxon $t$ in database $d$:} The number of unique $k$-mers in $d$ assigned to any taxon on the path from $t$ to the taxonomic root including $t$ itself.
 \end{description}
     
    These counts allow for defining \emph{path precision} as $TP / (TP + FP)$ and \emph{path recall} as $TP / P$.
    
-   Figure \ref{ftsketch} allows for considering simple examples of path precision and path recall: In the database in (3), the path precision of $Z$ is $2/3$ because there are three $2$-mers on the path from $Z$ to the root $W$ but one of them, \texttt{CT}, is not in $W$'s genome. In (3), $X$ and $Y$ both have a path precision of $1$. The refined database in (4) has a precision of 1 for $X$, $Y$ \emph{and} $Z$. Path recall is $1$ for all of the cases in (3) and (4). 
+   As an example, consider Figure \ref{ftsketch}: In (3), the path precision of $Z$ is $2/3$ because there are three $2$-mers on the path from $Z$ to the root $W$ but one of them, \texttt{CT}, is not in $W$'s sequence. In (3), $X$ and $Y$ both have a path precision of $1$. The refined database in (4) has a precision of 1 for $X$, $Y$ \emph{and} $Z$. Path recall is $1$ for all of the cases in (3) and (4). 
         
-    We report average path precision and average path recall by averaging over all data taxons in $d$ or subsets thereof. In particular, we report averages over all taxons under the same species or the same genus, respectively. E.g. in (3) of Figure \ref{ftsketch}, the average path precision of the genus $W$ is 8/9.
+We require that each data taxon must be a leaf node in taxonomy tree of database $d$. This can be easily be enforced by a tree transformation explained via (3) and (4) in Figure \ref{fttrans}. If the requirement was not met, then two data taxons on the same path may result in an inadequately lowered path precision (see Figure Figure \ref{fttrans} (1) and (2)). Note that the described tree transformation does not impact the fundamental phylogenetic structure of a given taxonomy.
+
+\begin{figure}[h]%
+\centering
+\small
+\begin{minipage}[c]{0.25\textwidth}
+\begin{flushleft}(1) Given $k = 2$ and $X$, $Y$, $Z$ under the genus $W$ with associated sequences:\\
+$X$: \texttt{CCT}, $Y$: \texttt{CTT}, $Z$: \texttt{TCA}
+So $X$, $Y$, $Z$ are data taxons but $X$ is not a leaf node.
+\end{flushleft}
+\end{minipage}
+\begin{minipage}[c]{0.2\textwidth}
+\begin{tikzpicture}
+\tikzset{every tree node/.style={align=center,anchor=north}}
+\Tree [.$W$ [.$X$ $Y$ ] $Z$ ]
+\end{tikzpicture}
+\end{minipage}
+\begin{minipage}[c]{0.25\textwidth}
+\begin{flushleft}2) The resulting database with its taxonomy and $2$-mers assigned accordingly: The $2$-mer \texttt{CC} at $X$ is not in the sequence of $Y$ and therefore lowers $Y$'s path precision from $1$ to $2/3$.
+\end{flushleft}
+\end{minipage}
+\begin{minipage}[c]{0.2\textwidth}
+\begin{tikzpicture}
+\tikzset{every tree node/.style={align=center,anchor=north}}
+\Tree [.$W$ [{$Y$\\\texttt{TT}} ].{$X$\\\texttt{CC},\texttt{CT}} {$Z$\\ \texttt{TC},\texttt{CA}} ]
+\end{tikzpicture}
+\end{minipage}
+
+\vspace{0.2cm}
+
+\begin{minipage}[c]{0.25\textwidth}
+\begin{flushleft}3) The taxonomy transformation introduces the node $h_X$ under $X$ and moves \texttt{CCT} away from $X$ to $h_X$. So $X$ is no data taxon anymore but $h_x$ is.
+\end{flushleft}
+\end{minipage}
+\begin{minipage}[c]{0.2\textwidth}
+\begin{tikzpicture}
+\tikzset{every tree node/.style={align=center,anchor=north}}
+\Tree [.$W$ [.$X$ $h_X$ $Y$ ] $Z$ ]
+\end{tikzpicture}
+\end{minipage}
+\begin{minipage}[c]{0.25\textwidth}
+\begin{flushleft}4) The resulting database with the \emph{transformed} taxonomy and $2$-mers assigned accordingly: The $2$-mer \texttt{CC} remains at $h_X$ and therefore, it does not lower $Y$'s path precision.\end{flushleft}
+\end{minipage}
+\begin{minipage}[c]{0.2\textwidth}
+\begin{tikzpicture}
+\tikzset{every tree node/.style={align=center,anchor=north}}
+\Tree [.$W$ [{$h_X$\\\texttt{CC}} {$Y$\\\texttt{TT}} ].{$X$\\\texttt{CT}} {$Z$\\ \texttt{TC},\texttt{CA}} ]
+\end{tikzpicture}
+\end{minipage}
+
+\vspace{0.2cm}
+
+\caption{Transformation of a databases a taxonomy tree to ensure that every data taxon is a leaf node.}\label{fttrans}
+\end{figure}   
+
+    We report (unweighted) average path precision and average path recall by averaging over all data taxons in $d$ or subsets thereof. In particular, we report averages over all taxons under the same species or the same genus, respectively. E.g. in (3) of Figure \ref{ftsketch}, the average path precision of the genus $W$ is 8/9.
             
     Note that for a taxonomy tree with a branching factor $\geq 2$ (which is the standard case) a high average path precision ensures the a $k$-mer $h$ in $d$ is located as closely as possible above or right at a data taxon(s) whose sequences contain $h$. Otherwise, if $h$ was located higher up in the taxonomy, then $h$ would also be on the path to the root starting from a data taxon $s$ whose sequences do not contain $h$. But this would increase the $FP$-count of $s$ and in turn lower the average path precision.
     
