@@ -188,20 +188,75 @@ $X$: \texttt{CCT}, $Y$: \texttt{CTT}, $Z$: \texttt{TCA}
   \begin{figure}[h]%
         \centering
 
-         \caption{Intersection counts between Borrelia species for $k$-mers pushed to the genus Borrelia via the LCA updated according to Figure \ref{lcasketch}}\label{intersectioncounts}
+         \caption{Intersection counts between Orthopoxvirus species for $k$-mers pushed to the genus \enquote{Orthopoxvirus} via the LCA update according to Figure \ref{lcasketch}.}\label{intersectioncounts}
     \end{figure}
     
   \begin{figure}[h]%
         \centering
 
-         \caption{Dendrogram of Borrelia species obtained via agglomerative clustering on the basis of Jaccard-index over the intersection counts from Figure \ref{intersectioncounts}}\label{dendrogram}
+         \caption{Dendrogram of \enquote{Orthopoxvirus} species obtained via agglomerative clustering on the basis of the Jaccard index applied to the intersection counts from Figure \ref{intersectioncounts}.}\label{dendrogram}
     \end{figure}
+    
+    
+\begin{figure}[h]%
+\centering
+\small
+\begin{minipage}[c]{0.25\textwidth}
+\begin{flushleft}(1) Given $k = 2$ and $X$, $Y$ under the genus $W$ with associated sequences:\\
+$X$: \texttt{CCT}, $Y$: \texttt{CTT}\\
+$X$ is stored in the database $d$ but $Y$ is not as indicated by the dashed branch to $Y$.
+\end{flushleft}
+\end{minipage}
+\begin{minipage}[c]{0.2\textwidth}
+\begin{tikzpicture}
+\tikzset{every tree node/.style={align=center,anchor=north}}
+\Tree [.$W$ $X$ \edge[dashed]; $Y$  ]
+\end{tikzpicture}
+\end{minipage}
+\begin{minipage}[c]{0.25\textwidth}
+\begin{flushleft}(2) $d$ right after the LCA update: Genestrip considered $Y$ even though $Y$ itself and its $2$-mer \texttt{TT} are not stored in $d$. Therefore \texttt{CT} correctly ends up at $W$. 
+\end{flushleft}
+\end{minipage}
+\begin{minipage}[c]{0.2\textwidth}
+\begin{tikzpicture}
+\tikzset{every tree node/.style={align=center,anchor=north}}
+\Tree [.{$W$\\\texttt{CT}} {$X$\\\texttt{CC}} ]
+\end{tikzpicture}
+\end{minipage}
+
+\vspace{0.2cm}
+
+\begin{minipage}[c]{0.25\textwidth}
+\begin{flushleft}(3) In the first phase of the refinement, Genestrip encodes which $2$-mer originates from which taxon. \emph{Here, the \enquote{Other} node $O$ is a placeholder for $k$-mers originating from species like $Y$ who are not included in the database}, but $Y$ caused \texttt{CT} to be pushed to $W$ during the LCA update.
+\end{flushleft}
+\end{minipage}
+\begin{minipage}[c]{0.2\textwidth}
+\begin{tikzpicture}
+\tikzset{every tree node/.style={align=center,anchor=north}}
+\Tree [.$W$\\$X$:\texttt{CT},$O$:\texttt{CT} {$X$\\$X$:\texttt{CC}} $O$ ]
+\end{tikzpicture}
+\end{minipage}
+\begin{minipage}[c]{0.25\textwidth}
+\begin{flushleft}(4) In the last phase of the refinement, the encoding $O$:\texttt{CT} on $W$ from (3) protects \texttt{CT} from being pushed down to $X$. Later, at classification time, this prevents the assignment of $X$ to \texttt{CT} when found in a read. (Due to $Y$ containing \texttt{CT},  $W$ is the accurate assignment.)\end{flushleft}
+\end{minipage}
+\begin{minipage}[c]{0.2\textwidth}
+\begin{tikzpicture}
+\tikzset{every tree node/.style={align=center,anchor=north}}
+\Tree [.$W$\\\texttt{CT} {$X$\\\texttt{CC}} $O$ ]
+\end{tikzpicture}
+\end{minipage}
+
+\vspace{0.2cm}
+
+\caption{Schematic example for the need of \enquote{Other} nodes when refining a $k$-mer database.}\label{fttrans}
+\end{figure}   
+    
     
 
   \begin{figure}[h]%
         \centering
 
-         \caption{Comparison of original database contents and the resulting refined database contents for Borrelia according to the dendrogram from Figure \ref{dendrogram}. The database contents is depicted as part of taxonomy tree extract in both cases.}\label{dendrogram}
+         \caption{Comparison of original database contents (1) and the resulting refined database contents for the genus \enquote{Orthopoxvirus} according to the dendrogram from Figure \ref{dendrogram}. The database contents is depicted as part of taxonomy tree in both cases and is directly generated with Genestrip.}\label{dendrogram}
     \end{figure}
         
     \section{Results}\label{results}
@@ -224,7 +279,7 @@ $X$: \texttt{CCT}, $Y$: \texttt{CTT}, $Z$: \texttt{TCA}
    
    As an example, consider Figure \ref{ftsketch}: In (3), the path precision of $Z$ is $2/3$ because there are three $2$-mers on the path from $Z$ to the root $W$ but one of them, \texttt{CT}, is not in $W$'s sequence. In (3), $X$ and $Y$ both have a path precision of $1$. The refined database in (4) has a precision of 1 for $X$, $Y$ \emph{and} $Z$. Path recall is $1$ for all of the cases in (3) and (4). 
         
-We require that each data taxon must be a leaf node in taxonomy tree of database $d$. This can be easily be enforced by a tree transformation explained via (3) and (4) in Figure \ref{fttrans}. If the requirement was not met, then two data taxons on the same path may result in an inadequately lowered path precision (as in Figure \ref{fttrans} (1) and (2)). Note that the described transformation leaves the phylogenetic structure of a given taxonomy intact.
+We require that each data taxon must be a leaf node in taxonomy tree of database $d$. This can be easily be enforced by a tree transformation explained via (3) and (4) in Figure \ref{fttrans}. If the requirement was not met, then two data taxons on the same path would likely result in an inadequately lowered path precision (as in Figure \ref{fttrans} (1) and (2)). Note that the described transformation leaves the phylogenetic structure of a given taxonomy intact.
 
 \begin{figure}[h]%
 \centering
@@ -242,7 +297,7 @@ So $X$, $Y$, $Z$ are data taxons but $X$ is not a leaf node.
 \end{tikzpicture}
 \end{minipage}
 \begin{minipage}[c]{0.25\textwidth}
-\begin{flushleft}2) The resulting database with its taxonomy and $2$-mers assigned accordingly: The $2$-mer \texttt{CC} at $X$ is not in the sequence of $Y$ and therefore lowers $Y$'s path precision from $1$ to $2/3$.
+\begin{flushleft}(2) The resulting database with its taxonomy and $2$-mers assigned accordingly: The $2$-mer \texttt{CC} at $X$ is not in the sequence of $Y$ and therefore lowers $Y$'s path precision from $1$ to $2/3$.
 \end{flushleft}
 \end{minipage}
 \begin{minipage}[c]{0.2\textwidth}
@@ -255,7 +310,7 @@ So $X$, $Y$, $Z$ are data taxons but $X$ is not a leaf node.
 \vspace{0.2cm}
 
 \begin{minipage}[c]{0.25\textwidth}
-\begin{flushleft}3) The taxonomy transformation introduces the node $h$ under $X$ and moves \texttt{CCT} away from $X$ to $h$. So $X$ is no data taxon anymore but $h$ is.
+\begin{flushleft}(3) The taxonomy transformation introduces the node $h$ under $X$ and moves \texttt{CCT} away from $X$ to $h$. So $X$ is no data taxon anymore but $h$ is.
 \end{flushleft}
 \end{minipage}
 \begin{minipage}[c]{0.2\textwidth}
@@ -265,7 +320,7 @@ So $X$, $Y$, $Z$ are data taxons but $X$ is not a leaf node.
 \end{tikzpicture}
 \end{minipage}
 \begin{minipage}[c]{0.25\textwidth}
-\begin{flushleft}4) The resulting database with the \emph{transformed} taxonomy and $2$-mers assigned accordingly: The $2$-mer \texttt{CC} remains at $h_X$ and therefore, it does not lower $Y$'s path precision.\end{flushleft}
+\begin{flushleft}(4) The resulting database with the \emph{transformed} taxonomy and $2$-mers assigned accordingly: The $2$-mer \texttt{CC} remains at $h_X$ and therefore, it does not lower $Y$'s path precision.\end{flushleft}
 \end{minipage}
 \begin{minipage}[c]{0.2\textwidth}
 \begin{tikzpicture}
@@ -279,7 +334,7 @@ So $X$, $Y$, $Z$ are data taxons but $X$ is not a leaf node.
 \caption{Transformation of a databases a taxonomy tree to ensure that every data taxon is a leaf node.}\label{fttrans}
 \end{figure}   
 
-    We report (unweighted) average path precision and average path recall by averaging over all data taxons in $d$ or subsets thereof. In particular, we report averages over all taxons under the same species or the same genus, respectively. E.g. in (3) of Figure \ref{ftsketch}, the average path precision of the genus $W$ is 8/9.
+    We report unweighted\footnote{The unweighted average considers every data taxon as equally relevant.} average path precision and average path recall by averaging over all data taxons in $d$ or subsets thereof. In particular, we report averages over all taxons under the same species or the same genus, respectively. E.g. in (3) of Figure \ref{ftsketch}, the average path precision of the genus $W$ is 8/9.
             
     Note that for a taxonomy tree with a branching factor $\geq 2$ (which is the standard case) a high average path precision ensures the a $k$-mer $h$ in $d$ is located as closely as possible above or right at a data taxon(s) whose sequences contain $h$. Otherwise, if $h$ was located higher up in the taxonomy, then $h$ would also be on the path to the root starting from a data taxon $s$ whose sequences do not contain $h$. But this would increase the $FP$-count of $s$ and in turn lower the average path precision.
     
