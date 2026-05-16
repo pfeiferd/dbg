@@ -203,14 +203,14 @@ $X$: \texttt{CCT}, $Y$: \texttt{CTT}, $Z$: \texttt{TCA}
 \small
 \begin{minipage}[c]{0.25\textwidth}
 \begin{flushleft}(1) Given $k = 2$ and $X$, $Y$ under the genus $W$ with associated sequences:\\
-$X$: \texttt{CCT}, $Y$: \texttt{CTT}\\
-$X$ is stored in the database $d$ but $Y$ is not as indicated by the dashed branch to $Y$.
+$X$: \texttt{CCT}, $Y$: \texttt{CTT}, $Z$: \texttt{TCA}\\
+$X$ is stored in the database $d$ but $Y$ is not as indicated by the dashed branch to $Y$ and $Z$.
 \end{flushleft}
 \end{minipage}
 \begin{minipage}[c]{0.2\textwidth}
 \begin{tikzpicture}
 \tikzset{every tree node/.style={align=center,anchor=north}}
-\Tree [.$W$ $X$ \edge[dashed]; $Y$  ]
+\Tree [.$W$ $X$ \edge[dashed]; $Y$ \edge[dashed]; $Z$ ]
 \end{tikzpicture}
 \end{minipage}
 \begin{minipage}[c]{0.25\textwidth}
@@ -248,7 +248,8 @@ $X$ is stored in the database $d$ but $Y$ is not as indicated by the dashed bran
 
 \vspace{0.2cm}
 
-\caption{Schematic example for the need of \enquote{Other} nodes when refining a $k$-mer database.}\label{fttrans}
+\caption{Schematic example for the need of \enquote{Other} nodes when refining a $k$-mer database:
+$X$, $Y$ and $Z$ are the same as in Figure \ref{ftsketch}. Since $Y$ and $Z$ are not represented in $d$, their potential $k$-mers shared with $X$ at the genus $W$ represented by means of $O$. As a drawback, the missing nodes for $Y$ and $Z$ prohibit the refinement via $h$ as in Figure \ref{ftsketch}.}\label{ftother}
 \end{figure}   
     
     
@@ -286,7 +287,7 @@ We require that each data taxon must be a leaf node in taxonomy tree of database
 \small
 \begin{minipage}[c]{0.25\textwidth}
 \begin{flushleft}(1) Given $k = 2$ and $X$, $Y$, $Z$ under the genus $W$ with associated sequences:\\
-$X$: \texttt{CCT}, $Y$: \texttt{CTT}, $Z$: \texttt{TCA}
+$X$: \texttt{CCT}, $Y$: \texttt{CTT}, $Z$: \texttt{TCA}\\
 So $X$, $Y$, $Z$ are data taxons but $X$ is not a leaf node.
 \end{flushleft}
 \end{minipage}
@@ -358,11 +359,25 @@ So $X$, $Y$, $Z$ are data taxons but $X$ is not a leaf node.
     
     \subsubsection{Principle arguments in favour of the approach}
     
-    \subsubsection{Comparison with established phyloegeny trees}
+    \subsection{Correction for the assessment of evolutionary distance}
+    
+    Let $s$ be the length of a genome $g$ transformed to $g'$ via $n$ mutations. We assume that $s$ hat the same length as $g$ and consider the number $n$ of measurable mutations, i.e. all positions $1 \leq i \leq s$ where $g(i) \neq g'(i)$. We also assume that the $n$ mutations are uniformly distributed of $g$.
+    
+    Let $X$ be the number of differing $k$-mers between $g$ and $g'$ depending on the mutations $n$. For simplicity we assume that there are no duplicate $k$-mers in either $g$ or $g'$ so that $X$ is also the number of differing unique $k$-mers. 
+
+    The probability for a changed $k$-mer is $p = 1 - (1 - n/s)^k$. As a further simplification, we consider observations of $k$-mers in $g$ to be mutually independent.\todo{Explain why this is justified...} Since the number of $k$-mers in $g$ is $s-k+1$, $X$ follows the binomial distribution $X \sim B(s-k+1, p)$.   
+        
+    In our context we measure $X$ with but we are interested in $n$. We therefore estimate $n$ via $X \approx E[X] = (s-k+1) \cdot p$ and solve by $n$:
+    \[ n \approx s \cdot (1 - \sqrt[k]{1 - X / (s - k + 1)} \] 
+Using $Var(X) = (s-k+1) \cdot p \cdot (1-p)$ we can also estimate a range for $n$ in units of the standard deviation $\sigma_X = \sqrt{Var(X)}$. E.g., the following range $r$ covers $\pm \sigma_X$:
+\[ r = s \cdot (1 - \sqrt[k]{1 - (X \pm \sigma_X) / (s - k + 1)} \]
+The range $r$ allows for assessing the sensitivity of the estimate of $n$ when varying the measured $X$: A low $r$ therefore means that altering the measured value of $X$ within the range of $\pm \sigma_X$ does not affect $n$ much which renders the estimate of $n$ itself less significant.
+
+    \subsubsection{Comparison with established phylogeny trees}
     
     Example candidates: Borrelia, Babesia, Malaria, Orthopoxsvirus
     
-    \subsubsection{Database refinement performance}
+    \subsection{Database refinement performance}
     
     \section{Conclusions}\label{discussion}
 
