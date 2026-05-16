@@ -21,6 +21,8 @@
 %\usepackage{xstring}
 \usepackage{csquotes}
 \usepackage{pgfplots}
+\usepgfplotslibrary{fillbetween}
+
 \usepackage{csvsimple}
 \usepackage{listings}
 \usepackage{siunitx}
@@ -359,19 +361,40 @@ So $X$, $Y$, $Z$ are data taxons but $X$ is not a leaf node.
     
     \subsubsection{Principle arguments in favour of the approach}
     
-    \subsection{Correction for the assessment of evolutionary distance}
+    \subsection{Basic Correction for the assessment of evolutionary distance}
     
-    Let $s$ be the length of a genome $g$ transformed to $g'$ via $n$ mutations. We assume that $s$ hat the same length as $g$ and consider the number $n$ of measurable mutations, i.e. all positions $1 \leq i \leq s$ where $g(i) \neq g'(i)$. We also assume that the $n$ mutations are uniformly distributed of $g$.
-    
-    Let $X$ be the number of differing $k$-mers between $g$ and $g'$ depending on the mutations $n$. For simplicity we assume that there are no duplicate $k$-mers in either $g$ or $g'$ so that $X$ is also the number of differing unique $k$-mers. 
+    Let $l$ be the length of a sequence $s$ transformed to a sequence $s'$ via mutations of bases. We assume that $s$ has the same length as $s'$ and consider the number of measurable mutations $n$, i.e. all base positions $1 \leq i \leq l$ where $s(i) \neq s'(i)$. We also assume that the mutations are uniformly distributed over $s'$.
+    Let $X$ be the number of differing $k$-mers between $s$ and $s'$ depending caused by the $n$ mutations. For simplicity we assume that there are no duplicate $k$-mers in either $s$ or $s'$ so that $X$ is also the number of differing \emph{unique} $k$-mers. 
 
-    The probability for a changed $k$-mer is $p = 1 - (1 - n/s)^k$. As a further simplification, we consider observations of $k$-mers in $g$ to be mutually independent.\todo{Explain why this is justified...} Since the number of $k$-mers in $g$ is $s-k+1$, $X$ follows the binomial distribution $X \sim B(s-k+1, p)$.   
+    A mutation occurs at a chance of $n/l$. So the probability for a changed $k$-mer, which must conatin a least on mutation, is $p(n) = 1 - (1 - n/l)^k$. As a further simplification, we consider observations of $k$-mers in $s'$ but also in $s$ to be mutually independent.\todo{Explain why this is justified...} Since the number of $k$-mers in $s$ and $s'$ is $l-k+1$, $X$ follows the binomial distribution $X \sim B(l-k+1, p(n))$.   
         
-    In our context we measure $X$ with but we are interested in $n$. We therefore estimate $n$ via $X \approx E[X] = (s-k+1) \cdot p$ and solve by $n$:
-    \[ n \approx s \cdot (1 - \sqrt[k]{1 - X / (s - k + 1)} \] 
-Using $Var(X) = (s-k+1) \cdot p \cdot (1-p)$ we can also estimate a range for $n$ in units of the standard deviation $\sigma_X = \sqrt{Var(X)}$. E.g., the following range $r$ covers $\pm \sigma_X$:
-\[ r = s \cdot (1 - \sqrt[k]{1 - (X \pm \sigma_X) / (s - k + 1)} \]
-The range $r$ allows for assessing the sensitivity of the estimate of $n$ when varying the measured $X$: A low $r$ therefore means that altering the measured value of $X$ within the range of $\pm \sigma_X$ does not affect $n$ much which renders the estimate of $n$ itself less significant.
+    In our context, \emph{we measure the number $E$ of $k$-mers differing between $s$ and $s'$ but we want to estimate $n$}. We therefore approximate $E \approx E[X] = (l-k+1) \cdot p(n)$ and solve by $n$:
+    \[ n \approx l \cdot (1 - \sqrt[k]{1 - E / (l - k + 1)} =: n(E)\] 
+
+Figure \ref{nfunc} shows a plot of the function $n(E)$: On the right of the above formula, $l$ serves as normalization factor that we set to $10,000$ as an example. Since $0 \leq E \leq l - k + 1$, the expression $E / (l - k + 1)$ ranges on in $[0,1]$. $n(E)$ starts with a slope of $1/(k-1)$ because when $n$ is small, every mutation results in about $k-1$ different $k$-mers. The estimate $n(E)$ becomes very sensitive, i.e. unreliable, when $E$ reaches $l - k + 1$. For practical considerations we therefore indicate it phylogeny trees, when $E / (l - k + 1) > 0.8$ 
+
+\todo{Some equations from \cite{skmer} seem to come closest to the estimate from above -- or is my stuff just crap?}
+
+\todo{This is poor man's math. I would like to get variance of $n$, where $n$ is a random variable based on $X$. But on the other hand $X$ is based on $p(n)$... ?}
+
+
+\begin{figure}[h]
+\centering  
+\begin{tikzpicture}
+\begin{axis}[
+    ylabel={$n(E)$},
+    xlabel={$E / (l - k + 1)$},
+    trig format plots = rad,
+    samples     = 500,
+    domain      = 0:1,
+    no markers, smooth]
+  \addplot[name path=f1, black, thick] {10000 *(1 - (1 - x)^(1/31))};
+  \addplot[name path=f1, red, thick] {10000 *(1 - (1 - x*1.1)^(1/31))};
+  \addplot[name path=f1, red, thick] {10000 *(1 - (1 - x*0.9)^(1/31))};
+\end{axis}
+\end{tikzpicture}
+\caption{Graphical nature of the function $n(E)$ with $k = 31$ and $l=10,000$ in black. The red curves simulate an error of $\pm 10\%$ when measuring $E$.}\label{nfunc}
+\end{figure}
 
     \subsubsection{Comparison with established phylogeny trees}
     
@@ -444,5 +467,7 @@ DP developed the software, designed the evaluation and wrote the manuscript. \to
 \subsection{Acknowledgements}
 
 \clearpage
-    
+
+\bibliography{sn-bibliography}
+      
 \end{document}
