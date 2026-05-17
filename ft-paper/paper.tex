@@ -204,9 +204,9 @@ $X$: \texttt{CCT}, $Y$: \texttt{CTT}, $Z$: \texttt{TCA}
 \centering
 \small
 \begin{minipage}[c]{0.25\textwidth}
-\begin{flushleft}(1) Given $k = 2$ and $X$, $Y$ under the genus $W$ with associated sequences:\\
+\begin{flushleft}(1) Given $k = 2$ and $X$, $Y$, $Z$ under the genus $W$ with associated sequences:\\
 $X$: \texttt{CCT}, $Y$: \texttt{CTT}, $Z$: \texttt{TCA}\\
-$X$ is stored in the database $d$ but $Y$ is not as indicated by the dashed branch to $Y$ and $Z$.
+$X$ is stored in the database $d$ but $Y$ and $Z$ are not as indicated by the dashed branches.
 \end{flushleft}
 \end{minipage}
 \begin{minipage}[c]{0.2\textwidth}
@@ -216,7 +216,7 @@ $X$ is stored in the database $d$ but $Y$ is not as indicated by the dashed bran
 \end{tikzpicture}
 \end{minipage}
 \begin{minipage}[c]{0.25\textwidth}
-\begin{flushleft}(2) $d$ right after the LCA update: Genestrip considered $Y$ even though $Y$ itself and its $2$-mer \texttt{TT} are not stored in $d$. Therefore \texttt{CT} correctly ends up at $W$. 
+\begin{flushleft}(2) $d$ right after the LCA update: Genestrip also considered $Y$ and $Z$ during the update. So, \texttt{CT} correctly ends up at $W$ because \texttt{CT} is contained in $Y$'s sequence. 
 \end{flushleft}
 \end{minipage}
 \begin{minipage}[c]{0.2\textwidth}
@@ -239,7 +239,7 @@ $X$ is stored in the database $d$ but $Y$ is not as indicated by the dashed bran
 \end{tikzpicture}
 \end{minipage}
 \begin{minipage}[c]{0.25\textwidth}
-\begin{flushleft}(4) In the last phase of the refinement, the encoding $O$:\texttt{CT} on $W$ from (3) protects \texttt{CT} from being pushed down to $X$. Later, at classification time, this prevents the assignment of $X$ to \texttt{CT} when found in a read. (Due to $Y$ containing \texttt{CT},  $W$ is the accurate assignment.)\end{flushleft}
+\begin{flushleft}(4) In the last phase of the refinement, the encoding $O$:\texttt{CT} on $W$ from (3) protects \texttt{CT} from being pushed down to $X$. Later, at classification time, this prevents the assignment of $X$ to \texttt{CT} when found in a read: Due to $Y$ containing \texttt{CT},  $W$ is the accurate assignment.\end{flushleft}
 \end{minipage}
 \begin{minipage}[c]{0.2\textwidth}
 \begin{tikzpicture}
@@ -334,7 +334,7 @@ So $X$, $Y$, $Z$ are data taxons but $X$ is not a leaf node.
 
 \vspace{0.2cm}
 
-\caption{Transformation of a databases a taxonomy tree to ensure that every data taxon is a leaf node.}\label{fttrans}
+\caption{Transformation of a database's a taxonomy tree to ensure that every data taxon is a leaf node.}\label{fttrans}
 \end{figure}   
 
     We report unweighted\footnote{The unweighted average considers every data taxon as equally relevant.} average path precision and average path recall by averaging over all data taxons in $d$ or subsets thereof. In particular, we report averages over all taxons under the same species or the same genus, respectively. E.g. in (3) of Figure \ref{ftsketch}, the average path precision of the genus $W$ is 8/9.
@@ -359,9 +359,9 @@ So $X$, $Y$, $Z$ are data taxons but $X$ is not a leaf node.
         
     \subsection{Application in phylogeny}
     
-    \subsubsection{Principle arguments in favour of the approach}
+    \subsubsection{Introduction}
     
-    \subsection{Correction for the evolutionary distance $d$}
+    \subsubsection{The evolutionary distance $d$}
     
     Let $l$ be the length of a sequence $s$ transformed to a sequence $s'$ via mutations of bases. We assume that $s$ has the same length as $s'$ and consider the number of measurable mutations $n$, i.e. all base positions $1 \leq i \leq l$ where $s(i) \neq s'(i)$. We also assume that the mutations are uniformly distributed over $s'$.
     Let $X$ be the number of differing $k$-mers between $s$ and $s'$ depending caused by the $n$ mutations. For simplicity we assume that there are no duplicate $k$-mers in either $s$ or $s'$ so that $X$ is also the number of differing \emph{unique} $k$-mers. 
@@ -397,7 +397,7 @@ Next, we apply $d$ to the lengths of horizontal lines from a node $n$ to its par
   %\addplot[name path=f1, red, thick] {(1 - x)^((1/31) - 1))};
 \end{axis}
 \end{tikzpicture}
-\caption{Graphical nature of the function $d(E)$ with $k = 31$ in black. The red curves simulate the effect of an error of $\pm 10\%$ when measuring $E$.}\label{nfunc}
+\caption{A plot of the function $d(E/l)$ with $k = 31$ in black. The red curves simulate the effect of an error of $\pm 10\%$ when measuring $E$.}\label{nfunc}
 \end{figure}
 
     \subsubsection{Comparison with established phylogeny trees}
