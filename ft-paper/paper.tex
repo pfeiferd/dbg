@@ -361,7 +361,7 @@ So $X$, $Y$, $Z$ are data taxons but $X$ is not a leaf node.
     
     \subsubsection{Principle arguments in favour of the approach}
     
-    \subsection{Basic Correction for the assessment of evolutionary distance}
+    \subsection{Correction for the evolutionary distance $d$}
     
     Let $l$ be the length of a sequence $s$ transformed to a sequence $s'$ via mutations of bases. We assume that $s$ has the same length as $s'$ and consider the number of measurable mutations $n$, i.e. all base positions $1 \leq i \leq l$ where $s(i) \neq s'(i)$. We also assume that the mutations are uniformly distributed over $s'$.
     Let $X$ be the number of differing $k$-mers between $s$ and $s'$ depending caused by the $n$ mutations. For simplicity we assume that there are no duplicate $k$-mers in either $s$ or $s'$ so that $X$ is also the number of differing \emph{unique} $k$-mers. 
@@ -371,7 +371,7 @@ So $X$, $Y$, $Z$ are data taxons but $X$ is not a leaf node.
     In our context, \emph{we measure the number $E$ of $k$-mers differing between $s$ and $s'$ but we want to estimate the distance $d:=n/l$ as a ratio of mutations over the sequence $s$}. We therefore approximate $E \approx E[X] = (l-k+1) \cdot p(n)$ and solve by $n/l$:
     \[ d \approx 1 - \sqrt[k]{1 - E / (l - k + 1)} \approx 1 - \sqrt[k]{1 - E / l} =: d(E/l)\] 
 
-Figure \ref{nfunc} shows a plot of the function $d(E/l)$: It starts with a slope of $1/(k-1)$ because when $n$ is small, every mutation results in about $k-1$ different $k$-mers. The estimate $d(E/l)$ becomes very sensitive, i.e. less reliable, when $E$ reaches $l$. For practical considerations we therefore graphically indicate in resulting phylogeny trees, when $d'(E / l)$
+Figure \ref{nfunc} shows a plot of the function $d(E/l)$: It starts with a slope of $1/(k-1)$ because when $n$ is small, every mutation results in about $k-1$ different $k$-mers. The estimate $d(E/l)$ becomes very sensitive, i.e. less reliable, when $E$ reaches $l$. For practical considerations, we therefore indicate in phylogeny trees, when $d'(E / l)$
 %$ =(1 - E/l)^{1/k - 1}$ 
 exceeds a configurable threshold.
 
@@ -379,7 +379,7 @@ exceeds a configurable threshold.
 
 \todo{This is poor man's math. I would like to get variance of $n$, where $n$ is a random variable based on $X$. But on the other hand $X$ is based on $p(n)$... ?}
 
-We want to graphically map $d(E/l)$ to the lengths of horizontal tree lines such as in Figure \ref{}. This concerns leaf nodes as well as inner tree nodes: For any node $n$ we determine $down(n)$ by considering sums over $k$-mers assigned to nodes on paths from $n$ to any leaf node under $n$ including $n$ itself. For $down(n)$ we choose the path with the maximum sum. Likewise, $up(n)$ sums over the $k$-mers assigned to nodes above $n$ to the root excluding $n$. For the distance $d$ between $n$ and its parent, we then set $E = down(n)$ and $l = up(n) + down(n)$.
+Next, we apply $d$ to the lengths of horizontal lines from a node $n$ to its parent for phylogeny trees such as in Figure \ref{}. This concerns leaf nodes as well as inner nodes: For any node $n$ we define $down(n)$ by considering each path starting from $n$ to any leaf node under $n$ including $n$ itself. We sum over the $k$-mers assigned to all nodes along each path and set $down(n)$ to be the maximum sum. Likewise, $up(n)$ sums over the $k$-mers assigned to nodes above $n$ to the tree's root excluding $n$. To determine the distance $d$ from $n$ to its parent, i.e. $d_n(E_n/l_n)$, we let $E_n := down(n)$ and $l_n := up(n) + down(n)$.
 
 \begin{figure}[h]
 \centering  
@@ -397,7 +397,7 @@ We want to graphically map $d(E/l)$ to the lengths of horizontal tree lines such
   %\addplot[name path=f1, red, thick] {(1 - x)^((1/31) - 1))};
 \end{axis}
 \end{tikzpicture}
-\caption{Graphical nature of the function $d(E)$ with $k = 31$ in black. The red curves simulate an error of $\pm 10\%$ when measuring $E$.}\label{nfunc}
+\caption{Graphical nature of the function $d(E)$ with $k = 31$ in black. The red curves simulate the effect of an error of $\pm 10\%$ when measuring $E$.}\label{nfunc}
 \end{figure}
 
     \subsubsection{Comparison with established phylogeny trees}
