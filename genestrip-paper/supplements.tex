@@ -137,9 +137,9 @@ We designed a simple dust function $d(s)$ that allows for recognizing and potent
 	\item $d(s)$ should be computable in $O(|s|)$ and should lend itself for streaming computation. I.e., after $d(s) = d(s_1 \ldots s_k)$ has been computed, $d(s') = d(s_2 \ldots s_k s'_{k+1})$ should be computable in constant time.
 \end{enumerate}
 
-To specify the dust function $d$, we first define the \emph{skip-$c$-repeat length} at position $i$ in a string $s$ where  $1 \leq i \leq |s|$ and $c \geq 0$:    
+To specify the dust function $d$, we first define the \emph{skip-$c$-repeat length} at position $i$ in a string $s$ where  $1 \leq i \leq |s|$, $c \geq 0$:    
 \[srl_c(s, i) = \max \{ r\ |\ i + r - 1 \leq |s| - c - 1 \wedge \bigwedge_{j = i}^{i + r - 1} s_j = s_{j + c + 1} \}\]
-E.g., two skip-$1$-repeat lenghts for $s = \texttt{ACTCT}$ are $srl_1(s, 0) = 0$ and $srl_1(s, 1) = 2$.
+E.g., two skip-$1$-repeat lengths for $s = \texttt{ACTCT}$ are $srl_1(s, 1) = 0$ and $srl_1(s, 2) = 2$. Note that $r$'s range is confined to $0 \leq r \leq |s| - c - i$.
 
 We then determine the \emph{next position} $np_c(s,l)$ of the $l$-th skip-$c$-repeat length in $s$ with $|s| \geq 1$ as follows: 
 \[
@@ -164,7 +164,7 @@ The use of the Fibonacci function in $d$ accounts for point 3 from the above rat
 
 %We don't use $sr$ but $srl$ in $d$ because otherwise, repeats with a larger $c$ would become underrepresented at higher values of $d$. E.g., for a $31$-mer the maximum skip-$2$-repeat is 9 but the maximum skip-$0$-repeat is 30. This means that with a threshold $t$ for $d(s)$ and $d(s) \geq t \geq fib(9)$, no true skip-$2$-repeat (which is not a skip-$0$-repeat already) would qualify anymore.
  
- $d(s)$ does not compensate for double counts, e.g. $sr_0(\texttt{AAAA}, 1) = 3$ but also $sr_1(\texttt{AAAA}, 1) = 1$. We consider this as legitimate since \texttt{AAAA} is indeed both a skip-$0$-repeat of \texttt{A} and a skip-$1$-repeat of \texttt{AA}. In the general case, given some skip-$c$-repeat $h$ and a multiple $f + 1$ of $c + 1$ with $f \leq c_{\max}$: If $|h| > f$, then $h$ is also a skip-$f$-repeat. Therefore, $h$ gets ``boosted" in $d$ via any corresponding multiple $f + 1$.
+ $d(s)$ does not compensate for double counts, e.g. $srl_0(\texttt{AAAA}, 1) = 3$ but also $srl_1(\texttt{AAAA}, 1) = 1$. We consider this as legitimate since \texttt{AAAA} is indeed both a skip-$0$-repeat of \texttt{A} and a skip-$1$-repeat of \texttt{AA}. In the general case, given some skip-$c$-repeat $h$ and a multiple $f + 1$ of $c + 1$ with $f \leq c_{\max}$: If $|h| > f$, then $h$ is also a skip-$f$-repeat. Therefore, $h$ gets ``boosted" in $d$ via any corresponding multiple $f + 1$.
  
  For an efficient implementation that considers no more but triplets, we set $c_{\max} = 2$.
  Although the functional specification of $d(s)$ from above may seem intricate, its computation is simple and iterates just once over $s$. Listing \ref{dust_alg} presents a basic Java implementation that computes $d(s)$ for $c_{\max} = 2$.\footnote{Although the presented algorithm works just for $c_{\max} = 2$, it can obviously be generalized for a larger $c_{\max}$ by introducing appropriate loops over $c = 0,\ldots,c_{\max}$.} It confirms the desired complexity of $O(|s|)$ given that $c_{\max}$ is constant.
@@ -173,8 +173,8 @@ The use of the Fibonacci function in $d$ accounts for point 3 from the above rat
  \begin{lstlisting}[frame=single, basicstyle=\footnotesize\ttfamily, language=Java, numbers=left, numberstyle=\tiny\color{black},caption= {Computation of $d(s)$ for $c_{\max} = 2$ in Java with a simplistic representation of a string $s$.}, ,label={dust_alg}]
     // int fib[] = ... is assumed to be defined beforehand.
     public int d(byte[] s) {
-        int d = 0, srl0 = 0, srl1 = 0, srl2 = 0; // skip-c-repeat lenghts
-        int l1 = -1, l2 = -1, l3 = -1;           // previous elements of s
+        int d = 0, srl0 = 0, srl1 = 0, srl2 = 0; // skip-c-repeat lengths
+        int l1 = -1, l2 = -1, l3 = -1;           // previous elements in s
         for (int i = 0; i < s.length; i++) {
             if (s[i] == l1) srl0++;
             else {
@@ -246,7 +246,7 @@ The use of the Fibonacci function in $d$ accounts for point 3 from the above rat
 
     It is useful to compare $E(k_{t,f,d},u_{t,d})$ with the actual count $u_{t,f,d}$: If these quantities divert too much from each other, then the consistency of the $k$-mer counting results for $t$ in $f$ should be questioned. If on the other hand, these quantities are close, then this supports the consistency of the counting results. This leads to the \emph{$k$-mer consistency ratio}, which ideally is close to $1$:\footnote{A mathematically sounder approach is to consider the probability distribution
         $q(u_{t,f,d}\ |\ k_{t,f,d})$, i.e., the probability of obtaining exactly $u_{t,f,d}$ unique $k$-mers for a given (non-unique) $k$-mer count of $k_{t,f,d}$ by sampling with replacement as the underlying random process.
-        Interestingly, this distribution is non-trivial and has been investigated in \cite{Mendelson2016WhatIT}. The authors have shown that the distribution can be approximated by a normal distribution $\mathcal{N}(E(k_{t,f,d},u_{t,d}),\sigma^2_q)$ under most practically relevant conditions. Moreover, they confirm the expectation $E(k_{t,f,d},u_{t,d})$ from above and give a formula for the variance $\sigma^2_q$ which in our case depends on $k_{t,f,d}$ and $u_{t,d}$.
+        Interestingly, this distribution is non-trivial and has been investigated in \cite{Mendelson2016WhatIT}. The authors have shown that the distribution can be approximated by a normal distribution $\mathcal{N}(E(k_{t,f,d},u_{t,d}),\sigma^2_q)$ under most practically relevant conditions. Moreover, they confirm the expectation $E(k_{t,f,d},u_{t,d})$ from above and give a formula for the variance $\sigma^2_q$ which in our case, depends on $k_{t,f,d}$ and $u_{t,d}$.
         Although mathematically sound, the approach did not prove useful with respect to $k$-mer counts because $\mathcal{N}$ tends to be extremely peaked and so, even small deviations from $E(k_{t,f,d},u_{t,d})$ result in a $q(u_{t,f,d}\ |\ k_{t,f,d}) \approx 0$.}
 %%Expectation accounting for duplicate kmers in DB:
 %%Let $k_{t,d}(i)$ be the number of times a unique kmer $i$ occurs in the genome of $t$ with $1 \leq i \leq u_{t,d}$ and $\vec{k}_{t,d}$ the corresponding vector:
