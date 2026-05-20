@@ -371,9 +371,10 @@ So $X$, $Y$, $Z$ are data taxons but $X$ is not a leaf node.
     In our context, \emph{we measure the number $E$ of $k$-mers differing between $s$ and $s'$ but we want to estimate the distance $d:=n/l$ as a ratio of mutations over the sequence $s$}. We therefore approximate $E \approx E[X] = (l-k+1) \cdot p(n)$ and solve by $n/l$:
     \[ d \approx 1 - \sqrt[k]{1 - E / (l - k + 1)} \approx 1 - \sqrt[k]{1 - E / l} =: d(E/l)\] 
 
-Figure \ref{nfunc} shows a plot of the function $d(E/l)$: It starts with a slope of $1/(k-1)$ because when $n$ is small, every mutation results in about $k-1$ different $k$-mers. The estimate $d(E/l)$ becomes very sensitive, i.e. less reliable, when $E$ reaches $l$. For practical considerations, we therefore indicate in phylogeny trees, when $d'(E / l)$
-%$ =(1 - E/l)^{1/k - 1}$ 
-exceeds a configurable threshold.
+Figure \ref{nfunc} shows a plot of the function $d(E/l)$: It starts with a slope of $1/(k-1)$ because when $n$ is small, every mutation results in about $k-1$ different $k$-mers. The estimate $d(E/l)$ becomes very sensitive, i.e. less reliable, when $E$ reaches $l$. For practical considerations, we therefore indicate it in phylogeny trees, when $d$ exceeds a configurable threshold $t_d$.
+% Better work with slope of derivative ?
+% $d'(E / l) =(1 - E/l)^{1/k - 1}$ 
+% or even determine the variance
 
 \todo{Some equations from \cite{skmer} are pretty much the same as the estimate from above -- refer to it put derivation from above in the Appendix. Use distance measure $d$}
 
@@ -398,12 +399,17 @@ exceeds a configurable threshold.
 \caption{A plot of the function $d(E/l)$ with $k = 31$ in black. The red curves simulate the effect of an error of $\pm 10\%$ when measuring $E$.}\label{nfunc}
 \end{figure}
 
-Next, we apply $d$ with respect to a node $n$ and its parent for phylogeny trees such as in Figure \ref{}. This concerns leaf nodes as well as inner nodes: For any node $n$ we firstly define $down(n)$ by considering each path starting from $n$ to any leaf node under $n$ including $n$ itself. We sum over the $k$-mers assigned to all nodes along each path and set $down(n)$ to be the maximum sum. Let $p_n$ be the or a path offering to $down(n)$. Secondly $up(n)$ sums over the $k$-mers assigned to nodes above $n$ towards the tree's root excluding $n$. To determine the distance $d$ from $n$ to its parent, i.e. $d_n := d(E_n/l_n)$, we let $E_n := down(n)$ and $l_n := up(n) + down(n)$.
-
+Next, we apply $d$ with respect to a node $n$ and its parent for phylogeny trees such as in Figure \ref{}. This concerns leaf nodes as well as inner nodes:
+\begin{itemize}
+\item 
+For any node $n$, we define $below(n)$ by considering each path starting from $n$ to any leaf node under $n$ including $n$ itself. We sum over the $k$-mers assigned to all nodes along each path and set $below(n)$ to be the maximum sum. Let $p_n$ be the/a path resulting in $below(n)$. 
+\item
+$above(n)$ sums over the $k$-mers assigned to nodes above $n$ towards the tree's root excluding $n$. 
+\end{itemize}
+To determine the distance $d$ from $n$ to its parent, i.e. $d_n := d(E_n/l_n)$, we let $E_n := down(n)$ and $l_n := up(n) + down(n)$.
 $d_n$ measures the evolutionary distance of $n$ with respect to the leaf of $p_n$. 
 However, to depict the taxonomy tree we would like to obtain just the portion $dp_n$ of $d_n$ from $n$ to its children.
-Let $c_n$ be a child of $n$. We have $d_n \geq d_{c_n}$ because $E_n \geq E_{c_n}$ and because $d$ is monotonous. To determine the corresponding portion we set $dp_n := d_n - \max_{c_n} d_{c_n}$.
-
+Let $c_n$ be a child of $n$. We have $d_n \geq d_{c_n}$ because $E_n \geq E_{c_n}$ and because $d$ is monotonous. To determine the corresponding portion, we set $dp_n := d_n - \max_{c_n} d_{c_n}$.
 Figure \ref{} shows a resulting taxonomy tree incorporating $dp_n$.
 
 % like so: $d(E_n / k_n)$. But unfortunately, the following does not hold: $d_n(E_n/l_n) \neq \sum_i d_{n_i}(E_i/k_i)$.
