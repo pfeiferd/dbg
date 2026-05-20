@@ -379,8 +379,6 @@ exceeds a configurable threshold.
 
 \todo{This is poor man's math. I would like to get variance of $n$, where $n$ is a random variable based on $X$. But on the other hand $X$ is based on $p(n)$... ?}
 
-Next, we apply $d$ to the lengths of horizontal lines from a node $n$ to its parent for phylogeny trees such as in Figure \ref{}. This concerns leaf nodes as well as inner nodes: For any node $n$ we define $down(n)$ by considering each path starting from $n$ to any leaf node under $n$ including $n$ itself. We sum over the $k$-mers assigned to all nodes along each path and set $down(n)$ to be the maximum sum. Likewise, $up(n)$ sums over the $k$-mers assigned to nodes above $n$ to the tree's root excluding $n$. To determine the distance $d$ from $n$ to its parent, i.e. $d_n(E_n/l_n)$, we let $E_n := down(n)$ and $l_n := up(n) + down(n)$.
-
 \begin{figure}[h]
 \centering  
 \begin{tikzpicture}
@@ -399,6 +397,17 @@ Next, we apply $d$ to the lengths of horizontal lines from a node $n$ to its par
 \end{tikzpicture}
 \caption{A plot of the function $d(E/l)$ with $k = 31$ in black. The red curves simulate the effect of an error of $\pm 10\%$ when measuring $E$.}\label{nfunc}
 \end{figure}
+
+Next, we apply $d$ with respect to a node $n$ and its parent for phylogeny trees such as in Figure \ref{}. This concerns leaf nodes as well as inner nodes: For any node $n$ we firstly define $down(n)$ by considering each path starting from $n$ to any leaf node under $n$ including $n$ itself. We sum over the $k$-mers assigned to all nodes along each path and set $down(n)$ to be the maximum sum. Let $p_n$ be the or a path offering to $down(n)$. Secondly $up(n)$ sums over the $k$-mers assigned to nodes above $n$ towards the tree's root excluding $n$. To determine the distance $d$ from $n$ to its parent, i.e. $d_n := d(E_n/l_n)$, we let $E_n := down(n)$ and $l_n := up(n) + down(n)$.
+
+$d_n$ measures the evolutionary distance of $n$ with respect to the leaf of $p_n$. 
+However, to depict the taxonomy tree we would like to obtain just the portion $dp_n$ of $d_n$ from $n$ to its children.
+Let $c_n$ be a child of $n$. We have $d_n \geq d_{c_n}$ because $E_n \geq E_{c_n}$ and because $d$ is monotonous. To determine the corresponding portion we set $dp_n := d_n - \max_{c_n} d_{c_n}$.
+
+Figure \ref{} shows a resulting taxonomy tree incorporating $dp_n$.
+
+% like so: $d(E_n / k_n)$. But unfortunately, the following does not hold: $d_n(E_n/l_n) \neq \sum_i d_{n_i}(E_i/k_i)$.
+
 
     \subsubsection{Comparison with established phylogeny trees}
     
