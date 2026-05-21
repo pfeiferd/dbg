@@ -361,25 +361,24 @@ So $X$, $Y$, $Z$ are data taxons but $X$ is not a leaf node.
     
     \subsubsection{Introduction}
     
-    \subsubsection{The evolutionary distance $d$}
+    \subsubsection{The evolutionary distance $d$ for taxonomy trees}
     
+We briefly introduce an approximation of the evolutionary distance $d$ as a ratio of mutations of two genomes or sequences, respectively. The approximation has been derived before in \cite{skmer} where it is expressed via the Jaccard index over shared $k$-mers between genomes. Besides, \cite{Ondov:2016aa} pointed out a related approximation with a logarithmic damping included. For clarity of discussion, we also derive $d$, but express it in terms of counts available in a Genestrip database and related taxonomy trees. Afterwards, we build on these considerations to adequately integrate $d$ into refined trees such as produced via Genestrip FT. 
     
-    
-    Let $|s|$ be the length of a sequence $s$ transformed to a sequence $s'$ via mutations of bases. We assume that $|s| = |s'|$ and consider the number of observable mutations $n$, i.e. all base positions $1 \leq i \leq |s|$ where $s(i) \neq s'(i)$. We also assume that the mutations are uniformly distributed over $s'$.
-    Let $X$ be a random variable for the number of differing $k$-mers between $s$ and $s'$ depending on the $m$ mutations. For simplicity we assume that there are no duplicate $k$-mers in either $s$ or $s'$ so that $X$ is also the number of differing \emph{unique} $k$-mers. 
+The following assumptions are essentially the same as in \cite{skmer} and \cite{Ondov:2016aa}:
+    Let $|s|$ be the length of a sequence $s$ transformed to a sequence $s'$ via mutations of bases. We assume that $|s| = |s'|$ and consider the number of observable mutations $m$, i.e. all base positions $1 \leq i \leq |s|$ where $s(i) \neq s'(i)$. We also assume that these mutations are uniformly distributed over $s'$.
+    Let $X$ be a random variable for the number of differing $k$-mers between $s$ and $s'$ depending on the $m$ mutations. For simplicity we assume that there are no duplicate $k$-mers in either $s$ or $s'$ so that $X$ is also the number of differing \emph{unique} $k$-mers. As our last simplification, we consider observations of $k$-mers within $s$ and analogously within $s'$ to be mutually independent. 
 
-    A mutation occurs at a chance of $m/|s|$. So the probability for a changed $k$-mer, which must contain a least on mutation, is $p(m) = 1 - (1 - m/|s|)^k$. As a further simplification, we consider observations of $k$-mers within $s$ and analogously within $s'$ to be mutually independent.\todo{Explain why this is justified...} Since the number of $k$-mers in $s$ and $s'$ is $|s|-k+1$, $X$ follows the binomial distribution $X \sim B(|s|-k+1, p(m))$.   
-        
+    A mutation occurs at a chance of $m/|s|$. So the probability for a changed $k$-mer, which must contain a least on mutation, is $p(m) = 1 - (1 - m/|s|)^k$. Since the number of $k$-mers in $s$ and $s'$ is $|s|-k+1$, $X$ follows the binomial distribution $X \sim B(|s|-k+1, p(m))$.         
     In our context, \emph{we measure the number $E$ of unique $k$-mers differing between $s$ and $s'$ but we want to estimate the distance $d:=m/|s|$ as a ratio of mutations over the sequence $s$}. We therefore approximate $E \approx E[X] = (|s|-k+1) \cdot p(m)$ and solve by $d$:
-    \[ d \approx 1 - \sqrt[k]{1 - E / (|s| - k + 1)} \approx 1 - \sqrt[k]{1 - E / |s|} =: d(E/|s|)\] 
+ \begin{equation}
+d \approx 1 - \sqrt[k]{1 - E / (|s| - k + 1)} \approx 1 - \sqrt[k]{1 - E / |s|} =: d(E/|s|)\label{distanceapprox} 	
+ \end{equation} 
 
-Figure \ref{nfunc} shows a plot of the function $d(E/|s|)$: It starts with a slope of $1/(k-1)$ because when $n$ is small, every mutation results in about $k-1$ different $k$-mers. The estimate $d(E/|s|)$ becomes very sensitive, i.e. less reliable, when $E$ reaches $|s|$. For practical considerations, we therefore indicate it in phylogeny trees, when $d$ exceeds a configurable threshold $t_d$.
+Figure \ref{nfunc} shows a plot of the function $d(E/|s|)$: It starts with a slope of $1/(k-1)$ because when $n$ is small, every mutation results in about $k-1$ different $k$-mers. The estimate $d(E/|s|)$ becomes very sensitive, i.e. less reliable, when $E$ reaches $|s|$. For practical considerations, we therefore indicate it in taxonomy trees, when $d$ exceeds a configurable threshold $t_d$.
 % Better work with slope of derivative ?
 % $d'(E / l) =(1 - E/l)^{1/k - 1}$ 
 % or even determine the variance
-
-\todo{Some equations from \cite{skmer} are pretty much the same as the estimate from above -- refer to it put derivation from above in the Appendix. Use distance measure $d$}
-
 \todo{This is poor man's math. I would like to get variance of $n$, where $n$ is a random variable based on $X$. But on the other hand $X$ is based on $p(n)$... ?}
 
 \begin{figure}[h]
@@ -401,19 +400,19 @@ Figure \ref{nfunc} shows a plot of the function $d(E/|s|)$: It starts with a slo
 \caption{A plot of the function $d(E/|s|)$ with $k = 31$ in black. The red curves simulate the effect of an error of $\pm 10\%$ when measuring $E$.}\label{nfunc}
 \end{figure}
 
-Next, we apply $d$ to a node $n$ in the context of phylogeny trees such as in Figure \ref{}:
+Next, we apply $d$ to a node $n$ in the context of a taxonomy tree such as in Figure \ref{}:
 \begin{itemize}
 \item
-For that, $above(n)$ sums over the $k$-mers assigned to nodes above $n$ towards the tree's root excluding $n$. 
+For that, $above(n)$ shall sum over the $k$-mers assigned to nodes above $n$ towards the tree's root excluding $n$. 
 \item 
-Regarding $below(n)$, we consider each path starting from $n$ to any leaf node under $n$ including $n$ itself. We sum over the $k$-mers assigned to all nodes along each path and set $below(n)$ to be the maximum sum from such paths. $p_n$ denotes the/a corresponding path of $below(n)$. 
+Regarding $below(n)$, we consider each path starting from $n$ to any leaf node under $n$ including $n$ itself. We sum over the $k$-mers assigned to all nodes along each path and set $below(n)$ to be the maximum sum from such paths. $p_n$ denotes the/a corresponding path for $below(n)$. 
 \end{itemize}
-To determine the distance $d$ from $n$ to its parent, i.e. $d_n := d(E_n/|s|_n)$, we let $E_n := below(n)$ and $|s|_n := above(n) + below(n)$.
+To determine the distance $d$ from the node $n$ to its parent, i.e. $d_n := d(E_n/|s|_n)$, we let $E_n := below(n)$ and $|s|_n := above(n) + below(n)$.
 $d_n$ measures the evolutionary distance from $n$'s parent to the leaf of $p_n$. 
-As we use the maximum sum in $below(n)$, the estimate is conservative.
+Since we use the maximum sum along $p_n$ in $below(n)$, the estimate is conservative.
 
-However, to depict evolutionary distances in a taxonomy tree we require just a portion of $d_n$, namely the portion $dp_n$ for the branch of $n$'s parent to $n$ itself.
-Let $C$ be the set of children of $n$. For any $c \in C$ we have $d_n \geq d_c$ because $E_n = down(n) \geq E_c = down(c)$, $|s_n| \geq |s_c|$ and because $d$ is monotonous. To estimate the desired portion, we set $dp_n := d_n - \max_{c \in C} d_{c} \geq 0$. ??This is an optimistic estimate for $dp_n$ for subtracting a corresponding maximum??
+To depict evolutionary distances in a given, refined taxonomy tree we must represent the portion $dp_n$ of $d_n$ relating to the branch of a node $n$'s parent to $n$ itself.
+Let $C$ be the set of children of $n$. For any $c \in C$ we have $d_n \geq d_c$ because $E_n = down(n) \geq E_c = down(c)$, $|s_n| \geq |s_c|$ and because $d$ is monotonically increasing. To estimate the desired portion, we set $dp_n := d_n - \max_{c \in C} d_{c} \geq 0$. ??This is an optimistic estimate for $dp_n$ for subtracting a corresponding maximum??
 
 % like so: $d(E_n / k_n)$. But unfortunately, the following does not hold: $d_n(E_n/l_n) \neq \sum_i d_{n_i}(E_i/k_i)$.
 
