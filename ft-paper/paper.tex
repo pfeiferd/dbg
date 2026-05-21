@@ -259,7 +259,7 @@ $X$, $Y$ and $Z$ are the same as in Figure \ref{ftsketch}. Since $Y$ and $Z$ are
   \begin{figure}[h]%
         \centering
 
-         \caption{Comparison of original database contents (1) and the resulting refined database contents for the genus \enquote{Orthopoxvirus} according to the dendrogram from Figure \ref{dendrogram}. The database contents is depicted as part of taxonomy tree in both cases and is directly generated with Genestrip.}\label{dendrogram}
+         \caption{Comparison of original database contents (1) and the resulting refined database contents (2) for the genus \enquote{Orthopoxvirus} according to the dendrogram from Figure \ref{dendrogram}. The database contents is depicted as part of taxonomy tree in both cases the tree was generated directly via Genestrip.}\label{refcomp}
     \end{figure}
         
     \section{Results}\label{results}
@@ -357,7 +357,7 @@ So $X$, $Y$, $Z$ are data taxons but $X$ is not a leaf node.
     
     Ratio-based positive count: If the class taxon is on the path between the taxonomic root and the correct species taxon: $1$ divided by the number of species taxons that are subordinate, above or identical to the class taxon; $0$ otherwise.
         
-    \subsection{Application in phylogeny}
+    \subsection{Application to phylogeny}
     
     \subsubsection{Introduction}
     
@@ -400,7 +400,7 @@ Figure \ref{nfunc} shows a plot of the function $d(E/|s|)$: It starts with a slo
 \caption{A plot of the function $d(E/|s|)$ with $k = 31$ in black. The red curves simulate the effect of an error of $\pm 10\%$ when measuring $E$.}\label{nfunc}
 \end{figure}
 
-Next, we apply $d$ to a node $n$ in the context of a taxonomy tree such as in Figure \ref{}:
+Next, we apply $d$ to a node $n$ in the context of a taxonomy tree such as in Figure \ref{refcomp} (2):
 \begin{itemize}
 \item
 For that, $above(n)$ shall sum over the $k$-mers assigned to nodes above $n$ towards the tree's root excluding $n$. 
@@ -410,9 +410,8 @@ Regarding $below(n)$, we consider each path starting from $n$ to any leaf node u
 To determine the distance $d$ from the node $n$ to its parent, i.e. $d_n := d(E_n/|s|_n)$, we let $E_n := below(n)$ and $|s|_n := above(n) + below(n)$.
 $d_n$ measures the evolutionary distance from $n$'s parent to the leaf of $p_n$. 
 Since we use the maximum sum along $p_n$ in $below(n)$, the estimate is conservative.
-
-To depict evolutionary distances in a given, refined taxonomy tree we must represent the portion $dp_n$ of $d_n$ relating to the branch of a node $n$'s parent to $n$ itself.
-Let $C$ be the set of children of $n$. For any $c \in C$ we have $d_n \geq d_c$ because $E_n = down(n) \geq E_c = down(c)$, $|s_n| \geq |s_c|$ and because $d$ is monotonically increasing. To estimate the desired portion, we set $dp_n := d_n - \max_{c \in C} d_{c} \geq 0$. ??This is an optimistic estimate for $dp_n$ for subtracting a corresponding maximum??
+However, to depict evolutionary distances in a given, refined taxonomy tree we must represent the portion $dp_n$ of $d_n$ relating to the branch from a node $n$'s parent to $n$ itself.
+Let $c$ be the child of $n$ on $p_n$. We have $d_n \geq d_c$ because $E_n = down(n) \geq E_c = down(c)$, $|s_n| \geq |s_c|$ and because $d$ is monotonically increasing. So, to estimate the desired portion, we set $dp_n := d_n - d_{c}\geq 0$.
 
 % like so: $d(E_n / k_n)$. But unfortunately, the following does not hold: $d_n(E_n/l_n) \neq \sum_i d_{n_i}(E_i/k_i)$.
 
