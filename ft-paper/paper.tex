@@ -183,14 +183,15 @@ $X$: \texttt{CCT}, $Y$: \texttt{CTT}, $Z$: \texttt{TCA}
 
   \begin{figure}[h]%
         \centering
-
-         \caption{Schematic representation of the lowest common ancestor update in a simplified $k$-mer database.}\label{lcasketch}
+        
+\includegraphics[width=10cm]{figs/orthopox_svgtaxtree.pdf}
+         \caption{Tree representation of a Genestrip $k$-mer database including four Orthopoxvirus species. The tree represents the state \emph{right after the LCA-update} as in Figure \ref{ftsketch} (2). The number of $k$-mers assigned to a node is printed in brackets. The length of the horizontal lines is equivalent to the ratio of $k$-mers under a node.}\label{simplelcadb}
     \end{figure}   
 
   \begin{figure}[h]%
         \centering
 
-         \caption{Intersection counts between Orthopoxvirus species for $k$-mers pushed to the genus \enquote{Orthopoxvirus} via the LCA update according to Figure \ref{lcasketch}.}\label{intersectioncounts}
+         \caption{Intersection counts of $k$-mers for the tree node on genus \enquote{Orthopoxvirus} regarding the database from Figure \ref{simplelcadb}.}\label{intersectioncounts}
     \end{figure}
     
   \begin{figure}[h]%
@@ -259,7 +260,9 @@ $X$, $Y$ and $Z$ are the same as in Figure \ref{ftsketch}. Since $Y$ and $Z$ are
   \begin{figure}[h]%
         \centering
 
-         \caption{Comparison of original database contents (1) and the resulting refined database contents (2) for the genus \enquote{Orthopoxvirus} according to the dendrogram from Figure \ref{dendrogram}. The database contents is depicted as part of taxonomy tree in both cases the tree was generated directly via Genestrip.}\label{refcomp}
+\includegraphics[width=12cm]{figs/orthopox_ftsvgtaxtree.pdf}
+
+         \caption{Tree representation of a Genestrip $k$-mer database including four Orthopoxvirus species. The tree represents the state right \emph{after the refinement} as in Figure \ref{ftsketch} (4). Figure \ref{simplelcadb} shows the same database before the refinement. The number of $k$-mers assigned to a node is printed in brackets. The number of $k$-mers on the genus decreased from 239,265 to 134,449 because the other $k$-mers got pushed down to nodes typed as \enquote{REFINED}. The length of the horizontal lines is equivalent to the ratio of $k$-mers under a node.}\label{simplerefdb}
     \end{figure}
         
     \section{Results}\label{results}
@@ -313,22 +316,22 @@ So $X$, $Y$, $Z$ are data taxons but $X$ is not a leaf node.
 \vspace{0.2cm}
 
 \begin{minipage}[c]{0.25\textwidth}
-\begin{flushleft}(3) The taxonomy transformation introduces the node $h$ under $X$ and moves \texttt{CCT} away from $X$ to $h$. So $X$ is no data taxon anymore but $h$ is.
+\begin{flushleft}(3) The tree transformation introduces the node $h$ under $X$ and moves \texttt{CCT} away from $X$ to $h$. So $X$ is no data taxon anymore but $h_X$ is.
 \end{flushleft}
 \end{minipage}
 \begin{minipage}[c]{0.2\textwidth}
 \begin{tikzpicture}
 \tikzset{every tree node/.style={align=center,anchor=north}}
-\Tree [.$W$ [.$X$ $h$ $Y$ ] $Z$ ]
+\Tree [.$W$ [.$X$ $h_X$ $Y$ ] $Z$ ]
 \end{tikzpicture}
 \end{minipage}
 \begin{minipage}[c]{0.25\textwidth}
-\begin{flushleft}(4) The resulting database with the \emph{transformed} taxonomy and $2$-mers assigned accordingly: The $2$-mer \texttt{CC} remains at $h_X$ and therefore, it does not lower $Y$'s path precision.\end{flushleft}
+\begin{flushleft}(4) The resulting database with the \emph{transformed} tree and $2$-mers assigned accordingly: The $2$-mer \texttt{CC} remains at $h_X$ and therefore, it does not lower $Y$'s path precision.\end{flushleft}
 \end{minipage}
 \begin{minipage}[c]{0.2\textwidth}
 \begin{tikzpicture}
 \tikzset{every tree node/.style={align=center,anchor=north}}
-\Tree [.$W$ [{$h$\\\texttt{CC}} {$Y$\\\texttt{TT}} ].{$X$\\\texttt{CT}} {$Z$\\ \texttt{TC},\texttt{CA}} ]
+\Tree [.$W$ [{$h_X$\\\texttt{CC}} {$Y$\\\texttt{TT}} ].{$X$\\\texttt{CT}} {$Z$\\ \texttt{TC},\texttt{CA}} ]
 \end{tikzpicture}
 \end{minipage}
 
@@ -405,12 +408,12 @@ Next, we apply $d$ to a node $n$ in the context of a taxonomy tree such as in Fi
 \item
 For that, $above(n)$ shall sum over the $k$-mers assigned to nodes above $n$ towards the tree's root excluding $n$. 
 \item 
-Regarding $below(n)$, we consider each path starting from $n$ to any leaf node under $n$ including $n$ itself. We sum over the $k$-mers assigned to all nodes along each path and set $below(n)$ to be the maximum sum from such paths. $p_n$ denotes the/a corresponding path for $below(n)$. 
+Regarding $below(n)$, we consider each path starting from $n$ to any leaf node under $n$ including $n$ itself. We sum over the $k$-mers assigned to all nodes along each path and set $below(n)$ to be the maximum sum from such paths. $p_n$ denotes some path leading to maximum sum of $below(n)$. 
 \end{itemize}
 To determine the distance $d$ from the node $n$ to its parent, i.e. $d_n := d(E_n/|s|_n)$, we let $E_n := below(n)$ and $|s|_n := above(n) + below(n)$.
 $d_n$ measures the evolutionary distance from $n$'s parent to the leaf of $p_n$. 
 Since we use the maximum sum along $p_n$ in $below(n)$, the estimate is conservative.
-However, to depict evolutionary distances in a given, refined taxonomy tree we must represent the portion $dp_n$ of $d_n$ relating to the branch from a node $n$'s parent to $n$ itself.
+However, to depict evolutionary distances in a given taxonomy tree we must represent the portion $dp_n$ of $d_n$ relating to the branch from a node $n$'s parent to $n$ itself.
 Let $c$ be the child of $n$ on $p_n$. We have $d_n \geq d_c$ because $E_n = down(n) \geq E_c = down(c)$, $|s_n| \geq |s_c|$ and because $d$ is monotonically increasing. So, to estimate the desired portion, we set $dp_n := d_n - d_{c}\geq 0$.
 
 % like so: $d(E_n / k_n)$. But unfortunately, the following does not hold: $d_n(E_n/l_n) \neq \sum_i d_{n_i}(E_i/k_i)$.
