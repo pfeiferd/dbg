@@ -182,10 +182,9 @@ $X$: \texttt{CCT}, $Y$: \texttt{CTT}, $Z$: \texttt{TCA}
     \section{Implementation}\label{methods}
 
   \begin{figure}[h]%
-        \centering
-        
-\includegraphics[width=10cm]{figs/orthopox_svgtaxtree.pdf}
-         \caption{Tree representation of a Genestrip $k$-mer database including four Orthopoxvirus species. The tree represents the state \emph{right after the LCA-update} as in Figure \ref{ftsketch} (2). The number of $k$-mers assigned to a node is printed in brackets. The length of the horizontal lines is equivalent to the ratio of $k$-mers under a node.}\label{simplelcadb}
+        \centering        
+\includegraphics[width=12cm]{figs/orthopox_svgtaxtree.pdf}
+         \caption{Tree representation of a Genestrip $k$-mer database including three Orthopoxvirus species. The tree represents the state \emph{right after the LCA-update} as in Figure \ref{ftsketch} (2). The number of $k$-mers assigned to a node is printed in brackets. The length of the horizontal lines is equivalent to the ratio of $k$-mers under a node.}\label{simplelcadb}
     \end{figure}   
 
   \begin{figure}[h]%
@@ -196,8 +195,39 @@ $X$: \texttt{CCT}, $Y$: \texttt{CTT}, $Z$: \texttt{TCA}
     
   \begin{figure}[h]%
         \centering
-
-         \caption{Dendrogram of \enquote{Orthopoxvirus} species obtained via agglomerative clustering on the basis of the Jaccard index applied to the intersection counts from Figure \ref{intersectioncounts}.}\label{dendrogram}
+\begin{tikzpicture}[sloped,scale=0.8]
+\draw[<-] (0,-2.500000) -- node[above]{Similarity} (8.000000,-2.500000);
+\draw (0,-1.000000) -- (8.000000,-1.000000);
+\draw (0.000000,-1.000000) -- (0.000000,-1.100000);
+\node at (0.000000,-1.400000) {$1$};
+\draw (1.600000,-1.000000) -- (1.600000,-1.100000);
+\node at (1.600000,-1.400000) {$0.8$};
+\draw (3.200000,-1.000000) -- (3.200000,-1.100000);
+\node at (3.200000,-1.400000) {$0.6$};
+\draw (4.800000,-1.000000) -- (4.800000,-1.100000);
+\node at (4.800000,-1.400000) {$0.4$};
+\draw (6.400000,-1.000000) -- (6.400000,-1.100000);
+\node at (6.400000,-1.400000) {$0.2$};
+\draw (8.000000,-1.000000) -- (8.000000,-1.100000);
+\node at (8.000000,-1.400000) {$0$};
+\node [anchor=east] (n3) at (0,0.000000) {Orthopoxvirus vaccinia (10245)
+};
+\node [anchor=east] (n4) at (0,1.000000) {OTHER};
+\node (n2) at (2.809248,0.500000) {};
+\node [anchor=east] (n5) at (0,2.000000) {Orthopoxvirus cowpox (3431481)
+};
+\node (n1) at (3.487487,1.250000) {};
+\node [anchor=east] (n6) at (0,3.000000) {Orthopoxvirus monkeypox (3431483)
+};
+\node (n0) at (3.915213,2.125000) {};
+\draw  (n0.center) |- (n1.center);
+\draw  (n0.center) |- (n6.east);
+\draw  (n1.center) |- (n2.center);
+\draw  (n1.center) |- (n5.east);
+\draw  (n2.center) |- (n3.east);
+\draw  (n2.center) |- (n4.east);
+\end{tikzpicture}
+         \caption{Dendrogram for the node \enquote{Orthopoxvirus (10242, genus)} from Figure \ref{simplelcadb} obtained via agglomerative clustering on the basis of the Jaccard index when applied to the intersection counts from Figure \ref{intersectioncounts}.}\label{dendrogram}
     \end{figure}
     
     
@@ -255,14 +285,10 @@ $X$ is stored in the database $d$ but $Y$ and $Z$ are not as indicated by the da
 $X$, $Y$ and $Z$ are the same as in Figure \ref{ftsketch}. Since $Y$ and $Z$ are not represented in $d$, their potential $k$-mers shared with $X$ at the genus $W$ represented by means of $O$. As a drawback, the missing nodes for $Y$ and $Z$ prohibit the refinement via $h$ as in Figure \ref{ftsketch}.}\label{ftother}
 \end{figure}   
     
-    
-
   \begin{figure}[h]%
         \centering
-
 \includegraphics[width=12cm]{figs/orthopox_ftsvgtaxtree.pdf}
-
-         \caption{Tree representation of a Genestrip $k$-mer database including four Orthopoxvirus species. The tree represents the state right \emph{after the refinement} as in Figure \ref{ftsketch} (4). Figure \ref{simplelcadb} shows the same database before the refinement. The number of $k$-mers assigned to a node is printed in brackets. The number of $k$-mers on the genus decreased from 239,265 to 134,449 because the other $k$-mers got pushed down to nodes typed as \enquote{REFINED}. The length of the horizontal lines is equivalent to the ratio of $k$-mers under a node.}\label{simplerefdb}
+         \caption{Tree representation of a Genestrip $k$-mer database including three Orthopoxvirus species. The tree represents the state right \emph{after the refinement} as in Figure \ref{ftsketch} (4). Figure \ref{simplelcadb} shows the same database before the refinement. The number of $k$-mers assigned to a node is printed in brackets. The number of $k$-mers on the genus decreased from 239,265 to 134,449 because the other $k$-mers got pushed down to nodes typed as \enquote{REFINED}. The length of the horizontal lines is equivalent to the ratio of $k$-mers under a node.}\label{simplerefdb}
     \end{figure}
         
     \section{Results}\label{results}
@@ -286,6 +312,7 @@ $X$, $Y$ and $Z$ are the same as in Figure \ref{ftsketch}. Since $Y$ and $Z$ are
    As an example, consider Figure \ref{ftsketch}: In (3), the path precision of $Z$ is $2/3$ because there are three $2$-mers on the path from $Z$ to the root $W$ but one of them, \texttt{CT}, is not in $W$'s sequence. In (3), $X$ and $Y$ both have a path precision of $1$. The refined database in (4) has a precision of 1 for $X$, $Y$ \emph{and} $Z$. Path recall is $1$ for all of the cases in (3) and (4). 
         
 We require that each data taxon must be a leaf node in taxonomy tree of database $d$. This can be easily be enforced by a tree transformation explained via (3) and (4) in Figure \ref{fttrans}. If the requirement was not met, then two data taxons on the same path would likely result in an inadequately lowered path precision (as in Figure \ref{fttrans} (1) and (2)). Note that the described transformation leaves the phylogenetic structure of a given taxonomy intact.
+Figure \ref{simplerefdbtrans} exemplifies the transformation when included in the refinement of the database from Figure \ref{simplelcadb}.\footnote{When carefully comparing the $k$-mer counts of similar nodes from Figure \ref{simplerefdb} and \ref{simplerefdbtrans}, one finds minor differences such as for \enquote{10245/OTHER}. Note, that these differences originate in the use probabilistic data structures, i.e. Bloom filters, during the refinement procedure.}
 
 \begin{figure}[h]%
 \centering
@@ -339,6 +366,13 @@ So $X$, $Y$, $Z$ are data taxons but $X$ is not a leaf node.
 
 \caption{Transformation of a database's a taxonomy tree to ensure that every data taxon is a leaf node.}\label{fttrans}
 \end{figure}   
+
+
+  \begin{figure}[h]%
+        \centering
+\includegraphics[width=12cm]{figs/orthopox2_ftsvgtaxtree.pdf}
+         \caption{Tree representation of a Genestrip $k$-mer database including three Orthopoxvirus species. The tree represents the state right \emph{after the refinement} as in Figure \ref{ftsketch} (4), so it is similar to Figure \ref{simplerefdb} \emph{but with the transformation from Figure \ref{fttrans} included.}}\label{simplerefdbtrans}
+    \end{figure}
 
     We report unweighted\footnote{The unweighted average considers every data taxon as equally relevant.} average path precision and average path recall by averaging over all data taxons in $d$ or subsets thereof. In particular, we report averages over all taxons under the same species or the same genus, respectively. E.g. in (3) of Figure \ref{ftsketch}, the average path precision of the genus $W$ is 8/9.
             
@@ -403,7 +437,7 @@ Figure \ref{nfunc} shows a plot of the function $d(E/|s|)$: It starts with a slo
 \caption{A plot of the function $d(E/|s|)$ with $k = 31$ in black. The red curves simulate the effect of an error of $\pm 10\%$ when measuring $E$.}\label{nfunc}
 \end{figure}
 
-Next, we apply $d$ to a node $n$ in the context of a taxonomy tree such as in Figure \ref{refcomp} (2):
+Next, we apply $d$ to a node $n$ in the context of a taxonomy tree such as in Figure \ref{simplerefdb} (2):
 \begin{itemize}
 \item
 For that, $above(n)$ shall sum over the $k$-mers assigned to nodes above $n$ towards the tree's root excluding $n$. 
@@ -415,6 +449,13 @@ $d_n$ measures the evolutionary distance from $n$'s parent to the leaf of $p_n$.
 Since we use the maximum sum along $p_n$ in $below(n)$, the estimate is conservative.
 However, to depict evolutionary distances in a given taxonomy tree we must represent the portion $dp_n$ of $d_n$ relating to the branch from a node $n$'s parent to $n$ itself.
 Let $c$ be the child of $n$ on $p_n$. We have $d_n \geq d_c$ because $E_n = down(n) \geq E_c = down(c)$, $|s_n| \geq |s_c|$ and because $d$ is monotonically increasing. So, to estimate the desired portion, we set $dp_n := d_n - d_{c}\geq 0$.
+
+  \begin{figure}[h]%
+        \centering
+\includegraphics[width=13cm]{figs/orthopox3_ftsvgtaxtree.pdf}
+         \caption{Tree representation of a Genestrip $k$-mer database including three Orthopoxvirus species. The tree represents the state right \emph{after the refinement} as in Figure \ref{ftsketch} (4). The tree depicts that same database as in Figure \ref{simplerefdb} but here, the length of a horizontal line to a node $n$ encodes the evolutionary distance portion $dp_n$. In addition, both $d_n$ and $dp_n$ are stated in brackets. Dashed lines signal less reliable evolutionary distances $d_n > t_n := 0.8$. The reddened lines indicate the branch for the $p_n$ starting from node $n$.}\label{simplerefdbtrans}
+    \end{figure}
+
 
 % like so: $d(E_n / k_n)$. But unfortunately, the following does not hold: $d_n(E_n/l_n) \neq \sum_i d_{n_i}(E_i/k_i)$.
 
