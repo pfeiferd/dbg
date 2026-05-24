@@ -183,7 +183,7 @@ $X$: \texttt{CCT}, $Y$: \texttt{CTT}, $Z$: \texttt{TCA}
 
   \begin{figure}[h]%
         \centering        
-\includegraphics[width=12cm]{figs/orthopox_svgtaxtree.pdf}
+\includegraphics[width=13cm]{figs/orthopox_svgtaxtree.pdf}
          \caption{Tree representation of a Genestrip $k$-mer database including three Orthopoxvirus species. The tree represents the state \emph{right after the LCA-update} as in Figure \ref{ftsketch} (2). The number of $k$-mers assigned to a node is printed in brackets. The length of the horizontal lines is equivalent to the ratio of $k$-mers under a node.}\label{simplelcadb}
     \end{figure}   
 
@@ -306,7 +306,7 @@ $X$, $Y$ and $Z$ are the same as in Figure \ref{ftsketch}. Since $Y$ and $Z$ are
     
   \begin{figure}[h]%
         \centering
-\includegraphics[width=12cm]{figs/orthopox_ftsvgtaxtree.pdf}
+\includegraphics[width=13cm]{figs/orthopox_ftsvgtaxtree.pdf}
          \caption{Tree representation of a Genestrip $k$-mer database including three Orthopoxvirus species. The tree represents the state right \emph{after the refinement} as in Figure \ref{ftsketch} (4). Figure \ref{simplelcadb} shows the same database before the refinement. The number of $k$-mers assigned to a node is printed in brackets. The number of $k$-mers on the genus decreased from 239,265 to 134,449 because the other $k$-mers got pushed down to nodes typed as \enquote{REFINED}. The length of the horizontal lines is equivalent to the ratio of $k$-mers under a node.}\label{simplerefdb}
     \end{figure}
         
@@ -389,7 +389,7 @@ So $X$, $Y$, $Z$ are data taxons but $X$ is not a leaf node.
 
   \begin{figure}[h]%
         \centering
-\includegraphics[width=12cm]{figs/orthopox2_ftsvgtaxtree.pdf}
+\includegraphics[width=13cm]{figs/orthopox2_ftsvgtaxtree.pdf}
          \caption{Tree representation of a Genestrip $k$-mer database including three Orthopoxvirus species. The tree represents the state right \emph{after the refinement} as in Figure \ref{ftsketch} (4), so it is similar to Figure \ref{simplerefdb} \emph{but with the transformation from Figure \ref{fttrans} included.}}\label{simplerefdbtrans}
     \end{figure}
 
@@ -456,25 +456,27 @@ Figure \ref{nfunc} shows a plot of the function $d(E/|s|)$: It starts with a slo
 \caption{A plot of the function $d(E/|s|)$ with $k = 31$ in black. The red curves simulate the effect of an error of $\pm 10\%$ when measuring $E$.}\label{nfunc}
 \end{figure}
 
-Next, we apply $d$ to a node $n$ in the context of a taxonomy tree such as in Figure \ref{simplerefdb} (2). More precisely, we estimate $d_n$ as the maximum evolutionary distance \emph{from $n$'s parent to the data taxons under $n$}:
+Next, we apply $d$ to a node $n$ in the context of a taxonomy tree such as in Figure \ref{simplerefdb} (2). More precisely, we estimate $d_n$ to be the maximum evolutionary distance \emph{from $n$'s parent to the data taxons under $n$}:
 \begin{itemize}
 \item
 For that, $above(n)$ shall sum over the $k$-mers assigned to nodes above $n$ towards the tree's root excluding $n$. 
 \item 
 Regarding $below(n)$, we consider each path starting from $n$ to any leaf node under $n$ including $n$ itself. We sum over the $k$-mers assigned to all nodes along each path and set $below(n)$ to be the maximum sum from such paths. $p_n$ denotes some path leading to the maximum sum of $below(n)$. 
 \end{itemize}
-We set $d_n := d(E_n/|s_n|)$ by letting $E_n := below(n)$ and $|s|_n := above(n) + below(n)$.
+We set $d_n := d(E_n/|s_n|)$ by letting $E_n := below(n)$ and $|s_n| := above(n) + below(n)$.
 This way, $d_n$ measures the evolutionary distance from $n$'s parent to the leaf of $p_n$. 
-Since we use the maximum sum along $p_n$ in $below(n)$, the estimate is conservative.
+Since we use the maximum sum in $below(n)$, this estimate is conservative for $n$.
 However, to depict evolutionary distances in a given taxonomy tree we must represent the portion $dp_n$ of $d_n$ relating to the branch from a node $n$'s parent to $n$ itself.
-Let $c$ be the child of $n$ on $p_n$. We have $d_n \geq d_c$ because $E_n = below(n) \geq E_c = below(c)$, $|s_n| \geq |s_c|$ and because $d$ is monotonically increasing. So, to estimate the desired portion, we set $dp_n := d_n - d_{c}\geq 0$.
+Let $c$ be the child of $n$ on the path $p_n$. We have $d_n \geq d_c$ because $E_n = below(n) \geq E_c = below(c)$, $|s_n| \geq |s_c|$ and because $d$ is monotonically increasing. So, to estimate the desired portion, we simply set $dp_n := d_n - d_{c}\geq 0$.
 
-Figure \ref{simplerefdbdist} depicts a resulting taxonomy tree for the same database as in Figure \ref{simplerefdb} but with horizontal line lengths enconding distance portions. \footnote{As an exception, we set the horizontal line length of a node $n$ to a minimum when $d_n = 1$ although $dp_n$ might be large. This is because the resulting distance portion is too unreliable and tends to cause a large but non-informative indentation in the tree. In Figure \ref{simplerefdbdist}, the exception only holds for the node \enquote{Viruses (10239) acellular root}.}
+Figure \ref{simplerefdbdist} depicts a resulting taxonomy tree for the same database as in Figure \ref{simplerefdb} but with horizontal line lengths enconding distance portions.\footnote{We set the horizontal line length of a node $n$ to a minimum when $d_n = 1$ although $dp_n$ might be large. This is because the resulting distance portion is too unreliable and tends to cause a large but non-informative indentation in the tree. In Figure \ref{simplerefdbdist}, this exception affects for the node \enquote{Viruses (10239) acellular root} only.}
 
   \begin{figure}[h]%
         \centering
 \includegraphics[width=13cm]{figs/orthopox3_ftsvgtaxtree.pdf}
-         \caption{Tree representation of a Genestrip $k$-mer database including three Orthopoxvirus species. The database is in the state \emph{right after the refinement} as in Figure \ref{ftsketch} (4). The tree depicts the same database as in Figure \ref{simplerefdb} but here, the length of a horizontal line to a node $n$ encodes the evolutionary distance portion $dp_n$. Both $d_n$ and $dp_n$ are also printed in brackets. Dashed lines signal less reliable evolutionary distances $d_n > t_n := 0.8$. The reddened lines indicate the branch for the $p_n$ starting from node $n$.}\label{simplerefdbdist}
+         \caption{Tree representation of a Genestrip $k$-mer database including three Orthopoxvirus species. The database is in the state \emph{right after the refinement} as in Figure \ref{ftsketch} (4). The tree depicts the same database as in Figure \ref{simplerefdb} but here, the length of a horizontal line to a node $n$ encodes the evolutionary distance portion $dp_n$. Both $d_n$ and $dp_n$ are also printed in brackets. The reddened lines indicate the branch for the $p_n$ starting from node $n$.
+% Dashed lines signal less reliable evolutionary distances $d_n > t_n := 0.8$.
+ }\label{simplerefdbdist}
     \end{figure}
 
 
