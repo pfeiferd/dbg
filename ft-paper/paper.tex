@@ -419,7 +419,7 @@ So $X$, $Y$, $Z$ are data taxons but $X$ is not a leaf node.
     
     \subsubsection{The evolutionary distance $d$ for taxonomy trees}
     
-We briefly introduce an approximation of the evolutionary distance $d$ as a ratio of mutations of genomes or sequences, respectively. The approximation has been derived before in \cite{skmer} where it is expressed via the Jaccard index over shared $k$-mers between genomes. Besides, \cite{Ondov:2016aa} pointed out a related approximation with a logarithmic damping included. For clarity of discussion, we also derive $d$, but express it in terms of counts available in a Genestrip database and related taxonomy trees. Afterwards, we build on these considerations to adequately integrate $d$ into refined trees such as produced via Genestrip FT. 
+We briefly introduce an approximation of the evolutionary distance $d$ as a ratio of mutations of genomes or sequences, respectively. The approximation has been derived before in \cite{skmer} where it is expressed via the Jaccard index over shared $k$-mers between genomes. Besides, \cite{Ondov:2016aa} pointed out a similar approximation. For clarity of discussion, we also derive $d$, but express it in terms of counts available in a Genestrip database and related taxonomy trees. Afterwards, we build on these considerations to adequately integrate $d$ into refined trees such as produced via Genestrip-FT. 
     
 The following assumptions are essentially the same as in \cite{skmer} and \cite{Ondov:2016aa}:
     Let $|s|$ be the length of a sequence $s$ transformed to a sequence $s'$ via mutations of bases. We assume that $|s| = |s'|$ and consider the number of observable mutations $m$, i.e. all base positions $1 \leq i \leq |s|$ where $s(i) \neq s'(i)$. We also assume that these mutations are uniformly distributed over $s'$.
@@ -456,23 +456,25 @@ Figure \ref{nfunc} shows a plot of the function $d(E/|s|)$: It starts with a slo
 \caption{A plot of the function $d(E/|s|)$ with $k = 31$ in black. The red curves simulate the effect of an error of $\pm 10\%$ when measuring $E$.}\label{nfunc}
 \end{figure}
 
-Next, we apply $d$ to a node $n$ in the context of a taxonomy tree such as in Figure \ref{simplerefdb} (2):
+Next, we apply $d$ to a node $n$ in the context of a taxonomy tree such as in Figure \ref{simplerefdb} (2). More precisely, we estimate $d_n$ as the maximum evolutionary distance \emph{from $n$'s parent to the data taxons under $n$}:
 \begin{itemize}
 \item
 For that, $above(n)$ shall sum over the $k$-mers assigned to nodes above $n$ towards the tree's root excluding $n$. 
 \item 
-Regarding $below(n)$, we consider each path starting from $n$ to any leaf node under $n$ including $n$ itself. We sum over the $k$-mers assigned to all nodes along each path and set $below(n)$ to be the maximum sum from such paths. $p_n$ denotes some path leading to maximum sum of $below(n)$. 
+Regarding $below(n)$, we consider each path starting from $n$ to any leaf node under $n$ including $n$ itself. We sum over the $k$-mers assigned to all nodes along each path and set $below(n)$ to be the maximum sum from such paths. $p_n$ denotes some path leading to the maximum sum of $below(n)$. 
 \end{itemize}
-To determine the distance $d$ from the node $n$ to its parent, i.e. $d_n := d(E_n/|s|_n)$, we let $E_n := below(n)$ and $|s|_n := above(n) + below(n)$.
-$d_n$ measures the evolutionary distance from $n$'s parent to the leaf of $p_n$. 
+We set $d_n := d(E_n/|s_n|)$ by letting $E_n := below(n)$ and $|s|_n := above(n) + below(n)$.
+This way, $d_n$ measures the evolutionary distance from $n$'s parent to the leaf of $p_n$. 
 Since we use the maximum sum along $p_n$ in $below(n)$, the estimate is conservative.
 However, to depict evolutionary distances in a given taxonomy tree we must represent the portion $dp_n$ of $d_n$ relating to the branch from a node $n$'s parent to $n$ itself.
-Let $c$ be the child of $n$ on $p_n$. We have $d_n \geq d_c$ because $E_n = down(n) \geq E_c = down(c)$, $|s_n| \geq |s_c|$ and because $d$ is monotonically increasing. So, to estimate the desired portion, we set $dp_n := d_n - d_{c}\geq 0$.
+Let $c$ be the child of $n$ on $p_n$. We have $d_n \geq d_c$ because $E_n = below(n) \geq E_c = below(c)$, $|s_n| \geq |s_c|$ and because $d$ is monotonically increasing. So, to estimate the desired portion, we set $dp_n := d_n - d_{c}\geq 0$.
+
+Figure \ref{simplerefdbdist} depicts a resulting taxonomy tree for the same database as in Figure \ref{simplerefdb} but with horizontal line lengths enconding distance portions. \footnote{As an exception, we set the horizontal line length of a node $n$ to a minimum when $d_n = 1$ although $dp_n$ might be large. This is because the resulting distance portion is too unreliable and tends to cause a large but non-informative indentation in the tree. In Figure \ref{simplerefdbdist}, the exception only holds for the node \enquote{Viruses (10239) acellular root}.}
 
   \begin{figure}[h]%
         \centering
 \includegraphics[width=13cm]{figs/orthopox3_ftsvgtaxtree.pdf}
-         \caption{Tree representation of a Genestrip $k$-mer database including three Orthopoxvirus species. The database is in the state \emph{right after the refinement} as in Figure \ref{ftsketch} (4). The tree depicts the same database as in Figure \ref{simplerefdb} but here, the length of a horizontal line to a node $n$ encodes the evolutionary distance portion $dp_n$. Both $d_n$ and $dp_n$ are also printed in brackets. Dashed lines signal less reliable evolutionary distances $d_n > t_n := 0.8$. The reddened lines indicate the branch for the $p_n$ starting from node $n$.}\label{simplerefdbtrans}
+         \caption{Tree representation of a Genestrip $k$-mer database including three Orthopoxvirus species. The database is in the state \emph{right after the refinement} as in Figure \ref{ftsketch} (4). The tree depicts the same database as in Figure \ref{simplerefdb} but here, the length of a horizontal line to a node $n$ encodes the evolutionary distance portion $dp_n$. Both $d_n$ and $dp_n$ are also printed in brackets. Dashed lines signal less reliable evolutionary distances $d_n > t_n := 0.8$. The reddened lines indicate the branch for the $p_n$ starting from node $n$.}\label{simplerefdbdist}
     \end{figure}
 
 
