@@ -17,7 +17,7 @@
 %\usepackage{paper}
 %
 %\usepackage{xstring}
-%\usepackage{csquotes}
+\usepackage{csquotes}
 \usepackage{pgfplots}
 \usepackage{csvsimple}
 \usepackage{siunitx}
@@ -399,7 +399,7 @@ before line=\\\hline]{results/viral_human_virus_accuracy.csv}{}
             \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcolix}
             }\\                        
         \end{tabular}
-\caption{Read classification quality for simulated fastq files from Section \ref{correctness} of the main document analyzed with KrakenUniq, Kraken 2, Ganon and Genestrip using the complete viral databases from Section \ref{broadcov} of the main document but with an evaluation focus on human viruses only. The systems' adaptions for ``(S)" and ``(C)" are based on Table \ref{toolvariants} of the main document.}
+\caption{Read classification quality for simulated fastq files from \enquote{\nameref{correctness}} section of the main document analyzed with KrakenUniq, Kraken 2, Ganon and Genestrip using the complete viral databases from \enquote{\nameref{broadcov}} section of the main document but with an evaluation focus on human viruses only. The systems' adaptions for ``(S)" and ``(C)" are based on Table \ref{toolvariants} of the main document.}
 \label{broadhvcov}
     \end{table}
     
@@ -426,7 +426,7 @@ before line=\\\hline]{results/viral_saliva_rel_accuracy.csv}{}
             \tablenum[table-format=1.2, round-mode = places,round-precision = 2]{\csvcolix}
             }\\                       
         \end{tabular}
-\caption{Read classification quality for the the real-world fastq files from Table \ref{errorsviral} of the main document analyzed with KrakenUniq, Kraken 2, Ganon and Genestrip with an evaluation focus on human viruses only. The evaluation compares the classifications when using a ``human virus only" database against each system's own classifications obtained when using the corresponding complete viral database from Section \ref{broadcov} of the main document. The systems' adaptions for ``(S)" and ``(C)" are based on Table \ref{toolvariants} of the main document. }
+\caption{Read classification quality for the the real-world fastq files from Table \ref{errorsviral} of the main document analyzed with KrakenUniq, Kraken 2, Ganon and Genestrip with an evaluation focus on human viruses only. The evaluation compares the classifications when using a ``human virus only" database against each system's own classifications obtained when using the corresponding complete viral database from \enquote{\nameref{broadcov}} section of the main document. The systems' adaptions for ``(S)" and ``(C)" are based on Table \ref{toolvariants} of the main document. }
 \label{humansalivarelcompl}
     \end{table}
 
@@ -458,7 +458,7 @@ before line=\\\hline]{results/tick-borne_tick-borne_accuracy_short.csv}{}
             \tablenum[table-format=1.2, round-mode = places,round-precision = 2, exponent-mode = fixed,fixed-exponent = 0]{\csvcolix}
             }\\                        
         \end{tabular}
-\caption{Read classification quality for simulated data derived from an analysis of bacterial pathogens in ticks \cite{nanoporeticks}. The results are based on five simulated fastq files generated using NanoSim \cite{10.1093/gigascience/gix010, 10.1093/gigascience/giad013} on the basis of five corresponding real-world, tick-related fastq files. Section \ref{mdbtb} of the main document describes the databases used and Section \ref{ticksim} of the main document discusses the analyzed data.  The systems' adaptions for ``(S)" and ``(C)" are based on Table \ref{toolvariants} (main document); ``Ganon (A)" is described in Section \ref{ticksim} (main document).}
+\caption{Read classification quality for simulated data derived from an analysis of bacterial pathogens in ticks \cite{nanoporeticks}. The results are based on five simulated fastq files generated using NanoSim \cite{10.1093/gigascience/gix010, 10.1093/gigascience/giad013} on the basis of five corresponding real-world, tick-related fastq files. \enquote{\nameref{mdbtb}} section of the main document describes the databases used and \enquote{\nameref{ticksim}} section of the main document discusses the analyzed data.  The systems' adaptions for ``(S)" and ``(C)" are based on Table \ref{toolvariants} (main document); ``Ganon (A)" is described in \enquote{\nameref{ticksim}} section (main document).}
 \label{tickdetres}
     \end{table}
      
