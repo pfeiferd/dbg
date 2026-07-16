@@ -1,0 +1,180 @@
+<svg width="840" height="880" viewBox="0 0 630 660" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="translate(50.845001220703125,600) scale(1)">
+<title>regexp</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-544 532.31,-544 532.31,4 -4,4"/>
+<!-- taxtree -->
+<g id="node1" class="node">
+<title>taxtree</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M135.98,-540C135.98,-540 95.01,-540 95.01,-540 89.01,-540 83.01,-534 83.01,-528 83.01,-528 83.01,-516 83.01,-516 83.01,-510 89.01,-504 95.01,-504 95.01,-504 135.98,-504 135.98,-504 141.98,-504 147.98,-510 147.98,-516 147.98,-516 147.98,-528 147.98,-528 147.98,-534 141.98,-540 135.98,-540"/>
+<text text-anchor="middle" x="115.5" y="-517.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:taxtree</text>
+</g>
+<!-- taxnodes -->
+<g id="node2" class="node">
+<title>taxnodes</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M230.82,-540C230.82,-540 178.17,-540 178.17,-540 172.17,-540 166.17,-534 166.17,-528 166.17,-528 166.17,-516 166.17,-516 166.17,-510 172.17,-504 178.17,-504 178.17,-504 230.82,-504 230.82,-504 236.82,-504 242.82,-510 242.82,-516 242.82,-516 242.82,-528 242.82,-528 242.82,-534 236.82,-540 230.82,-540"/>
+<text text-anchor="middle" x="204.5" y="-517.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:taxnodes</text>
+</g>
+<!-- categories -->
+<g id="node3" class="node">
+<title>categories</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M332.31,-540C332.31,-540 272.68,-540 272.68,-540 266.68,-540 260.68,-534 260.68,-528 260.68,-528 260.68,-516 260.68,-516 260.68,-510 266.68,-504 272.68,-504 272.68,-504 332.31,-504 332.31,-504 338.31,-504 344.31,-510 344.31,-516 344.31,-516 344.31,-528 344.31,-528 344.31,-534 338.31,-540 332.31,-540"/>
+<text text-anchor="middle" x="302.5" y="-517.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:categories</text>
+</g>
+<!-- refseqfna -->
+<g id="node4" class="node">
+<title>refseqfna</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M428.98,-540C428.98,-540 374.01,-540 374.01,-540 368.01,-540 362.01,-534 362.01,-528 362.01,-528 362.01,-516 362.01,-516 362.01,-510 368.01,-504 374.01,-504 374.01,-504 428.98,-504 428.98,-504 434.98,-504 440.98,-510 440.98,-516 440.98,-516 440.98,-528 440.98,-528 440.98,-534 434.98,-540 428.98,-540"/>
+<text text-anchor="middle" x="401.5" y="-517.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">d:refseqfna</text>
+</g>
+<!-- accmap -->
+<g id="node5" class="node">
+<title>accmap</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M516.31,-540C516.31,-540 470.68,-540 470.68,-540 464.68,-540 458.68,-534 458.68,-528 458.68,-528 458.68,-516 458.68,-516 458.68,-510 464.68,-504 470.68,-504 470.68,-504 516.31,-504 516.31,-504 522.31,-504 528.31,-510 528.31,-516 528.31,-516 528.31,-528 528.31,-528 528.31,-534 522.31,-540 516.31,-540"/>
+<text text-anchor="middle" x="493.5" y="-517.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:accmap</text>
+</g>
+<!-- loaddb -->
+<g id="node6" class="node">
+<title>loaddb</title>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M52.99,-540C52.99,-540 12,-540 12,-540 6,-540 0,-534 0,-528 0,-528 0,-516 0,-516 0,-510 6,-504 12,-504 12,-504 52.99,-504 52.99,-504 58.99,-504 64.99,-510 64.99,-516 64.99,-516 64.99,-528 64.99,-528 64.99,-534 58.99,-540 52.99,-540"/>
+<text text-anchor="middle" x="32.5" y="-517.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:loaddb</text>
+</g>
+<!-- kmerindexbloom -->
+<g id="node7" class="node">
+<title>kmerindexbloom</title>
+<path fill="none" stroke="black" d="M260.77,-468C260.77,-468 162.23,-468 162.23,-468 156.23,-468 150.23,-462 150.23,-456 150.23,-456 150.23,-444 150.23,-444 150.23,-438 156.23,-432 162.23,-432 162.23,-432 260.77,-432 260.77,-432 266.77,-432 272.77,-438 272.77,-444 272.77,-444 272.77,-456 272.77,-456 272.77,-462 266.77,-468 260.77,-468"/>
+<text text-anchor="middle" x="211.5" y="-445.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:kmerindexbloom</text>
+</g>
+<!-- kmerindexbloom&#45;&gt;taxtree -->
+<g id="edge1" class="edge">
+<title>kmerindexbloom-&gt;taxtree</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M187.77,-468.3C175.88,-476.97 161.3,-487.6 148.36,-497.04"/>
+<polygon fill="black" stroke="black" points="146.53,-494.04 140.51,-502.76 150.65,-499.7 146.53,-494.04"/>
+</g>
+<!-- kmerindexbloom&#45;&gt;taxnodes -->
+<g id="edge5" class="edge">
+<title>kmerindexbloom-&gt;taxnodes</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M209.77,-468.3C209.04,-475.59 208.17,-484.27 207.35,-492.46"/>
+<polygon fill="black" stroke="black" points="203.87,-492.09 206.36,-502.39 210.84,-492.79 203.87,-492.09"/>
+</g>
+<!-- kmerindexbloom&#45;&gt;categories -->
+<g id="edge4" class="edge">
+<title>kmerindexbloom-&gt;categories</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M233.99,-468.3C245.15,-476.89 258.81,-487.39 270.99,-496.76"/>
+<polygon fill="black" stroke="black" points="268.69,-499.41 278.75,-502.73 272.95,-493.86 268.69,-499.41"/>
+</g>
+<!-- kmerindexbloom&#45;&gt;refseqfna -->
+<g id="edge6" class="edge">
+<title>kmerindexbloom-&gt;refseqfna</title>
+<path fill="none" stroke="black" d="M258.95,-468.48C287.02,-478.82 322.55,-491.92 351.12,-502.44"/>
+<polygon fill="black" stroke="black" points="349.68,-505.64 360.28,-505.81 352.1,-499.07 349.68,-505.64"/>
+</g>
+<!-- kmerindexbloom&#45;&gt;accmap -->
+<g id="edge2" class="edge">
+<title>kmerindexbloom-&gt;accmap</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M272.8,-462.03C318.69,-470.88 383.11,-484.56 447.79,-503.72"/>
+<polygon fill="black" stroke="black" points="446.56,-507.01 457.15,-506.54 448.58,-500.3 446.56,-507.01"/>
+</g>
+<!-- kmerindexbloom&#45;&gt;loaddb -->
+<g id="edge3" class="edge">
+<title>kmerindexbloom-&gt;loaddb</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M165.76,-468.49C141.49,-477.82 110.94,-489.63 75.97,-503.44"/>
+<polygon fill="black" stroke="black" points="74.91,-500.1 66.9,-507.03 77.49,-506.61 74.91,-500.1"/>
+</g>
+<!-- storekmerindex -->
+<g id="node8" class="node">
+<title>storekmerindex</title>
+<path fill="none" stroke="black" d="M263.31,-396C263.31,-396 175.68,-396 175.68,-396 169.68,-396 163.68,-390 163.68,-384 163.68,-384 163.68,-372 163.68,-372 163.68,-366 169.68,-360 175.68,-360 175.68,-360 263.31,-360 263.31,-360 269.31,-360 275.31,-366 275.31,-372 275.31,-372 275.31,-384 275.31,-384 275.31,-390 269.31,-396 263.31,-396"/>
+<text text-anchor="middle" x="219.5" y="-373.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">f:storekmerindex</text>
+</g>
+<!-- storekmerindex&#45;&gt;kmerindexbloom -->
+<g id="edge7" class="edge">
+<title>storekmerindex-&gt;kmerindexbloom</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M217.52,-396.3C216.69,-403.59 215.69,-412.27 214.76,-420.46"/>
+<polygon fill="black" stroke="black" points="211.28,-420.06 213.62,-430.39 218.24,-420.85 211.28,-420.06"/>
+</g>
+<!-- loadkmerindex -->
+<g id="node9" class="node">
+<title>loadkmerindex</title>
+<path fill="none" stroke="black" d="M216.93,-324C216.93,-324 130.07,-324 130.07,-324 124.07,-324 118.07,-318 118.07,-312 118.07,-312 118.07,-300 118.07,-300 118.07,-294 124.07,-288 130.07,-288 130.07,-288 216.93,-288 216.93,-288 222.93,-288 228.93,-294 228.93,-300 228.93,-300 228.93,-312 228.93,-312 228.93,-318 222.93,-324 216.93,-324"/>
+<text text-anchor="middle" x="173.5" y="-301.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:loadkmerindex</text>
+</g>
+<!-- loadkmerindex&#45;&gt;kmerindexbloom -->
+<g id="edge8" class="edge">
+<title>loadkmerindex-&gt;kmerindexbloom</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M163.72,-324.36C154.73,-342.76 144.21,-372.39 154.5,-396 159.19,-406.78 167.28,-416.35 175.91,-424.29"/>
+<polygon fill="black" stroke="black" points="173.57,-426.9 183.46,-430.7 178.1,-421.56 173.57,-426.9"/>
+</g>
+<!-- loadkmerindex&#45;&gt;storekmerindex -->
+<g id="edge9" class="edge">
+<title>loadkmerindex-&gt;storekmerindex</title>
+<path fill="none" stroke="black" d="M184.87,-324.3C190.05,-332.19 196.3,-341.7 202.05,-350.45"/>
+<polygon fill="black" stroke="black" points="199.01,-352.2 207.43,-358.63 204.86,-348.35 199.01,-352.2"/>
+</g>
+<!-- intersectcount -->
+<g id="node10" class="node">
+<title>intersectcount</title>
+<path fill="none" stroke="black" d="M140.2,-252C140.2,-252 58.79,-252 58.79,-252 52.79,-252 46.79,-246 46.79,-240 46.79,-240 46.79,-228 46.79,-228 46.79,-222 52.79,-216 58.79,-216 58.79,-216 140.2,-216 140.2,-216 146.2,-216 152.2,-222 152.2,-228 152.2,-228 152.2,-240 152.2,-240 152.2,-246 146.2,-252 140.2,-252"/>
+<text text-anchor="middle" x="99.5" y="-229.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:intersectcount</text>
+</g>
+<!-- intersectcount&#45;&gt;loaddb -->
+<g id="edge10" class="edge">
+<title>intersectcount-&gt;loaddb</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M95.41,-252.46C84.19,-300.34 52.87,-434.05 39.11,-492.76"/>
+<polygon fill="black" stroke="black" points="35.75,-491.76 36.88,-502.29 42.57,-493.36 35.75,-491.76"/>
+</g>
+<!-- intersectcount&#45;&gt;loadkmerindex -->
+<g id="edge11" class="edge">
+<title>intersectcount-&gt;loadkmerindex</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M117.79,-252.3C126.59,-260.63 137.32,-270.78 147,-279.93"/>
+<polygon fill="black" stroke="black" points="144.39,-282.28 154.06,-286.61 149.2,-277.2 144.39,-282.28"/>
+</g>
+<!-- dendrogram -->
+<g id="node11" class="node">
+<title>dendrogram</title>
+<path fill="none" stroke="black" d="M134.76,-180C134.76,-180 64.23,-180 64.23,-180 58.23,-180 52.23,-174 52.23,-168 52.23,-168 52.23,-156 52.23,-156 52.23,-150 58.23,-144 64.23,-144 64.23,-144 134.76,-144 134.76,-144 140.76,-144 146.76,-150 146.76,-156 146.76,-156 146.76,-168 146.76,-168 146.76,-174 140.76,-180 134.76,-180"/>
+<text text-anchor="middle" x="99.5" y="-157.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:dendrogram</text>
+</g>
+<!-- dendrogram&#45;&gt;intersectcount -->
+<g id="edge12" class="edge">
+<title>dendrogram-&gt;intersectcount</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M99.5,-180.3C99.5,-187.59 99.5,-196.27 99.5,-204.46"/>
+<polygon fill="black" stroke="black" points="96,-204.38 99.5,-214.38 103,-204.38 96,-204.38"/>
+</g>
+<!-- updatestore -->
+<g id="node12" class="node">
+<title>updatestore</title>
+<path fill="none" stroke="black" d="M133.21,-108C133.21,-108 65.79,-108 65.79,-108 59.79,-108 53.79,-102 53.79,-96 53.79,-96 53.79,-84 53.79,-84 53.79,-78 59.79,-72 65.79,-72 65.79,-72 133.21,-72 133.21,-72 139.21,-72 145.21,-78 145.21,-84 145.21,-84 145.21,-96 145.21,-96 145.21,-102 139.21,-108 133.21,-108"/>
+<text text-anchor="middle" x="99.5" y="-85.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">o:updatestore</text>
+</g>
+<!-- updatestore&#45;&gt;loaddb -->
+<g id="edge14" class="edge">
+<title>updatestore-&gt;loaddb</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M75.91,-108.34C64.63,-117.75 51.8,-130.25 43.5,-144 22.25,-179.17 18.5,-191.91 18.5,-233 18.5,-233 18.5,-233 18.5,-379 18.5,-418.45 23.91,-463.77 28.01,-492.39"/>
+<polygon fill="black" stroke="black" points="24.52,-492.69 29.44,-502.07 31.44,-491.66 24.52,-492.69"/>
+</g>
+<!-- updatestore&#45;&gt;loadkmerindex -->
+<g id="edge15" class="edge">
+<title>updatestore-&gt;loadkmerindex</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M124.63,-108.27C136.01,-117.5 148.45,-129.86 155.5,-144 176.72,-186.6 177.75,-243.23 176.01,-276.73"/>
+<polygon fill="black" stroke="black" points="172.53,-276.23 175.37,-286.44 179.52,-276.69 172.53,-276.23"/>
+</g>
+<!-- updatestore&#45;&gt;dendrogram -->
+<g id="edge13" class="edge">
+<title>updatestore-&gt;dendrogram</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M99.5,-108.3C99.5,-115.59 99.5,-124.27 99.5,-132.46"/>
+<polygon fill="black" stroke="black" points="96,-132.38 99.5,-142.38 103,-132.38 96,-132.38"/>
+</g>
+<!-- ftdb -->
+<g id="node13" class="node">
+<title>ftdb</title>
+<polygon fill="none" stroke="black" stroke-width="2" points="126.5,-36 72.5,-36 72.5,0 126.5,0 126.5,-36"/>
+<text text-anchor="middle" x="99.5" y="-13.8" font-family="Helvetica,Arial,sans-serif" font-size="14.00">f:ftdb</text>
+</g>
+<!-- ftdb&#45;&gt;updatestore -->
+<g id="edge16" class="edge">
+<title>ftdb-&gt;updatestore</title>
+<path fill="none" stroke="black" stroke-dasharray="1,5" d="M99.5,-36.3C99.5,-43.59 99.5,-52.27 99.5,-60.46"/>
+<polygon fill="black" stroke="black" points="96,-60.38 99.5,-70.38 103,-60.38 96,-60.38"/>
+</g>
+</g>
+</svg>
