@@ -1,3 +1,107 @@
+@article{Sokal1958ASM,
+  title={A statistical method for evaluating systematic relationships},
+  author={Robert R. Sokal and Charles Duncan Michener},
+  journal={University of Kansas science bulletin},
+  year={1958},
+  volume={38},
+  pages={1409-1438},
+  url={https://api.semanticscholar.org/CorpusID:61950873}
+}
+
+@book{1394399,
+author = {Manning, Christopher D. and Raghavan, Prabhakar and Sch\"{u}tze, Hinrich},
+title = {Introduction to Information Retrieval},
+year = {2008},
+isbn = {0521865719},
+publisher = {Cambridge University Press},
+address = {USA},
+abstract = {Class-tested and coherent, this groundbreaking new textbook teaches web-era information retrieval, including web search and the related areas of text classification and text clustering from basic concepts. Written from a computer science perspective by three leading experts in the field, it gives an up-to-date treatment of all aspects of the design and implementation of systems for gathering, indexing, and searching documents; methods for evaluating systems; and an introduction to the use of machine learning methods on text collections. All the important ideas are explained using examples and figures, making it perfect for introductory courses in information retrieval for advanced undergraduates and graduate students in computer science. Based on feedback from extensive classroom experience, the book has been carefully structured in order to make teaching more natural and effective. Although originally designed as the primary text for a graduate or advanced undergraduate course in information retrieval, the book will also create a buzz for researchers and professionals alike.}
+}
+
+@article{King01031967,
+author = {Benjamin King},
+title = {Step-Wise Clustering Procedures},
+journal = {Journal of the American Statistical Association},
+volume = {62},
+number = {317},
+pages = {86--101},
+year = {1967},
+publisher = {Taylor \& Francis},
+doi = {10.1080/01621459.1967.10482890},
+URL = { https://www.tandfonline.com/doi/abs/10.1080/01621459.1967.10482890 },
+eprint = { https://www.tandfonline.com/doi/pdf/10.1080/01621459.1967.10482890 }
+}
+
+@inbook{jaccard,
+author = {Hancock, John M.},
+publisher = {John Wiley \& Sons, Ltd},
+isbn = {9780471650126},
+title = {Jaccard Distance (Jaccard Index, Jaccard Similarity Coefficient)},
+booktitle = {Dictionary of Bioinformatics and Computational Biology},
+chapter = {},
+pages = {},
+doi = {https://doi.org/10.1002/9780471650126.dob0956},
+url = {https://onlinelibrary.wiley.com/doi/abs/10.1002/9780471650126.dob0956},
+eprint = {https://onlinelibrary.wiley.com/doi/pdf/10.1002/9780471650126.dob0956},
+year = {2014}
+}
+
+
+@article{10.1145/3510449,
+author = {Graf, Thomas Mueller and Lemire, Daniel},
+title = {Binary Fuse Filters: Fast and Smaller Than Xor Filters},
+year = {2022},
+issue_date = {December 2022},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {27},
+issn = {1084-6654},
+url = {https://doi.org/10.1145/3510449},
+doi = {10.1145/3510449},
+abstract = {Bloom and cuckoo filters provide fast approximate set membership while using little memory. Engineers use them to avoid expensive disk and network accesses. The recently introduced xor filters can be faster and smaller than Bloom and cuckoo filters. The xor filters are within 23\% of the theoretical lower bound in storage as opposed to 44\% for Bloom filters. Inspired by Dietzfelbinger and Walzer, we build probabilistic filters—called binary fuse filters—that are within 13\% of the storage lower bound—without sacrificing query speed. As an additional benefit, the construction of the new binary fuse filters can be more than twice as fast as the construction of xor filters. By slightly sacrificing query speed, we further reduce storage to within 8\% of the lower bound. We compare the performance against a wide range of competitive alternatives such as Bloom filters, blocked Bloom filters, vector quotient filters, cuckoo filters, and the recent ribbon filters. Our experiments suggest that binary fuse filters are superior to xor filters.},
+journal = {ACM J. Exp. Algorithmics},
+month = mar,
+articleno = {1.5},
+numpages = {15},
+keywords = {Bloom filters, cuckoo filters, approximate set membership}
+}
+
+@inproceedings{10.1145/2674005.2674994,
+author = {Fan, Bin and Andersen, Dave G. and Kaminsky, Michael and Mitzenmacher, Michael D.},
+title = {Cuckoo Filter: Practically Better Than Bloom},
+year = {2014},
+isbn = {9781450332798},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/2674005.2674994},
+doi = {10.1145/2674005.2674994},
+abstract = {In many networking systems, Bloom filters are used for high-speed set membership tests. They permit a small fraction of false positive answers with very good space efficiency. However, they do not permit deletion of items from the set, and previous attempts to extend "standard" Bloom filters to support deletion all degrade either space or performance.We propose a new data structure called the cuckoo filter that can replace Bloom filters for approximate set membership tests. Cuckoo filters support adding and removing items dynamically while achieving even higher performance than Bloom filters. For applications that store many items and target moderately low false positive rates, cuckoo filters have lower space overhead than space-optimized Bloom filters. Our experimental results also show that cuckoo filters outperform previous data structures that extend Bloom filters to support deletions substantially in both time and space.},
+booktitle = {Proceedings of the 10th ACM International on Conference on Emerging Networking Experiments and Technologies},
+pages = {75–88},
+numpages = {14},
+keywords = {cuckoo hashing, compression, bloom filters},
+location = {Sydney, Australia},
+series = {CoNEXT '14}
+}
+
+@article{genestrip-pub,
+	abstract = {The consumption of main memory resources is a significant burden in k-mer-based metagenomic analysis when creating related databases but also when performing (unique) k-mer-counting and read classification. Genestrip addresses this issue by focusing on small but freely configurable groups of organisms. Regarding the selected organisms, Genestrip produces k-mer databases and results comparable to those of KrakenUniq but at a fraction of its required memory resources. Our tool ensures that during database generation, the most suitable lowest common ancestor taxon is assigned for each stored k-mer by also considering genomes of organisms whose k-mers are not included in the database. This enables read analysis with high precision and recall for the organisms of interest.},
+	author = {Pfeifer, Daniel and Graf, Markus and Rurik, Clas},
+	date = {2026/06/16},
+	date-added = {2026-07-16 10:01:34 +0200},
+	date-modified = {2026-07-16 10:01:34 +0200},
+	doi = {10.1186/s12859-026-06512-1},
+	id = {Pfeifer2026},
+	isbn = {1471-2105},
+	journal = {BMC Bioinformatics},
+	number = {1},
+	pages = {134},
+	title = {Genestrip: exact and efficient read classification for selected groups of organisms},
+	url = {https://doi.org/10.1186/s12859-026-06512-1},
+	volume = {27},
+	year = {2026},
+	bdsk-url-1 = {https://doi.org/10.1186/s12859-026-06512-1}}
+
 
 @article{Ondov:2016aa,
 	abstract = {Mash extends the MinHash dimensionality-reduction technique to include a pairwise mutation distance and P value significance test, enabling the efficient clustering and search of massive sequence collections. Mash reduces large sequences and sequence sets to small, representative sketches, from which global mutation distances can be rapidly estimated. We demonstrate several use cases, including the clustering of all 54,118 NCBI RefSeq genomes in 33 CPU h; real-time database search using assembled or unassembled Illumina, Pacific Biosciences, and Oxford Nanopore data; and the scalable clustering of hundreds of metagenomic samples by composition. Mash is freely released under a BSD license ( https://github.com/marbl/mash ).},
@@ -126,7 +230,7 @@
 }
 
 @article{10.1093/gigascience/giad013,
-    author = {Yang, Chen and Lo, Theodora and Nip, Ka Ming and Hafezqorani, Saber and Warren, Ren� L and Birol, Inanc},
+    author = {Yang, Chen and Lo, Theodora and Nip, Ka Ming and Hafezqorani, Saber and Warren, Renï¿½ L and Birol, Inanc},
     title = {Characterization and simulation of metagenomic nanopore sequencing data with Meta-NanoSim},
     journal = {GigaScience},
     volume = {12},
@@ -139,7 +243,7 @@
 }
 
 @article{10.1093/gigascience/gix010,
-    author = {Yang, Chen and Chu, Justin and Warren, Ren� L and Birol, Inan�},
+    author = {Yang, Chen and Chu, Justin and Warren, Renï¿½ L and Birol, Inanï¿½},
     title = {NanoSim: nanopore sequence read simulator based on statistical characterization},
     journal = {GigaScience},
     volume = {6},
@@ -153,7 +257,7 @@
 }
 
 @article{10.1093/nar/gkab1053,
-    author = {Katz, Kenneth and Shutov, Oleg and Lapoint, Richard and Kimelman, Michael and Brister, J�Rodney and O'Sullivan, Christopher},
+    author = {Katz, Kenneth and Shutov, Oleg and Lapoint, Richard and Kimelman, Michael and Brister, Jï¿½Rodney and O'Sullivan, Christopher},
     title = {The Sequence Read Archive: a decade more of explosive growth},
     journal = {Nucleic Acids Research},
     volume = {50},
@@ -176,7 +280,7 @@
 }
 
 @article{10.1093/nargab/lqaf094,
-    author = {Piro, Vitor�C and Reinert, Knut},
+    author = {Piro, Vitor C and Reinert, Knut},
     title = {ganon2: up-to-date and scalable metagenomics analysis},
     journal = {NAR Genomics and Bioinformatics},
     volume = {7},
@@ -184,7 +288,7 @@
     pages = {lqaf094},
     year = {2025},
     month = {07},
-    abstract = {The fast growth of public genomic sequence repositories greatly contributes to the success of metagenomics. However, they are growing at a faster pace than the computational resources to use them. This challenges current methods, which struggle to take full advantage of massive and fast data generation. We propose a generational leap in performance and usability with ganon2, a sequence classification method that performs taxonomic binning and profiling for metagenomics�analysis. It indexes large datasets with a small memory footprint, maintaining fast, sensitive, and precise classification results. Based on the full NCBI RefSeq and its subsets, ganon2 indices are on average 50\% smaller than state-of-the-art methods. Using 16 simulated samples from various studies, including the CAMI 1+2 challenge, ganon2 achieved up to 0.15 higher median F1-score in taxonomic binning. In profiling, improvements in the F1-score median are up to 0.35, keeping a balanced L1-norm error in the abundance estimation. ganon2 is one of the fastest tools evaluated and enables the use of larger, more diverse, and up-to-date reference sets in daily microbiome analysis, improving the resolution of results. The code is open-source and available with documentation at https://github.com/pirovc/ganon.},
+    abstract = {The fast growth of public genomic sequence repositories greatly contributes to the success of metagenomics. However, they are growing at a faster pace than the computational resources to use them. This challenges current methods, which struggle to take full advantage of massive and fast data generation. We propose a generational leap in performance and usability with ganon2, a sequence classification method that performs taxonomic binning and profiling for metagenomicsï¿½analysis. It indexes large datasets with a small memory footprint, maintaining fast, sensitive, and precise classification results. Based on the full NCBI RefSeq and its subsets, ganon2 indices are on average 50\% smaller than state-of-the-art methods. Using 16 simulated samples from various studies, including the CAMI 1+2 challenge, ganon2 achieved up to 0.15 higher median F1-score in taxonomic binning. In profiling, improvements in the F1-score median are up to 0.35, keeping a balanced L1-norm error in the abundance estimation. ganon2 is one of the fastest tools evaluated and enables the use of larger, more diverse, and up-to-date reference sets in daily microbiome analysis, improving the resolution of results. The code is open-source and available with documentation at https://github.com/pirovc/ganon.},
     issn = {2631-9268},
     doi = {10.1093/nargab/lqaf094},
     url = {https://doi.org/10.1093/nargab/lqaf094},
@@ -219,8 +323,8 @@ author = {Gourl\'{e}, Hadrien and Karlsson-Lindsj\"{o}, Oskar and Hayer, Juliett
 
 @INPROCEEDINGS{9920402,
   author={Linuwih, B. P. and Satrya, G. B. and Mugitama, S. A. and Maulana, M. S.},
-  booktitle={2022 International Seminar on Application for Technology of Information and Communication (iSemantic)}, 
-  title={Space-Efficient Probabilistic Data Structure Ribbon Filter: Analysis, Design, and Optimized Implementation}, 
+  booktitle={2022 International Seminar on Application for Technology of Information and Communication (iSemantic)},
+  title={Space-Efficient Probabilistic Data Structure Ribbon Filter: Analysis, Design, and Optimized Implementation},
   year={2022},
   volume={},
   number={},
@@ -355,13 +459,13 @@ keywords = {cuckoo filters, approximate set membership, Bloom filters}
 	bdsk-url-1 = {https://doi.org/10.1093/nar/gkv1189}}
 
 @misc{Mendelson2016WhatIT,
-      title={What is the distribution of the number of unique original items in a bootstrap sample?}, 
+      title={What is the distribution of the number of unique original items in a bootstrap sample?},
       author={Alex F. Mendelson and Maria A. Zuluaga and Brian F. Hutton and Sebastien Ourselin},
       year={2016},
       eprint={1602.05822},
       archivePrefix={arXiv},
       primaryClass={stat.ML},
-      url={https://arxiv.org/abs/1602.05822}, 
+      url={https://arxiv.org/abs/1602.05822},
 }
 
 @article{bloomfilter,
@@ -376,7 +480,7 @@ number = {7},
 issn = {0001-0782},
 url = {https://doi.org/10.1145/362686.362692},
 doi = {10.1145/362686.362692},
-abstract = {In this paper trade-offs among certain computational factors in hash coding are analyzed. The paradigm problem considered is that of testing a series of messages one-by-one for membership in a given set of messages. Two new hash-coding methods are examined and compared with a particular conventional hash-coding method. The computational factors considered are the size of the hash area (space), the time required to identify a message as a nonmember of the given set (reject time), and an allowable error frequency.The new methods are intended to reduce the amount of space required to contain the hash-coded information from that associated with conventional methods. The reduction in space is accomplished by exploiting the possibility that a small fraction of errors of commission may be tolerable in some applications, in particular, applications in which a large amount of data is involved and a core resident hash area is consequently not feasible using conventional methods.In such applications, it is envisaged that overall performance could be improved by using a smaller core resident hash area in conjunction with the new methods and, when necessary, by using some secondary and perhaps time-consuming test to âcatchâ the small fraction of errors associated with the new methods. An example is discussed which illustrates possible areas of application for the new methods.Analysis of the paradigm problem demonstrates that allowing a small number of test messages to be falsely identified as members of the given set will permit a much smaller hash area to be used without increasing reject time.},
+abstract = {In this paper trade-offs among certain computational factors in hash coding are analyzed. The paradigm problem considered is that of testing a series of messages one-by-one for membership in a given set of messages. Two new hash-coding methods are examined and compared with a particular conventional hash-coding method. The computational factors considered are the size of the hash area (space), the time required to identify a message as a nonmember of the given set (reject time), and an allowable error frequency.The new methods are intended to reduce the amount of space required to contain the hash-coded information from that associated with conventional methods. The reduction in space is accomplished by exploiting the possibility that a small fraction of errors of commission may be tolerable in some applications, in particular, applications in which a large amount of data is involved and a core resident hash area is consequently not feasible using conventional methods.In such applications, it is envisaged that overall performance could be improved by using a smaller core resident hash area in conjunction with the new methods and, when necessary, by using some secondary and perhaps time-consuming test to Ã¢ÂÂcatchÃ¢ÂÂ the small fraction of errors associated with the new methods. An example is discussed which illustrates possible areas of application for the new methods.Analysis of the paradigm problem demonstrates that allowing a small number of test messages to be falsely identified as members of the given set will permit a much smaller hash area to be used without increasing reject time.},
 journal = {Commun. ACM},
 month = jul,
 pages = {422-426},
@@ -444,7 +548,7 @@ keywords = {storage layout, storage efficiency, searching, scatter storage, retr
     pages = {3402-3404},
     year = {2014},
     month = {08},
-    abstract = {Large datasets can be screened for sequences from a specific organism, quickly and with low memory requirements, by a data structure that supports time- and memory-efficient set membership queries. Bloom filters offer such queries but require that false positives be controlled. We present BioBloom Tools, a Bloom filter-based sequence-screening tool that is faster than BWA, Bowtie 2 (popular alignment algorithms) and FACS (a membership query algorithm). It delivers accuracies comparable with these tools, controls false positives and has low memory requirements.Availability and implementaion: Â www.bcgsc.ca/platform/bioinfo/software/biobloomtoolsContact: Â cjustin@bcgsc.ca or ibirol@bcgsc.caSupplementary information: Â Supplementary data are available at Bioinformatics online.},
+    abstract = {Large datasets can be screened for sequences from a specific organism, quickly and with low memory requirements, by a data structure that supports time- and memory-efficient set membership queries. Bloom filters offer such queries but require that false positives be controlled. We present BioBloom Tools, a Bloom filter-based sequence-screening tool that is faster than BWA, Bowtie 2 (popular alignment algorithms) and FACS (a membership query algorithm). It delivers accuracies comparable with these tools, controls false positives and has low memory requirements.Availability and implementaion: ÃÂ www.bcgsc.ca/platform/bioinfo/software/biobloomtoolsContact: ÃÂ cjustin@bcgsc.ca or ibirol@bcgsc.caSupplementary information: ÃÂ Supplementary data are available at Bioinformatics online.},
     issn = {1367-4803},
     doi = {10.1093/bioinformatics/btu558},
     url = {https://doi.org/10.1093/bioinformatics/btu558},
@@ -461,7 +565,7 @@ keywords = {storage layout, storage efficiency, searching, scatter storage, retr
     pages = {D84-D86},
     year = {2019},
     month = {10},
-    abstract = {GenBankÂ® (www.ncbi.nlm.nih.gov/genbank/) is a comprehensive, public database that contains over 6.25 trillion base pairs from over 1.6 billion nucleotide sequences for 450 000 formally described species. Daily data exchange with the European Nucleotide Archive (ENA) and the DNA Data Bank of Japan (DDBJ) ensures worldwide coverage. Recent updates include a new version of Genome Workbench that supports GenBank submissions, new submission wizards for viral genomes, enhancements to BankIt and improved handling of taxonomy for sequences from pathogens.},
+    abstract = {GenBankÃÂ® (www.ncbi.nlm.nih.gov/genbank/) is a comprehensive, public database that contains over 6.25 trillion base pairs from over 1.6 billion nucleotide sequences for 450 000 formally described species. Daily data exchange with the European Nucleotide Archive (ENA) and the DNA Data Bank of Japan (DDBJ) ensures worldwide coverage. Recent updates include a new version of Genome Workbench that supports GenBank submissions, new submission wizards for viral genomes, enhancements to BankIt and improved handling of taxonomy for sequences from pathogens.},
     issn = {0305-1048},
     doi = {10.1093/nar/gkz956},
     url = {https://doi.org/10.1093/nar/gkz956},
@@ -526,7 +630,7 @@ keywords = {storage layout, storage efficiency, searching, scatter storage, retr
 	volume = {18},
 	year = {2017},
 	bdsk-url-1 = {https://doi.org/10.1186/s13059-017-1299-7}}
-	
+
 
 @article{nanoporeq,
 	abstract = {Illumina MiSeq is the current standard for characterizing microbial communities in soil. The newer alternative, Oxford Nanopore Technologies MinION sequencer, is quickly gaining popularity because of the low initial cost and longer sequence reads. However, the accuracy of MinION, per base, is much lower than MiSeq (95{\%} versus 99.9{\%}). The effects of this difference in base-calling accuracy on taxonomic and diversity estimates remains unclear. We compared the effects of platform, primers, and bioinformatics on mock community and agricultural soil samples using short MiSeq, and short and full-length MinION 16S rRNA amplicon sequencing. For all three methods, we found that taxonomic assignments of the mock community at both the genus and species level matched expectations with minimal deviation (genus: 80.9--90.5{\%}; species: 70.9--85.2{\%} Bray--Curtis similarity); however, the short MiSeq with error correction (DADA2) resulted in the correct estimate of mock community species richness and much lower alpha diversity for soils. Several filtering strategies were tested to improve these estimates with varying results. The sequencing platform also had a significant influence on the relative abundances of taxa with MiSeq resulting in significantly higher abundances Actinobacteria, Chloroflexi, and Gemmatimonadetes and lower abundances of Acidobacteria, Bacteroides, Firmicutes, Proteobacteria, and Verrucomicrobia compared to the MinION platform. When comparing agricultural soils from two different sites (Fort Collins, CO and Pendleton, OR), methods varied in the taxa identified as significantly different between sites. At all taxonomic levels, the full-length MinION method had the highest similarity to the short MiSeq method with DADA2 correction with 73.2{\%}, 69.3{\%}, 74.1{\%}, 79.3{\%}, 79.4{\%}, and 82.28{\%} of the taxa at the phyla, class, order, family, genus, and species levels, respectively, showing similar patterns in differences between the sites. In summary, although both platforms appear suitable for 16S rRNA microbial community composition, biases for different taxa may make the comparison between studies problematic; and even with a single study (i.e., comparing sites or treatments), the sequencing platform can influence the differentially abundant taxa identified.},
@@ -545,7 +649,7 @@ keywords = {storage layout, storage efficiency, searching, scatter storage, retr
 	volume = {13},
 	year = {2023},
 	bdsk-url-1 = {https://doi.org/10.1038/s41598-023-36101-8}}
-	
+
 
 @article{Delahaye:2021up,
 	abstract = {Oxford Nanopore Technologies' (ONT) long read sequencers offer access to longer DNA fragments than previous sequencer generations, at the cost of a higher error rate. While many papers have studied read correction methods, few have addressed the detailed characterization of observed errors, a task complicated by frequent changes in chemistry and software in ONT technology. The MinION sequencer is now more stable and this paper proposes an up-to-date view of its error landscape, using the most mature flowcell and basecaller. We studied Nanopore sequencing error biases on both bacterial and human DNA reads. We found that, although Nanopore sequencing is expected not to suffer from GC bias, it is a crucial parameter with respect to errors. In particular, low-GC reads have fewer errors than high-GC reads (about 6% and 8% respectively). The error profile for homopolymeric regions or regions with short repeats, the source of about half of all sequencing errors, also depends on the GC rate and mainly shows deletions, although there are some reads with long insertions. Another interesting finding is that the quality measure, although over-estimated, offers valuable information to predict the error rate as well as the abundance of reads. We supplemented this study with an analysis of a rapeseed RNA read set and shown a higher level of errors with a higher level of deletion in these data. Finally, we have implemented an open source pipeline for long-term monitoring of the error profile, which enables users to easily compute various analysis presented in this work, including for future developments of the sequencing device. Overall, we hope this work will provide a basis for the design of better error-correction methods.},
@@ -616,7 +720,7 @@ keywords = {storage layout, storage efficiency, searching, scatter storage, retr
 	volume = {13},
 	year = {2023},
 	bdsk-url-1 = {https://doi.org/10.1038/s41598-023-37134-9}}
-	
+
 
 @article{classifier_eval,
 	abstract = {Long reads have gained popularity in the analysis of metagenomics data. Therefore, we comprehensively assessed metagenomics classification tools on the species taxonomic level. We analysed kmer-based tools, mapping-based tools and two general-purpose long reads mappers. We evaluated more than 20 pipelines which use either nucleotide or protein databases and selected 13 for an extensive benchmark. We prepared seven synthetic datasets to test various scenarios, including the presence of a host, unknown species and related species. Moreover, we used available sequencing data from three well-defined mock communities, including a dataset with abundance varying from 0.0001 to 20{\%} and six real gut microbiomes.},
@@ -710,18 +814,18 @@ year = {2006},
 doi = {10.1089/cmb.2006.13.1028},
     note ={PMID: 16796549},
 
-URL = { 
-    
+URL = {
+
         https://doi.org/10.1089/cmb.2006.13.1028
-    
-    
+
+
 
 },
-eprint = { 
-    
+eprint = {
+
         https://doi.org/10.1089/cmb.2006.13.1028
-    
-    
+
+
 
 }
 ,
@@ -806,7 +910,7 @@ eprint = {
 	volume = {36},
 	year = {2020},
 	bdsk-url-1 = {https://doi.org/10.1093/bioinformatics/btz899}}
-	
+
 
 @article{16srrnause,
 	abstract = {The 16S rRNA gene has been a mainstay of sequence-based bacterial analysis for decades. However, high-throughput sequencing of the full gene has only recently become a realistic prospect. Here, we use in silico and sequence-based experiments to critically re-evaluate the potential of the 16S gene to provide taxonomic resolution at species and strain level. We demonstrate that targeting of 16S variable regions with short-read sequencing platforms cannot achieve the taxonomic resolution afforded by sequencing the entire (\~{}1500 bp) gene. We further demonstrate that full-length sequencing platforms are sufficiently accurate to resolve subtle nucleotide substitutions (but not insertions/deletions) that exist between intragenomic copies of the 16S gene. In consequence, we argue that modern analysis approaches must necessarily account for intragenomic variation between 16S gene copies. In particular, we demonstrate that appropriate treatment of full-length 16S intragenomic copy variants has the potential to provide taxonomic resolution of bacterial communities at species and strain level.},
@@ -867,9 +971,9 @@ eprint = {
 	volume = {132},
 	year = {2022},
 	bdsk-url-1 = {https://doi.org/10.1172/JCI154944}}
-	
-	
-	
+
+
+
 @article{Lu:2022aa,
 	abstract = {Metagenomic experiments expose the wide range of microscopic organisms in any microbial environment through high-throughput DNA sequencing. The computational analysis of the sequencing data is critical for the accurate and complete characterization of the microbial community. To facilitate efficient and reproducible metagenomic analysis, we introduce a step-by-step protocol for the Kraken suite, an end-to-end pipeline for the classification, quantification and visualization of metagenomic datasets. Our protocol describes the execution of the Kraken programs, via a sequence of easy-to-use scripts, in two scenarios: (1) quantification of the species in a given metagenomics sample; and (2) detection of a pathogenic agent from a clinical sample taken from a human patient. The protocol, which is executed within 1--2 h, is targeted to biologists and clinicians working in microbiome or metagenomics analysis who are familiar with the Unix command-line environment.},
 	author = {Lu, Jennifer and Rincon, Natalia and Wood, Derrick E. and Breitwieser, Florian P. and Pockrandt, Christopher and Langmead, Ben and Salzberg, Steven L. and Steinegger, Martin},
@@ -972,8 +1076,8 @@ eprint = {
 	volume = {10},
 	year = {2020},
 	bdsk-url-1 = {https://doi.org/10.1038/s41598-020-76022-4}}
-	
-	
+
+
 	@article{JOHNSON20181499,
 title = {Prevalence and distribution of seven human pathogens in host-seeking Ixodes scapularis (Acari: Ixodidae) nymphs in Minnesota, USA},
 journal = {Ticks and Tick-borne Diseases},
@@ -986,7 +1090,7 @@ doi = {https://doi.org/10.1016/j.ttbdis.2018.07.009},
 url = {https://www.sciencedirect.com/science/article/pii/S1877959X18301821},
 author = {Tammi L. Johnson and Christine B. Graham and Sarah E. Maes and Andrias Hojgaard and Amy Fleshman and Karen A. Boegler and Mark J. Delory and Kimetha S. Slater and Sandor E. Karpathy and Jenna K. Bjork and David F. Neitzel and Elizabeth K. Schiffman and Rebecca J. Eisen},
 keywords = {Lyme disease, Anaplasmosis, Babesiosis, Nymphal infection prevalence (NIP), Density of infected nymphs (DIN), Coinfection},
-abstract = {In the north-central United States, the blacklegged tick (Ixodes scapularis) is currently known to vector seven human pathogens. These include five bacteria (Borrelia burgdorferi sensu stricto, Borrelia mayonii, Borrelia miyamotoi, Anaplasma phagocytophilum, Ehrlichia muris eauclairensis), one protozoan (Babesia microti) and one virus (Powassan). We sought to assess the prevalence and distribution of these pathogens in host-seeking nymphs collected throughout Minnesota, a state on the northwestern edge of the tick’s expanding range, where reported cases of I. scapularis-borne diseases have increased in incidence and geographic range over the past decade. Among the 1240 host-seeking I. scapularis nymphs that we screened from 64 sites, we detected all seven pathogens at varying frequencies. Borrelia burgdorferi s.s. was the most prevalent and geographically widespread, found in 25.24% of all nymphs tested. Anaplasma phagocytophilum and Babesia microti were also geographically widespread, but they were less prevalent than Bo. burgdorferi s.s. (detected in 6.29% and 4.68% of ticks, respectively). Spatial clusters of sites with high prevalence for these three pathogens were identified in the north-central region of the state. Prevalence was less than 1.29% for each of the remaining pathogens. Two or more pathogens were detected in 90 nymphs (7.26%); coinfections with Bo. burgdorferi s.s. and either A. phagocytophilum (51 nymphs, 4.11%) or Ba. microti (43 nymphs, 3.47%) were the most common combinations. The distribution and density of infected ticks mirrors the distribution of notifiable tick-borne diseases in Minnesota and provides information on the distribution and prevalence of recently described human pathogens.}
+abstract = {In the north-central United States, the blacklegged tick (Ixodes scapularis) is currently known to vector seven human pathogens. These include five bacteria (Borrelia burgdorferi sensu stricto, Borrelia mayonii, Borrelia miyamotoi, Anaplasma phagocytophilum, Ehrlichia muris eauclairensis), one protozoan (Babesia microti) and one virus (Powassan). We sought to assess the prevalence and distribution of these pathogens in host-seeking nymphs collected throughout Minnesota, a state on the northwestern edge of the tickâs expanding range, where reported cases of I. scapularis-borne diseases have increased in incidence and geographic range over the past decade. Among the 1240 host-seeking I. scapularis nymphs that we screened from 64 sites, we detected all seven pathogens at varying frequencies. Borrelia burgdorferi s.s. was the most prevalent and geographically widespread, found in 25.24% of all nymphs tested. Anaplasma phagocytophilum and Babesia microti were also geographically widespread, but they were less prevalent than Bo. burgdorferi s.s. (detected in 6.29% and 4.68% of ticks, respectively). Spatial clusters of sites with high prevalence for these three pathogens were identified in the north-central region of the state. Prevalence was less than 1.29% for each of the remaining pathogens. Two or more pathogens were detected in 90 nymphs (7.26%); coinfections with Bo. burgdorferi s.s. and either A. phagocytophilum (51 nymphs, 4.11%) or Ba. microti (43 nymphs, 3.47%) were the most common combinations. The distribution and density of infected ticks mirrors the distribution of notifiable tick-borne diseases in Minnesota and provides information on the distribution and prevalence of recently described human pathogens.}
 }
 
 
@@ -1027,8 +1131,8 @@ abstract = {In the north-central United States, the blacklegged tick (Ixodes sca
 	volume = {18},
 	year = {2012},
 	bdsk-url-1 = {https://doi.org/10.3201/eid1810.120390}}
-	
-	
+
+
 @article{Thomas:1990aa,
 	abstract = {Ticks of the genus Ornithodors feed on many rodent species with known roles in maintaining and amplifying plague (Yersinia pestis) in nature. Five species of ticks in this genus are shown to acquire the plague bacillus by feeding on infected hosts. Most notably, 80% of O. hermsi Wheeler, Herms and Meyer harbored Y. pestis 1 mo after an infectious blood meal. Subsequent transmission by infected ticks was not demonstrated. However, 1 yr after the infectious feeding, Y. pestis DNA was detected using a hybridization probe on tick triturates that were amplified by in vitro cultivation. Y. pestis can remain reproductively viable for at least 1 yr in about 2% of ticks fed on infected hosts.},
 	address = {Department of Health and Human Services, National Institutes of Health, National Institute of Allergy and Infectious Diseases, Hamilton, Montana.},
@@ -1066,13 +1170,13 @@ abstract = {In the north-central United States, the blacklegged tick (Ixodes sca
 
 
 @ARTICLE{10.3389/fvets.2025.1522904,
-  
+
 AUTHOR={Shi, Hongfei  and Li, Guoguang  and Li, Dandan  and Zhai, Hongyue  and Ji, Shidong  and Hu, Yun  and Wang, Long  and Yao, Lunguang },
-         
+
 TITLE={Molecular investigation reveals three hemotropic mycoplasmas in cats and three tick species in China},
-        
+
 JOURNAL={Frontiers in Veterinary Science},
-        
+
 VOLUME={Volume 12 - 2025},
 
 YEAR={2025},
@@ -1083,7 +1187,7 @@ DOI={10.3389/fvets.2025.1522904},
 
 ISSN={2297-1769},
 
-ABSTRACT={To date, the primary hemoplasmas that infect cats include Mycoplasma haemofelis, ‘Candidatus Mycoplasma haemominutum’, and ‘Candidatus Mycoplasma turicensis’. In addition, other hemoplasmas Mycoplasma species have also been identified in cats. In central China, no infections or potential vectors with hemotropic mycoplasmas have been recorded in cats. To elucidate the prevalence of hemotropic mycoplasmas in both cats and parasitic ticks, this study investigated the occurrence of hemotropic mycoplasma infections in ticks and cats. A total of 78 blood samples were collected from both anemic and healthy cats, along with 284 ticks from the cats’ body surfaces and 356 ticks found in the surrounding environment. Following the morphological and molecular identification of ticks, all samples were screened for pathogens using PCR detection and sequence analysis. The results indicated the presence of 392 Haemaphysalis longicornis, 152 Rhipicephalus microplus, and 76 Rhipicephalus sanguineus sensu lato in cats and their surrounding environment. Molecular detection revealed the amplification of 156 ‘Ca. M. haemominutum’, 96 ‘Candidatus Mycoplasma haemobos’, 41 M. haemofelis, and 64 Rickettsia felis-positive amplicons from both cats and ticks. Notably, when comparing the infection rates of ‘Ca. M. haemobos’ in the environment group, no significant differences were observed in the infection rates among the three tick species from anemic or healthy cats (p > 0.05, α = 0.05). Furthermore, sequence analysis of ‘Ca. M. haemobos’ indicated two novel sequence types that were most closely related to an isolate from buffalo in China. In conclusion, in this study, in addition to ‘Ca. M. haemominutum’ and M. haemofelis, ‘Ca. M. haemobos’ was first detected in cats. ‘Ca. M. haemominutum’ appears to be associated with anemic syndrome in cats, while further research is needed to explore the relationship between ‘Ca. M. haemobos’ and clinical signs in felines. Additionally, these three hemotropic mycoplasmas were also found in three species of ticks, and transmission experiments are required to investigate the capacity of these ticks to transmit hemoplasmas Mycoplasma among animals.}}
+ABSTRACT={To date, the primary hemoplasmas that infect cats include Mycoplasma haemofelis, âCandidatus Mycoplasma haemominutumâ, and âCandidatus Mycoplasma turicensisâ. In addition, other hemoplasmas Mycoplasma species have also been identified in cats. In central China, no infections or potential vectors with hemotropic mycoplasmas have been recorded in cats. To elucidate the prevalence of hemotropic mycoplasmas in both cats and parasitic ticks, this study investigated the occurrence of hemotropic mycoplasma infections in ticks and cats. A total of 78 blood samples were collected from both anemic and healthy cats, along with 284 ticks from the catsâ body surfaces and 356 ticks found in the surrounding environment. Following the morphological and molecular identification of ticks, all samples were screened for pathogens using PCR detection and sequence analysis. The results indicated the presence of 392 Haemaphysalis longicornis, 152 Rhipicephalus microplus, and 76 Rhipicephalus sanguineus sensu lato in cats and their surrounding environment. Molecular detection revealed the amplification of 156 âCa. M. haemominutumâ, 96 âCandidatus Mycoplasma haemobosâ, 41 M. haemofelis, and 64 Rickettsia felis-positive amplicons from both cats and ticks. Notably, when comparing the infection rates of âCa. M. haemobosâ in the environment group, no significant differences were observed in the infection rates among the three tick species from anemic or healthy cats (pâ¯>â¯0.05, Î±â¯=â¯0.05). Furthermore, sequence analysis of âCa. M. haemobosâ indicated two novel sequence types that were most closely related to an isolate from buffalo in China. In conclusion, in this study, in addition to âCa. M. haemominutumâ and M. haemofelis, âCa. M. haemobosâ was first detected in cats. âCa. M. haemominutumâ appears to be associated with anemic syndrome in cats, while further research is needed to explore the relationship between âCa. M. haemobosâ and clinical signs in felines. Additionally, these three hemotropic mycoplasmas were also found in three species of ticks, and transmission experiments are required to investigate the capacity of these ticks to transmit hemoplasmas Mycoplasma among animals.}}
 
 
 @article{Nasko:2018aa,
@@ -1103,10 +1207,10 @@ ABSTRACT={To date, the primary hemoplasmas that infect cats include Mycoplasma h
 	volume = {19},
 	year = {2018},
 	bdsk-url-1 = {https://doi.org/10.1186/s13059-018-1554-6}}
-	
+
 	@article{10.1093/nar/gkae1038,
-    author = {Goldfarb, Tamara and Kodali, Vamsi K and Pujar, Shashikant and Brover, Vyacheslav and Robbertse, Barbara and Farrell, Catherine M and Oh, Dong-Ha and Astashyn, Alexander and Ermolaeva, Olga and Haddad, Diana and Hlavina, Wratko and Hoffman, Jinna and Jackson, John D and Joardar, Vinita S and Kristensen, David and Masterson, Patrick and McGarvey, Kelly M and McVeigh, Richard and Mozes, Eyal and Murphy, Michael R and Schafer, Susan S and Souvorov, Alexander and Spurrier, Brett and Strope, Pooja K and Sun, Hanzhen and Vatsan, Anjana R and Wallin, Craig and Webb, David and Brister, J Rodney and Hatcher, Eneida and Kimchi, Avi and Klimke, William and Marchler-Bauer, Aron and Pruitt, Kim D and Thibaud-Nissen, Françoise and Murphy, Terence D},
-    title = {NCBI RefSeq: reference sequence standards through 25 years of curation and annotation},
+    author = {Goldfarb, Tamara and Kodali, VamsiÂ K and Pujar, Shashikant and Brover, Vyacheslav and Robbertse, Barbara and Farrell, CatherineÂ M and Oh, Dong-Ha and Astashyn, Alexander and Ermolaeva, Olga and Haddad, Diana and Hlavina, Wratko and Hoffman, Jinna and Jackson, JohnÂ D and Joardar, VinitaÂ S and Kristensen, David and Masterson, Patrick and McGarvey, KellyÂ M and McVeigh, Richard and Mozes, Eyal and Murphy, MichaelÂ R and Schafer, SusanÂ S and Souvorov, Alexander and Spurrier, Brett and Strope, PoojaÂ K and Sun, Hanzhen and Vatsan, AnjanaÂ R and Wallin, Craig and Webb, David and Brister, JÂ Rodney and Hatcher, Eneida and Kimchi, Avi and Klimke, William and Marchler-Bauer, Aron and Pruitt, KimÂ D and Thibaud-Nissen, FranÃ§oise and Murphy, TerenceÂ D},
+    title = {NCBI RefSeq: reference sequence standards through 25Â years of curation and annotation},
     journal = {Nucleic Acids Research},
     volume = {53},
     number = {D1},
@@ -1187,8 +1291,8 @@ ABSTRACT={To date, the primary hemoplasmas that infect cats include Mycoplasma h
 	year = {2018},
 	year1 = {2018},
 	bdsk-url-1 = {https://doi.org/10.1016/j.pt.2017.12.006}}
-	
-	
+
+
 	@article{HUGGINS2024100839,
 title = {Metabarcoding using nanopore sequencing enables identification of diverse and zoonotic vector-borne pathogens from neglected regions: A case study investigating dogs from Bhutan},
 journal = {One Health},
@@ -1200,7 +1304,7 @@ doi = {https://doi.org/10.1016/j.onehlt.2024.100839},
 url = {https://www.sciencedirect.com/science/article/pii/S2352771424001654},
 author = {Lucas G. Huggins and Ugyen Namgyel and Pelden Wangchuk and Ushani Atapattu and Rebecca Traub and Vito Colella},
 keywords = {Zoonosis, Next-generation sequencing, MinION, ,  sp. hongkongensis, , , One Health},
-abstract = {The diversity and prevalence of canine vector-borne pathogens (VBPs) in Bhutan have to date remained unexplored, whilst recent epidemiological surveys in other South Asian nations have found diseases caused by VBPs to be rife in local dog populations. Importantly, many of such VBPs can infect people as well, with a building body of evidence identifying potentially zoonotic rickettsial organisms infecting humans in Bhutan. Given the lack of data on canine pathogens in Bhutan we employed a suite of deep-sequencing metabarcoding methods using Oxford Nanopore Technologies' MinION™ device to holistically characterise the bacterial, apicomplexan and filarial worm blood-borne pathogens of dogs in the country's south. Of the 95 stray, owned and community dogs sampled 78% (95% CI = 69%–85%) were infected with at least one VBP. Pathogen species detected were highly diverse including the bacteria Mycoplasma haemocanis in 16% (95% CI: 10–24%), Ehrlichia canis in 4% (95% CI: 2–10%), Anaplasma platys in 2% (95% CI: 0.5–7%) of dogs as well as the zoonotic species Bartonella clarridgeiae in 1% (95% CI: 0.1–6%), a potentially novel Bartonella spp. and an Ehrlichia chaffeensis-like bacterium, both in 1% (95% CI: 0.1–6%) of dogs. The apicomplexan haemoparasites Hepatozoon canis in 62% (95% CI: 52–71%), Babesia gibsoni in 45% (95% CI: 36–55%) and Babesia vogeli in 3% (95% CI: 1–9%) of dogs were also detected. Finally, 5% (95% CI: 2–12%) of dogs were found to be infected with the filarioid Acanthocheilonema reconditum and 1% (95% CI: 0.1–6%) with zoonotic Dirofilaria sp. hongkongensis. One canine was found positive to the filarioid Setaria tundra, a species normally found infecting cervids. The elucidated diversity of VBP communities highlights the strength of assumption-free diagnostics, such as metabarcoding, in detecting rare, novel, and unexpected pathogens. This approach to identifying pathogen diversity is of critical importance when investigating regions and populations that have thus far been neglected, with the findings aiding the development of future One Health informed strategies for disease control.}
+abstract = {The diversity and prevalence of canine vector-borne pathogens (VBPs) in Bhutan have to date remained unexplored, whilst recent epidemiological surveys in other South Asian nations have found diseases caused by VBPs to be rife in local dog populations. Importantly, many of such VBPs can infect people as well, with a building body of evidence identifying potentially zoonotic rickettsial organisms infecting humans in Bhutan. Given the lack of data on canine pathogens in Bhutan we employed a suite of deep-sequencing metabarcoding methods using Oxford Nanopore Technologies' MinIONâ¢ device to holistically characterise the bacterial, apicomplexan and filarial worm blood-borne pathogens of dogs in the country's south. Of the 95 stray, owned and community dogs sampled 78% (95% CIÂ =Â 69%â85%) were infected with at least one VBP. Pathogen species detected were highly diverse including the bacteria Mycoplasma haemocanis in 16% (95% CI: 10â24%), Ehrlichia canis in 4% (95% CI: 2â10%), Anaplasma platys in 2% (95% CI: 0.5â7%) of dogs as well as the zoonotic species Bartonella clarridgeiae in 1% (95% CI: 0.1â6%), a potentially novel Bartonella spp. and an Ehrlichia chaffeensis-like bacterium, both in 1% (95% CI: 0.1â6%) of dogs. The apicomplexan haemoparasites Hepatozoon canis in 62% (95% CI: 52â71%), Babesia gibsoni in 45% (95% CI: 36â55%) and Babesia vogeli in 3% (95% CI: 1â9%) of dogs were also detected. Finally, 5% (95% CI: 2â12%) of dogs were found to be infected with the filarioid Acanthocheilonema reconditum and 1% (95% CI: 0.1â6%) with zoonotic Dirofilaria sp. hongkongensis. One canine was found positive to the filarioid Setaria tundra, a species normally found infecting cervids. The elucidated diversity of VBP communities highlights the strength of assumption-free diagnostics, such as metabarcoding, in detecting rare, novel, and unexpected pathogens. This approach to identifying pathogen diversity is of critical importance when investigating regions and populations that have thus far been neglected, with the findings aiding the development of future One Health informed strategies for disease control.}
 }
 
 
@@ -1291,7 +1395,7 @@ abstract = {The diversity and prevalence of canine vector-borne pathogens (VBPs)
 	volume = {24},
 	year = {2024},
 	bdsk-url-1 = {https://doi.org/10.1111/1755-0998.13878}}
-	
+
 
 @book{hillebrand1998rebschutz,
   title={Rebschutz-Taschenbuch},
@@ -1302,12 +1406,12 @@ abstract = {The diversity and prevalence of canine vector-borne pathogens (VBPs)
   publisher={Fachverlag Fraund},
   language = {german}
   }
-	
+
 @book{mehlhorn2012parasiten,
-  title={Die Parasiten des Menschen: Erkrankungen erkennen, bekämpfen und vorbeugen},
+  title={Die Parasiten des Menschen: Erkrankungen erkennen, bekÃ¤mpfen und vorbeugen},
   author={Mehlhorn, H.},
   isbn={9783827422712},
-  series={SpringerLink: Bücher},
+  series={SpringerLink: BÃ¼cher},
   doi = {https://doi.org/10.1007/978-3-662-65315-9},
   year={2023},
   address={Heidelberg},
@@ -1374,7 +1478,7 @@ abstract = {The diversity and prevalence of canine vector-borne pathogens (VBPs)
 	url = {https://doi.org/10.1186/s12864-024-10440-w},
 	volume = {25},
 	year = {2024},
-	bdsk-url-1 = {https://doi.org/10.1186/s12864-024-10440-w}}	
+	bdsk-url-1 = {https://doi.org/10.1186/s12864-024-10440-w}}
 
 @article{viralzone,
 	abstract = {The molecular diversity of viruses complicates the interpretation of viral genomic and proteomic data. To make sense of viral gene functions, investigators must be familiar with the virus host range, replication cycle and virion structure. Our aim is to provide a comprehensive resource bridging together textbook knowledge with genomic and proteomic sequences. ViralZone web resource (www.expasy.org/viralzone/) provides fact sheets on all known virus families/genera with easy access to sequence data. A selection of reference strains (RefStrain) provides annotated standards to circumvent the exponential increase of virus sequences. Moreover ViralZone offers a complete set of detailed and accurate virion pictures.},
@@ -1417,14 +1521,10 @@ abstract = {The diversity and prevalence of canine vector-borne pathogens (VBPs)
 	year = {2011},
 	bdsk-url-1 = {https://doi.org/10.1093/nar/gkq901}}
 
-	
+
 @misc{microbialdb,
   author		= "Benjamin Langmead",
-  title			= "Kraken 2, KrakenUniq and Bracken indexes", 
+  title			= "Kraken 2, KrakenUniq and Bracken indexes",
   year			= "2025",
   note			= "\url{https://benlangmead.github.io/aws-indexes/k2}"
 }
-
-	
-
-	
