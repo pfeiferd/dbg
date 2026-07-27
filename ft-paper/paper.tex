@@ -344,7 +344,7 @@ $X$, $Y$ and $Z$ are the same as in Figure \ref{ftsketch}. Since $Y$ and $Z$ are
 \label{intrinsicqms}    
     In this section, we consider quality measures regarding database refinement irrespective of read analysis and read classification results. For this purpose, we establish \emph{path precision and path recall} for a $k$-mer database $d$ that has a taxonomy tree associated and where stored $k$-mers have taxons, i.e. nodes, assigned from that tree. Below, in the result section, we use these new measures amongst established measures to assess refinement quality. 
     
-    Let $t$ be a \emph{data taxon}, i.e., \emph{a taxon with a complete genome directly associated whereby at least one $k$-mer from that complete genome is also stored in $d$}. For example in RefSeq, complete genomic sequences are often associated with taxons of the rank species or below -- such taxons therefore constitute data taxons.
+    Let $t$ be a \emph{data taxon}, i.e., \emph{a taxon with a complete genome directly associated whereby the $k$-mers from that genome are also stored in $d$}. For example in RefSeq, complete genomes are often associated with taxons of the rank species or below.
     
     Based on the following counts, the quality of the taxonomic refinement can be assessed per data taxon $t$ in $d$:
 \begin{description}
@@ -423,15 +423,25 @@ So $X$, $Y$, $Z$ are data taxons but $X$ is not a leaf node.
 
     As part of Section \ref{results} from below, we report unweighted\footnote{The unweighted average considers every data taxon as equally relevant.} average path precision and average path recall by averaging over all data taxons in $d$ or subsets thereof. In particular, we report averages over all taxons under the same species or the same genus, respectively. E.g. in (3) of Figure \ref{ftsketch}, the average path precision of the genus $W$ is 8/9.
             
-    Note that for a taxonomy tree with a branching factor $\geq 2$ (which is the standard case) a high average path precision ensures the a $k$-mer $a$ in $d$ is located as closely as possible above a data taxon or right at data taxon whose genome(s) contain $a$. Otherwise, if $a$ was located higher up in the taxonomy, then $a$ would also be on the path to the root starting from a data taxon $s$ whose genome does not contain $a$. But this would increase the $FP$-count of $s$ and in turn would lower the average path precision.
+    Note that for a taxonomy tree with a branching factor $\geq 2$ (which is the standard case) a high average path precision ensures the a $k$-mer $a$ in $d$ is located as closely as possible above a data taxon or right at data taxon whose genome(s) contain $a$. Otherwise, if $a$ was located higher up in the taxonomy, then $a$ would also be on the path to the root starting from a data taxon $t$ whose genome does not contain $a$. But this would increase the $FP$-count of $t$ and in turn would lower the average path precision.
     
-    Likewise, a high average path recall ensures that a $k$-mer $h$ in $d$ is assigned to a tree node such that \emph{as many data taxons as possible} which contain $h$ in their genome are subordinate or equal to that node. Otherwise, the $k$-mer $h$ would not be on the path to the root for such a taxon. But this would decrease the $TP$-count of that taxon and in turn lower the average path recall.
+ %   Likewise, a high average path recall ensures that a $k$-mer $a$ in $d$ is assigned to a tree node such that \emph{as many data taxons as possible} which contain $a$ in their genome are subordinate or equal to that node. Otherwise, the $k$-mer $a$ would not be on the path to the root for such a taxon. But this would decrease the $TP$-count of that taxon and in turn lower the average path recall.
     
-    So together, both, a high average path precision and a high average path recall suggest that $k$-mers are located at a near optimal position in the taxonomy tree -- not too high up to lower precision and not too far down to lower recall.
+It is important to see that \emph{path recall should always equal one for a correct $k$-mer database} since
+the LCA-update should move up a $k$-mer in the taxonomy so far that all data taxons associated with that $k$-mer become descendants of the resulting tree node.
+Moreover, the refinement may push down $k$-mers only just so far that the same requirement is still maintained.
+In other words, \emph{path recall actually serves as a correctness criterion for $k$-mer databases}. 
 
-Node precision $np(n)$: Let $A_n$ be set of $k$-mers associated with node $n$ and $T_n$ be the set of data taxons of descendants under $n$ including $n$ itself. Let $c_n(a)$ with $a \in A_n$ be the number of data taxons $t \in T_n$ whose genomes contain $a$.
-\[ np(n) = \sum_{a \in A_n} c_n(a) / (|A_n| \cdot |T_n|) \]
-If follows by definition that $np(n)$ for the node $n$ of a data taxon $t$.
+    So together, both, a high average path precision and a path recall of one suggest that $k$-mers are located at a near optimal position in the taxonomy tree -- not too high up to lower precision and not too far down to taint recall.
+
+Given that \emph{path recall} equals one, it is interesting to  consider refinement quality also on per node-basis for each node in the database $d$'s taxonomy tree. For this purpose, we define
+\emph{node precision} $np(n)$: Let $A_n$ be set of $k$-mers associated with a node $n$ in $d$'s taxonomy tree and $T_n$ be the set of data taxons of descendants under $n$ including $n$ itself. Let $c_n(a)$ with $a \in A_n$ be the number of data taxons $t \in T_n$ whose genomes contain $a$ at least once.
+\[ np(n) = \frac{1}{(1 + |A_n|) \cdot |T_n|} (|T_n| +\sum_{a \in A_n} c_n(a))  \]
+
+Together, the terms \enquote{$1 + $} and \enquote{$|T_n| +$} account for a Laplace correction to avoid division by zero if $A_n = \emptyset$ such that $np(n) = 1$ if $A_n = \emptyset$. 
+Given the transformation from Figure \ref{fttrans}, it follows by definition that $np(n) = 1$ for a node $n$ of a data taxon $t$. Note that \enquote{OTHER} nodes from Section \ref{dbrefinement} do not impact $np$ and so, node precision simply disregards them.
+
+Using a refined database with its refined taxonomy, node precision allows for spotting structural flaws in the original, unrefined taxonomy. Figure \ref{} presents simple example that to explain this use case....
 
 \subsection{Phylogenic Mapping}
 
