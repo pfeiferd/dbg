@@ -100,25 +100,25 @@
     \begin{figure}[h]%
         \centering
 
-         \caption{Box-plot histogram of relative $k$-mer distributions across ranks macro-averaged on a per species-basis for ?? different bacterial species. The distribution is based on all respective bacterial genomes in Refseq where $k$-mers shared with any other bacterial species from RefSeq have been pushed up the ranks accordingly due to Genestrip's LCA update. $k$-mers are counted according the frequency in a species' genome.}\label{kmerongenusborrelia}
+         \caption{Box-plot histogram of relative $k$-mer distributions across ranks macro-averaged on a per species-basis for ?? different bacterial species. The distribution is based on all respective bacterial genomes in RefSeq where $k$-mers shared with any other bacterial species from RefSeq have been pushed up the ranks accordingly due to Genestrip's LCA update. $k$-mers are counted according to the frequency in a species' genome.}\label{kmerongenusborrelia}
     \end{figure}
     
     \begin{figure}[h]%
         \centering
 
-         \caption{Box-plot histogram of relative $k$-mer distributions across ranks macro-averaged on a per species-basis for ?? different protozoan species. The distribution is based on all respective protozoan genomes in Refseq where $k$-mers shared with any other protozoan species from RefSeq have been pushed up the ranks accordingly due to Genestrip's LCA update. $k$-mers are counted according the frequency in a species' genome.}\label{kmerongenusborrelia}
+         \caption{Box-plot histogram of relative $k$-mer distributions across ranks macro-averaged on a per species-basis for ?? different protozoan species. The distribution is based on all respective protozoan genomes in RefSeq where $k$-mers shared with any other protozoan species from RefSeq have been pushed up the ranks accordingly due to Genestrip's LCA update. $k$-mers are counted according to the frequency in a species' genome.}\label{kmerongenusborrelia}
     \end{figure}
     
     \begin{figure}[h]%
         \centering
 
-         \caption{Box-plot histogram of relative $k$-mer distributions across species on the rank genus averaged across twelve bacterial genera with an average of ?? subordinate species. The distribution is based on all ?? $k$-mers of respective genomes in Refseq where the $k$-mers have been pushed to the rank genus due to Genestrip's LCA update.}\label{kmeronbacterialgenera}
+         \caption{Box-plot histogram of relative $k$-mer distributions across species on the rank genus averaged across twelve bacterial genera with an average of ?? subordinate species. The distribution is based on all ?? $k$-mers of respective genomes in RefSeq where the $k$-mers have been pushed to the rank genus due to Genestrip's LCA update.}\label{kmeronbacterialgenera}
     \end{figure}
     
     \begin{figure}[h]%
         \centering
 
-         \caption{Box-plot histogram of relative $k$-mer distribution across species on the rank genus averaged across twelve protozoan genera with an average of ?? subordinate species. The distribution is based on all ?? $k$-mers of respective genomes in Refseq where the $k$-mers have been pushed to the rank genus due to Genestrip's LCA update.}\label{kmerviaranks}
+         \caption{Box-plot histogram of relative $k$-mer distribution across species on the rank genus averaged across twelve protozoan genera with an average of ?? subordinate species. The distribution is based on all ?? $k$-mers of respective genomes in RefSeq where the $k$-mers have been pushed to the rank genus due to Genestrip's LCA update.}\label{kmerviaranks}
     \end{figure}
     
     \subsection{Approach}
@@ -131,7 +131,7 @@ with $k = 2$:
 	\item The lowest common ancestor update (LCA update) pushes the $2$-mer \texttt{CT} up to $W$ because it occurs in the sequence of both $X$ and $Y$. However, it does not occur in $Z$. So, according to this database a read \texttt{CT} would just be classified as $W$ although $Z$ is not even a candidate species for \texttt{CT}.
 	\item Genestrip-FT's refinement adds an artificial node $h$ to the taxonomy with $X$ and $Y$ as children but not $Z$. Also, the refinement \emph{pushes down} \texttt{CT} from $W$ to $h$. According to this refined database, a read \texttt{CT} would be classified as $h$ and so, $Z$ is excluded as candidate species for \texttt{CT}.
 \end{enumerate}
- So in general, this type refinement potentially improves classification precision: E.g., if a read was classified under a genus taxon in a non-refined database, then \emph{the corresponding refined database may allow for narrowing down the candidate species to less species than originally listed under that genus}. 
+ So in general, this type of refinement potentially improves classification precision: E.g., if a read was classified under a genus taxon in a non-refined database, then \emph{the corresponding refined database may allow for narrowing down the candidate species to fewer species than originally listed under that genus}. 
 
 \begin{figure}[h]%
 \centering
@@ -167,7 +167,7 @@ $X$: \texttt{CCT}, $Y$: \texttt{CTT}, $Z$: \texttt{TCA}
 \end{tikzpicture}
 \end{minipage}
 \begin{minipage}[c]{0.25\textwidth}
-\begin{flushleft}(4) After the refinement of the taxonomy tree with node $h$ added and \texttt{CT} push down to $h$
+\begin{flushleft}(4) After the refinement of the taxonomy tree with node $h$ added and \texttt{CT} pushed down to $h$
 \end{flushleft}
 \end{minipage}
 \begin{minipage}[c]{0.2\textwidth}
@@ -185,27 +185,29 @@ $X$: \texttt{CCT}, $Y$: \texttt{CTT}, $Z$: \texttt{TCA}
 \subsection{Database Refinement}
 \label{dbrefinement}
    
-We explain the system's refinement procedure by means of a small and initially unrefined example database including three species under the genus Orthopoxvirus. The structure of the unrefined database is shown in Figure \ref{simplelcadb}. For sake of simplicity, we restrict the refinement to the rank genus only, although \emph{it is normally performed simultaneously on all levels of the database's taxonomy} but its leaves.
+We explain the system's refinement procedure by means of a small and initially unrefined example database including three species under the genus Orthopoxvirus. The structure of the unrefined database is shown in Figure \ref{simplelcadb}. For the sake of simplicity, we restrict the refinement to the rank genus only, although \emph{it is normally performed simultaneously on all levels of the database's taxonomy} but its leaves.
 
   \begin{figure}[h]%
         \centering        
 \includegraphics[width=11cm]{figs/orthopox_svgtaxtree.pdf}
-         \caption{Tree representation of a Genestrip $k$-mer database including three Orthopoxvirus species. The tree represents the state \emph{right after the LCA update} as in Figure \ref{ftsketch} (2). Taxons and rank are given in parentheses. The number of $k$-mers assigned to a node is printed in brackets. The length of the horizontal lines is equivalent to the ratio of $k$-mers under a node.}\label{simplelcadb}
+         \caption{Tree representation of a Genestrip $k$-mer database including three Orthopoxvirus species. The tree represents the state \emph{right after the LCA update} as in Figure \ref{ftsketch} (2). Taxa and rank are given in parentheses. The number of $k$-mers assigned to a node is printed in brackets. The length of the horizontal lines is equivalent to the ratio of $k$-mers under a node.}\label{simplelcadb}
     \end{figure}   
 
-Genestrip structures the complex computation of a $k$-mer database via goals as explained in \cite{genestrip-pub}. The goals form a dependency graph where a goal $g_1$ is executed only if its computational result is needed by a dependent goal $g_2$, and if $g_1$'s result has not been computed yet. Genestrip FT is implemented as an extension of the original goal graph formed by Genestrip. Figure \ref{ftgoals} presents an extract of the additional goals, with most of Genestrip's original goals omitted. 
+Genestrip structures the complex computation of a $k$-mer database via goals as explained in \cite{genestrip-pub}. The goals form a dependency graph where a goal $g_1$ is executed only if its computational result is needed by a dependent goal $g_2$, and if $g_1$'s result has not been computed yet. Genestrip-FT is implemented as an extension of the original goal graph formed by Genestrip. Figure \ref{ftgoals} presents an extract of the additional goals, with most of Genestrip's original goals omitted. 
 
   \begin{figure}[h]%
         \centering        
 \includegraphics[width=8cm]{figs/ft-goals-extract.pdf}
-         \caption{Extract of additional goals required by Genestrip FT for the refinement of a corresponding $k$-mer database. The file goal \texttt{ftdb}, prefixed with \texttt{f:} stores the refined database as a file and depends on several, so-called object goals prefixed with \texttt{o:}. Genestrip FT's goals also depend on some of Genestrip's original goals with the latter depicted at the top in dashed boxes. An extract of Genestrip's original goals can be found in the Appendix of \cite{genestrip-pub}. The different types dependencies and goals (such as object goals or file goals) are explained there too.}\label{ftgoals}
+         \caption{Extract of additional goals required by Genestrip-FT for the refinement of a corresponding $k$-mer database. The file goal \texttt{ftdb}, prefixed with \texttt{f:} stores the refined database as a file and depends on several, so-called object goals prefixed with \texttt{o:}. Genestrip-FT's goals also depend on some of Genestrip's original goals with the latter depicted at the top in dashed boxes. An extract of Genestrip's original goals can be found in the Appendix of \cite{genestrip-pub}. The different types of dependencies and goals (such as object goals or file goals) are explained there too.}\label{ftgoals}
     \end{figure}   
 
 In the following, we briefly explain the essential goals needed for the computation of a refined database:
 \begin{enumerate}
-	\item \verb|kmerindexbloom| associates each $k$-mer stored on the genus rank with the original species taxon of the sequence in which it occurred. To achieve this, the original sequences that were used to generate the unrefined database must all be reread. The mapping of a $k$-mer to its original species taxon is hashed; the resulting hash code is stored via a Bloom filter \cite{bloomfilter} in order to save main memory.\footnote{A Bloom filter is a probabilistic data structure for an efficient and compressed storing of values but also for a fast lookup of entered values. However this comes at the expense of a configurable, usually low false positive rate at lookup time. Bloom filters and  probabilistic filters in general \cite{10.1145/2674005.2674994,9920402,10.1145/3510449,10.1145/3376122} are widely used in the context of metagenomics tools \cite{biobloom, Piro:2020aa, 10.1093/nargab/lqaf094}.}
+	\item \verb|kmerindexbloom| associates each $k$-mer stored on the genus rank with the original species taxon of the sequence in which it occurred. To achieve this, the original sequences that were used to generate the unrefined database must all be reread. The mapping of a $k$-mer to its original species taxon is hashed; the resulting hash code is stored via a Bloom filter \cite{bloomfilter} in order to save main memory.\footnote{A Bloom filter is a probabilistic data structure for an efficient and compressed storing of values but also for a fast lookup of entered values. However, this comes at the expense of a configurable, usually low false positive rate at lookup time. Bloom filters and probabilistic filters in general \cite{10.1145/2674005.2674994,9920402,10.1145/3510449,10.1145/3376122} are widely used in the context of metagenomics tools \cite{biobloom, Piro:2020aa, 10.1093/nargab/lqaf094}.}
 	
-	\item \verb|intersectcount| computes the number of common $k$-mers $c(t_1, t_2)$ between any two species taxons $t_1$ and $t_2$ under the same genus. To do so, it consults the Bloom filter produced via the goal \verb|kmerindexbloom|. Based on $c(t_1, t_2)$, it also determines the Jaccard index $J(t_1, t_2) =  c(t_1, t_2) / (c(t_1, t_1) + c(t_2, t_2) - c(t_1, t_2))$ \cite{jaccard} as a similarity measure of the two sets of $k$-mers belonging to $t_1$ and $t_2$ on the genus, respectively. Regarding our running example, Table \ref{intersectioncounts} shows the raw intersection counts whereas Table \ref{jaccard} states the resulting Jaccard indices. For simplicity, we skip the background of the column \enquote{OTHER} for now --- it will be explained at the end of this section.
+	\item \verb|intersectcount| computes the number of common $k$-mers $c(t_1, t_2)$ between any two species taxons $t_1$ and $t_2$ under the same genus. To do so, it consults the Bloom filter produced via the goal \verb|kmerindexbloom|. Based on $c(t_1, t_2)$, it also determines a Laplace-smoothed Jaccard index
+	\[ J(t_1, t_2) = \frac{c(t_1, t_2) + 1}{c(t_1, t_1) + c(t_2, t_2) - c(t_1, t_2) + 1} \]
+	\cite{jaccard} as a similarity measure of the two sets of $k$-mers belonging to $t_1$ and $t_2$ on the genus, respectively. The Laplace correction adds $1$ to both the intersection count (numerator) and each self-count (denominator), which avoids division by zero when both species share no $k$-mers on the genus and yields $J = 1$ in that degenerate case. Regarding our running example, Table \ref{intersectioncounts} shows the raw intersection counts whereas Table \ref{jaccard} states the resulting Jaccard indices. For simplicity, we skip the background of the column \enquote{OTHER} for now --- it will be explained at the end of this section.
 
 	\item The goal \verb|dendrogram| from Figure \ref{ftgoals} computes a dendrogram using the standard agglomerative clustering algorithm \enquote{HAC} \cite{King01031967,1394399}, where the cluster distance is based on the Jaccard index $J$ from \verb|intersectcount|. Since the taxonomic refinement is governed by the aim of improving classification precision (see Section \ref{approach}), we chose \enquote{Single Linkage} \cite{King01031967} as the default linkage strategy. This linkage strategy is suitable because it merges clusters on the basis of their most similar $k$-mer sets they contain. Nevertheless, other linkage strategies such as UPGMA and WPGMA \cite{Sokal1958ASM} may be configured instead. Figure \ref{dendrogram} depicts the resulting dendrogram as computed on the basis of Table \ref{jaccard}.
 
@@ -284,7 +286,7 @@ In the following, we briefly explain the essential goals needed for the computat
          \caption{Tree representation of a Genestrip $k$-mer database including three Orthopoxvirus species. The tree represents the state right \emph{after the refinement} as in Figure \ref{ftsketch} (4). Figure \ref{simplelcadb} shows the same database before the refinement. The number of $k$-mers on the genus decreased from 239,265 to 134,449 because the other $k$-mers got pushed down to newly added nodes typed as \enquote{REFINED}.}\label{simplerefdb}
     \end{figure}
     
-Lastly, we motivate the need for the column \enquote{OTHER} in Tables \ref{intersectioncounts} and \ref{jaccard} but also for respective nodes in Figure \ref{simplerefdb}: Genestrip's LCA update is generally based on more taxons and associated sequences than just the ones stored in a resulting database \cite{genestrip-pub}. Typically, \emph{all} taxons and associated sequences under a RefSeq category are considered during the LCA update, if the database comprises any taxon from that category. However, this means that a $k$-mer $a$ may end up on a rank above species even though the corresponding database contains just single species-level taxon $t$ associated with a sequence containing $a$. For such cases \enquote{OTHER} acts as placeholder for taxons that are not in the database but caused $a$ to be pushed to a higher rank. Otherwise, if that placeholder was missing during the refinement, $a$ would inevitably be pushed down too far towards $t$ via the goal \verb|updatestore| from above. Figure \ref{ftother} further details this issue by means of a small example.
+Lastly, we motivate the need for the column \enquote{OTHER} in Tables \ref{intersectioncounts} and \ref{jaccard} but also for respective nodes in Figure \ref{simplerefdb}: Genestrip's LCA update is generally based on more taxons and associated sequences than just the ones stored in a resulting database \cite{genestrip-pub}. Typically, \emph{all} taxons and associated sequences under a RefSeq category are considered during the LCA update, if the database comprises any taxon from that category. However, this means that a $k$-mer $a$ may end up on a rank above species even though the corresponding database contains just a single species-level taxon $t$ associated with a sequence containing $a$. For such cases \enquote{OTHER} acts as placeholder for taxons that are not in the database but caused $a$ to be pushed to a higher rank. Otherwise, if that placeholder was missing during the refinement, $a$ would inevitably be pushed down too far towards $t$ via the goal \verb|updatestore| from above. Figure \ref{ftother} further details this issue by means of a small example.
     
 \begin{figure}[h]%
 \centering
@@ -337,14 +339,14 @@ $X$ is stored in the database $d$ but $Y$ and $Z$ are not as indicated by the da
 \vspace{0.2cm}
 
 \caption{Schematic example for the need of \enquote{OTHER} nodes when refining a $k$-mer database:
-$X$, $Y$ and $Z$ are the same as in Figure \ref{ftsketch}. Since $Y$ and $Z$ are not represented in $d$, their potential $k$-mers shared with $X$ at the genus $W$ represented by means of $O$. As a drawback, the missing nodes for $Y$ and $Z$ prohibit the refinement via $h$ as in Figure \ref{ftsketch}.}\label{ftother}
+$X$, $Y$ and $Z$ are the same as in Figure \ref{ftsketch}. Since $Y$ and $Z$ are not represented in $d$, their potential $k$-mers shared with $X$ at the genus $W$ are represented by means of $O$. As a drawback, the missing nodes for $Y$ and $Z$ prohibit the refinement via $h$ as in Figure \ref{ftsketch}.}\label{ftother}
 \end{figure}
 
 \subsection{Intrinsic quality measures for database refinement}
 \label{intrinsicqms}    
-    In this section, we consider quality measures regarding database refinement irrespective of read analysis and read classification results. For this purpose, we establish \emph{path precision and path recall} for a $k$-mer database $d$ that has a taxonomy tree associated and where stored $k$-mers have taxons, i.e. nodes, assigned from that tree. Below, in the result section, we use these new measures amongst established measures to assess refinement quality. 
+    In this section, we consider quality measures regarding database refinement irrespective of read analysis and read classification results. For this purpose, we establish \emph{path precision and path recall} for a $k$-mer database $d$ that has a taxonomy tree associated and where stored $k$-mers have taxa, i.e., nodes, assigned from that tree. Below, in the result section, we use these new measures among established measures to assess refinement quality. 
     
-    Let $t$ be a \emph{data taxon}, i.e., \emph{a taxon with a complete genome directly associated whereby the $k$-mers from that genome are also stored in $d$}. For example in RefSeq, complete genomes are often associated with taxons of the rank species or below.
+    Let $t$ be a \emph{data taxon}, i.e., \emph{a taxon with a complete genome directly associated whereby the $k$-mers from that genome are also stored in $d$}. For example in RefSeq, complete genomes are often associated with taxa of the rank species or below.
     
     Based on the following counts, the quality of the taxonomic refinement can be assessed per data taxon $t$ in $d$:
 \begin{description}
@@ -359,8 +361,8 @@ $X$, $Y$ and $Z$ are the same as in Figure \ref{ftsketch}. Since $Y$ and $Z$ are
    
    As an example, consider Figure \ref{ftsketch} from above: In (3), the path precision of $Z$ is $2/3$ because there are three $2$-mers on the path from $Z$ to the root $W$ but one of them, \texttt{CT}, is not in $W$'s sequence. In (3), $X$ and $Y$ both have a path precision of $1$. The refined database in (4) has a precision of 1 for $X$, $Y$ \emph{and} $Z$. Path recall is $1$ for all of the cases in (3) and (4). 
         
-For fair a assessment of precision, we require that each data taxon must be a leaf node in the taxonomy tree of database $d$. This can be easily be enforced by a tree transformation explained via (3) and (4) in Figure \ref{fttrans}. If the requirement was not met, then two data taxons on the same path would likely result in an inadequately lowered path precision (as in Figure \ref{fttrans} (1) and (2)). Note that the described transformation leaves the phylogenetic structure of a given taxonomy intact.
-Figure \ref{simplerefdbtrans} exemplifies the transformation when integrated into the refinement of the database from Figure \ref{simplelcadb}.\footnote{When carefully comparing the $k$-mer counts of similar nodes from Figure \ref{simplerefdb} and \ref{simplerefdbtrans}, one finds minor differences such as for \enquote{10245/OTHER}. Note, that these differences originate in the use of a probabilistic data structure, i.e. a Bloom filter, during the refinement procedure according to Section \ref{dbrefinement}.}
+For a fair assessment of precision, we require that each data taxon must be a leaf node in the taxonomy tree of database $d$. This can easily be enforced by a tree transformation explained via (3) and (4) in Figure \ref{fttrans}. If the requirement was not met, then two data taxa on the same path would likely result in an inadequately lowered path precision (as in Figure \ref{fttrans} (1) and (2)). Note that the described transformation leaves the phylogenetic structure of a given taxonomy intact.
+Figure \ref{simplerefdbtrans} exemplifies the transformation when integrated into the refinement of the database from Figure \ref{simplelcadb}.\footnote{When carefully comparing the $k$-mer counts of similar nodes from Figure \ref{simplerefdb} and \ref{simplerefdbtrans}, one finds minor differences such as for \enquote{10245/OTHER}. Note that these differences originate in the use of a probabilistic data structure, i.e. a Bloom filter, during the refinement procedure according to Section \ref{dbrefinement}.}
 
 \begin{figure}[h]%
 \centering
@@ -412,7 +414,7 @@ So $X$, $Y$, $Z$ are data taxons but $X$ is not a leaf node.
 
 \vspace{0.2cm}
 
-\caption{Transformation of a database's a taxonomy tree to ensure that every data taxon is a leaf node.}\label{fttrans}
+\caption{Transformation of a database's taxonomy tree to ensure that every data taxon is a leaf node.}\label{fttrans}
 \end{figure}   
 
   \begin{figure}[h]%
@@ -421,9 +423,9 @@ So $X$, $Y$, $Z$ are data taxons but $X$ is not a leaf node.
          \caption{Tree representation of a Genestrip $k$-mer database including three Orthopoxvirus species. The tree represents the state right \emph{after the refinement} as in Figure \ref{ftsketch} (4); so it is similar to Figure \ref{simplerefdb} \emph{but with the transformation from Figure \ref{fttrans} included.}}\label{simplerefdbtrans}
     \end{figure}
 
-    As part of Section \ref{results} from below, we report unweighted\footnote{The unweighted average considers every data taxon as equally relevant.} average path precision and average path recall by averaging over all data taxons in $d$ or subsets thereof. In particular, we report averages over all taxons under the same species or the same genus, respectively. E.g. in (3) of Figure \ref{ftsketch}, the average path precision of the genus $W$ is 8/9.
+    As part of Section \ref{results} from below, we report unweighted\footnote{The unweighted average considers every data taxon as equally relevant.} average path precision and average path recall by averaging over all data taxa in $d$ or subsets thereof. In particular, we report averages over all taxa under the same species or the same genus, respectively. E.g., in (3) of Figure \ref{ftsketch}, the average path precision of the genus $W$ is 8/9.
             
-    Note that for a taxonomy tree with a branching factor $\geq 2$ (which is the standard case) a high average path precision ensures the a $k$-mer $a$ in $d$ is located as closely as possible above a data taxon or right at data taxon whose genome(s) contain $a$. Otherwise, if $a$ was located higher up in the taxonomy, then $a$ would also be on the path to the root starting from a data taxon $t$ whose genome does not contain $a$. But this would increase the $FP$-count of $t$ and in turn would lower the average path precision.
+    Note that for a taxonomy tree with a branching factor $\geq 2$ (which is the standard case) a high average path precision ensures that a $k$-mer $a$ in $d$ is located as closely as possible above a data taxon or right at a data taxon whose genome(s) contain $a$. Otherwise, if $a$ was located higher up in the taxonomy, then $a$ would also be on the path to the root starting from a data taxon $t$ whose genome does not contain $a$. But this would increase the $FP$-count of $t$ and in turn would lower the average path precision.
     
  %   Likewise, a high average path recall ensures that a $k$-mer $a$ in $d$ is assigned to a tree node such that \emph{as many data taxons as possible} which contain $a$ in their genome are subordinate or equal to that node. Otherwise, the $k$-mer $a$ would not be on the path to the root for such a taxon. But this would decrease the $TP$-count of that taxon and in turn lower the average path recall.
     
@@ -432,20 +434,20 @@ the LCA-update should move up a $k$-mer in the taxonomy so far that all data tax
 Moreover, the refinement may push down $k$-mers only just so far that the same requirement is still maintained.
 In other words, \emph{path recall actually serves as a correctness criterion for $k$-mer databases}. 
 
-    So together, both, a high average path precision and a path recall of one suggest that $k$-mers are located at a near optimal position in the taxonomy tree -- not too high up to lower precision and not too far down to taint recall.
+    So together, a high average path precision and a path recall of one suggest that $k$-mers are located at a near optimal position in the taxonomy tree -- not too high up to lower precision and not too far down to taint recall.
 
-Given that \emph{path recall} equals one, it is interesting to  consider refinement quality also on per node-basis for each node in the database $d$'s taxonomy tree. For this purpose, we define
+Given that \emph{path recall} equals one, it is interesting to consider refinement quality also on a per-node basis for each node in the database $d$'s taxonomy tree. For this purpose, we define
 \emph{node precision} $np(n)$: Let $A_n$ be set of $k$-mers associated with a node $n$ in $d$'s taxonomy tree and $T_n$ be the set of data taxons of descendants under $n$ including $n$ itself. Let $c_n(a)$ with $a \in A_n$ be the number of data taxons $t \in T_n$ whose genomes contain $a$ at least once.
 \[ np(n) = \frac{1}{(1 + |A_n|) \cdot |T_n|} (|T_n| +\sum_{a \in A_n} c_n(a))  \]
 
 Together, the terms \enquote{$1 + $} and \enquote{$|T_n| +$} account for a Laplace correction to avoid division by zero if $A_n = \emptyset$ such that $np(n) = 1$ if $A_n = \emptyset$. 
 Given the transformation from Figure \ref{fttrans}, it follows by definition that $np(n) = 1$ for a node $n$ of a data taxon $t$. Note that \enquote{OTHER} nodes from Section \ref{dbrefinement} do not impact $np$ and so, node precision simply disregards them.
 
-Using a refined database with its refined taxonomy, node precision allows for spotting structural flaws in the original, unrefined taxonomy. Figure \ref{} presents simple example that to explain this use case....
+Using a refined database with its refined taxonomy, node precision allows for spotting structural flaws in the original, unrefined taxonomy. Figure \ref{} presents a simple example to explain this use case.
 
-\subsection{Phylogenic Mapping}
+\subsection{Phylogenetic Mapping}
 
-Genestrip FT's database refinement lends itself for a comprehensive visualization of even large phylogeny trees with evolutionary distances being integrated. Resulting tree representations refine the existing NCBI taxonomy \cite{taxonomy} and derive from a refined $k$-mer database. Here, we briefly discuss computational aspects for embedding the evolutionary distance in such trees.
+Genestrip-FT's database refinement lends itself to a comprehensive visualization of even large phylogeny trees with evolutionary distances being integrated. Resulting tree representations refine the existing NCBI taxonomy \cite{taxonomy} and derive from a refined $k$-mer database. Here, we briefly discuss computational aspects for embedding the evolutionary distance in such trees.
 
    \subsubsection{The evolutionary distance $d$}
     
@@ -455,7 +457,7 @@ The following assumptions are essentially the same as in \cite{skmer} and \cite{
     Let $|s|$ be the length of a sequence $s$ transformed to a sequence $s'$ via mutations of bases. We assume that $|s| = |s'|$ and consider the number of observable mutations $m$, i.e. all base positions $1 \leq i \leq |s|$ where $s(i) \neq s'(i)$. We also assume that these mutations are uniformly distributed over $s'$.
     Let $X$ be a random variable for the number of differing $k$-mers between $s$ and $s'$ depending on the $m$ mutations. For simplicity we assume that there are no duplicate $k$-mers in either $s$ or $s'$ so that $X$ is also the number of differing \emph{unique} $k$-mers. As our last simplification, we consider observations of $k$-mers within $s$ and analogously within $s'$ to be mutually independent. 
 
-    A mutation occurs at a chance of $m/|s|$. So the probability for a changed $k$-mer, which must contain a least on mutation, is $p(m) = 1 - (1 - m/|s|)^k$. Since the number of $k$-mers in $s$ and $s'$ is $|s|-k+1$, $X$ follows the binomial distribution $X \sim B(|s|-k+1, p(m))$.         
+    A mutation occurs at a chance of $m/|s|$. So the probability for a changed $k$-mer, which must contain at least one mutation, is $p(m) = 1 - (1 - m/|s|)^k$. Since the number of $k$-mers in $s$ and $s'$ is $|s|-k+1$, $X$ follows the binomial distribution $X \sim B(|s|-k+1, p(m))$.         
     In our context, \emph{we measure the number $E$ of unique $k$-mers differing between $s$ and $s'$ but we want to estimate the distance $d:=m/|s|$ as a ratio of mutations over the sequence $s$}. We therefore approximate $E \approx E[X] = (|s|-k+1) \cdot p(m)$ and solve by $d$:
  \begin{equation}
 d \approx 1 - \sqrt[k]{1 - E / (|s| - k + 1)} \approx 1 - \sqrt[k]{1 - E / |s|} =: d(E/|s|)\label{distanceapprox} 	
@@ -487,7 +489,7 @@ Figure \ref{nfunc} shows a plot of the function $d(E/|s|)$: It starts with a slo
 
 \subsubsection{Embedding of $d$ in taxonomy trees}
 
-We want to apply $d$ to a node $n$ in the context of a taxonomy tree such as in Figure \ref{simplerefdb}. More precisely, we estimate $d_n$ to be the maximum evolutionary distance \emph{from $n$'s parent to the data taxons\footnote{See Section for \ref{intrinsicqms} for the definition of the term \enquote{data taxon}.} under $n$}:
+We want to apply $d$ to a node $n$ in the context of a taxonomy tree such as in Figure \ref{simplerefdb}. More precisely, we estimate $d_n$ to be the maximum evolutionary distance \emph{from $n$'s parent to the data taxons\footnote{See Section~\ref{intrinsicqms} for the definition of the term \enquote{data taxon}.} under $n$}:
 \begin{itemize}
 \item
 For that, $above(n)$ shall sum over the $k$-mers assigned to nodes above $n$ towards the tree's root excluding $n$. 
@@ -500,7 +502,7 @@ Since we use the maximum sum in $below(n)$, this estimate is conservative for $n
 However, to depict evolutionary distances in a given taxonomy tree we must represent the portion $dp_n$ of $d_n$ relating to the branch from a node $n$'s parent to $n$ itself.
 Let $c$ be the child of $n$ on the path $p_n$. We have $d_n \geq d_c$ because $E_n = below(n) \geq E_c = below(c)$, $|s_n| \geq |s_c|$ and because $d$ is monotonically increasing. So, to estimate the desired portion, we simply set $dp_n := d_n - d_{c}\geq 0$.
 
-Figure \ref{simplerefdbdist} depicts a resulting taxonomy tree for the same database as in Figure \ref{simplerefdb} but with horizontal line lengths encoding distance portions.\footnote{We configuratively set the horizontal line lengths of the highest ranked nodes to a minimum although their $dp_n$ might be large. This is because the resulting distance portion is too unreliable and tends to cause a large but non-informative indentation in the tree. In Figure \ref{simplerefdbdist}, this exception affects for the node \enquote{Viruses (10239) acellular root} only.}
+Figure \ref{simplerefdbdist} depicts a resulting taxonomy tree for the same database as in Figure \ref{simplerefdb} but with horizontal line lengths encoding distance portions.\footnote{We configuratively set the horizontal line lengths of the highest ranked nodes to a minimum although their $dp_n$ might be large. This is because the resulting distance portion is too unreliable and tends to cause a large but non-informative indentation in the tree. In Figure \ref{simplerefdbdist}, this exception affects the node \enquote{Viruses (10239) acellular root} only.}
 
   \begin{figure}[h]%
         \centering
@@ -510,7 +512,7 @@ Figure \ref{simplerefdbdist} depicts a resulting taxonomy tree for the same data
  }\label{simplerefdbdist}
     \end{figure}
 
-The relatively compact depiction of taxonomy trees such as in Figure \ref{simplerefdbdist} allows for combining many species or even genera in a single representation and enables a fine-grained \emph{mapping of evolutionary relationships}. Hereby, the refinements resulting from Genestrip FT integrate into the established NCBI taxonomy tree and support the visual display of the evolutionary distance $d$ via horizontal indentations. Figure \ref{borr_map} exemplifies this kind of  mapping on slightly larger scale with regard to the closely related genera Borrelia (138) and Borreliella (64895).\footnote{The generation of such a map can be executed as a goal included by standard in Genestrip FT. A resulting SVG file may be generated for any refined, but also any non-refined Genestrip database.} 
+The relatively compact depiction of taxonomy trees such as in Figure \ref{simplerefdbdist} allows for combining many species or even genera in a single representation and enables a fine-grained \emph{mapping of evolutionary relationships}. Hereby, the refinements resulting from Genestrip-FT integrate into the established NCBI taxonomy tree and support the visual display of the evolutionary distance $d$ via horizontal indentations. Figure \ref{borr_map} exemplifies this kind of mapping on a slightly larger scale with regard to the closely related genera Borrelia (138) and Borreliella (64895).\footnote{The generation of such a map can be executed as a goal included by standard in Genestrip-FT. A resulting SVG file may be generated for any refined, but also any non-refined Genestrip database.} 
 
   \begin{figure}[h]%
         \centering
@@ -544,7 +546,7 @@ The relatively compact depiction of taxonomy trees such as in Figure \ref{simple
 \textbf{Database} & \textbf{Genus}&\textbf{Unrefined avg. precision}&\textbf{Refined avg. precision}\\
           \hline
         \end{tabular}
-         \caption{Collection of average path precision for different databases and genuses.}\label{dbpathprec}        
+         \caption{Collection of average path precision for different databases and genera.}\label{dbpathprec}        
     \end{table}      
     
     \subsection{Classification quality}
@@ -566,7 +568,7 @@ The relatively compact depiction of taxonomy trees such as in Figure \ref{simple
 
     \subsubsection{Comparison with established phylogeny trees}
     
-    Example candidates: Borrelia, Babesia, Malaria, Orthopoxsvirus
+    Example candidates: Borrelia, Babesia, Malaria, Orthopoxvirus
     
     \subsection{Database refinement performance}
     
