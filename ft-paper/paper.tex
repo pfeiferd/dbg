@@ -106,7 +106,7 @@
     \begin{figure}[h]%
         \centering
 
-         \caption{Box-plot histogram of relative $k$-mer distributions across ranks macro-averaged on a per species-basis for ?? different protozoan species. The distribution is based on all respective protozoan genomes in RefSeq where $k$-mers shared with any other protozoan species from RefSeq have been pushed up the ranks accordingly due to Genestrip's LCA update. $k$-mers are counted according to the frequency in a species' genome.}\label{kmerongenusborrelia}
+         \caption{Box-plot histogram of relative $k$-mer distributions across ranks macro-averaged on a per species-basis for ?? different protozoan species. The distribution is based on all respective protozoan genomes in RefSeq where $k$-mers shared with any other protozoan species from RefSeq have been pushed up the ranks accordingly due to Genestrip's LCA update. $k$-mers are counted according to the frequency in a species' genome.}\label{kmerongenusprotozoa}
     \end{figure}
     
     \begin{figure}[h]%
@@ -432,7 +432,7 @@ So $X$, $Y$, $Z$ are data taxons but $X$ is not a leaf node.
 It is important to see that \emph{path recall should always equal one for a correct $k$-mer database} since
 the LCA-update should move up a $k$-mer in the taxonomy so far that all data taxons associated with that $k$-mer become descendants of the resulting tree node.
 Moreover, the refinement may push down $k$-mers only just so far that the same requirement is still maintained.
-In other words, \emph{path recall actually serves as a correctness criterion for $k$-mer databases}. 
+In other words, \emph{path recall actually serves as a correctness criterion for $k$-mer databases}. For the unrefined database this holds exactly by construction of the LCA update. For a refined database, a small deviation below one may arise from occasional false positives of the Bloom filter used during the \verb|kmerindexbloom| step (see Section~\ref{dbrefinement}): a false positive can cause a $k$-mer to be attributed to the wrong species during clustering, leading \verb|updatestore| to push it to a REFINED node that is not on the path of every data taxon whose genome contains that $k$-mer.
 
     So together, a high average path precision and a path recall of one suggest that $k$-mers are located at a near optimal position in the taxonomy tree -- not too high up to lower precision and not too far down to taint recall.
 
@@ -440,8 +440,8 @@ Given that \emph{path recall} equals one, it is interesting to consider refineme
 \emph{node precision} $np(n)$: Let $A_n$ be set of $k$-mers associated with a node $n$ in $d$'s taxonomy tree and $T_n$ be the set of data taxons of descendants under $n$ including $n$ itself. Let $c_n(a)$ with $a \in A_n$ be the number of data taxons $t \in T_n$ whose genomes contain $a$ at least once.
 \[ np(n) = \frac{1}{(1 + |A_n|) \cdot |T_n|} (|T_n| +\sum_{a \in A_n} c_n(a))  \]
 
-Together, the terms \enquote{$1 + $} and \enquote{$|T_n| +$} account for a Laplace correction to avoid division by zero if $A_n = \emptyset$ such that $np(n) = 1$ if $A_n = \emptyset$. 
-Given the transformation from Figure \ref{fttrans}, it follows by definition that $np(n) = 1$ for a node $n$ of a data taxon $t$. Note that \enquote{OTHER} nodes from Section \ref{dbrefinement} do not impact $np$ and so, node precision simply disregards them.
+Together, the terms \enquote{$1 + $} and \enquote{$|T_n| +$} account for a Laplace correction such that $np(n) = 1$ when $A_n = \emptyset$, i.e., when no $k$-mers are stored directly under $n$, reflecting that an empty assignment is trivially correct.
+Given the transformation from Figure \ref{fttrans}, it follows by definition that $np(n) = 1$ for a node $n$ of a data taxon $t$.
 
 Using a refined database with its refined taxonomy, node precision allows for spotting structural flaws in the original, unrefined taxonomy. Figure \ref{} presents a simple example to explain this use case.
 
@@ -462,14 +462,10 @@ The following assumptions are essentially the same as in \cite{skmer} and \cite{
  \begin{equation}
 d \approx 1 - \sqrt[k]{1 - E / (|s| - k + 1)} \approx 1 - \sqrt[k]{1 - E / |s|} =: d(E/|s|)\label{distanceapprox} 	
  \end{equation} 
-Figure \ref{nfunc} shows a plot of the function $d(E/|s|)$: It starts with a slope of $1/(k-1)$ because when $n$ is small, every mutation results in about $k-1$ different $k$-mers. The estimate $d(E/|s|)$ becomes very sensitive, i.e. less reliable, when $E$ reaches $|s|$. For practical considerations, we therefore indicate it in taxonomy trees, when $d$ exceeds a configurable threshold $t_d$.
-% Better work with slope of derivative ?
-% $d'(E / l) =(1 - E/l)^{1/k - 1}$ 
-% or even determine the variance
-\todo{This is poor man's math. I would like to get variance of $n$, where $n$ is a random variable based on $X$. But on the other hand $X$ is based on $p(n)$... ?}
+Figure \ref{nfunc} shows a plot of the function $d(E/|s|)$: It starts with a slope of $1/k$ because each mutation affects about $k$ $k$-mers (those spanning the mutated position), so $E \approx k \cdot m$ for small $m$, giving $d = m/|s| \approx (E/|s|)/k$. The estimate $d(E/|s|)$ becomes very sensitive, i.e. less reliable, when $E$ reaches $|s|$. For practical considerations, we therefore indicate it in taxonomy trees, when $d$ exceeds a configurable threshold $t_d$.
 
 \begin{figure}[h]
-\centering  
+\centering
 \begin{tikzpicture}
 \begin{axis}[
     ylabel={$d(E/|s|)$},
@@ -500,7 +496,7 @@ We set $d_n := d(E_n/|s_n|)$ by letting $E_n := below(n)$ and $|s_n| := above(n)
 This way, $d_n$ measures the evolutionary distance from $n$'s parent to the leaf of $p_n$. 
 Since we use the maximum sum in $below(n)$, this estimate is conservative for $n$.
 However, to depict evolutionary distances in a given taxonomy tree we must represent the portion $dp_n$ of $d_n$ relating to the branch from a node $n$'s parent to $n$ itself.
-Let $c$ be the child of $n$ on the path $p_n$. We have $d_n \geq d_c$ because $E_n = below(n) \geq E_c = below(c)$, $|s_n| \geq |s_c|$ and because $d$ is monotonically increasing. So, to estimate the desired portion, we simply set $dp_n := d_n - d_{c}\geq 0$.
+Let $c$ be the child of $n$ on the path $p_n$. It can be shown that $d_n \geq d_c$,\footnote{$E_n = below(n) = k_n + below(c) = k_n + E_c \geq E_c$ (where $k_n \geq 0$ is the number of $k$-mers stored at $n$ itself), while $|s_n| = above(n) + below(n) = above(n) + k_n + E_c = (above(n) + k_n) + E_c = above(c) + below(c) = |s_c|$, so $E_n/|s_n| \geq E_c/|s_c|$, and therefore $d_n \geq d_c$ by monotonicity of $d$.} so we simply set $dp_n := d_n - d_{c}\geq 0$.
 
 Figure \ref{simplerefdbdist} depicts a resulting taxonomy tree for the same database as in Figure \ref{simplerefdb} but with horizontal line lengths encoding distance portions.\footnote{We configuratively set the horizontal line lengths of the highest ranked nodes to a minimum although their $dp_n$ might be large. This is because the resulting distance portion is too unreliable and tends to cause a large but non-informative indentation in the tree. In Figure \ref{simplerefdbdist}, this exception affects the node \enquote{Viruses (10239) acellular root} only.}
 
@@ -639,7 +635,93 @@ DP developed the software, designed the evaluation and wrote the manuscript. \to
 
 \subsection{Appendix}
 
+\subsubsection*{Posterior distribution for the evolutionary distance}
 
+We derive the probability distribution of $d$ given the observed count $E$ of differing unique $k$-mers, using Bayes' theorem. Let $N := |s|-k+1$ be the number of $k$-mers in $s$. We adopt a uniform prior $\pi(d) = 1$ on $d\in[0,1]$, reflecting no preference for any particular mutation rate. The binomial model from above gives the likelihood
+\[
+  P(E \mid d) = \binom{N}{E}\,p(d)^E\,[1-p(d)]^{N-E}, \qquad p(d) = 1-(1-d)^k.
+\]
+By Bayes' theorem the posterior satisfies
+\[
+  P(d \mid E) \;\propto\; [1-(1-d)^k]^E\,(1-d)^{k(N-E)}.
+\]
+To identify the normalising constant we substitute $v := (1-d)^k$, so $d = 1-v^{1/k}$ and $\mathrm{d}d = \frac{1}{k}\,v^{1/k-1}\,\mathrm{d}v$. The posterior density in $v$ becomes
+\[
+  P(v \mid E) \;\propto\; v^{\,N-E+\frac{1}{k}-1}(1-v)^{E},
+\]
+which is recognised as a $\mathrm{Beta}\!\left(N-E+\tfrac{1}{k},\;E+1\right)$ density. Hence the normalised posterior for $d$ is
+\begin{equation}
+  P(d \mid E) \;=\;
+  \frac{k\,(1-d)^{k(N-E)}\bigl[1-(1-d)^k\bigr]^E}
+       {B\!\left(N-E+\tfrac{1}{k},\;E+1\right)},
+  \qquad d\in[0,1].
+  \label{eq:dposterior}
+\end{equation}
+
+\subsubsection*{Posterior mean and variance}
+
+Since $d = 1-v^{1/k}$ with $v\sim\mathrm{Beta}\!\left(N-E+\tfrac{1}{k},\,E+1\right)$, and the $t$-th moment of a $\mathrm{Beta}(\alpha,\beta)$ variable equals $B(\alpha+t,\beta)/B(\alpha,\beta)$, the posterior mean is
+\begin{equation}
+  E[d\mid E] \;=\; 1 \;-\;
+  \frac{B\!\left(N-E+\tfrac{2}{k},\;E+1\right)}
+       {B\!\left(N-E+\tfrac{1}{k},\;E+1\right)}.
+  \label{eq:dpostmean}
+\end{equation}
+For the variance we use $\mathrm{Var}(d\mid E) = \mathrm{Var}(v^{1/k}\mid E) = E[v^{2/k}\mid E]-(E[v^{1/k}\mid E])^2$, giving
+\begin{equation}
+  \mathrm{Var}(d\mid E) \;=\;
+  \frac{B\!\left(N-E+\tfrac{3}{k},\;E+1\right)}
+       {B\!\left(N-E+\tfrac{1}{k},\;E+1\right)}
+  \;-\;
+  \left(\frac{B\!\left(N-E+\tfrac{2}{k},\;E+1\right)}
+             {B\!\left(N-E+\tfrac{1}{k},\;E+1\right)}\right)^{\!2}.
+  \label{eq:dpostvar}
+\end{equation}
+
+\subsubsection*{Delta method approximation for large $|s|$}
+
+For genomic sequences $|s|$ is in the millions, so the posterior concentrates tightly around the point estimate $\hat{d} = d(E/|s|) = 1-(1-E/|s|)^{1/k}$ from Eq.~\eqref{distanceapprox}. Setting $\hat{v} = (1-\hat{d})^k$, the posterior variance of $v$ is approximately $\mathrm{Var}(v\mid E)\approx \hat{v}(1-\hat{v})/|s|$. Applying the delta method to $d = g(v) = 1-v^{1/k}$ with $g'(v) = -\tfrac{1}{k}\,v^{1/k-1}$ yields
+\begin{equation}
+  \mathrm{Var}(d\mid E) \;\approx\;
+  \frac{(1-\hat{d})^{2-k}\bigl[1-(1-\hat{d})^k\bigr]}{k^2\,|s|}.
+  \label{eq:ddeltavar}
+\end{equation}
+An approximate $\pm 1\sigma$ credible interval for $d$ is therefore $\hat{d}\,\pm\,\sqrt{\mathrm{Var}(d\mid E)}$. The bands are tight for moderate $E/|s|$ but widen rapidly as $E$ approaches $|s|$, confirming that the estimate becomes unreliable in that regime.
+
+\iffalse
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    name=sigfull,
+    ylabel={$d(E/|s|)$},
+    xlabel={$E / |s|$},
+    height=5cm, width=6cm,
+    samples=500, domain=0:1,
+    no markers, smooth]
+  \addplot[black, thick] {(1 - (1-x)^(1/31))};
+  \addplot[blue, thick, domain=0:0.9999] {(1-(1-x)^(1/31)) + x^0.5*(1-x)^(-29/62)/3100};
+  \addplot[blue, thick, domain=0:0.9999] {(1-(1-x)^(1/31)) - x^0.5*(1-x)^(-29/62)/3100};
+  \addplot[orange, thick, domain=0:0.9999] {(1-(1-x)^(1/31)) + x^0.5*(1-x)^(-29/62)/980};
+  \addplot[orange, thick, domain=0:0.9999] {(1-(1-x)^(1/31)) - x^0.5*(1-x)^(-29/62)/980};
+\end{axis}
+\begin{axis}[
+    at={(sigfull.east)}, anchor=west, xshift=1.2cm,
+    xlabel={$E / |s|$},
+    xmin=0.9, xmax=1,
+    height=5cm, width=6cm,
+    samples=2000,
+    no markers]
+  \addplot[black, thick, domain=0.9:1] {(1 - (1-x)^(1/31))};
+  \addplot[blue, thick, domain=0.9:0.9999] {(1-(1-x)^(1/31)) + x^0.5*(1-x)^(-29/62)/3100};
+  \addplot[blue, thick, domain=0.9:0.9999] {(1-(1-x)^(1/31)) - x^0.5*(1-x)^(-29/62)/3100};
+  \addplot[orange, thick, domain=0.9:0.9999] {(1-(1-x)^(1/31)) + x^0.5*(1-x)^(-29/62)/980};
+  \addplot[orange, thick, domain=0.9:0.9999] {(1-(1-x)^(1/31)) - x^0.5*(1-x)^(-29/62)/980};
+\end{axis}
+\end{tikzpicture}
+\caption{Left: $\hat{d}\pm\sigma_d$ from Eq.~\eqref{eq:ddeltavar} with $k=31$ (black: $d(E/|s|)$; blue: $|s|=10^4$; orange: $|s|=10^3$). Right: zoomed view of $E/|s|\in[0.9,1]$ showing the bands widening as $E$ approaches $|s|$.}\label{nfuncsigma}
+\end{figure}
+\fi
 
 \clearpage
 
