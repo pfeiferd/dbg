@@ -449,7 +449,7 @@ Genestrip FT's database refinement lends itself for a comprehensive visualizatio
 
    \subsubsection{The evolutionary distance $d$}
     
-We briefly introduce an approximation of the evolutionary distance $d$ as a ratio of mutations of genomes or sequences, respectively. The approximation has been derived before in \cite{skmer} where it is expressed via the Jaccard index over shared $k$-mers between genomes. Besides, \cite{Ondov:2016aa} pointed out a similar approximation. For clarity of discussion, we also derive $d$, but express it in terms of counts available in a Genestrip database and related taxonomy trees. Afterwards, we build on these considerations to adequately integrate $d$ into depicted, refined trees such as produced via Genestrip-FT. 
+We briefly introduce an approximation of the evolutionary distance $d$ as a ratio of mutations in genomes or sequences, respectively. The approximation has been derived before in \cite{skmer} where it is expressed via the Jaccard index over shared $k$-mers between genomes. Besides, \cite{Ondov:2016aa} pointed out a similar approximation. For clarity of discussion, we also derive $d$, but express it in terms of counts available in a Genestrip database and related taxonomy trees. Afterwards, we build on these considerations to adequately integrate $d$ into depicted, refined trees such as produced via Genestrip-FT. 
     
 The following assumptions are essentially the same as in \cite{skmer} and \cite{Ondov:2016aa}:
     Let $|s|$ be the length of a sequence $s$ transformed to a sequence $s'$ via mutations of bases. We assume that $|s| = |s'|$ and consider the number of observable mutations $m$, i.e. all base positions $1 \leq i \leq |s|$ where $s(i) \neq s'(i)$. We also assume that these mutations are uniformly distributed over $s'$.
@@ -500,7 +500,7 @@ Since we use the maximum sum in $below(n)$, this estimate is conservative for $n
 However, to depict evolutionary distances in a given taxonomy tree we must represent the portion $dp_n$ of $d_n$ relating to the branch from a node $n$'s parent to $n$ itself.
 Let $c$ be the child of $n$ on the path $p_n$. We have $d_n \geq d_c$ because $E_n = below(n) \geq E_c = below(c)$, $|s_n| \geq |s_c|$ and because $d$ is monotonically increasing. So, to estimate the desired portion, we simply set $dp_n := d_n - d_{c}\geq 0$.
 
-Figure \ref{simplerefdbdist} depicts a resulting taxonomy tree for the same database as in Figure \ref{simplerefdb} but with horizontal line lengths encoding distance portions.\footnote{We set the horizontal line length of a node $n$ to a minimum when $d_n = 1$ although $dp_n$ might be large. This is because the resulting distance portion is too unreliable and tends to cause a large but non-informative indentation in the tree. In Figure \ref{simplerefdbdist}, this exception affects for the node \enquote{Viruses (10239) acellular root} only.}
+Figure \ref{simplerefdbdist} depicts a resulting taxonomy tree for the same database as in Figure \ref{simplerefdb} but with horizontal line lengths encoding distance portions.\footnote{We configuratively set the horizontal line lengths of the highest ranked nodes to a minimum although their $dp_n$ might be large. This is because the resulting distance portion is too unreliable and tends to cause a large but non-informative indentation in the tree. In Figure \ref{simplerefdbdist}, this exception affects for the node \enquote{Viruses (10239) acellular root} only.}
 
   \begin{figure}[h]%
         \centering
