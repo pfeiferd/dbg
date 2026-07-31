@@ -1,6 +1,16 @@
 \documentclass[pdflatex,sn-vancouver-num]{sn-jnl}
 
+%
+% Set to \finalsubmissiontrue when compiling on a system without Inkscape and/or
+% -shell-escape (e.g. most cloud/journal LaTeX services). Figures are then taken
+% from pre-rendered PDFs instead of being converted from SVG on the fly; run
+% convert-svgs-to-pdf.sh once beforehand to produce them.
+\newif\iffinalsubmission
+\finalsubmissionfalse
+
 \usepackage{graphicx}%
+\iffinalsubmission\else\usepackage{svg}%
+\fi
 \usepackage{multirow}%
 \usepackage{amsmath,amssymb,amsfonts}%
 \usepackage{amsthm}%
@@ -50,6 +60,18 @@
 %
 %\newif\ifscatter
 %\scattertrue
+
+%
+% Includes an SVG figure produced by ft-db-exp2, e.g. \dbfig[width=12cm]{results/orthopox_ftsvgtaxtree}.
+% Converts on the fly via Inkscape unless \finalsubmissiontrue, in which case a pre-rendered
+% <name>.pdf next to the <name>.svg (see convert-svgs-to-pdf.sh) is used instead.
+\newcommand{\dbfig}[2][]{%
+\iffinalsubmission
+\includegraphics[#1]{#2.pdf}%
+\else
+\includesvg[#1]{#2}%
+\fi
+}
 
 \newcommand{\taxon}{taxon}
 \newcommand{\ku}{KrakenUniq}
@@ -189,7 +211,7 @@ We explain the system's refinement procedure by means of a small and initially u
 
   \begin{figure}[h]%
         \centering        
-\includegraphics[width=11cm]{figs/orthopox_svgtaxtree.pdf}
+\dbfig[width=11cm]{results/orthopox_svgtaxtree}
          \caption{Tree representation of a Genestrip $k$-mer database including three Orthopoxvirus species. The tree represents the state \emph{right after the LCA update} as in Figure \ref{ftsketch} (2). Taxa and rank are given in parentheses. The number of $k$-mers assigned to a node is printed in brackets. The length of the horizontal lines is equivalent to the ratio of $k$-mers under a node.}\label{simplelcadb}
     \end{figure}   
 
@@ -209,7 +231,7 @@ In the following, we briefly explain the essential goals needed for the computat
 	\[ J(t_1, t_2) = \frac{c(t_1, t_2) + 1}{c(t_1, t_1) + c(t_2, t_2) - c(t_1, t_2) + 1} \]
 	\cite{jaccard} as a similarity measure of the two sets of $k$-mers belonging to $t_1$ and $t_2$ on the genus, respectively. The Laplace correction adds $1$ to both the intersection count (numerator) and each self-count (denominator), which avoids division by zero when both species share no $k$-mers on the genus and yields $J = 1$ in that degenerate case. Regarding our running example, Table \ref{intersectioncounts} shows the raw intersection counts whereas Table \ref{jaccard} states the resulting Jaccard indices. For simplicity, we skip the background of the column \enquote{OTHER} for now --- it will be explained at the end of this section.
 
-	\item The goal \verb|dendrogram| from Figure \ref{ftgoals} computes a dendrogram using the standard agglomerative clustering algorithm \enquote{HAC} \cite{King01031967,1394399}, where the cluster distance is based on the Jaccard index $J$ from \verb|intersectcount|. Since the taxonomic refinement is governed by the aim of improving classification precision (see Section \ref{approach}), we chose \enquote{Single Linkage} \cite{King01031967} as the default linkage strategy. This linkage strategy is suitable because it merges clusters on the basis of their most similar $k$-mer sets they contain. Nevertheless, other linkage strategies such as UPGMA and WPGMA \cite{Sokal1958ASM} may be configured instead. Figure \ref{dendrogram} depicts the resulting dendrogram as computed on the basis of Table \ref{jaccard}.
+	\item The goal \verb|dendrogram| from Figure \ref{ftgoals} computes a dendrogram using the standard agglomerative clustering algorithm \enquote{HAC} \cite{King01031967,1394399}, where the cluster distance is based on the Jaccard index $J$ from \verb|intersectcount|. Since the taxonomic refinement is governed by the aim of improving classification precision (see Section \ref{approach}), we chose \enquote{Single Linkage} \cite{King01031967} as the default linkage strategy. This linkage strategy is suitable because it merges clusters on the basis of their most similar $k$-mer sets they contain. Nevertheless, other linkage strategies such as UPGMA and WPGMA \cite{Sokal1958ASM} may be configured instead. Figure \ref{dendrogram10242} depicts the resulting dendrogram as computed on the basis of Table \ref{jaccard}.
 
 	\item The goal \verb|ftupdatedb| reorganizes the database's taxonomy tree by adding new tree nodes under a genus as induced by the previous goal's dendrogram. Furthermore, $k$-mers are pushed down, i.e. reassigned, to the newly added nodes accordingly. Hereby, each $k$-mer is pushed down as far to a new node $n$, such that all species with sequences containing that $k$-mer still remain descendants of $n$.
 
@@ -242,47 +264,15 @@ In the following, we briefly explain the essential goals needed for the computat
        \end{tabular}
          \caption{Jaccard indices for the intersection counts from Figure \ref{intersectioncounts}.}\label{jaccard}
     \end{table}    
-  \begin{figure}[h]%
-        \centering
-\footnotesize        
-\begin{tikzpicture}[sloped,scale=0.6]
-\draw[<-] (0,-2.500000) -- node[above]{Similarity} (8.000000,-2.500000);
-\draw (0,-1.000000) -- (8.000000,-1.000000);
-\draw (0.000000,-1.000000) -- (0.000000,-1.100000);
-\node at (0.000000,-1.400000) {$1$};
-\draw (1.600000,-1.000000) -- (1.600000,-1.100000);
-\node at (1.600000,-1.400000) {$0.8$};
-\draw (3.200000,-1.000000) -- (3.200000,-1.100000);
-\node at (3.200000,-1.400000) {$0.6$};
-\draw (4.800000,-1.000000) -- (4.800000,-1.100000);
-\node at (4.800000,-1.400000) {$0.4$};
-\draw (6.400000,-1.000000) -- (6.400000,-1.100000);
-\node at (6.400000,-1.400000) {$0.2$};
-\draw (8.000000,-1.000000) -- (8.000000,-1.100000);
-\node at (8.000000,-1.400000) {$0$};
-\node [anchor=east] (n3) at (0,0.000000) {Orthopoxvirus vaccinia (10245)
-};
-\node [anchor=east] (n4) at (0,1.000000) {OTHER};
-\node (n2) at (2.809248,0.500000) {};
-\node [anchor=east] (n5) at (0,2.000000) {Orthopoxvirus cowpox (3431481)
-};
-\node (n1) at (3.487487,1.250000) {};
-\node [anchor=east] (n6) at (0,3.000000) {Orthopoxvirus monkeypox (3431483)
-};
-\node (n0) at (3.915213,2.125000) {};
-\draw  (n0.center) |- (n1.center);
-\draw  (n0.center) |- (n6.east);
-\draw  (n1.center) |- (n2.center);
-\draw  (n1.center) |- (n5.east);
-\draw  (n2.center) |- (n3.east);
-\draw  (n2.center) |- (n4.east);
-\end{tikzpicture}
-         \caption{Dendrogram for the node \enquote{Orthopoxvirus (10242, genus)} from Figure \ref{simplelcadb} obtained via agglomerative clustering on the basis of the Jaccard index when applied to the intersection counts from Table \ref{intersectioncounts}.}\label{dendrogram}
-    \end{figure}
+\begingroup
+\let\oldcaption\caption
+\renewcommand{\caption}[1]{\oldcaption{Dendrogram for the node \enquote{Orthopoxvirus (10242, genus)} from Figure \ref{simplelcadb} obtained via agglomerative clustering on the basis of the Jaccard index when applied to the intersection counts from Table \ref{intersectioncounts}.}}
+\input{results/orthopox_dendrolatex_10242.tex}
+\endgroup
     
   \begin{figure}[h]%
         \centering
-\includegraphics[width=12cm]{figs/orthopox_ftsvgtaxtree.pdf}
+\dbfig[width=12cm]{results/orthopox_ftsvgtaxtree}
          \caption{Tree representation of a Genestrip $k$-mer database including three Orthopoxvirus species. The tree represents the state right \emph{after the refinement} as in Figure \ref{ftsketch} (4). Figure \ref{simplelcadb} shows the same database before the refinement. The number of $k$-mers on the genus decreased from 239,265 to 134,449 because the other $k$-mers got pushed down to newly added nodes typed as \enquote{REFINED}.}\label{simplerefdb}
     \end{figure}
     
@@ -419,7 +409,7 @@ So $X$, $Y$, $Z$ are data taxons but $X$ is not a leaf node.
 
   \begin{figure}[h]%
         \centering
-\includegraphics[width=12cm]{figs/orthopox2_ftsvgtaxtree.pdf}
+\dbfig[width=12cm]{results/orthopox2_ftsvgtaxtree}
          \caption{Tree representation of a Genestrip $k$-mer database including three Orthopoxvirus species. The tree represents the state right \emph{after the refinement} as in Figure \ref{ftsketch} (4); so it is similar to Figure \ref{simplerefdb} \emph{but with the transformation from Figure \ref{fttrans} included.}}\label{simplerefdbtrans}
     \end{figure}
 
@@ -432,14 +422,13 @@ So $X$, $Y$, $Z$ are data taxons but $X$ is not a leaf node.
 It is important to see that \emph{path recall should always equal one for a correct $k$-mer database} since
 the LCA-update should move up a $k$-mer in the taxonomy so far that all data taxons associated with that $k$-mer become descendants of the resulting tree node.
 Moreover, the refinement may push down $k$-mers only just so far that the same requirement is still maintained.
-In other words, \emph{path recall actually serves as a correctness criterion for $k$-mer databases}. This holds for both the unrefined database via the LCA update and the refined database via the goal \verb|ftupdatedb|.\footnote{Due to its probabilistic nature, the Bloom filter used during the \texttt{kmerindexbloom} step (see Section~\ref{dbrefinement}) may occasionally falsely attribute a species to a $k$-mer, which may prevent the $k$-mer from being pushed down to its lowest possible node. This mildly lowers precision but never recall.}
+In other words, \emph{path recall actually serves as a correctness criterion for $k$-mer databases}. This holds for both the unrefined database via the LCA update and the refined database via the goal \verb|ftupdatedb|.\footnote{Due to its probabilistic nature, the Bloom filter used during the \texttt{kmerindexbloom} step (see Section~\ref{dbrefinement}) occasionally falsely attributes a species to a $k$-mer, which may prevent the $k$-mer from being pushed down to its lowest possible node. This mildly lowers precision but never recall.}
 
     So together, a high average path precision and a path recall of one suggest that $k$-mers are located at a near optimal position in the taxonomy tree -- not too high up to lower precision and not too far down to taint recall.
 
 Given that \emph{path recall} equals one, it is interesting to consider refinement quality also on a per-node basis for each node in the database $d$'s taxonomy tree. For this purpose, we define
 \emph{node precision} $np(n)$: Let $A_n$ be set of $k$-mers associated with a node $n$ in $d$'s taxonomy tree and $T_n$ be the set of data taxons of descendants under $n$ including $n$ itself. Let $c_n(a)$ with $a \in A_n$ be the number of data taxons $t \in T_n$ whose genomes contain $a$ at least once.
-\[ np(n) = \frac{1}{(1 + |A_n|) \cdot |T_n|} (|T_n| +\sum_{a \in A_n} c_n(a))  \]
-
+\[ np(n) = (|T_n| +\sum_{a \in A_n} c_n(a)) / (1 + |A_n|) \cdot |T_n| \]
 Together, the terms \enquote{$1 + $} and \enquote{$|T_n| +$} account for a Laplace correction such that $np(n) = 1$ when $A_n = \emptyset$, i.e., when no $k$-mers are stored directly under $n$, reflecting that an empty assignment is trivially correct.
 Given the transformation from Figure \ref{fttrans}, it follows by definition that $np(n) = 1$ for a node $n$ of a data taxon $t$.
 
@@ -502,19 +491,13 @@ Figure \ref{simplerefdbdist} depicts a resulting taxonomy tree for the same data
 
   \begin{figure}[h]%
         \centering
-\includegraphics[width=12.95cm]{figs/orthopox3_ftsvgtaxtree.pdf}
+\dbfig[width=12.95cm]{results/orthopox3_ftsvgtaxtree}
          \caption{Tree representation of a Genestrip $k$-mer database including three Orthopoxvirus species. The database is in the state \emph{right after the refinement} as in Figure \ref{ftsketch} (4). The tree depicts the same database as in Figure \ref{simplerefdb} but here, the length of a horizontal line to a node $n$ encodes the evolutionary distance portion $dp_n$. Both $d_n$ and $dp_n$ are also printed in brackets. The reddened lines indicate the branch for the $p_n$ starting from node $n$.
 % Dashed lines signal less reliable evolutionary distances $d_n > t_n := 0.8$.
  }\label{simplerefdbdist}
     \end{figure}
 
-The relatively compact depiction of taxonomy trees such as in Figure \ref{simplerefdbdist} allows for combining many species or even genera in a single representation and enables a fine-grained \emph{mapping of evolutionary relationships}. Hereby, the refinements resulting from Genestrip-FT integrate into the established NCBI taxonomy tree and support the visual display of the evolutionary distance $d$ via horizontal indentations. Figure \ref{borr_map} exemplifies this kind of mapping on a slightly larger scale with regard to the closely related genera Borrelia (138) and Borreliella (64895).\footnote{The generation of such a map can be executed as a goal included by standard in Genestrip-FT. A resulting SVG file may be generated for any refined, but also any non-refined Genestrip database.} 
-
-  \begin{figure}[h]%
-        \centering
-\includegraphics[width=13cm]{figs/borr_ftsvgtaxtree.pdf}
-         \caption{Example of an evolutionary mapping for the genera Borrelia (138) and Borreliella (64895) via a refined taxonomic tree with evolutionary distances. The presentation approach is the same as in Figure \ref{simplerefdbdist}}\label{borr_map}
-    \end{figure}
+The relatively compact depiction of taxonomy trees such as in Figure \ref{simplerefdbdist} allows for combining many species or even genera in a single representation and enables a fine-grained \emph{mapping of evolutionary relationships}. Hereby, the refinements resulting from Genestrip-FT integrate into the established NCBI taxonomy tree and support the visual display of the evolutionary distance $d$ via horizontal indentations. Figure \ref{borr_map} in the Appendix exemplifies this kind of mapping on a slightly larger scale with regard to the genus Borrelia (138).\footnote{The generation of such a map can be executed as a goal included by standard in Genestrip-FT. A resulting SVG file may be generated for any refined and non-refined Genestrip database.} 
             
     \section{Results}\label{results}
     
@@ -633,9 +616,19 @@ DP developed the software, designed the evaluation and wrote the manuscript. \to
 
 \subsection{Acknowledgements}
 
-\subsection{Appendix}
+\section{Appendix}
 
-\subsubsection*{Posterior distribution for the evolutionary distance}
+\subsection{Example of phylogenetic mapping}
+
+  \begin{figure}[h]%
+        \centering
+\dbfig[width=13cm]{results/borrelia_ftsvgtaxtree}
+         \caption{Example of a phylogenetic mapping for the genus Borrelia (138) via a refined taxonomic tree with evolutionary distances included. The presentation approach is the same as in Figure \ref{simplerefdbdist}}\label{borr_map}
+    \end{figure}
+
+\subsection{Evolutionary distance distribution}
+
+\subsubsection{Posterior distribution for the evolutionary distance}
 
 We derive the probability distribution of $d$ given the observed count $E$ of differing unique $k$-mers, using Bayes' theorem. Let $N := |s|-k+1$ be the number of $k$-mers in $s$. We adopt a uniform prior $\pi(d) = 1$ on $d\in[0,1]$, reflecting no preference for any particular mutation rate. The binomial model from above gives the likelihood
 \[
@@ -658,7 +651,7 @@ which is recognised as a $\mathrm{Beta}\!\left(N-E+\tfrac{1}{k},\;E+1\right)$ de
   \label{eq:dposterior}
 \end{equation}
 
-\subsubsection*{Posterior mean and variance}
+\subsubsection{Posterior mean and variance}
 
 Since $d = 1-v^{1/k}$ with $v\sim\mathrm{Beta}\!\left(N-E+\tfrac{1}{k},\,E+1\right)$, and the $t$-th moment of a $\mathrm{Beta}(\alpha,\beta)$ variable equals $B(\alpha+t,\beta)/B(\alpha,\beta)$, the posterior mean is
 \begin{equation}
@@ -678,7 +671,7 @@ For the variance we use $\mathrm{Var}(d\mid E) = \mathrm{Var}(v^{1/k}\mid E) = E
   \label{eq:dpostvar}
 \end{equation}
 
-\subsubsection*{Delta method approximation for large $|s|$}
+\subsubsection{Delta method approximation for large $|s|$}
 
 For genomic sequences $|s|$ is in the millions, so the posterior concentrates tightly around the point estimate $\hat{d} = d(E/|s|) = 1-(1-E/|s|)^{1/k}$ from Eq.~\eqref{distanceapprox}. Setting $\hat{v} = (1-\hat{d})^k$, the posterior variance of $v$ is approximately $\mathrm{Var}(v\mid E)\approx \hat{v}(1-\hat{v})/|s|$. Applying the delta method to $d = g(v) = 1-v^{1/k}$ with $g'(v) = -\tfrac{1}{k}\,v^{1/k-1}$ yields
 \begin{equation}
