@@ -90,7 +90,8 @@
 
 % Enter title:
 %    \title{Genestrip-FT: Optimized $k$-mer databases through refined taxonomies}
-    \title{Genestrip-FT: Maxing out $k$-mer databases with refined taxonomies}
+%    \title{Genestrip-FT: Maxing out $k$-mer databases with refined taxonomies}
+    \title{Genestrip-FT: Finer taxonomy trees for more precise read classification}
 
     \author*[1]{\sur{Daniel} \fnm{Pfeifer}}\email{daniel.pfeifer@hs-heilbronn.de}
 
@@ -227,7 +228,7 @@ In the following, we briefly explain the essential goals needed for the computat
 \begin{enumerate}
 	\item \verb|kmerindexbloom| associates each $k$-mer stored on the genus rank with the original species taxon of the sequence in which it occurred. To achieve this, the original sequences that were used to generate the unrefined database must all be reread. The mapping of a $k$-mer to its original species taxon is hashed; the resulting hash code is stored via a Bloom filter \cite{bloomfilter} in order to save main memory.\footnote{A Bloom filter is a probabilistic data structure for an efficient and compressed storing of values but also for a fast lookup of entered values. However, this comes at the expense of a configurable, usually low false positive rate at lookup time. Bloom filters and probabilistic filters in general \cite{10.1145/2674005.2674994,9920402,10.1145/3510449,10.1145/3376122} are widely used in the context of metagenomics tools \cite{biobloom, Piro:2020aa, 10.1093/nargab/lqaf094}.}
 	
-	\item \verb|intersectcount| computes the number of common $k$-mers $c(t_1, t_2)$ between any two species taxons $t_1$ and $t_2$ under the same genus. To do so, it consults the Bloom filter produced via the goal \verb|kmerindexbloom|. Based on $c(t_1, t_2)$, it also determines a Laplace-smoothed Jaccard index
+	\item \verb|intersectcount| computes the number of common $k$-mers $c(t_1, t_2)$ between any two species taxa $t_1$ and $t_2$ under the same genus. To do so, it consults the Bloom filter produced via the goal \verb|kmerindexbloom|. Based on $c(t_1, t_2)$, it also determines a Laplace-smoothed Jaccard index
 	\[ J(t_1, t_2) = \frac{c(t_1, t_2) + 1}{c(t_1, t_1) + c(t_2, t_2) - c(t_1, t_2) + 1} \]
 	\cite{jaccard} as a similarity measure of the two sets of $k$-mers belonging to $t_1$ and $t_2$ on the genus, respectively. The Laplace correction adds $1$ to both the intersection count (numerator) and each self-count (denominator), which avoids division by zero when both species share no $k$-mers on the genus and yields $J = 1$ in that degenerate case. Regarding our running example, Table \ref{intersectioncounts} shows the raw intersection counts whereas Table \ref{jaccard} states the resulting Jaccard indices. For simplicity, we skip the background of the column \enquote{OTHER} for now --- it will be explained at the end of this section.
 
@@ -305,7 +306,7 @@ In the following, we briefly explain the essential goals needed for the computat
          \caption{Tree representation of a Genestrip $k$-mer database including three Orthopoxvirus species. The tree represents the state right \emph{after the refinement} as in Figure \ref{ftsketch} (4). Figure \ref{simplelcadb} shows the same database before the refinement. The number of $k$-mers on the genus decreased from 239,265 to 134,449 because the other $k$-mers got pushed down to newly added nodes typed as \enquote{REFINED}.}\label{simplerefdb}
     \end{figure}
     
-Lastly, we motivate the need for the column \enquote{OTHER} in Tables \ref{intersectioncounts} and \ref{jaccard} but also for respective nodes in Figure \ref{simplerefdb}: Genestrip's LCA update is generally based on more taxons and associated sequences than just the ones stored in a resulting database \cite{genestrip-pub}. Typically, \emph{all} taxons and associated sequences under a RefSeq category are considered during the LCA update, if the database comprises any taxon from that category. However, this means that a $k$-mer $a$ may end up on a rank above species even though the corresponding database contains just a single species-level taxon $t$ associated with a sequence containing $a$. For such cases \enquote{OTHER} acts as placeholder for taxons that are not in the database but caused $a$ to be pushed to a higher rank. Otherwise, if that placeholder was missing during the refinement, $a$ would inevitably be pushed down too far towards $t$ via the goal \verb|ftupdatedb| from above. Figure \ref{ftother} further details this issue by means of a small example.
+Lastly, we motivate the need for the column \enquote{OTHER} in Tables \ref{intersectioncounts} and \ref{jaccard} but also for respective nodes in Figure \ref{simplerefdb}: Genestrip's LCA update is generally based on more taxa and associated sequences than just the ones stored in a resulting database \cite{genestrip-pub}. Typically, \emph{all} taxa and associated sequences under a RefSeq category are considered during the LCA update, if the database comprises any taxon from that category. However, this means that a $k$-mer $a$ may end up on a rank above species even though the corresponding database contains just a single species-level taxon $t$ associated with a sequence containing $a$. For such cases \enquote{OTHER} acts as placeholder for taxa that are not in the database but caused $a$ to be pushed to a higher rank. Otherwise, if that placeholder was missing during the refinement, $a$ would inevitably be pushed down too far towards $t$ via the goal \verb|ftupdatedb| from above. Figure \ref{ftother} further details this issue by means of a small example.
     
 \begin{figure}[h]%
 \centering
@@ -381,7 +382,7 @@ $X$, $Y$ and $Z$ are the same as in Figure \ref{ftsketch}. Since $Y$ and $Z$ are
    As an example, consider Figure \ref{ftsketch} from above: In (3), the path precision of $Z$ is $2/3$ because there are three $2$-mers on the path from $Z$ to the root $W$ but one of them, \texttt{CT}, is not in $W$'s sequence. In (3), $X$ and $Y$ both have a path precision of $1$. The refined database in (4) has a precision of 1 for $X$, $Y$ \emph{and} $Z$. Path recall is $1$ for all of the cases in (3) and (4). 
         
 For a fair assessment of precision, we require that each data taxon must be a leaf node in the taxonomy tree of database $d$. This can easily be enforced by a tree transformation explained via (3) and (4) in Figure \ref{fttrans}. If the requirement was not met, then two data taxa on the same path would likely result in an inadequately lowered path precision (as in Figure \ref{fttrans} (1) and (2)). Note that the described transformation leaves the phylogenetic structure of a given taxonomy intact.
-Figure \ref{simplerefdbtrans} exemplifies the transformation when integrated into the refinement of the database from Figure \ref{simplelcadb}.\footnote{When carefully comparing the $k$-mer counts of similar nodes from Figure \ref{simplerefdb} and \ref{simplerefdbtrans}, one finds minor differences such as for \enquote{10245/OTHER}. Note that these differences originate in the use of a probabilistic data structure, i.e. a Bloom filter, during the refinement procedure according to Section \ref{dbrefinement}.}
+Figure \ref{simplerefdbtrans} exemplifies the transformation when integrated into the refinement of the database from Figure \ref{simplelcadb}.\footnote{When carefully comparing the $k$-mer counts of similar nodes from Figures \ref{simplerefdb} and \ref{simplerefdbtrans}, one finds minor differences such as for \enquote{10245/OTHER}. Note that these differences originate in the use of a probabilistic data structure, i.e. a Bloom filter, during the refinement procedure according to Section \ref{dbrefinement}.}
 
 \begin{figure}[h]%
 \centering
@@ -389,7 +390,7 @@ Figure \ref{simplerefdbtrans} exemplifies the transformation when integrated int
 \begin{minipage}[c]{0.25\textwidth}
 \begin{flushleft}(1) Given $k = 2$ and $X$, $Y$, $Z$ under the genus $W$ with associated sequences:\\
 $X$: \texttt{CCT}, $Y$: \texttt{CTT}, $Z$: \texttt{TCA}\\
-So $X$, $Y$, $Z$ are data taxons but $X$ is not a leaf node.
+So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
 \end{flushleft}
 \end{minipage}
 \begin{minipage}[c]{0.2\textwidth}
@@ -446,22 +447,81 @@ So $X$, $Y$, $Z$ are data taxons but $X$ is not a leaf node.
             
     Note that for a taxonomy tree with a branching factor $\geq 2$ (which is the standard case) a high average path precision ensures that a $k$-mer $a$ in $d$ is located as closely as possible above a data taxon or right at a data taxon whose genome(s) contain $a$. Otherwise, if $a$ was located higher up in the taxonomy, then $a$ would also be on the path to the root starting from a data taxon $t$ whose genome does not contain $a$. But this would increase the $FP$-count of $t$ and in turn would lower the average path precision.
     
- %   Likewise, a high average path recall ensures that a $k$-mer $a$ in $d$ is assigned to a tree node such that \emph{as many data taxons as possible} which contain $a$ in their genome are subordinate or equal to that node. Otherwise, the $k$-mer $a$ would not be on the path to the root for such a taxon. But this would decrease the $TP$-count of that taxon and in turn lower the average path recall.
+ %   Likewise, a high average path recall ensures that a $k$-mer $a$ in $d$ is assigned to a tree node such that \emph{as many data taxa as possible} which contain $a$ in their genome are subordinate or equal to that node. Otherwise, the $k$-mer $a$ would not be on the path to the root for such a taxon. But this would decrease the $TP$-count of that taxon and in turn lower the average path recall.
     
 It is important to see that \emph{path recall should always equal one for a correct $k$-mer database} since
-the LCA-update should move up a $k$-mer in the taxonomy so far that all data taxons associated with that $k$-mer become descendants of the resulting tree node.
+the LCA-update should move up a $k$-mer in the taxonomy so far that all data taxa associated with that $k$-mer become descendants of the resulting tree node.
 Moreover, the refinement may push down $k$-mers only just so far that the same requirement is still maintained.
 In other words, \emph{path recall actually serves as a correctness criterion for $k$-mer databases}. This holds for both the unrefined database via the LCA update and the refined database via the goal \verb|ftupdatedb|.\footnote{Due to its probabilistic nature, the Bloom filter used during the \texttt{kmerindexbloom} step (see Section~\ref{dbrefinement}) occasionally falsely attributes a species to a $k$-mer, which may prevent the $k$-mer from being pushed down to its lowest possible node. This mildly lowers precision but never recall.}
 
     So together, a high average path precision and a path recall of one suggest that $k$-mers are located at a near optimal position in the taxonomy tree -- not too high up to lower precision and not too far down to taint recall.
 
 Given that \emph{path recall} equals one, it is interesting to consider refinement quality also on a per-node basis for each node in the database $d$'s taxonomy tree. For this purpose, we define
-\emph{node precision} $np(n)$: Let $A_n$ be set of $k$-mers associated with a node $n$ in $d$'s taxonomy tree and $T_n$ be the set of data taxons of descendants under $n$ including $n$ itself. Let $c_n(a)$ with $a \in A_n$ be the number of data taxons $t \in T_n$ whose genomes contain $a$ at least once.
+\emph{node precision} $np(n)$: Let $A_n$ be set of $k$-mers associated with a node $n$ in $d$'s taxonomy tree and $T_n$ be the set of data taxa of descendants under $n$ including $n$ itself. Let $c_n(a)$ with $a \in A_n$ be the number of data taxa $t \in T_n$ whose genomes contain $a$ at least once.
 \[ np(n) = (|T_n| +\sum_{a \in A_n} c_n(a)) / (1 + |A_n|) \cdot |T_n| \]
 Together, the terms \enquote{$1 + $} and \enquote{$|T_n| +$} account for a Laplace correction such that $np(n) = 1$ when $A_n = \emptyset$, i.e., when no $k$-mers are stored directly under $n$, reflecting that an empty assignment is trivially correct.
 Given the transformation from Figure \ref{fttrans}, it follows by definition that $np(n) = 1$ for a node $n$ of a data taxon $t$.
 
-Using a refined database with its refined taxonomy, node precision allows for spotting structural flaws in the original, unrefined taxonomy. Figure \ref{} presents a simple example to explain this use case.
+Using a refined database with its refined taxonomy, node precision allows for spotting structural flaws in the original, unrefined taxonomy. Figure \ref{npflaw} presents a basic example to highlight this use case:
+In (1), $X$ and $Y$ are not placed under the same node, even though their genomes are \emph{identical}. This causes a lowered node precision at their lowest common ancestor $W$.
+After correcting the taxonomy, node precision in (4) ends up being $1$ for all nodes.
+
+%The example from Figure \ref{npflaw} can be generalized: When the nodes of two data taxa, like $X$ and $Y$ from above, are falsely \emph{not} close enough together in the taxonomy, this \emph{always} manifests itself in a lowered node precision at \emph{their lowest common ancestor} $W$.
+%This is because the LCA update will move every joint $k$-mer $a$ from $X$ and $Y$ to $W$ but the refinement must keep it there to maintain a path recall of $1$ for both.
+%With $X$ and $Y$ being apart, this implies that another data taxon $Z$ exists near $X$ or $Y$ that does not contain $a$, therefore driving down $W$'s node precision.
+
+\begin{figure}[h]%
+\centering
+\small
+\begin{minipage}[c]{0.25\textwidth}
+\begin{flushleft}(1) Given $k = 2$ and $X$, $Y$, $Z$ under $W$ with associated sequences:\\
+$X$: \texttt{CCT}, $Y$: \texttt{CCT}, $Z$: \texttt{GCA}\\
+Here, the taxonomy groups $X$ and $Z$ under the intermediate node $V$.
+\end{flushleft}
+\end{minipage}
+\begin{minipage}[c]{0.2\textwidth}
+\begin{tikzpicture}
+\tikzset{every tree node/.style={align=center,anchor=north}}
+\Tree [.$W$ [.$V$ $X$ $Z$ ] $Y$ ]
+\end{tikzpicture}
+\end{minipage}
+\begin{minipage}[c]{0.25\textwidth}
+\begin{flushleft}(2) After the LCA update: \texttt{CC} and \texttt{CT} occur in both $X$ and $Y$ and so they move up to $W$. With $|T_W| = 3$ and $c_W(\texttt{CC}) = c_W(\texttt{CT}) = 2$, this yields $np(W) = 7/9 < 1$.
+\end{flushleft}
+\end{minipage}
+\begin{minipage}[c]{0.2\textwidth}
+\begin{tikzpicture}
+\tikzset{every tree node/.style={align=center,anchor=north}}
+\Tree [.{$W$\\\texttt{CC},\texttt{CT}} [.$V$ $X$ {$Z$\\\texttt{GC},\texttt{CA}} ] $Y$ ]
+\end{tikzpicture}
+\end{minipage}
+
+\vspace{0.2cm}
+
+\begin{minipage}[c]{0.25\textwidth}
+\begin{flushleft}(3) The lowered $np(W)$ suggests that $Y$ rather than $Z$ belongs next to $X$. Correcting the taxonomy accordingly groups $X$ and $Y$ under $V$.
+\end{flushleft}
+\end{minipage}
+\begin{minipage}[c]{0.2\textwidth}
+\begin{tikzpicture}
+\tikzset{every tree node/.style={align=center,anchor=north}}
+\Tree [.$W$ [.$V$ $X$ $Y$ ] $Z$ ]
+\end{tikzpicture}
+\end{minipage}
+\begin{minipage}[c]{0.25\textwidth}
+\begin{flushleft}(4) The resulting database with the \emph{corrected} tree and $2$-mers assigned accordingly: \texttt{CC} and \texttt{CT} now reside at $V$ and $np(n) = 1$ holds for every node $n$.\end{flushleft}
+\end{minipage}
+\begin{minipage}[c]{0.2\textwidth}
+\begin{tikzpicture}
+\tikzset{every tree node/.style={align=center,anchor=north}}
+\Tree [.$W$ [.{$V$\\\texttt{CC},\texttt{CT}} $X$ $Y$ ] {$Z$\\ \texttt{GC},\texttt{CA}} ]
+\end{tikzpicture}
+\end{minipage}
+
+\vspace{0.2cm}
+
+\caption{Using node precision to spot a structural flaw in a taxonomy. In (2), $np(W) = 7/9$ lies below one, which indicates that the intermediate node $V$ groups the wrong data taxa. The corrected taxonomy in (3) yields $np(n) = 1$ for all nodes in (4).}\label{npflaw}
+\end{figure}
 
 \subsection{Phylogenetic Mapping}
 
@@ -503,7 +563,7 @@ Figure \ref{nfunc} shows a plot of the function $d(E/|s|)$: It starts with a slo
 
 \subsubsection{Embedding of $d$ in taxonomy trees}
 
-We want to apply $d$ to a node $n$ in the context of a taxonomy tree such as in Figure \ref{simplerefdb}. More precisely, we estimate $d_n$ to be the maximum evolutionary distance \emph{from $n$'s parent to the data taxons\footnote{See Section~\ref{intrinsicqms} for the definition of the term \enquote{data taxon}.} under $n$}:
+We want to apply $d$ to a node $n$ in the context of a taxonomy tree such as in Figure \ref{simplerefdb}. More precisely, we estimate $d_n$ to be the maximum evolutionary distance \emph{from $n$'s parent to the data taxa\footnote{See Section~\ref{intrinsicqms} for the definition of the term \enquote{data taxon}.} under $n$}:
 \begin{itemize}
 \item
 For that, $above(n)$ shall sum over the $k$-mers assigned to nodes above $n$ towards the tree's root excluding $n$. 
@@ -565,7 +625,7 @@ The relatively compact depiction of taxonomy trees such as in Figure \ref{simple
     
     Boolean positive count: $1$ if the class taxon is equal to or below the correct species taxon and $0$ otherwise.
     
-    Ratio-based positive count: If the class taxon is on the path between the taxonomic root and the correct species taxon: $1$ divided by the number of species taxons that are subordinate, above or identical to the class taxon; $0$ otherwise.
+    Ratio-based positive count: If the class taxon is on the path between the taxonomic root and the correct species taxon: $1$ divided by the number of species taxa that are subordinate, above or identical to the class taxon; $0$ otherwise.
         
    \subsection{Application to phylogeny}
     
