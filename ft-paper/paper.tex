@@ -639,7 +639,31 @@ The relatively compact depiction of taxonomy trees such as in Figure \ref{simple
     Example candidates: Borrelia, Babesia, Malaria, Orthopoxvirus
     
     \subsection{Database refinement performance}
-    
+
+Since a refined database is always generated \emph{on top of} an existing, unrefined one, the relevant cost of the refinement is its \emph{additional} resource consumption. Table \ref{ftdbperf} therefore reports the wall time and the maximum RAM of the unrefined database generation in absolute terms, but the corresponding figures of the subsequent refinement relative to them.
+
+As can be seen, the refinement typically costs clearly less than the generation of the unrefined database it builds upon: for \texttt{protozoa} and \texttt{parasites} it stays below two thirds of the wall time and for \texttt{tb} below 85 \%. The database \texttt{cv} forms an exception with 184 \%, i.e. the refinement takes almost twice as long as the original database generation. This is because the refinement's runtime is essentially driven by the number of species under a refinement rank and by the number of $k$-mers residing on such ranks, whereas the generation time of the unrefined database is dominated by reading and hashing the underlying genomic sequences. With 25,739 species and below (see Table \ref{dbdesc}), \texttt{cv} is by far the most species-rich database considered here.
+Regarding main memory, the refinement never exceeds the unrefined database generation, since it does not need to hold the sequence-related data structures of the latter.
+
+   \begin{table}[h]
+        \centering
+\sisetup{table-alignment-mode = format, table-number-alignment = center, group-separator = {,}, group-minimum-digits = 4}
+        \begin{tabular}{c|S[table-format=3.1]|S[table-format=5.0]|S[table-format=3.1]|S[table-format=3.1]}
+            & \multicolumn{2}{c|}{\textbf{Unrefined database}} & \multicolumn{2}{c}{\textbf{Refinement}}\\
+            \textbf{DB name} &
+            \multicolumn{1}{c|}{\textbf{Wall (min)}} &
+            \multicolumn{1}{c|}{\textbf{RAM (MB)}} &
+            \multicolumn{1}{c|}{\textbf{Wall (\%)}} &
+            \multicolumn{1}{c}{\textbf{RAM (\%)}}\\
+            \hline
+            \texttt{cv}        &  23.2 &  9237 & 184.2 & 90.6\\
+            \texttt{tb}        & 402.5 & 23360 &  83.6 & 92.6\\
+            \texttt{protozoa}  &  38.5 & 26102 &  52.6 & 59.4\\
+            \texttt{parasites} & 155.2 & 36506 &  62.6 & 53.8\\
+        \end{tabular}
+        \caption{Resource consumption for refining the Genestrip databases from Table \ref{dbdesc} using 19 threads and a maximum allowed JVM heap size of 64 GB. Wall time and maximum RAM of generating the \emph{unrefined} database are given in absolute terms. The columns under \enquote{Refinement} state the corresponding values of the \emph{subsequent} refinement as a percentage of the unrefined database generation, i.e. a value below 100 \% means that the refinement consumed less than the generation of the database it refines.}\label{ftdbperf}
+    \end{table}
+
     \section{Conclusions}\label{discussion}
 
 
