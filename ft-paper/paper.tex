@@ -152,8 +152,23 @@
   xlabel style={font=\scriptsize}, ylabel style={font=\scriptsize},
   width=0.47\textwidth, height=0.44\textwidth, ymajorgrids, tick align=outside,
 ]
+% The degree blocks start after the childdeg/kmerdeg summary blocks. Since these carry min and max
+% since 2026-08-03, the blocks sit 4 columns further right than in files written before that. The older
+% layout ends at column 62 (61 statistics plus the empty cell behind the trailing separator), so column
+% 63 exists only in the newer one, which is what the test below distinguishes.
 \csvreader[separator=semicolon, filter strcmp={\csvcoli}{#3}]{#2}{}%
-{\bhbox{2}{\csvcolxix}{\csvcolxx}{\csvcolxxi}%
+{\ifcsname csvcollxiii\endcsname
+ \bhbox{2}{\csvcolxxiii}{\csvcolxxiv}{\csvcolxxv}%
+ \bhbox{3}{\csvcolxxviii}{\csvcolxxix}{\csvcolxxx}%
+ \bhbox{4}{\csvcolxxxiii}{\csvcolxxxiv}{\csvcolxxxv}%
+ \bhbox{5}{\csvcolxxxviii}{\csvcolxxxix}{\csvcolxl}%
+ \bhbox{6}{\csvcolxliii}{\csvcolxliv}{\csvcolxlv}%
+ \bhbox{7}{\csvcolxlviii}{\csvcolxlix}{\csvcoll}%
+ \bhbox{8}{\csvcolliii}{\csvcolliv}{\csvcollv}%
+ \bhbox{9}{\csvcollviii}{\csvcollix}{\csvcollx}%
+ \bhbox{10}{\csvcollxiii}{\csvcollxiv}{\csvcollxv}%
+ \else
+ \bhbox{2}{\csvcolxix}{\csvcolxx}{\csvcolxxi}%
  \bhbox{3}{\csvcolxxiv}{\csvcolxxv}{\csvcolxxvi}%
  \bhbox{4}{\csvcolxxix}{\csvcolxxx}{\csvcolxxxi}%
  \bhbox{5}{\csvcolxxxiv}{\csvcolxxxv}{\csvcolxxxvi}%
@@ -161,7 +176,8 @@
  \bhbox{7}{\csvcolxliv}{\csvcolxlv}{\csvcolxlvi}%
  \bhbox{8}{\csvcolxlix}{\csvcoll}{\csvcolli}%
  \bhbox{9}{\csvcolliv}{\csvcollv}{\csvcollvi}%
- \bhbox{10}{\csvcollix}{\csvcollx}{\csvcollxi}}
+ \bhbox{10}{\csvcollix}{\csvcollx}{\csvcollxi}%
+ \fi}
 \end{axis}
 \end{tikzpicture}%
 }
@@ -471,7 +487,7 @@ $X$, $Y$ and $Z$ are the same as in Figure \ref{ftsketch}. Since $Y$ and $Z$ are
     In this section, we consider new quality measures regarding database refinement irrespective of read analysis and read classification results. For this purpose, we establish \emph{path precision and path recall} as well as \emph{node precision} for a $k$-mer database $d$ that has a taxonomy tree associated and where stored $k$-mers have taxa, i.e., nodes, assigned from that tree.
     In the result section, we use these new measures along with well-established classifcation-based measures to assess refinement quality. \todo{As will be shown, these new intrisic measures correlate well with the established, classification-based measures.}
 
-\subsubsection{Path precision and path recall}
+\subsubsection{Path precision and path recall}\label{pathprecision}
     Let $t$ be a \emph{data taxon}, i.e., \emph{a taxon with a complete genome directly associated whereby the $k$-mers from that genome are also stored in $d$}. For example in RefSeq, complete genomes are often associated with taxa of the rank species or below.
     
     Based on the following counts, the quality of the taxonomic refinement can be assessed per data taxon $t$ in $d$:
@@ -555,8 +571,11 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
 \[ \overline{pp}_w(m) = \frac{\sum_{t \in T_m} TP_m(t)}{\sum_{t \in T_m} (TP + FP)_m(t)} , \]
     which relates the pooled counts instead of averaging the per-taxon ratios. For $m$ being the taxonomic root, it ranges over all data taxa of $d$ and hence assesses the database as a whole.
 
-    As for node precision in Section \ref{nodeprecision} below, a Laplace correction avoids degenerate values when few or no $k$-mers reside on the paths considered. It amounts to adding one virtual $k$-mer to every node of the taxonomy, which by definition occurs in the genomes of all data taxa under that node and therefore always counts as a true positive. For a data taxon $t \in T_m$ this contributes one $k$-mer per node on the path from $t$ to $m$, so that with $p_m(t)$ denoting the number of these nodes, the \emph{Laplace-corrected} weighted average path precision reads
-\[ \overline{pp}^{\,L}_w(m) = \frac{\sum_{t \in T_m} \left( p_m(t) + TP_m(t) \right)}{\sum_{t \in T_m} \left( p_m(t) + (TP + FP)_m(t) \right)} . \]
+    We deliberately refrain from smoothing $\overline{pp}_w(m)$ by a Laplace correction, i.e.\ from adding a virtual $k$-mer per node of the subtree that counts as a true positive by definition. Such a correction contributes the same amount to numerator and denominator, and since the ratio is at most one, every contribution of this kind strictly raises it -- without a single $k$-mer of $d$ supporting the increase. Its total size grows with the number of nodes of the subtree, and the refinement is precisely a procedure that \emph{adds} nodes to the taxonomy. A corrected measure would therefore reward a refined tree over an unrefined one for its mere node count, and it would do so the more the deeper the refined subtrees become, i.e.\ exactly along the axis the measure is meant to assess.
+
+    Without the correction, $\overline{pp}_w(m)$ depends on the placement of the $k$-mers alone. Since every $k$-mer of $d$ is associated with exactly one node, we may equivalently sum over the $k$-mers stored in the subtree rooted at $m$ instead of over the data taxa under $m$. Writing $\nu(a)$ for the node a $k$-mer $a$ is associated with and $c(a)$ for the number of data taxa under $\nu(a)$ whose genomes contain $a$,
+\[ \overline{pp}_w(m) = \frac{\sum_a c(a)}{\sum_a |T_{\nu(a)}|} , \]
+    where $a$ ranges over the $k$-mers stored at the nodes of that subtree. So $\overline{pp}_w(m)$ is the mean of the per-$k$-mer precisions $c(a) / |T_{\nu(a)}|$ weighted by $|T_{\nu(a)}|$, and each of these asks what fraction of the data taxa under a $k$-mer's node actually contain that $k$-mer. Inserting a node into the taxonomy changes neither $\nu(a)$ nor $|T_{\nu(a)}|$ nor $c(a)$ for any $k$-mer $a$ already stored, so $\overline{pp}_w(m)$ is invariant under it and responds only once $k$-mers are actually relocated -- which is what a refinement is to be judged by. The measure is undefined only if no $k$-mer at all resides in the subtree rooted at $m$; we let it be $1$ in that case, in line with an empty assignment being trivially correct.
 
     Note that for a taxonomy tree with a branching factor $\geq 2$ (which is the standard case) a high average path precision ensures that a $k$-mer $a$ in $d$ is located as closely as possible above a data taxon or right at a data taxon whose genome(s) contain $a$. Otherwise, if $a$ was located higher up in the taxonomy, then $a$ would also be on the path to the root starting from a data taxon $t$ whose genome does not contain $a$. But this would increase the $FP$-count of $t$ and in turn would lower the average path precision.
     
@@ -572,36 +591,36 @@ In other words, \emph{path recall actually serves as a correctness criterion for
 \subsubsection{Node precision}\label{nodeprecision}
 Given that \emph{path recall} equals one, it is interesting to consider refinement quality also on a per-node basis for each node in the database $d$'s taxonomy tree. For this purpose, we define
 \emph{node precision} $np(n)$: Let $A_n$ be set of $k$-mers associated with a node $n$ in $d$'s taxonomy tree and let $T_n$ be the set of data taxa under $n$ including $n$ itself, as introduced above. Let $c_n(a)$ with $a \in A_n$ be the number of data taxa $t \in T_n$ whose genomes contain $a$ at least once.
-\[ np(n) = \frac{|T_n| + \sum_{a \in A_n} c_n(a)}{|T_n| \cdot (1 + |A_n|)} \]
-    Given a node $n$,  $np(n)$ therefore measures the average ratio of data taxa under $n$ which contain a $k$-mer associated with $n$ itself. Together, the terms \enquote{$1 + $} and \enquote{$|T_n| +$} account for a Laplace correction such that $np(n) = 1$ when $A_n = \emptyset$, i.e., when no $k$-mers are stored directly under $n$, reflecting that an empty assignment is trivially correct.
+\[ np(n) = \frac{\sum_{a \in A_n} c_n(a)}{|T_n| \cdot |A_n|} \]
+    Given a node $n$,  $np(n)$ therefore measures the average ratio of data taxa under $n$ which contain a $k$-mer associated with $n$ itself. For $A_n = \emptyset$, i.e.\ when no $k$-mers are stored directly under $n$, the ratio is undefined and we let $np(n) = 1$, reflecting that an empty assignment is trivially correct. As for path precision in Section \ref{pathprecision}, we refrain from a Laplace correction here: a virtual $k$-mer per node would let every node -- and an empty one at that -- enter the decomposition below with a score closer to one than it deserves, and thereby inflate path precision in proportion to the number of nodes of the taxonomy.
 
     Given the transformation from Figure \ref{fttrans}, it follows by definition that $np(n) = 1$ for a node $n$ of a data taxon $t$. Note that $np(n)$ may deteriorate if too many data taxa's genomes under $n$ are \emph{incomplete}, because in this case a $k$-mer $a$ at node $n$ might simply not be supported by such taxa, even though their completed genome would contain $a$.
 
-Node precision is not merely a per-node indicator: it decomposes the weighted average path precision of \emph{any subtree} of the taxonomy. Since both measures rest on the same Laplace correction -- one virtual $k$-mer per node, contained in the genomes of all data taxa under it -- the decomposition holds for the corrected quantities directly.
+Node precision is not merely a per-node indicator: it decomposes the weighted average path precision of \emph{any subtree} of the taxonomy.
 
 \begin{proposition}\label{npdecomp}
-    Let $m$ be a node of $d$'s taxonomy tree, let $S_m$ be the set of nodes $n$ in the subtree rooted at $m$ with $T_n \neq \emptyset$ and let $w_n = |T_n| \cdot (1 + |A_n|)$. Then
-    \[ \overline{pp}^{\,L}_w(m) = \frac{\sum_{n \in S_m} w_n \cdot np(n)}{\sum_{n \in S_m} w_n}, \]
-    i.e. the Laplace-corrected weighted average path precision of any subtree is exactly the $w_n$-weighted mean of the node precisions within that subtree.
+    Let $m$ be a node of $d$'s taxonomy tree, let $S_m$ be the set of nodes $n$ in the subtree rooted at $m$ with $T_n \neq \emptyset$ and $A_n \neq \emptyset$, and let $w_n = |T_n| \cdot |A_n|$. Then
+    \[ \overline{pp}_w(m) = \frac{\sum_{n \in S_m} w_n \cdot np(n)}{\sum_{n \in S_m} w_n}, \]
+    i.e. the weighted average path precision of any subtree is exactly the $w_n$-weighted mean of the node precisions within that subtree.
 \end{proposition}
 
 \begin{proof}
     We first note that, for a data taxon $t \in T_m$ and a node $n$,
     \begin{equation}\label{npdecompaux}
-        n \text{ lies on the path from } t \text{ to } m \iff n \in S_m \text{ and } t \in T_n .
+        n \text{ lies on the path from } t \text{ to } m \text{ and } A_n \neq \emptyset \iff n \in S_m \text{ and } t \in T_n .
     \end{equation}
-    Indeed, since every data taxon is a leaf of the taxonomy tree of $d$ due to the transformation from Figure \ref{fttrans}, the condition $t \in T_n$ holds precisely for those nodes $n$ that are ancestors of $t$ or $t$ itself. Among these, the ones lying in the subtree rooted at $m$ are exactly the nodes on the path from $t$ to $m$, and each of them satisfies $T_n \neq \emptyset$ because of $t \in T_n$. Moreover, each $k$-mer of $d$ is associated with exactly one node, so the sets $A_n$ partition the $k$-mers of $d$.
+    Indeed, since every data taxon is a leaf of the taxonomy tree of $d$ due to the transformation from Figure \ref{fttrans}, the condition $t \in T_n$ holds precisely for those nodes $n$ that are ancestors of $t$ or $t$ itself. Among these, the ones lying in the subtree rooted at $m$ are exactly the nodes on the path from $t$ to $m$, and each of them satisfies $T_n \neq \emptyset$ because of $t \in T_n$; the condition $A_n \neq \emptyset$ carries over on both sides. Moreover, each $k$-mer of $d$ is associated with exactly one node, so the sets $A_n$ partition the $k$-mers of $d$.
 
-    By definition, $p_m(t) + TP_m(t)$ counts, for every node $n$ on the path from $t$ to $m$, the virtual $k$-mer of $n$ together with those $k$-mers of $A_n$ that occur in the genome of $t$. Grouping this count by the node $n$ and applying (\ref{npdecompaux}) gives
-    \[ \sum_{t \in T_m} \left( p_m(t) + TP_m(t) \right) = \sum_{n \in S_m} \; \sum_{t \in T_n} \left( 1 + \left| \{ a \in A_n : a \text{ occurs in the genome of } t \} \right| \right) , \]
-    where $T_n \subseteq T_m$ holds for every $n \in S_m$. The right-hand inner sum amounts to $|T_n|$ plus the number of pairs $(a, t)$ with $a \in A_n$ and $t \in T_n$ such that $a$ occurs in the genome of $t$. Counting these pairs by $a$ instead of by $t$ yields $\sum_{a \in A_n} c_n(a)$ and therefore
-    \[ \sum_{t \in T_m} \left( p_m(t) + TP_m(t) \right) = \sum_{n \in S_m} \left( |T_n| + \sum_{a \in A_n} c_n(a) \right) = \sum_{n \in S_m} w_n \cdot np(n) . \]
-    Likewise, $p_m(t) + (TP + FP)_m(t)$ counts, for every node $n$ on the path from $t$ to $m$, the virtual $k$-mer of $n$ together with all $k$-mers of $A_n$, so that (\ref{npdecompaux}) gives
-    \[ \sum_{t \in T_m} \left( p_m(t) + (TP + FP)_m(t) \right) = \sum_{n \in S_m} |T_n| \cdot (1 + |A_n|) = \sum_{n \in S_m} w_n . \]
+    By definition, $TP_m(t)$ counts, for every node $n$ on the path from $t$ to $m$, those $k$-mers of $A_n$ that occur in the genome of $t$. The nodes of the path with $A_n = \emptyset$ contribute nothing to this count, so that grouping it by the node $n$ and applying (\ref{npdecompaux}) gives
+    \[ \sum_{t \in T_m} TP_m(t) = \sum_{n \in S_m} \; \sum_{t \in T_n} \left| \{ a \in A_n : a \text{ occurs in the genome of } t \} \right| , \]
+    where $T_n \subseteq T_m$ holds for every $n \in S_m$. The right-hand inner sum amounts to the number of pairs $(a, t)$ with $a \in A_n$ and $t \in T_n$ such that $a$ occurs in the genome of $t$. Counting these pairs by $a$ instead of by $t$ yields $\sum_{a \in A_n} c_n(a)$ and therefore
+    \[ \sum_{t \in T_m} TP_m(t) = \sum_{n \in S_m} \; \sum_{a \in A_n} c_n(a) = \sum_{n \in S_m} w_n \cdot np(n) . \]
+    Likewise, $(TP + FP)_m(t)$ counts, for every node $n$ on the path from $t$ to $m$, all $k$-mers of $A_n$, so that (\ref{npdecompaux}) gives
+    \[ \sum_{t \in T_m} (TP + FP)_m(t) = \sum_{n \in S_m} |T_n| \cdot |A_n| = \sum_{n \in S_m} w_n . \]
     Dividing the two identities proves the claim.
 \end{proof}
 
-Dropping the correction on both sides leaves the identity intact: with $np^{*}(n) = \sum_{a \in A_n} c_n(a) / (|T_n| \cdot |A_n|)$ denoting the uncorrected node precision, the very same argument yields $\overline{pp}_w(m) = \sum_n w^{*}_n \cdot np^{*}(n) / \sum_n w^{*}_n$ with $w^{*}_n = |T_n| \cdot |A_n|$, where $n$ now ranges over the nodes of the subtree with $A_n \neq \emptyset$. The two variants differ only marginally in practice, since $w_n$ and $w^{*}_n$ agree up to the summand $|T_n|$, which is negligible against $|T_n| \cdot |A_n|$ for all nodes holding a relevant number of $k$-mers.
+Note that a node without $k$-mers drops out of this mean entirely -- its weight $w_n$ is zero -- rather than entering it with $np(n) = 1$, as it would under a Laplace correction. This is the node-wise counterpart of the invariance observed in Section \ref{pathprecision}: the identity, and with it the weighted average path precision, is insensitive to the number of nodes a taxonomy provides and reacts only to where the $k$-mers actually reside.
 
     \section{Results}\label{results}
     
@@ -962,7 +981,7 @@ An approximate $\pm 1\sigma$ credible interval for $d$ is therefore $\hat{d}\,\p
             \end{tikzpicture}
         \end{minipage}
         \begin{minipage}[c]{0.25\textwidth}
-            \begin{flushleft}(2) After the LCA update: \texttt{CC} and \texttt{CT} occur in both $X$ and $Y$ and so they move up to $W$. With $|T_W| = 3$ and $c_W(\texttt{CC}) = c_W(\texttt{CT}) = 2$, this yields $np(W) = 7/9 < 1$.
+            \begin{flushleft}(2) After the LCA update: \texttt{CC} and \texttt{CT} occur in both $X$ and $Y$ and so they move up to $W$. With $|T_W| = 3$, $|A_W| = 2$ and $c_W(\texttt{CC}) = c_W(\texttt{CT}) = 2$, this yields $np(W) = 2/3 < 1$.
             \end{flushleft}
         \end{minipage}
         \begin{minipage}[c]{0.2\textwidth}
@@ -996,7 +1015,7 @@ An approximate $\pm 1\sigma$ credible interval for $d$ is therefore $\hat{d}\,\p
 
         \vspace{0.2cm}
 
-        \caption{Using node precision to spot a structural flaw in a taxonomy. In (2), $np(W) = 7/9$ lies below one, which indicates that the intermediate node $V$ groups the wrong data taxa. The corrected taxonomy in (3) yields $np(n) = 1$ for all nodes in (4).}\label{npflaw}
+        \caption{Using node precision to spot a structural flaw in a taxonomy. In (2), $np(W) = 2/3$ lies below one, which indicates that the intermediate node $V$ groups the wrong data taxa. The corrected taxonomy in (3) yields $np(n) = 1$ for all nodes in (4).}\label{npflaw}
     \end{figure}
 
   \subsection{Validation against other tools}
