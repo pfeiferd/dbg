@@ -14,6 +14,7 @@
 \usepackage{multirow}%
 \usepackage{amsmath,amssymb,amsfonts}%
 \usepackage{amsthm}%
+\newtheorem{proposition}{Proposition}%
 \usepackage{mathrsfs}%
 \usepackage[title]{appendix}%
 \usepackage{xcolor}%
@@ -258,7 +259,7 @@ with $k = 2$:
 	\item The lowest common ancestor update (LCA update) pushes the $2$-mer \texttt{CT} up to $W$ because it occurs in the sequence of both $X$ and $Y$. However, it does not occur in $Z$. So, according to this database a read \texttt{CT} would just be classified as $W$ although $Z$ is not even a candidate species for \texttt{CT}.
 	\item Genestrip-FT's refinement adds an artificial node $h$ to the taxonomy with $X$ and $Y$ as children but not $Z$. Also, the refinement \emph{pushes down} \texttt{CT} from $W$ to $h$. According to this refined database, a read \texttt{CT} would be classified as $h$ and so, $Z$ is excluded as candidate species for \texttt{CT}.
 \end{enumerate}
- So in general, this type of refinement potentially improves classification precision: E.g., if a read was classified under a genus taxon in a non-refined database, then \emph{the corresponding refined database may allow for narrowing down the candidate species to fewer species than originally listed under that genus}. 
+ So in general, this type of refinement potentially improves classification precision: E.g., if a read was classified under a genus taxon in a unrefined database, then \emph{the corresponding refined database may allow for narrowing down the candidate species to fewer species than originally listed under that genus}.
 
 \begin{figure}[h]%
 \centering
@@ -549,7 +550,14 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
     \end{figure}
 
     As part of Section \ref{results} from below, we report unweighted\footnote{The unweighted average considers every data taxon as equally relevant.} average path precision and average path recall by averaging over all data taxa in $d$ or subsets thereof. In particular, we report averages over all taxa under the same species or the same genus, respectively. E.g., in (3) of Figure \ref{ftsketch}, the average path precision of the genus $W$ is 8/9.
-            
+
+    So far, the counts of a data taxon $t$ refer to the entire path from $t$ to the taxonomic root. It is useful to relativize them to a subtree: let $m$ be a node of $d$'s taxonomy tree and let $T_m$ be the set of data taxa under $m$ including $m$ itself. For a data taxon $t \in T_m$, let $TP_m(t)$ and $(TP + FP)_m(t)$ be defined as above, but with respect to the path from $t$ to $m$ -- including $t$ and $m$ themselves -- instead of the path from $t$ to the taxonomic root. Besides the unweighted average, we then consider the \emph{weighted} average path precision of the subtree rooted at $m$,
+\[ \overline{pp}_w(m) = \frac{\sum_{t \in T_m} TP_m(t)}{\sum_{t \in T_m} (TP + FP)_m(t)} , \]
+    which relates the pooled counts instead of averaging the per-taxon ratios. For $m$ being the taxonomic root, it ranges over all data taxa of $d$ and hence assesses the database as a whole.
+
+    As for node precision in Section \ref{nodeprecision} below, a Laplace correction avoids degenerate values when few or no $k$-mers reside on the paths considered. It amounts to adding one virtual $k$-mer to every node of the taxonomy, which by definition occurs in the genomes of all data taxa under that node and therefore always counts as a true positive. For a data taxon $t \in T_m$ this contributes one $k$-mer per node on the path from $t$ to $m$, so that with $p_m(t)$ denoting the number of these nodes, the \emph{Laplace-corrected} weighted average path precision reads
+\[ \overline{pp}^{\,L}_w(m) = \frac{\sum_{t \in T_m} \left( p_m(t) + TP_m(t) \right)}{\sum_{t \in T_m} \left( p_m(t) + (TP + FP)_m(t) \right)} . \]
+
     Note that for a taxonomy tree with a branching factor $\geq 2$ (which is the standard case) a high average path precision ensures that a $k$-mer $a$ in $d$ is located as closely as possible above a data taxon or right at a data taxon whose genome(s) contain $a$. Otherwise, if $a$ was located higher up in the taxonomy, then $a$ would also be on the path to the root starting from a data taxon $t$ whose genome does not contain $a$. But this would increase the $FP$-count of $t$ and in turn would lower the average path precision.
     
  %   Likewise, a high average path recall ensures that a $k$-mer $a$ in $d$ is assigned to a tree node such that \emph{as many data taxa as possible} which contain $a$ in their genome are subordinate or equal to that node. Otherwise, the $k$-mer $a$ would not be on the path to the root for such a taxon. But this would decrease the $TP$-count of that taxon and in turn lower the average path recall.
@@ -561,74 +569,39 @@ In other words, \emph{path recall actually serves as a correctness criterion for
 
     So together, a high average path precision and a path recall of one suggest that $k$-mers are located at a near optimal position in the taxonomy tree -- not too high up to lower precision and not too far down to taint recall.
 
-\subsubsection{Node precision}
+\subsubsection{Node precision}\label{nodeprecision}
 Given that \emph{path recall} equals one, it is interesting to consider refinement quality also on a per-node basis for each node in the database $d$'s taxonomy tree. For this purpose, we define
-\emph{node precision} $np(n)$: Let $A_n$ be set of $k$-mers associated with a node $n$ in $d$'s taxonomy tree and $T_n$ be the set of data taxa of descendants under $n$ including $n$ itself. Let $c_n(a)$ with $a \in A_n$ be the number of data taxa $t \in T_n$ whose genomes contain $a$ at least once.
-\[ np(n) = (|T_n| +\sum_{a \in A_n} c_n(a)) / (1 + |A_n|) \cdot |T_n| \]
+\emph{node precision} $np(n)$: Let $A_n$ be set of $k$-mers associated with a node $n$ in $d$'s taxonomy tree and let $T_n$ be the set of data taxa under $n$ including $n$ itself, as introduced above. Let $c_n(a)$ with $a \in A_n$ be the number of data taxa $t \in T_n$ whose genomes contain $a$ at least once.
+\[ np(n) = \frac{|T_n| + \sum_{a \in A_n} c_n(a)}{|T_n| \cdot (1 + |A_n|)} \]
     Given a node $n$,  $np(n)$ therefore measures the average ratio of data taxa under $n$ which contain a $k$-mer associated with $n$ itself. Together, the terms \enquote{$1 + $} and \enquote{$|T_n| +$} account for a Laplace correction such that $np(n) = 1$ when $A_n = \emptyset$, i.e., when no $k$-mers are stored directly under $n$, reflecting that an empty assignment is trivially correct.
 
     Given the transformation from Figure \ref{fttrans}, it follows by definition that $np(n) = 1$ for a node $n$ of a data taxon $t$. Note that $np(n)$ may deteriorate if too many data taxa's genomes under $n$ are \emph{incomplete}, because in this case a $k$-mer $a$ at node $n$ might simply not be supported by such taxa, even though their completed genome would contain $a$.
 
-Using a refined database with its refined taxonomy and with complete genomes only, low node precision allows for spotting potential structural flaws in the original, unrefined taxonomy. Figure \ref{npflaw} presents a basic example to highlight this use case:
-In (1), $X$ and $Y$ are not placed under the same node, even though their genomes are \emph{identical}. This causes a lowered node precision at their lowest common ancestor $W$.
-After correcting the taxonomy, node precision in (4) ends up being $1$ for all nodes.
+Node precision is not merely a per-node indicator: it decomposes the weighted average path precision of \emph{any subtree} of the taxonomy. Since both measures rest on the same Laplace correction -- one virtual $k$-mer per node, contained in the genomes of all data taxa under it -- the decomposition holds for the corrected quantities directly.
 
-%The example from Figure \ref{npflaw} can be generalized: When the nodes of two data taxa, like $X$ and $Y$ from above, are falsely \emph{not} close enough together in the taxonomy, this \emph{always} manifests itself in a lowered node precision at \emph{their lowest common ancestor} $W$.
-%This is because the LCA update will move every joint $k$-mer $a$ from $X$ and $Y$ to $W$ but the refinement must keep it there to maintain a path recall of $1$ for both.
-%With $X$ and $Y$ being apart, this implies that another data taxon $Z$ exists near $X$ or $Y$ that does not contain $a$, therefore driving down $W$'s node precision.
+\begin{proposition}\label{npdecomp}
+    Let $m$ be a node of $d$'s taxonomy tree, let $S_m$ be the set of nodes $n$ in the subtree rooted at $m$ with $T_n \neq \emptyset$ and let $w_n = |T_n| \cdot (1 + |A_n|)$. Then
+    \[ \overline{pp}^{\,L}_w(m) = \frac{\sum_{n \in S_m} w_n \cdot np(n)}{\sum_{n \in S_m} w_n}, \]
+    i.e. the Laplace-corrected weighted average path precision of any subtree is exactly the $w_n$-weighted mean of the node precisions within that subtree.
+\end{proposition}
 
-\begin{figure}[h]%
-\centering
-\small
-\begin{minipage}[c]{0.25\textwidth}
-\begin{flushleft}(1) Given $k = 2$ and $X$, $Y$, $Z$ under $W$ with associated sequences:\\
-$X$: \texttt{CCT}, $Y$: \texttt{CCT}, $Z$: \texttt{GCA}\\
-Here, the taxonomy groups $X$ and $Z$ under the intermediate node $V$.
-\end{flushleft}
-\end{minipage}
-\begin{minipage}[c]{0.2\textwidth}
-\begin{tikzpicture}
-\tikzset{every tree node/.style={align=center,anchor=north}}
-\Tree [.$W$ [.$V$ $X$ $Z$ ] $Y$ ]
-\end{tikzpicture}
-\end{minipage}
-\begin{minipage}[c]{0.25\textwidth}
-\begin{flushleft}(2) After the LCA update: \texttt{CC} and \texttt{CT} occur in both $X$ and $Y$ and so they move up to $W$. With $|T_W| = 3$ and $c_W(\texttt{CC}) = c_W(\texttt{CT}) = 2$, this yields $np(W) = 7/9 < 1$.
-\end{flushleft}
-\end{minipage}
-\begin{minipage}[c]{0.2\textwidth}
-\begin{tikzpicture}
-\tikzset{every tree node/.style={align=center,anchor=north}}
-\Tree [.{$W$\\\texttt{CC},\texttt{CT}} [.$V$ $X$ {$Z$\\\texttt{GC},\texttt{CA}} ] $Y$ ]
-\end{tikzpicture}
-\end{minipage}
+\begin{proof}
+    We first note that, for a data taxon $t \in T_m$ and a node $n$,
+    \begin{equation}\label{npdecompaux}
+        n \text{ lies on the path from } t \text{ to } m \iff n \in S_m \text{ and } t \in T_n .
+    \end{equation}
+    Indeed, since every data taxon is a leaf of the taxonomy tree of $d$ due to the transformation from Figure \ref{fttrans}, the condition $t \in T_n$ holds precisely for those nodes $n$ that are ancestors of $t$ or $t$ itself. Among these, the ones lying in the subtree rooted at $m$ are exactly the nodes on the path from $t$ to $m$, and each of them satisfies $T_n \neq \emptyset$ because of $t \in T_n$. Moreover, each $k$-mer of $d$ is associated with exactly one node, so the sets $A_n$ partition the $k$-mers of $d$.
 
-\vspace{0.2cm}
+    By definition, $p_m(t) + TP_m(t)$ counts, for every node $n$ on the path from $t$ to $m$, the virtual $k$-mer of $n$ together with those $k$-mers of $A_n$ that occur in the genome of $t$. Grouping this count by the node $n$ and applying (\ref{npdecompaux}) gives
+    \[ \sum_{t \in T_m} \left( p_m(t) + TP_m(t) \right) = \sum_{n \in S_m} \; \sum_{t \in T_n} \left( 1 + \left| \{ a \in A_n : a \text{ occurs in the genome of } t \} \right| \right) , \]
+    where $T_n \subseteq T_m$ holds for every $n \in S_m$. The right-hand inner sum amounts to $|T_n|$ plus the number of pairs $(a, t)$ with $a \in A_n$ and $t \in T_n$ such that $a$ occurs in the genome of $t$. Counting these pairs by $a$ instead of by $t$ yields $\sum_{a \in A_n} c_n(a)$ and therefore
+    \[ \sum_{t \in T_m} \left( p_m(t) + TP_m(t) \right) = \sum_{n \in S_m} \left( |T_n| + \sum_{a \in A_n} c_n(a) \right) = \sum_{n \in S_m} w_n \cdot np(n) . \]
+    Likewise, $p_m(t) + (TP + FP)_m(t)$ counts, for every node $n$ on the path from $t$ to $m$, the virtual $k$-mer of $n$ together with all $k$-mers of $A_n$, so that (\ref{npdecompaux}) gives
+    \[ \sum_{t \in T_m} \left( p_m(t) + (TP + FP)_m(t) \right) = \sum_{n \in S_m} |T_n| \cdot (1 + |A_n|) = \sum_{n \in S_m} w_n . \]
+    Dividing the two identities proves the claim.
+\end{proof}
 
-\begin{minipage}[c]{0.25\textwidth}
-\begin{flushleft}(3) The lowered $np(W)$ suggests that $Y$ rather than $Z$ belongs next to $X$. Correcting the taxonomy accordingly groups $X$ and $Y$ under $V$.
-\end{flushleft}
-\end{minipage}
-\begin{minipage}[c]{0.2\textwidth}
-\begin{tikzpicture}
-\tikzset{every tree node/.style={align=center,anchor=north}}
-\Tree [.$W$ [.$V$ $X$ $Y$ ] $Z$ ]
-\end{tikzpicture}
-\end{minipage}
-\begin{minipage}[c]{0.25\textwidth}
-\begin{flushleft}(4) The resulting database with the \emph{corrected} tree and $2$-mers assigned accordingly: \texttt{CC} and \texttt{CT} now reside at $V$ and $np(n) = 1$ holds for every node $n$.\end{flushleft}
-\end{minipage}
-\begin{minipage}[c]{0.2\textwidth}
-\begin{tikzpicture}
-\tikzset{every tree node/.style={align=center,anchor=north}}
-\Tree [.$W$ [.{$V$\\\texttt{CC},\texttt{CT}} $X$ $Y$ ] {$Z$\\ \texttt{GC},\texttt{CA}} ]
-\end{tikzpicture}
-\end{minipage}
-
-\vspace{0.2cm}
-
-\caption{Using node precision to spot a structural flaw in a taxonomy. In (2), $np(W) = 7/9$ lies below one, which indicates that the intermediate node $V$ groups the wrong data taxa. The corrected taxonomy in (3) yields $np(n) = 1$ for all nodes in (4).}\label{npflaw}
-\end{figure}
+Dropping the correction on both sides leaves the identity intact: with $np^{*}(n) = \sum_{a \in A_n} c_n(a) / (|T_n| \cdot |A_n|)$ denoting the uncorrected node precision, the very same argument yields $\overline{pp}_w(m) = \sum_n w^{*}_n \cdot np^{*}(n) / \sum_n w^{*}_n$ with $w^{*}_n = |T_n| \cdot |A_n|$, where $n$ now ranges over the nodes of the subtree with $A_n \neq \emptyset$. The two variants differ only marginally in practice, since $w_n$ and $w^{*}_n$ agree up to the summand $|T_n|$, which is negligible against $|T_n| \cdot |A_n|$ for all nodes holding a relevant number of $k$-mers.
 
     \section{Results}\label{results}
     
@@ -864,7 +837,7 @@ Figure \ref{simplerefdbdist} depicts a resulting taxonomy tree for the same data
  }\label{simplerefdbdist}
     \end{figure}
 
-The relatively compact depiction of taxonomy trees such as in Figure \ref{simplerefdbdist} allows for combining many species or even genera in a single representation and enables a fine-grained \emph{mapping of evolutionary relationships}. Hereby, the refinements resulting from Genestrip-FT integrate into the established NCBI taxonomy tree and support the visual display of the evolutionary distance $d$ via horizontal indentations. Figure \ref{borr_map} exemplifies this kind of mapping on a slightly larger scale with regard to the genus Borrelia (138).\footnote{The generation of such a map can be executed as a goal included by standard in Genestrip-FT. A resulting SVG file may be generated for any refined and non-refined Genestrip database.} 
+The relatively compact depiction of taxonomy trees such as in Figure \ref{simplerefdbdist} allows for combining many species or even genera in a single representation and enables a fine-grained \emph{mapping of evolutionary relationships}. Hereby, the refinements resulting from Genestrip-FT integrate into the established NCBI taxonomy tree and support the visual display of the evolutionary distance $d$ via horizontal indentations. Figure \ref{borr_map} exemplifies this kind of mapping on a slightly larger scale with regard to the genus Borrelia (138).\footnote{The generation of such a map can be executed as a goal included by standard in Genestrip-FT. A resulting SVG file may be generated for any refined and unrefined Genestrip database.}
             
   \begin{figure}[h]%
         \centering
@@ -963,7 +936,69 @@ An approximate $\pm 1\sigma$ credible interval for $d$ is therefore $\hat{d}\,\p
 \fi
 
    \subsection{Application to phylogeny}
-    
+
+    \subsubsection{Node precision for taxonomy improvements}
+    Using a refined database with its refined taxonomy and with complete genomes only, low node precision allows for spotting potential structural flaws in the original, unrefined taxonomy. Figure \ref{npflaw} presents a basic example to highlight this use case:
+    In (1), $X$ and $Y$ are not placed under the same node, even though their genomes are \emph{identical}. This causes a lowered node precision at their lowest common ancestor $W$.
+    After correcting the taxonomy, node precision in (4) ends up being $1$ for all nodes.
+
+%The example from Figure \ref{npflaw} can be generalized: When the nodes of two data taxa, like $X$ and $Y$ from above, are falsely \emph{not} close enough together in the taxonomy, this \emph{always} manifests itself in a lowered node precision at \emph{their lowest common ancestor} $W$.
+%This is because the LCA update will move every joint $k$-mer $a$ from $X$ and $Y$ to $W$ but the refinement must keep it there to maintain a path recall of $1$ for both.
+%With $X$ and $Y$ being apart, this implies that another data taxon $Z$ exists near $X$ or $Y$ that does not contain $a$, therefore driving down $W$'s node precision.
+
+    \begin{figure}[h]%
+        \centering
+        \small
+        \begin{minipage}[c]{0.25\textwidth}
+            \begin{flushleft}(1) Given $k = 2$ and $X$, $Y$, $Z$ under $W$ with associated sequences:\\
+                $X$: \texttt{CCT}, $Y$: \texttt{CCT}, $Z$: \texttt{GCA}\\
+                Here, the taxonomy groups $X$ and $Z$ under the intermediate node $V$.
+            \end{flushleft}
+        \end{minipage}
+        \begin{minipage}[c]{0.2\textwidth}
+            \begin{tikzpicture}
+                \tikzset{every tree node/.style={align=center,anchor=north}}
+                \Tree [.$W$ [.$V$ $X$ $Z$ ] $Y$ ]
+            \end{tikzpicture}
+        \end{minipage}
+        \begin{minipage}[c]{0.25\textwidth}
+            \begin{flushleft}(2) After the LCA update: \texttt{CC} and \texttt{CT} occur in both $X$ and $Y$ and so they move up to $W$. With $|T_W| = 3$ and $c_W(\texttt{CC}) = c_W(\texttt{CT}) = 2$, this yields $np(W) = 7/9 < 1$.
+            \end{flushleft}
+        \end{minipage}
+        \begin{minipage}[c]{0.2\textwidth}
+            \begin{tikzpicture}
+                \tikzset{every tree node/.style={align=center,anchor=north}}
+                \Tree [.{$W$\\\texttt{CC},\texttt{CT}} [.$V$ $X$ {$Z$\\\texttt{GC},\texttt{CA}} ] $Y$ ]
+            \end{tikzpicture}
+        \end{minipage}
+
+        \vspace{0.2cm}
+
+        \begin{minipage}[c]{0.25\textwidth}
+            \begin{flushleft}(3) The lowered $np(W)$ suggests that $Y$ rather than $Z$ belongs next to $X$. Correcting the taxonomy accordingly groups $X$ and $Y$ under $V$.
+            \end{flushleft}
+        \end{minipage}
+        \begin{minipage}[c]{0.2\textwidth}
+            \begin{tikzpicture}
+                \tikzset{every tree node/.style={align=center,anchor=north}}
+                \Tree [.$W$ [.$V$ $X$ $Y$ ] $Z$ ]
+            \end{tikzpicture}
+        \end{minipage}
+        \begin{minipage}[c]{0.25\textwidth}
+            \begin{flushleft}(4) The resulting database with the \emph{corrected} tree and $2$-mers assigned accordingly: \texttt{CC} and \texttt{CT} now reside at $V$ and $np(n) = 1$ holds for every node $n$.\end{flushleft}
+        \end{minipage}
+        \begin{minipage}[c]{0.2\textwidth}
+            \begin{tikzpicture}
+                \tikzset{every tree node/.style={align=center,anchor=north}}
+                \Tree [.$W$ [.{$V$\\\texttt{CC},\texttt{CT}} $X$ $Y$ ] {$Z$\\ \texttt{GC},\texttt{CA}} ]
+            \end{tikzpicture}
+        \end{minipage}
+
+        \vspace{0.2cm}
+
+        \caption{Using node precision to spot a structural flaw in a taxonomy. In (2), $np(W) = 7/9$ lies below one, which indicates that the intermediate node $V$ groups the wrong data taxa. The corrected taxonomy in (3) yields $np(n) = 1$ for all nodes in (4).}\label{npflaw}
+    \end{figure}
+
   \subsection{Validation against other tools}
     
  
