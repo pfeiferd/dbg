@@ -261,7 +261,7 @@ Figure \ref{kmerongenusborrelia} illustrates the effect on the distribution of $
 
     To the best of our knowledge, none of the established $k$-mer based classification tools makes use of this potential. They take the given taxonomy for granted, so that a $k$-mer shared by several taxa can only ever be attributed to nodes that already exist -- under an LCA update, to their lowest common ancestor. Reads whose $k$-mers would suffice to narrow the candidates down to two or three species are therefore still reported on the genus, even though the information about which species actually share these $k$-mers is fully contained in the underlying genomes.
 
-An alternative to improving the database is to correct the classification results afterwards. E.g., Bracken \citep{lu2017bracken} re-estimates species-level abundances from the output of a Kraken-style classification by redistributing the reads assigned to higher ranks according to a background distribution, which describes how the $k$-mers of each species in the database are expected to spread across the taxonomy. Nasko et al. \citep{Nasko:2018aa} confirm that this mitigates the shift described above, but also that it struggles with novel genomes. The approach differs from a refinement of the database itself for two reasons. First, Bracken does not add information: it reallocates counts on the basis of \emph{probabilistic assumptions} about which species are present and how their $k$-mers distribute. Its estimates degrade when a sample deviates from these assumptions such as for rare or unexpected organisms. Second, it operates on aggregated abundances of an entire sample rather than on individual reads, so that a single read remains classified on the genus even after the re-estimation. A refined database, in contrast, relies on \emph{hard data}: which species actually share a given $k$-mer is known exactly from the underlying genomes, and this knowledge is encoded in the database itself. Each read is then classified more specifically by construction rather than by estimation, and any subsequent analysis -- including an abundance estimation -- benefits from it.
+An alternative to improving the database is to correct the classification results afterwards. E.g., Bracken \citep{lu2017bracken} re-estimates species-level abundances from the output of a Kraken-style classification by redistributing the reads assigned to higher ranks according to a background distribution, which describes how the $k$-mers of each species in the database are expected to spread across the taxonomy. Nasko et al. \citep{Nasko:2018aa} confirm that this mitigates the shift described above, but also that it struggles with novel genomes. The approach differs from a refinement of the database itself for two reasons: First, Bracken does not add information. It reallocates counts on the basis of \emph{probabilistic assumptions} about which species are present and how their $k$-mers distribute. Its estimates degrade when a sample deviates from these assumptions such as for rare or unexpected organisms. Second, it operates on aggregated abundances of an entire sample rather than on individual reads, so that a single read remains classified on the genus even after the re-estimation. A refined database, in contrast, relies on \emph{hard data}: which species actually share a given $k$-mer is known exactly from the underlying genomes, and this knowledge is encoded in the database itself. Each read is then classified more specifically by construction rather than by estimation, and any subsequent analysis -- including an abundance estimation -- benefits from it.
 
     \subsection{Approach}
     \label{approach}
@@ -482,28 +482,17 @@ $X$ is stored in the database $d$ but $Y$ and $Z$ are not as indicated by the da
 $X$, $Y$ and $Z$ are the same as in Figure \ref{ftsketch}. Since $Y$ and $Z$ are not represented in $d$, their potential $k$-mers shared with $X$ at the genus $W$ are represented by means of $O$. As a drawback, the missing nodes for $Y$ and $Z$ prohibit the refinement via $h$ as in Figure \ref{ftsketch}.}\label{ftother}
 \end{figure}
 
-\subsection{Intrinsic quality measures for database refinement}
+\subsection{Intrinsic quality measures for $k$-mer databases}
 \label{intrinsicqms}    
-    In this section, we consider new quality measures regarding database refinement irrespective of read analysis and read classification results. For this purpose, we establish \emph{path precision and path recall} as well as \emph{node precision} for a $k$-mer database $d$ that has a taxonomy tree associated and where stored $k$-mers have taxa, i.e., nodes, assigned from that tree.
-    In the result section, we use these new measures along with well-established classifcation-based measures to assess refinement quality. \todo{As will be shown, these new intrisic measures correlate well with the established, classification-based measures.}
+    In this section, we consider new quality measures regarding $k$-mer databases irrespective of read analysis and read classification results.
+    For this purpose, we establish \emph{path correctness} as a prerequisite and the precision of a single $k$-mer as the actual quality measure, from which \emph{node precision} and \emph{subtree precision} follow by averaging.
+    The three measures generally apply to any $k$-mer database $d$ that has a taxonomy tree associated and where stored $k$-mers have taxa, i.e., nodes, assigned from that tree.
+    In the results section, we use the new precision measures along with well-established classification-based measures to assess refinement quality. \todo{As will be shown, these new intrinsic measures correlate well with the established, classification-based measures.}
 
-\subsubsection{Path precision and path recall}\label{pathprecision}
-    Let $t$ be a \emph{data taxon}, i.e., \emph{a taxon with a complete genome directly associated whereby the $k$-mers from that genome are also stored in $d$}. For example in RefSeq, complete genomes are often associated with taxa of the rank species or below.
-    
-    Based on the following counts, the quality of the taxonomic refinement can be assessed per data taxon $t$ in $d$:
-\begin{description}
-    \item \textbf{Positive counts $P$ per data taxon $t$ in database $d$:} The number of unique $k$-mers in $d$ that occur in the genome associated with $t$.
+\subsubsection{Data taxa and path correctness}\label{pathcorrectness}
+    Let $t$ be a \emph{data taxon}, i.e., \emph{a taxon with a complete genome directly associated whereby the $k$-mers from that genome are also stored in $d$}. For example in RefSeq, complete genomes are often associated with taxa of the rank species or below. Moreover, let $\nu(a)$ denote the node at which a $k$-mer $a$ is stored in $d$; since each $k$-mer is stored exactly once, $\nu$ is well defined.
 
-    \item \textbf{True positive counts $TP$ per data taxon $t$ in database $d$:} The number of unique $k$-mers in $d$ that occur in the genome associated with $t$ where in $d$, such $k$-mers are associated with some taxon on the path from $t$ to the taxonomic root including $t$ itself.
-    
-    \item \textbf{True positive plus false positive counts $TP + FP$ per data taxon $t$ in database $d$:} The number of unique $k$-mers in $d$ assigned to any taxon on the path from $t$ to the taxonomic root including $t$ itself.
-\end{description}
-    
-   These counts allow for defining \emph{path precision} as $TP / (TP + FP)$ and \emph{path recall} as $TP / P$.
-   
-   As an example, consider Figure \ref{ftsketch} from above: In (3), the path precision of $Z$ is $2/3$ because there are three $2$-mers on the path from $Z$ to the root $W$ but one of them, \texttt{CT}, is not in $W$'s sequence. In (3), $X$ and $Y$ both have a path precision of $1$. The refined database in (4) has a precision of 1 for $X$, $Y$ \emph{and} $Z$. Path recall is $1$ for all of the cases in (3) and (4). 
-        
-For a fair assessment of precision, we require that each data taxon must be a leaf node in the taxonomy tree of database $d$. This can easily be enforced by a tree transformation explained via (3) and (4) in Figure \ref{fttrans}. If the requirement was not met, then two data taxa on the same path would likely result in an inadequately lowered path precision (as in Figure \ref{fttrans} (1) and (2)). Note that the described transformation leaves the phylogenetic structure of a given taxonomy intact.
+For a fair assessment of the measures below, we require that each data taxon must be a leaf node in the taxonomy tree of database $d$. This can easily be enforced by a tree transformation explained via (3) and (4) in Figure \ref{fttrans}. If the requirement was not met, then two data taxa on the same path would likely result in an inadequately lowered node precision (as in Figure \ref{fttrans} (1) and (2)). Note that the described transformation leaves the phylogenetic structure of a given taxonomy intact.
 Figure \ref{simplerefdbtrans} exemplifies the transformation when integrated into the refinement of the database from Figure \ref{simplelcadb}.\footnote{When carefully comparing the $k$-mer counts of similar nodes from Figures \ref{simplerefdb} and \ref{simplerefdbtrans}, one finds minor differences such as for \enquote{10245/OTHER}. Note that these differences originate in the use of a probabilistic data structure, i.e. a Bloom filter, during the refinement procedure according to Section \ref{dbrefinement}.}
 
 \begin{figure}[h]%
@@ -522,7 +511,7 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
 \end{tikzpicture}
 \end{minipage}
 \begin{minipage}[c]{0.25\textwidth}
-\begin{flushleft}(2) The resulting database with its taxonomy and $2$-mers assigned accordingly: The $2$-mer \texttt{CC} at $X$ is not in the sequence of $Y$ and therefore lowers $Y$'s path precision from $1$ to $2/3$.
+\begin{flushleft}(2) The resulting database with its taxonomy and $2$-mers assigned accordingly: The $2$-mer \texttt{CC} at $X$ is not in the sequence of $Y$ and therefore lowers $X$'s node precision from $1$ to $3/4$.
 \end{flushleft}
 \end{minipage}
 \begin{minipage}[c]{0.2\textwidth}
@@ -545,7 +534,7 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
 \end{tikzpicture}
 \end{minipage}
 \begin{minipage}[c]{0.25\textwidth}
-\begin{flushleft}(4) The resulting database with the \emph{transformed} tree and $2$-mers assigned accordingly: The $2$-mer \texttt{CC} remains at $h_X$ and therefore, it does not lower $Y$'s path precision.\end{flushleft}
+\begin{flushleft}(4) The resulting database with the \emph{transformed} tree and $2$-mers assigned accordingly: The $2$-mer \texttt{CC} remains at $h_X$ and therefore, it does not lower $X$'s node precision, which is $1$ again.\end{flushleft}
 \end{minipage}
 \begin{minipage}[c]{0.2\textwidth}
 \begin{tikzpicture}
@@ -565,67 +554,40 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
          \caption{Tree representation of a Genestrip $k$-mer database including three Orthopoxvirus species. The tree represents the state right \emph{after the refinement} as in Figure \ref{ftsketch} (4); so it is similar to Figure \ref{simplerefdb} \emph{but with the transformation from Figure \ref{fttrans} included.}}\label{simplerefdbtrans}
     \end{figure}
 
-    As part of Section \ref{results} from below, we report unweighted\footnote{The unweighted average considers every data taxon as equally relevant.} average path precision and average path recall by averaging over all data taxa in $d$ or subsets thereof. In particular, we report averages over all taxa under the same species or the same genus, respectively. E.g., in (3) of Figure \ref{ftsketch}, the average path precision of the genus $W$ is 8/9.
+    On this basis, we call a $k$-mer database $d$ \emph{path correct} if
+for every $k$-mer $a$ stored in $d$ and every data taxon $t$ whose genome contains $a$, the node $\nu(a)$ is an ancestor of $t$ or $t$ itself. Equivalently, $\nu(a)$ lies on the path from $t$ to the taxonomic root for each such $t$.
 
-    So far, the counts of a data taxon $t$ refer to the entire path from $t$ to the taxonomic root. It is useful to relativize them to a subtree: let $m$ be a node of $d$'s taxonomy tree and let $T_m$ be the set of data taxa under $m$ including $m$ itself. For a data taxon $t \in T_m$, let $TP_m(t)$ and $(TP + FP)_m(t)$ be defined as above, but with respect to the path from $t$ to $m$ -- including $t$ and $m$ themselves -- instead of the path from $t$ to the taxonomic root. Besides the unweighted average, we then consider the \emph{weighted} average path precision of the subtree rooted at $m$,
-\[ \overline{pp}_w(m) = \frac{\sum_{t \in T_m} TP_m(t)}{\sum_{t \in T_m} (TP + FP)_m(t)} , \]
-    which relates the pooled counts instead of averaging the per-taxon ratios. For $m$ being the taxonomic root, it ranges over all data taxa of $d$ and hence assesses the database as a whole.
+    Both unrefined and refined databases are path correct by construction. The LCA update moves a $k$-mer up in the taxonomy just far enough that all data taxa whose genomes contain it become descendants of the resulting node. The refinement, in turn, may push a $k$-mer down only so far that the condition above is still maintained --- this is what keeps \verb|ftupdatedb| from placing a $k$-mer below the lowest common ancestor of the data taxa supporting it.\footnote{Due to its probabilistic nature, the Bloom filter used during the \texttt{kmerindexbloom} step (see Section~\ref{dbrefinement}) occasionally falsely attributes a species to a $k$-mer, which may prevent the $k$-mer from being pushed down to its lowest possible node. This leaves path correctness intact and only keeps the $k$-mer at a less specific node than necessary.}
 
-    We deliberately refrain from smoothing $\overline{pp}_w(m)$ by a Laplace correction, i.e.\ from adding a virtual $k$-mer per node of the subtree that counts as a true positive by definition. Such a correction contributes the same amount to numerator and denominator, and since the ratio is at most one, every contribution of this kind strictly raises it -- without a single $k$-mer of $d$ supporting the increase. Its total size grows with the number of nodes of the subtree, and the refinement is precisely a procedure that \emph{adds} nodes to the taxonomy. A corrected measure would therefore reward a refined tree over an unrefined one for its mere node count, and it would do so the more the deeper the refined subtrees become, i.e.\ exactly along the axis the measure is meant to assess.
+\subsubsection{Node precision and subtree precision}\label{nodeprecision}
+Given path correctness, every data taxon under a $k$-mer's node is a candidate carrier of that $k$-mer, and how many of them actually carry it indicates how well the $k$-mer is placed.
 
-    Without the correction, $\overline{pp}_w(m)$ depends on the placement of the $k$-mers alone. Since every $k$-mer of $d$ is associated with exactly one node, we may equivalently sum over the $k$-mers stored in the subtree rooted at $m$ instead of over the data taxa under $m$. Writing $\nu(a)$ for the node a $k$-mer $a$ is associated with and $c(a)$ for the number of data taxa under $\nu(a)$ whose genomes contain $a$,
-\[ \overline{pp}_w(m) = \frac{\sum_a c(a)}{\sum_a |T_{\nu(a)}|} , \]
-    where $a$ ranges over the $k$-mers stored at the nodes of that subtree. So $\overline{pp}_w(m)$ is the mean of the per-$k$-mer precisions $c(a) / |T_{\nu(a)}|$ weighted by $|T_{\nu(a)}|$, and each of these asks what fraction of the data taxa under a $k$-mer's node actually contain that $k$-mer. Inserting a node into the taxonomy changes neither $\nu(a)$ nor $|T_{\nu(a)}|$ nor $c(a)$ for any $k$-mer $a$ already stored, so $\overline{pp}_w(m)$ is invariant under it and responds only once $k$-mers are actually relocated -- which is what a refinement is to be judged by. The measure is undefined only if no $k$-mer at all resides in the subtree rooted at $m$; we let it be $1$ in that case, in line with an empty assignment being trivially correct.
+    Let $D_n$ denote the set of data taxa under a node $n$ including $n$ itself. For a $k$-mer $a$ stored in $d$ with its node $\nu(a)$ from Section \ref{pathcorrectness}, let $c(a)$ be the number of data taxa $t \in D_{\nu(a)}$ whose genomes contain $a$ at least once. We define the \emph{precision of the $k$-mer $a$} as
+\[ p(a) = \frac{c(a)}{|D_{\nu(a)}|} , \]
+    i.e.\ as the fraction of the data taxa under $a$'s node whose genomes actually contain $a$. It is defined whenever $D_{\nu(a)} \neq \emptyset$, which excludes only the $k$-mers stored at artificial nodes carrying no data taxon at all.
 
-    Note that for a taxonomy tree with a branching factor $\geq 2$ (which is the standard case) a high average path precision ensures that a $k$-mer $a$ in $d$ is located as closely as possible above a data taxon or right at a data taxon whose genome(s) contain $a$. Otherwise, if $a$ was located higher up in the taxonomy, then $a$ would also be on the path to the root starting from a data taxon $t$ whose genome does not contain $a$. But this would increase the $FP$-count of $t$ and in turn would lower the average path precision.
-    
- %   Likewise, a high average path recall ensures that a $k$-mer $a$ in $d$ is assigned to a tree node such that \emph{as many data taxa as possible} which contain $a$ in their genome are subordinate or equal to that node. Otherwise, the $k$-mer $a$ would not be on the path to the root for such a taxon. But this would decrease the $TP$-count of that taxon and in turn lower the average path recall.
-    
-It is important to see that \emph{path recall should always equal one for a correct $k$-mer database} since
-the LCA-update should move up a $k$-mer in the taxonomy so far that all data taxa associated with that $k$-mer become descendants of the resulting tree node.
-Moreover, the refinement may push down $k$-mers only just so far that the same requirement is still maintained.
-In other words, \emph{path recall actually serves as a correctness criterion for $k$-mer databases}. This holds for both the unrefined database via the LCA update and the refined database via the goal \verb|ftupdatedb|.\footnote{Due to its probabilistic nature, the Bloom filter used during the \texttt{kmerindexbloom} step (see Section~\ref{dbrefinement}) occasionally falsely attributes a species to a $k$-mer, which may prevent the $k$-mer from being pushed down to its lowest possible node. This mildly lowers precision but never recall.}
+    Due to path correctness, every data taxon whose genome contains $a$ is subordinate to $\nu(a)$, and so the count $c(a)$ does not depend on where $a$ is stored: it is simply the number of data taxa in $d$ that support $a$. Only $|D_{\nu(a)}|$ varies with the placement, and it is smallest when $\nu(a)$ is the lowest common ancestor of the data taxa supporting $a$.
+    Note that raising $p(a)$ is the very purpose of the refinement as it introduces new nodes and moves $k$-mers onto them.
 
-    So together, a high average path precision and a path recall of one suggest that $k$-mers are located at a near optimal position in the taxonomy tree -- not too high up to lower precision and not too far down to taint recall.
+    Averaging $p$ over the $k$-mers stored at a single node $n$ yields \emph{node precision} $np(n)$. With $A_n$ denoting the set of $k$-mers associated with that node:
+\[ np(n) = \frac{1}{|A_n|} \sum_{a \in A_n} p(a). \]
+    Averaging $p$ over the $k$-mers of an entire subtree yields \emph{subtree precision} $sp(m)$. Let $m$ be a node of $d$'s taxonomy tree and let
+$A^{*}_m = \bigcup_{n} A_n$ be the set of $k$-mers stored at the nodes $n$ of the subtree rooted at $m$ --- including $m$ itself --- with $D_n \neq \emptyset$.
+    Then
+\[ sp(m) = \frac{1}{|A^{*}_m|} \sum_{a \in A^{*}_m} p(a) . \]
+    For $m$ being the taxonomic root, $A^{*}_m$ comprises all $k$-mers of $d$ that reside at a node with data taxa underneath, and $sp(m)$ hence assesses the database as a whole; for $m$ being a genus, it assesses the refinement of that genus in isolation.
+    The two averages are undefined when the set of $k$-mers they range over is empty, i.e.\ $np(n)$ for a node without $k$-mers and $sp(m)$ for a subtree without any.
+    Moreover, given the transformation from Figure \ref{fttrans}, it follows by definition that $np(n) = 1$ for a node $n$ of a data taxon $t$ that stores $k$-mers at all.
 
-\subsubsection{Node precision}\label{nodeprecision}
-Given that \emph{path recall} equals one, it is interesting to consider refinement quality also on a per-node basis for each node in the database $d$'s taxonomy tree. For this purpose, we define
-\emph{node precision} $np(n)$: Let $A_n$ be set of $k$-mers associated with a node $n$ in $d$'s taxonomy tree and let $T_n$ be the set of data taxa under $n$ including $n$ itself, as introduced above. Let $c_n(a)$ with $a \in A_n$ be the number of data taxa $t \in T_n$ whose genomes contain $a$ at least once.
-\[ np(n) = \frac{\sum_{a \in A_n} c_n(a)}{|T_n| \cdot |A_n|} \]
-    Given a node $n$,  $np(n)$ therefore measures the average ratio of data taxa under $n$ which contain a $k$-mer associated with $n$ itself. For $A_n = \emptyset$, i.e.\ when no $k$-mers are stored directly under $n$, the ratio is undefined and we let $np(n) = 1$, reflecting that an empty assignment is trivially correct. As for path precision in Section \ref{pathprecision}, we refrain from a Laplace correction here: a virtual $k$-mer per node would let every node -- and an empty one at that -- enter the decomposition below with a score closer to one than it deserves, and thereby inflate path precision in proportion to the number of nodes of the taxonomy.
-
-    Given the transformation from Figure \ref{fttrans}, it follows by definition that $np(n) = 1$ for a node $n$ of a data taxon $t$. Note that $np(n)$ may deteriorate if too many data taxa's genomes under $n$ are \emph{incomplete}, because in this case a $k$-mer $a$ at node $n$ might simply not be supported by such taxa, even though their completed genome would contain $a$.
-
-Node precision is not merely a per-node indicator: it decomposes the weighted average path precision of \emph{any subtree} of the taxonomy.
-
-\begin{proposition}\label{npdecomp}
-    Let $m$ be a node of $d$'s taxonomy tree, let $S_m$ be the set of nodes $n$ in the subtree rooted at $m$ with $T_n \neq \emptyset$ and $A_n \neq \emptyset$, and let $w_n = |T_n| \cdot |A_n|$. Then
-    \[ \overline{pp}_w(m) = \frac{\sum_{n \in S_m} w_n \cdot np(n)}{\sum_{n \in S_m} w_n}, \]
-    i.e. the weighted average path precision of any subtree is exactly the $w_n$-weighted mean of the node precisions within that subtree.
-\end{proposition}
-
-\begin{proof}
-    We first note that, for a data taxon $t \in T_m$ and a node $n$,
-    \begin{equation}\label{npdecompaux}
-        n \text{ lies on the path from } t \text{ to } m \text{ and } A_n \neq \emptyset \iff n \in S_m \text{ and } t \in T_n .
-    \end{equation}
-    Indeed, since every data taxon is a leaf of the taxonomy tree of $d$ due to the transformation from Figure \ref{fttrans}, the condition $t \in T_n$ holds precisely for those nodes $n$ that are ancestors of $t$ or $t$ itself. Among these, the ones lying in the subtree rooted at $m$ are exactly the nodes on the path from $t$ to $m$, and each of them satisfies $T_n \neq \emptyset$ because of $t \in T_n$; the condition $A_n \neq \emptyset$ carries over on both sides. Moreover, each $k$-mer of $d$ is associated with exactly one node, so the sets $A_n$ partition the $k$-mers of $d$.
-
-    By definition, $TP_m(t)$ counts, for every node $n$ on the path from $t$ to $m$, those $k$-mers of $A_n$ that occur in the genome of $t$. The nodes of the path with $A_n = \emptyset$ contribute nothing to this count, so that grouping it by the node $n$ and applying (\ref{npdecompaux}) gives
-    \[ \sum_{t \in T_m} TP_m(t) = \sum_{n \in S_m} \; \sum_{t \in T_n} \left| \{ a \in A_n : a \text{ occurs in the genome of } t \} \right| , \]
-    where $T_n \subseteq T_m$ holds for every $n \in S_m$. The right-hand inner sum amounts to the number of pairs $(a, t)$ with $a \in A_n$ and $t \in T_n$ such that $a$ occurs in the genome of $t$. Counting these pairs by $a$ instead of by $t$ yields $\sum_{a \in A_n} c_n(a)$ and therefore
-    \[ \sum_{t \in T_m} TP_m(t) = \sum_{n \in S_m} \; \sum_{a \in A_n} c_n(a) = \sum_{n \in S_m} w_n \cdot np(n) . \]
-    Likewise, $(TP + FP)_m(t)$ counts, for every node $n$ on the path from $t$ to $m$, all $k$-mers of $A_n$, so that (\ref{npdecompaux}) gives
-    \[ \sum_{t \in T_m} (TP + FP)_m(t) = \sum_{n \in S_m} |T_n| \cdot |A_n| = \sum_{n \in S_m} w_n . \]
-    Dividing the two identities proves the claim.
-\end{proof}
-
-Note that a node without $k$-mers drops out of this mean entirely -- its weight $w_n$ is zero -- rather than entering it with $np(n) = 1$, as it would under a Laplace correction. This is the node-wise counterpart of the invariance observed in Section \ref{pathprecision}: the identity, and with it the weighted average path precision, is insensitive to the number of nodes a taxonomy provides and reacts only to where the $k$-mers actually reside.
+    In both averages, every stored $k$-mer contributes equally, regardless of how the taxonomy happens to distribute the $k$-mers over nodes. In particular, inserting an inner node into the taxonomy changes neither $\nu(a)$ nor $|D_{\nu(a)}|$ nor $c(a)$ for any $k$-mer already stored, so neither $np$ nor $sp$ can be improved by refining the tree alone.
+    Note also that $np(n)$ may deteriorate if data taxa's genomes under $n$ are \emph{incomplete}, because in this case a $k$-mer $a$ at node $n$ might simply not be supported by such taxa, even though their completed genome would contain $a$.
 
     \section{Results}\label{results}
     
-    \subsection{Path precision and recall}
-        
+    \subsection{Node precision and subtree precision}
+
+    The subtree precision reported in Table \ref{dbsp} is defined in Section \ref{nodeprecision} along with node precision; the path precision of Appendix \ref{apppathprecision} is not reported here. \todo{Add the node precision results and fill in the \emph{root} rows of Table \ref{dbsp}.}
+
      \begin{table}[h]
         \centering
 \sisetup{table-alignment-mode = format, table-number-alignment = center, group-separator = {,}, group-minimum-digits = 4}
@@ -648,35 +610,50 @@ Note that a node without $k$-mers drops out of this mean entirely -- its weight 
         \centering
 \sisetup{table-alignment-mode = format, table-number-alignment = center, table-format = 1.4, round-mode = places, round-precision = 4}
         \begin{tabular}{c|c|S|S}
-\textbf{Database} & \textbf{Genus}&\textbf{Unrefined avg. precision}&\textbf{Refined avg. precision}\\
+\textbf{Database} & \textbf{Root / Genus $m$}&\textbf{Unrefined $sp(m)$}&\textbf{Refined $sp(m)$}\\
           \hline
-            \multirow{10}{*}{\texttt{protozoa}} & Acanthamoeba & 0.06531427 & 0.56917066\\
-            & Balamuthia & 0.06606686 & 0.57230778\\
-            & Naegleria & 0.07689149 & 0.14959149\\
-            & Trypanosoma & 0.81930388 & 0.83025002\\
-            & Leishmania & 0.79005375 & 0.84311978\\
-            & Plasmodium & 0.40457340 & 0.51858148\\
-            & Babesia & 0.59643290 & 0.59631937\\
-            & Toxoplasma & 0.51159947 & 0.51153410\\
-            & Cryptosporidium & 0.92237490 & 0.92279232\\
-            & Blastocystis & 0.04354525 & 0.04437880\\
-          \hline
-            \multirow{7}{*}{\texttt{tb}} & Mycoplasma & 0.11435632 & 0.26767187\\
-            & Malacoplasma & 0.31520441 & 0.49741995\\
-            & Mycoplasmoides & 0.23092061 & 0.40249865\\
-            & Metamycoplasma & 0.23325037 & 0.38692153\\
-            & Francisella & 0.13495615 & 0.23463325\\
-            & Bartonella & 0.03887573 & 0.06811601\\
-            & Rickettsia & 0.10272128 & 0.14078150\\
-          \hline
-            \multirow{6}{*}{\texttt{viral}} & Orthopoxvirus & 0.43507906 & 0.70777892\\
-            & Tequatrovirus & 0.08321319 & 0.14283079\\
+            \multirow{7}{*}{\texttt{cv}} & \rule{0pt}{2.6ex}\emph{root} & \multicolumn{1}{c|}{---} & \multicolumn{1}{c}{---}\\
+          \cmidrule{2-4}
             & Pandoravirus & 0.88918366 & 0.96683785\\
             & Alphabaculovirus & 0.21447688 & 0.69767821\\
-            & Epseptimavirus & 0.03801377 & 0.04920365\\
-            & Cheoctovirus & 0.02121841 & 0.02642287\\
+            & Megavirus & \multicolumn{1}{c|}{---} & \multicolumn{1}{c}{---}\\
+            & Moumouvirus & \multicolumn{1}{c|}{---} & \multicolumn{1}{c}{---}\\
+            & Betabaculovirus & \multicolumn{1}{c|}{---} & \multicolumn{1}{c}{---}\\
+            & Orthopoxvirus & 0.43507906 & 0.70777892\\
+          \hline
+            \multirow{6}{*}{\texttt{tb}} & \rule{0pt}{2.6ex}\emph{root} & \multicolumn{1}{c|}{---} & \multicolumn{1}{c}{---}\\
+          \cmidrule{2-4}
+            & Bartonella & 0.03887573 & 0.06811601\\
+            & Mycoplasma & 0.11435632 & 0.26767187\\
+            & Francisella & 0.13495615 & 0.23463325\\
+            & Rickettsia & 0.10272128 & 0.14078150\\
+            & Chlamydia & \multicolumn{1}{c|}{---} & \multicolumn{1}{c}{---}\\
+          \hline
+            \multirow{6}{*}{\texttt{protozoa}} & \rule{0pt}{2.6ex}\emph{root} & \multicolumn{1}{c|}{---} & \multicolumn{1}{c}{---}\\
+          \cmidrule{2-4}
+            & Plasmodium & 0.40457340 & 0.51858148\\
+            & Leishmania & 0.79005375 & 0.84311978\\
+            & Toxoplasma & 0.51159947 & 0.51153410\\
+            & Babesia & 0.59643290 & 0.59631937\\
+            & Trypanosoma & 0.81930388 & 0.83025002\\
+          \hline
+            \multirow{6}{*}{\texttt{vineyard}} & \rule{0pt}{2.6ex}\emph{root} & \multicolumn{1}{c|}{---} & \multicolumn{1}{c}{---}\\
+          \cmidrule{2-4}
+            & Botrytis & \multicolumn{1}{c|}{---} & \multicolumn{1}{c}{---}\\
+            & Trichothecium & \multicolumn{1}{c|}{---} & \multicolumn{1}{c}{---}\\
+            & Erysiphe & \multicolumn{1}{c|}{---} & \multicolumn{1}{c}{---}\\
+            & Dematophora & \multicolumn{1}{c|}{---} & \multicolumn{1}{c}{---}\\
+            & Alternaria & \multicolumn{1}{c|}{---} & \multicolumn{1}{c}{---}\\
+          \hline
+            \multirow{6}{*}{\texttt{parasites}} & \rule{0pt}{2.6ex}\emph{root} & \multicolumn{1}{c|}{---} & \multicolumn{1}{c}{---}\\
+          \cmidrule{2-4}
+            & Schistosoma & \multicolumn{1}{c|}{---} & \multicolumn{1}{c}{---}\\
+            & Necator & \multicolumn{1}{c|}{---} & \multicolumn{1}{c}{---}\\
+            & Echinococcus & \multicolumn{1}{c|}{---} & \multicolumn{1}{c}{---}\\
+            & Paragonimus & \multicolumn{1}{c|}{---} & \multicolumn{1}{c}{---}\\
+            & Toxocara & \multicolumn{1}{c|}{---} & \multicolumn{1}{c}{---}\\
         \end{tabular}
-         \caption{Collection of average path precision for different databases and genera. The averages are unweighted, i.e. they treat every data taxon under the respective genus as equally relevant. For \texttt{viral}, which comprises 3,161 genera, the genus Orthopoxvirus and the five genera with the largest number of true positives are listed.}\label{dbpathprec}
+         \caption{Subtree precision $sp(m)$ for the databases from Table \ref{dbdesc}. The row \emph{root} of each block states $sp(m)$ for $m$ being the taxonomic root, so that the average runs over every $k$-mer stored in the database; the rows below break the same measure down to genera, $m$ then being the respective genus. For each database, the five genera with the largest $|A^{*}_m|$ are listed in decreasing order of $|A^{*}_m|$. For \texttt{cv}, the genus Orthopoxvirus is listed in addition, as it serves as the running example of Section \ref{dbrefinement}. Note that the genera are a selection, so they do not average to the value of the \emph{root} row above them.}\label{dbsp}
     \end{table}      
     
     \subsection{Classification quality}
@@ -792,6 +769,35 @@ DP developed the software, designed the evaluation and wrote the manuscript. \to
 \subsection{Acknowledgements}
 
 \section{Appendix}
+
+\subsection{Path precision and path recall}\label{apppathprecision}
+
+Section \ref{pathcorrectness} states path correctness as a boolean property and Section \ref{nodeprecision} assesses refinement quality per node. Both can equivalently be expressed by counting $k$-mers per data taxon, which yields the more conventional pair of precision and recall. We develop it here for reference and to relate it to the measures used in the main text.
+
+Let $t$ be a data taxon of a database $d$, as defined in Section \ref{pathcorrectness}. The following counts assess the quality of the taxonomic refinement per data taxon $t$ in $d$:
+\begin{description}
+    \item \textbf{Positive counts $P$ per data taxon $t$ in database $d$:} The number of unique $k$-mers in $d$ that occur in the genome associated with $t$.
+
+    \item \textbf{True positive counts $TP$ per data taxon $t$ in database $d$:} The number of unique $k$-mers in $d$ that occur in the genome associated with $t$ where in $d$, such $k$-mers are associated with some taxon on the path from $t$ to the taxonomic root including $t$ itself.
+
+    \item \textbf{True positive plus false positive counts $TP + FP$ per data taxon $t$ in database $d$:} The number of unique $k$-mers in $d$ assigned to any taxon on the path from $t$ to the taxonomic root including $t$ itself.
+\end{description}
+
+   These counts allow for defining \emph{path precision} as $TP / (TP + FP)$ and \emph{path recall} as $TP / P$.
+
+   As an example, consider Figure \ref{ftsketch} from above: In (3), the path precision of $Z$ is $2/3$ because there are three $2$-mers on the path from $Z$ to the root $W$ but one of them, \texttt{CT}, is not in $W$'s sequence. In (3), $X$ and $Y$ both have a path precision of $1$. The refined database in (4) has a precision of 1 for $X$, $Y$ \emph{and} $Z$. Path recall is $1$ for all of the cases in (3) and (4).
+
+    Path recall is the counting counterpart of path correctness: a $k$-mer $a$ that occurs in the genome of $t$ contributes to $P$ in any case, but to $TP$ only if $\nu(a)$ lies on the path from $t$ to the root. Hence $TP = P$ for a data taxon $t$ exactly if the condition of Section \ref{pathcorrectness} holds for every $k$-mer supported by $t$, and \emph{a database is path correct if and only if its path recall equals one for every data taxon}. Since both the LCA update and the refinement establish that condition by construction, path recall carries no information beyond the boolean statement, which is why the main text uses the latter.
+
+    Path precision, in contrast, is a genuine quality measure and an alternative to node precision. We report unweighted\footnote{The unweighted average considers every data taxon as equally relevant.} average path precision by averaging over all data taxa in $d$ or subsets thereof, in particular over all taxa under the same species or the same genus. E.g., in (3) of Figure \ref{ftsketch}, the average path precision of the genus $W$ is 8/9.
+
+    The counts of a data taxon $t$ above refer to the entire path from $t$ to the taxonomic root. As for node precision, it is useful to relativize them to a subtree: let $m$ be a node of $d$'s taxonomy tree and let $D_m$ be the set of data taxa under $m$ including $m$ itself. For a data taxon $t \in D_m$, let $TP_m(t)$ and $(TP + FP)_m(t)$ be defined as above, but with respect to the path from $t$ to $m$ -- including $t$ and $m$ themselves -- instead of the path from $t$ to the taxonomic root. Besides the unweighted average, we then consider the \emph{weighted} average path precision of the subtree rooted at $m$,\footnote{We deliberately refrain from smoothing $\overline{pp}_w(m)$ -- or $np(n)$ from Section \ref{nodeprecision} -- by a Laplace correction, i.e.\ from adding a virtual $k$-mer per node that counts as a true positive by definition. Such a correction contributes the same amount to numerator and denominator, and since the ratio is at most one, every contribution of this kind strictly raises it -- without a single $k$-mer of $d$ supporting the increase. Its total size grows with the number of nodes of the subtree, and the refinement is precisely a procedure that \emph{adds} nodes to the taxonomy. A corrected measure would therefore reward a refined tree over an unrefined one for its mere node count, and it would do so the more the deeper the refined subtrees become, i.e.\ exactly along the axis the measure is meant to assess.}
+\[ \overline{pp}_w(m) = \frac{\sum_{t \in D_m} TP_m(t)}{\sum_{t \in D_m} (TP + FP)_m(t)} , \]
+    which relates the pooled counts instead of averaging the per-taxon ratios. For $m$ being the taxonomic root, it ranges over all data taxa of $d$ and hence assesses the database as a whole. The measure is undefined if no $k$-mer at all resides in the subtree rooted at $m$.
+
+    Note that for a taxonomy tree with a branching factor $\geq 2$ (which is the standard case) a high average path precision ensures that a $k$-mer $a$ in $d$ is located as closely as possible above a data taxon or right at a data taxon whose genome(s) contain $a$. Otherwise, if $a$ was located higher up in the taxonomy, then $a$ would also be on the path to the root starting from a data taxon $t$ whose genome does not contain $a$. But this would increase the $FP$-count of $t$ and in turn would lower the average path precision.
+
+    Grouping the pooled counts by the node holding each $k$-mer rather than by data taxon shows how $\overline{pp}_w(m)$ relates to the subtree precision $sp(m)$ of Section \ref{nodeprecision}. Both average the per-$k$-mer precision $p(a)$ over the $k$-mers of the subtree, but $\overline{pp}_w(m)$ weights each $k$-mer by $|D_{\nu(a)}|$, i.e.\ by the number of data taxa its node covers, whereas $sp(m)$ weights all $k$-mers equally. Path precision therefore lets $k$-mers sitting high in the taxonomy dominate the value, while subtree precision does not, which is the reason the main text builds on the latter.
 
 \subsection{Phylogenetic Mapping}
 
@@ -959,7 +965,7 @@ An approximate $\pm 1\sigma$ credible interval for $d$ is therefore $\hat{d}\,\p
     \subsubsection{Node precision for taxonomy improvements}
     Using a refined database with its refined taxonomy and with complete genomes only, low node precision allows for spotting potential structural flaws in the original, unrefined taxonomy. Figure \ref{npflaw} presents a basic example to highlight this use case:
     In (1), $X$ and $Y$ are not placed under the same node, even though their genomes are \emph{identical}. This causes a lowered node precision at their lowest common ancestor $W$.
-    After correcting the taxonomy, node precision in (4) ends up being $1$ for all nodes.
+    After correcting the taxonomy, node precision in (4) ends up being $1$ for every node that stores $k$-mers.
 
 %The example from Figure \ref{npflaw} can be generalized: When the nodes of two data taxa, like $X$ and $Y$ from above, are falsely \emph{not} close enough together in the taxonomy, this \emph{always} manifests itself in a lowered node precision at \emph{their lowest common ancestor} $W$.
 %This is because the LCA update will move every joint $k$-mer $a$ from $X$ and $Y$ to $W$ but the refinement must keep it there to maintain a path recall of $1$ for both.
@@ -981,7 +987,7 @@ An approximate $\pm 1\sigma$ credible interval for $d$ is therefore $\hat{d}\,\p
             \end{tikzpicture}
         \end{minipage}
         \begin{minipage}[c]{0.25\textwidth}
-            \begin{flushleft}(2) After the LCA update: \texttt{CC} and \texttt{CT} occur in both $X$ and $Y$ and so they move up to $W$. With $|T_W| = 3$, $|A_W| = 2$ and $c_W(\texttt{CC}) = c_W(\texttt{CT}) = 2$, this yields $np(W) = 2/3 < 1$.
+            \begin{flushleft}(2) After the LCA update: \texttt{CC} and \texttt{CT} occur in both $X$ and $Y$ and so they move up to $W$. With $|D_W| = 3$, $|A_W| = 2$ and $c(\texttt{CC}) = c(\texttt{CT}) = 2$, this yields $np(W) = 2/3 < 1$.
             \end{flushleft}
         \end{minipage}
         \begin{minipage}[c]{0.2\textwidth}
@@ -1004,7 +1010,7 @@ An approximate $\pm 1\sigma$ credible interval for $d$ is therefore $\hat{d}\,\p
             \end{tikzpicture}
         \end{minipage}
         \begin{minipage}[c]{0.25\textwidth}
-            \begin{flushleft}(4) The resulting database with the \emph{corrected} tree and $2$-mers assigned accordingly: \texttt{CC} and \texttt{CT} now reside at $V$ and $np(n) = 1$ holds for every node $n$.\end{flushleft}
+            \begin{flushleft}(4) The resulting database with the \emph{corrected} tree and $2$-mers assigned accordingly: \texttt{CC} and \texttt{CT} now reside at $V$ and $np(n) = 1$ holds for every node $n$ that stores $k$-mers.\end{flushleft}
         \end{minipage}
         \begin{minipage}[c]{0.2\textwidth}
             \begin{tikzpicture}
@@ -1015,7 +1021,7 @@ An approximate $\pm 1\sigma$ credible interval for $d$ is therefore $\hat{d}\,\p
 
         \vspace{0.2cm}
 
-        \caption{Using node precision to spot a structural flaw in a taxonomy. In (2), $np(W) = 2/3$ lies below one, which indicates that the intermediate node $V$ groups the wrong data taxa. The corrected taxonomy in (3) yields $np(n) = 1$ for all nodes in (4).}\label{npflaw}
+        \caption{Using node precision to spot a structural flaw in a taxonomy. In (2), $np(W) = 2/3$ lies below one, which indicates that the intermediate node $V$ groups the wrong data taxa. The corrected taxonomy in (3) yields $np(n) = 1$ for all $k$-mer-storing nodes in (4).}\label{npflaw}
     \end{figure}
 
   \subsection{Validation against other tools}
