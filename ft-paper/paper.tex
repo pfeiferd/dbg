@@ -662,16 +662,26 @@ $A^{*}_m = \bigcup_{n} A_n$ be the set of $k$-mers stored at the nodes $n$ of th
          \caption{Subtree precision $sp(m)$ for the databases from Table \ref{dbdesc}. The row \emph{root} of each block states $sp(m)$ for $m$ being the taxonomic root, so that the average runs over every $k$-mer stored in the database; the rows below break the same measure down to genera, $m$ then being the respective genus. For each database, the five genera with the largest $|A^{*}_m|$ are listed in decreasing order of $|A^{*}_m|$. For \texttt{cv}, the genus Orthopoxvirus is listed in addition, as it serves as the running example of Section \ref{dbrefinement}. Note that the genera are a selection, so they do not average to the value of the \emph{root} row above them.}\label{dbsp}
     \end{table}      
     
-    \subsection{Classification quality}
-    
-    Refinement at each level and node of the taxonomy tree.
-    
-    Boolean positive counts versus ratio-based positive counts for read classification regarding the rank \enquote{species}:
-    
-    Boolean positive count: $1$ if the class taxon is equal to or below the correct species taxon and $0$ otherwise.
-    
-    Ratio-based positive count: If the class taxon is on the path between the taxonomic root and the correct species taxon: $1$ divided by the number of species taxa that are subordinate, above or identical to the class taxon; $0$ otherwise.
-            
+    \subsection{Classification quality}\label{classificationquality}
+
+    The measures of Section \ref{intrinsicqms} assess a database as such. We now turn to what the refinement means for the analysis of actual reads, using simulated fastq files whose ground truth is known by construction.
+
+    Let $r$ be a read, let $\sigma(r)$ be the species taxon its underlying genome belongs to and let $\kappa(r)$ be the taxon the analysis assigns to it, which is undefined if $r$ remains unclassified. Reads whose $\sigma(r)$ cannot be determined are excluded from all counts below, as they can be neither right nor wrong.
+
+    The customary way to score such an assignment is a \emph{boolean positive count}: $r$ counts as a hit if $\kappa(r)$ is equal to or below $\sigma(r)$, and as a miss otherwise, and likewise one rank higher with the genus in place of the species. Both variants, however, are blind to what a refinement does. A refinement introduces nodes \emph{between} a genus and its species and moves $k$-mers onto them, so a read that used to be classified to its genus now tends to end up at one of these new nodes. That is a substantial gain --- the read is narrowed down from all species of the genus to a handful --- yet the boolean count at the genus rank scores it as a hit in both cases and the one at the species rank as a miss in both cases. Neither of them registers the improvement at all.
+
+    We therefore refine the count in proportion to how far the assignment narrows the species down. For a node $n$ of $d$'s taxonomy tree let
+\[ \Sigma(n) = \{ s : s \text{ is a species taxon of } d \text{ and } s \text{ lies on a common path to the root with } n \} \]
+    be the set of \emph{species in question} at $n$, i.e.\ the species that are still consistent with an assignment to $n$: those below $n$ and, if there are none because $n$ itself lies below the species rank, the one above it. The \emph{ratio-based positive count} of a read then is
+\[ q(r) = \begin{cases} \dfrac{1}{|\Sigma(\kappa(r))|} & \text{if } \sigma(r) \in \Sigma(\kappa(r)), \\[2ex] 0 & \text{otherwise,} \end{cases} \]
+    and $q(r) = 0$ for an unclassified read. So an assignment that pins the species down scores $1$, an assignment to a genus comprising $40$ species scores $1/40$, and one to a refined node covering $3$ of them scores $1/3$. In particular $q(r)$ agrees with the boolean count at the species rank whenever the species is actually determined, and it grades the cases in between that the boolean counts collapse.
+
+    Two points deserve attention when $\Sigma(n)$ is determined. First, the species are counted over the \emph{entire} subtree rooted at $n$ rather than among its children, because a taxonomy may well place intermediate nodes such as a subgenus between a genus and its species; counting children would let such a node hide the species underneath it. Second, the counting takes place in the taxonomy of the database at hand. Since the refinement adds nodes but neither adds nor removes species taxa, $\Sigma(n)$ is the same in the refined and the unrefined database for every node $n$ that exists in both. What differs between the two is $\kappa(r)$ --- the node a read is assigned to --- which is precisely the effect to be measured.
+
+    From these counts we obtain precision, recall and the $F_1$-score in the usual way: with $R$ denoting the reads of a fastq file whose species is known and $R_c \subseteq R$ those that were classified at all,
+\[ \mathit{prec} = \frac{\sum_{r \in R_c} q(r)}{|R_c|}, \qquad \mathit{rec} = \frac{\sum_{r \in R} q(r)}{|R|}, \qquad F_1 = \frac{2 \cdot \mathit{prec} \cdot \mathit{rec}}{\mathit{prec} + \mathit{rec}} , \]
+    and analogously for the boolean counts, which we report alongside for comparison with the literature.
+
     \subsection{Database refinement performance}
 
 Since a refined database is always generated \emph{on top of} an existing, unrefined one, the relevant cost of the refinement is its \emph{additional} resource consumption. Table \ref{ftdbperf} therefore reports the wall time and the maximum RAM of the unrefined database generation in absolute terms, but the corresponding figures of the subsequent refinement relative to them.
