@@ -237,14 +237,6 @@
 }
 
 \newcommand{\taxon}{taxon}
-\newcommand{\ku}{KrakenUniq}
-\newcommand{\ktwo}{Kraken 2 (S)}
-\newcommand{\ktwohc}{Kraken 2 (C)}
-\newcommand{\ganon}{Ganon (S)}
-\newcommand{\ganonlowfpr}{Ganon (C)}
-\newcommand{\ganonall}{Ganon (A)}
-\newcommand{\genestrip}{Genestrip (C)}
-\newcommand{\genestriphs}{Genestrip (S)}
 \newcommand{\hiseq}[1]{HiSeq}
 \newcommand{\miseq}[1]{MiSeq}
 \newcommand{\fastqone}[1]{Extr. from \cite{Wu:2024aa}}
@@ -699,6 +691,8 @@ $A^{*}_m = \bigcup_{n} A_n$ be the set of $k$-mers stored at the nodes $n$ of th
     Two caveats remain, and both argue for reporting $\Delta'$ in its own right rather than only as a stepping stone to $\hat{\Delta}$. First, the agreement between $R_g^{\circ}$ and $R_g$ has to be read in both directions, and only one of them is reassuring. Almost every read of $R_g^{\circ}$ is also in $R_g$ --- but that is a property of \emph{simulated} data, where the reads are drawn from the very genomes the database was built from, so a read assigned to a genus almost always does belong to it. The converse, how much of $R_g$ the substitute recovers, is the direction that bounds what the estimate can see, and it is the one to report. A real sample contains organisms the database never covered, whose reads may still be assigned to some genus and would enter $R_g^{\circ}$ without belonging to $R_g$. The calibration must therefore be performed on $R_g^{\circ}$ throughout --- as it is here --- and never fitted on $R_g$ and applied to $R_g^{\circ}$; and $\rho_d$ transfers to a real sample only to the extent that its off-target content resembles the simulation, which is the assumption a reader should be told about rather than one to hide in a ratio. Second, $\Delta'$ answers a question worth asking on its own --- by how much a refinement narrows the answers it gives on a given sample --- and that statement requires no calibration, claims no knowledge of the truth, and remains available exactly where $\hat{\Delta}$ is not.
 
     \section{Results}\label{results}
+
+    Every measurement below compares a database against \emph{itself}: the same reads are classified twice, or the same database assessed twice, once before the refinement and once after it, with everything else held fixed. That is a deliberate choice of control, and since it means no other tool appears beside Genestrip anywhere in this section, it is worth saying why at the outset. A comparison across tools would vary the database and the classification algorithm along with the refinement, so a difference could no longer be attributed to the refinement alone --- whereas the comparison made here isolates it by construction. Nor is there a refined counterpart elsewhere to compare against: no other system performs a refinement, for reasons that differ from tool to tool and that Section \ref{discussion} sets out. Finally, the baseline is not an arbitrary one --- the first study on Genestrip established that it and KrakenUniq return identical $k$-mer and read counts on the same database \citep{genestrip-pub}, so the unrefined database is an externally corroborated reference point and what is measured against it carries over.
     
     \subsection{Node precision and subtree precision}
 
@@ -1050,7 +1044,43 @@ A further reason why a refinement does not carry over to Kraken 1 or KrakenUniq 
 
 Simply shrinking such a database is not a way out either, and this is where Genestrip's particular design becomes essential. As the first study on Genestrip has shown, a database restricted to just the genomes of the organisms of interest provokes many false positives: a large fraction of a species' $k$-mers are unspecific in the sense that they also occur in genomes of organisms \emph{not} contained in the database, so that a read composed of such $k$-mers is falsely attributed to a species that happens to be present \citep{genestrip-pub}. Genestrip escapes this dilemma because its LCA update is \emph{comprehensive}: it takes all taxa and associated genomes under the relevant RefSeq categories into account, not merely those whose $k$-mers are eventually stored (see Section \ref{dbrefinement} and the placeholder \enquote{OTHER} in Figure \ref{ftother}). A Genestrip database may therefore remain small \emph{and} precise at the same time --- and it is exactly this combination that renders a refinement computationally affordable to begin with.
 
-Finally, it is worth noting that a refinement is tied to an \emph{exact} representation of $k$-mers. Genestrip stores $k$-mers uncompressed, so that each of them remains individually identifiable in the database \citep{genestrip-pub}. Only this property allows the refinement to decide \emph{per $k$-mer} which species share it and, consequently, how far down it may be pushed. The $k$-mer compressing databases of Kraken 2 and Ganon deliberately give up that property: they either store $k$-mers under loss of information or as members of probabilistic filters, so that a database entry no longer corresponds to a uniquely identifiable $k$-mer \citep{kraken2, Piro:2020aa, lowmemkraken, genestrip-pub}. A refinement on such a representation would have to attribute a more specific taxon to an entry that stands for several $k$-mers with potentially differing sets of containing species, and it could thereby push a $k$-mer below the node that its genomes justify --- which is precisely the error that the LCA update exists to prevent. In this sense, compression and refinement pursue opposite directions: compression discards exactly those distinctions on which a refinement relies. The price for keeping them is low though, since the refinement itself increases the size of a database by at most 2.5 \% (see Table \ref{ftdbperf}).
+Finally, a refinement presupposes that a database can still say, per $k$-mer, which species carry it. Genestrip stores its $k$-mers uncompressed and individually identifiable, so it can \citep{genestrip-pub}, and the price for keeping them that way is low: the refinement itself increases the size of a database by at most 2.5 \% (see Table \ref{ftdbperf}). The other systems stand in different relations to that requirement, and Table \ref{othertools} separates them rather than filing them all under \enquote{compression}. Three kinds of obstacle appear. For the filter-based indices it is one of principle --- there is no per-$k$-mer entry to carry a taxon, so a refinement has no object to act on. For Kraken 2 it is one of collision risk and resolution: a refinement is conceivable at build time, but the stored representation cannot always tell two $k$-mers apart, and pushing a merged entry downwards would produce exactly the false specificity that an LCA update exists to prevent. For a third group the question simply does not arise, because they never collapse a $k$-mer to a single taxon in the first place and so have nothing to recover --- at the price of a database that grows with the number of species carrying each $k$-mer, which is the very cost the LCA update avoids and a refinement pays back only in part.
+
+   \begin{table}[htbp]
+        \centering
+        \footnotesize
+        \setlength{\tabcolsep}{4pt}
+        \begin{tabular}{p{2.1cm}|p{2.9cm}|p{6.6cm}}
+            \textbf{Tool} & \textbf{What the database stores} & \textbf{Why a refinement does not carry over}\\
+            \hline
+            Kraken 1 \citep{kraken}, KrakenUniq \citep{krakenUniq}
+              & $k$-mers, losslessly, with one taxon each
+              & Not the representation but its cost: the broad-coverage database a refinement presupposes can hardly be built in the first place --- already in 2018 the bacterial genomes of RefSeq alone required ca.\ 2.5 TB of RAM and ca.\ 11 days \citep{Nasko:2018aa}, and RefSeq has grown considerably since.\\
+            \hline
+            Kraken 2 \citep{kraken2}
+              & Minimizers, subsampled one per window, in a compact hash table keyed on a \emph{truncated hash}
+              & Conceivable at build time, since minimizers are ordinary identifiable sequences and the build already merges the taxa of each by lowest common ancestor. The storage is what prevents it: two distinct minimizers may share a cell and have their taxa merged indistinguishably. Under an LCA a collision is harmless, as it can only make an answer less specific; under a refinement it yields a confidently wrong species. The subsampling compounds this, leaving fewer entries with which to separate close relatives.\\
+            \hline
+            Ganon \citep{Piro:2020aa}
+              & Bin membership in hierarchical interleaved Bloom filters
+              & No object to act on. A Bloom filter records membership and nothing else, so the $k$-mers are never stored and can be neither enumerated nor recovered; there is no per-$k$-mer entry that could carry a taxon or be moved to a more specific one. The resolution of the index is the bin rather than the $k$-mer, and the ambiguity is settled at query time instead of in the database.\\
+            \hline
+            Taxor \citep{taxor}
+              & Bin membership in hierarchical interleaved \emph{XOR} filters, over subsampled $k$-mers
+              & The same, and for the same reason: an XOR filter is an approximate membership structure of the same kind, the $k$-mers are subsampled before indexing, and what remains ambiguous is resolved at query time.\\
+            \hline
+            Metabuli \citep{metabuli}
+              & A sorted list of $k$-mer/species pairs, one per species carrying the $k$-mer
+              & The question does not arise. No LCA update is performed at all: redundant entries of the same species are removed, but the \emph{set} of species carrying a $k$-mer is retained in full, which is exactly what a refinement sets out to recover. The cost is borne by the database, which holds an entry per $k$-mer and species rather than per $k$-mer.\\
+            \hline
+            Colour-set indices, e.g.\ Themisto \citep{themisto}
+              & $k$-mers in a searchable index, each with the set of reference sequences containing it
+              & The same. A colour set encodes the identifiers of every reference containing the $k$-mer, so the information a refinement computes is present outright and is intersected at query time. These are indices rather than classifiers, and the colours are reference sequences rather than taxa, so a taxonomic assignment still has to be derived from them.\\
+        \end{tabular}
+        \caption{Why the refinement of Section \ref{dbrefinement} does not carry over to the other $k$-mer based classifiers. The obstacle is of two kinds. For Kraken 1 and KrakenUniq it lies in the effort of building the lossless broad-coverage database that a refinement presupposes, not in how that database represents a $k$-mer. For the filter-based indices of Ganon and Taxor it is a matter of principle, since no entry corresponds to a $k$-mer at all. Kraken 2 lies between the two: its minimizers are identifiable while the database is being built, but not once it is stored. For Metabuli and the colour-set indices the refinement is not obstructed but unnecessary, since the species or reference sets a refinement reconstructs are retained outright.}\label{othertools}
+    \end{table}
+
+
 
 \section{Availability and requirements}
 
@@ -1074,14 +1104,10 @@ $k_{t,f,d}$& Number of $k$-mers found for taxon $t$ in fastq file $f$ via databa
 $u_{t,f,d}$& Number of unique $k$-mers found for taxon $t$ in fastq file $f$  via database $d$\\
 $u_{t,d}$& Number of $k$-mers stored under taxon $t$ in database $d$ \\
 % $r_{t,f,d}$ &$k$-mer consistency ratio for $k$-mers found for taxon $t$ in fastq file $f$ with respect to database $d$ \\
-\texttt{cv\_ku} & Complete viral database for KrakenUniq \\
-\texttt{cv\_g} & Complete viral database for Genestrip \\
-\texttt{hv\_ku} & Human virus database for KrakenUniq \\
-\texttt{hv\_g} & Human virus database for Genestrip \\
 FPP & False positive probability of a probabilistic filter \\
 BPs & Base pairs \\
-\texttt{MicrobialDB} & Large, comprehensive microbial database for KrakenUniq \\
-\texttt{tb} & Tick-borne bacterial pathogens database for Genestrip \\
+\texttt{cv} & Complete viral database \\
+\texttt{tb} & Tick-borne bacterial pathogens database \\
 DB & Database
 \end{tabular}
 
