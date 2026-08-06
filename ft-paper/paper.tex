@@ -106,6 +106,21 @@
 % Includes an SVG figure produced by ft-db-exp2, e.g. \dbfig[width=12cm]{results/orthopox_ftsvgtaxtree}.
 % Converts on the fly via Inkscape unless \finalsubmissiontrue, in which case a pre-rendered
 % <name>.pdf next to the <name>.svg (see convert-svgs-to-pdf.sh) is used instead.
+%
+% Emits the rows of one summary CSV written by ft-db-exp2's `accuracy' run, for the tables that
+% report a refinement's gain. The file holds one row per read set with both database variants and
+% the derived quantities beside each other -- delta, delta' and their ratio rho are computed in the
+% Java evaluator, since they are differences and a quotient *between* the variant rows and LaTeX has
+% no business doing arithmetic across rows. The first line is the CSV header and is filtered out.
+% #1 = database label to print, #2 = path of the summary CSV.
+\newcommand{\gainrows}[2]{%
+\IfFileExists{#2}{%
+\csvreader[no head, separator=semicolon, late after line=\\,
+           filter test=\ifnumgreater{\thecsvinputline}{1}]{#2}{}%
+{\texttt{#1} & \csvcolii & \csvcolv & \csvcolvi & \csvcolvii & \csvcolviii & \csvcolix & \csvcolx & \csvcolxi & \csvcolxii & \csvcolxiii}%
+}{\texttt{#1} & \multicolumn{10}{c}{\emph{\detokenize{#2} not found}}\\}%
+}
+
 \newcommand{\dbfig}[2][]{%
 \iffinalsubmission
 \includegraphics[#1]{#2.pdf}%
@@ -370,7 +385,7 @@ $X$: \texttt{CCT}, $Y$: \texttt{CTT}, $Z$: \texttt{TCA}
     
     \section{Implementation}\label{methods}
     
-\subsection{Database Refinement}
+\subsection{Refinement procedure}
 \label{dbrefinement}
    
 We explain the system's refinement procedure by means of a small and initially unrefined example database including three species under the genus Orthopoxvirus. The structure of the unrefined database is shown in Figure \ref{simplelcadb}. For the sake of simplicity, we restrict the refinement to the rank genus only, although \emph{it is normally performed simultaneously on all levels of the database's taxonomy} but its leaves.
@@ -527,7 +542,9 @@ $X$ is stored in the database $d$ but $Y$ and $Z$ are not as indicated by the da
 $X$, $Y$ and $Z$ are the same as in Figure \ref{ftsketch}. Since $Y$ and $Z$ are not represented in $d$, their potential $k$-mers shared with $X$ at the genus $W$ are represented by means of $O$. As a drawback, the missing nodes for $Y$ and $Z$ prohibit the refinement via $h$ as in Figure \ref{ftsketch}.}\label{ftother}
 \end{figure}
 
-\subsection{Intrinsic quality measures for $k$-mer databases}
+\subsection{Quality measurements}
+
+Two kinds of measure are needed, and both are implemented in Genestrip rather than derived afterwards from its output. The first assess a database as such, without reference to any reads: how specifically the $k$-mers it stores are placed in its taxonomy. The second assess what that placement means for the classification of reads, and come in two forms --- one that scores a classification against a known ground truth, and one that does without, so that a refinement can also be judged on real data.
 \label{intrinsicqms}    
     In this section, we consider new quality measures regarding $k$-mer databases irrespective of read analysis and read classification results.
     For this purpose, we establish \emph{path correctness} as a prerequisite and the precision of a single $k$-mer as the actual quality measure, from which \emph{node precision} and \emph{subtree precision} follow by averaging.
@@ -631,6 +648,56 @@ $A^{*}_m = \bigcup_{n} A_n$ be the set of $k$-mers stored at the nodes $n$ of th
     In both averages, every stored $k$-mer contributes equally, regardless of how the taxonomy happens to distribute the $k$-mers over nodes. In particular, inserting an inner node into the taxonomy changes neither $\nu(a)$ nor $|D_{\nu(a)}|$ nor $c(a)$ for any $k$-mer already stored, so neither $np$ nor $sp$ can be improved by refining the tree alone.
     Note also that $np(n)$ may deteriorate if data taxa's genomes under $n$ are \emph{incomplete}, because in this case a $k$-mer $a$ at node $n$ might simply not be supported by such taxa, even though their completed genome would contain $a$.
 
+    \subsubsection{Measuring classification quality}\label{classmeasures}
+
+    Let $r$ be a read, let $\sigma(r)$ be the species taxon its underlying genome belongs to and let $\kappa(r)$ be the taxon the analysis assigns to it, which is undefined if $r$ remains unclassified. Reads whose $\sigma(r)$ cannot be determined are excluded from all counts below, as they can be neither right nor wrong.
+
+    The customary way to score such an assignment is a \emph{boolean positive count}: $r$ counts as a hit if $\kappa(r)$ is equal to or below $\sigma(r)$, and as a miss otherwise, and likewise one rank higher with the genus in place of the species. Both variants, however, are blind to what a refinement does. A refinement introduces nodes \emph{between} a genus and its species and moves $k$-mers onto them, so a read that used to be classified to its genus now tends to end up at one of these new nodes. That is a substantial gain --- the read is narrowed down from all species of the genus to a handful --- yet the boolean count at the genus rank scores it as a hit in both cases and the one at the species rank as a miss in both cases. Neither of them registers the improvement at all.
+
+    We therefore refine the count in proportion to how far the assignment narrows the species down. For a node $n$ of $d$'s taxonomy tree let
+\[ \Sigma(n) = \{ s : s \text{ is a species taxon of } d \text{ and } s \text{ lies on a common path to the root with } n \} \]
+    be the set of \emph{species in question} at $n$, i.e.\ the species that are still consistent with an assignment to $n$: those below $n$ and, if there are none because $n$ itself lies below the species rank, the one above it. The \emph{ratio-based positive count} of a read then is
+\[ q(r) = \begin{cases} \dfrac{1}{|\Sigma(\kappa(r))|} & \text{if } \sigma(r) \in \Sigma(\kappa(r)), \\[2ex] 0 & \text{otherwise,} \end{cases} \]
+    and $q(r) = 0$ for an unclassified read. So an assignment that pins the species down scores $1$, an assignment to a genus comprising $40$ species scores $1/40$, and one to a refined node covering $3$ of them scores $1/3$. In particular $q(r)$ agrees with the boolean count at the species rank whenever the species is actually determined, and it grades the cases in between that the boolean counts collapse.
+
+    Two points deserve attention when $\Sigma(n)$ is determined. First, the species are counted over the \emph{entire} subtree rooted at $n$ rather than among its children, because a taxonomy may well place intermediate nodes such as a subgenus between a genus and its species; counting children would let such a node hide the species underneath it. Second, the counting takes place in the taxonomy of the database at hand. Since the refinement adds nodes but neither adds nor removes species taxa, $\Sigma(n)$ is the same in the refined and the unrefined database for every node $n$ that exists in both. What differs between the two is $\kappa(r)$ --- the node a read is assigned to --- which is precisely the effect to be measured.
+
+    From these counts we obtain precision, recall and the $F_1$-score in the usual way: with $R$ denoting the reads of a fastq file whose species is known and $R_c \subseteq R$ those that were classified at all,
+\[ \mathit{prec} = \frac{\sum_{r \in R_c} q(r)}{|R_c|}, \qquad \mathit{rec} = \frac{\sum_{r \in R} q(r)}{|R|}, \qquad F_1 = \frac{2 \cdot \mathit{prec} \cdot \mathit{rec}}{\mathit{prec} + \mathit{rec}} , \]
+    and analogously for the boolean counts, which we report alongside for comparison with the literature.
+
+    One further effect must be accounted for before these averages can be read as a statement about the refinement. They range over \emph{all} reads, yet the vast majority of them is already assigned to a single species by the unrefined database, and such a read scores $q(r) = 1$ before and after a refinement. It cannot improve, but it does enter the average and thereby dilutes whatever happens to the reads that can. A read can only profit from the refinement if the unrefined database classified it correctly down to its genus but no further --- correct at that rank, yet not specific enough to name the species.
+
+    We therefore report the same measure a second time, restricted to exactly these reads. Let $\kappa_u$ and $\kappa_f$ denote the assignment of the unrefined and the refined database and let $q_u$ and $q_f$ be the corresponding counts. With
+\[ R_g = \{ r \in R : \text{the lowest ranked common ancestor of } \sigma(r) \text{ and } \kappa_u(r) \text{ lies at or below the genus of } \sigma(r) \text{ and above its species} \} \]
+    being the \emph{genus-only subset}, the \emph{restricted precision} of a variant $v \in \{u, f\}$ is
+\[ \mathit{prec}_g(v) = \frac{1}{|R_g|} \sum_{r \in R_g} q_v(r) . \]
+    The condition is a window of ranks rather than the genus alone, because a taxonomy places further ranks inside it: NCBI's \emph{subgenus} and \emph{species group} both lie between a genus and its species, and a read left at either is left with several species in question exactly as one left at the genus is. Restricting the subset to the genus proper would drop those reads although a refinement acts on them --- for \texttt{tb}, whose six species-group nodes carry the Rickettsia spotted fever, typhus, canis, belli and phagocytophilum groups, that is 13 \% of the improvable reads. Nodes carrying no rank of their own are excluded, which leaves a residue the measure does not see; determining the window by position in the tree rather than by rank would close it.
+
+    Note that $R_g$ is determined by the unrefined run and then kept fixed, so that both variants are scored on the very same reads and the difference $\mathit{prec}_g(f) - \mathit{prec}_g(u)$ states the gain where a gain was possible at all. Note also that the denominator is $|R_g|$ rather than the number of classified reads among them, which makes no difference here: every read of $R_g$ was classified by construction, since an unclassified read has no common ancestor with its true taxon to begin with.
+
+    \subsubsection{Estimating the gain without ground truth}\label{groundtruthfree}
+
+    Both measures of Section \ref{classmeasures} rest on $\sigma(r)$, the species a read actually stems from. A simulation supplies it, a real sample does not. Of a real fastq file we can therefore still ask how far a classification narrows the species down --- only not whether it does so correctly. Dropping precisely that test from $q$ leaves
+\[ q'(r) = \frac{1}{|\Sigma(\kappa(r))|} \]
+    for a classified read, and $q'(r) = 0$ for an unclassified one. Since $q(r)$ is $q'(r)$ multiplied by the indicator of $\sigma(r) \in \Sigma(\kappa(r))$, we have $q(r) \le q'(r)$ read by read, and hence for every average over reads as well. This needs no distributional assumption: $q'$ bounds $q$ pointwise.
+
+    The genus-only subset is defined through $\sigma(r)$ too and needs a substitute of the same kind. We take the reads the unrefined database assigned to a node \emph{at genus rank},
+\[ R_g^{\circ} = \{ r \in R : \kappa_u(r) \text{ lies at or below a genus and above the species rank} \} , \]
+    which keeps the observable half of the original condition --- classified no further than to a genus --- and drops the unobservable half --- that this genus is the right one. The rank window is the one of $R_g$, for the same reason. As before the subset is fixed by the unrefined run so that both variants are scored on the very same reads, and we write
+\[ \mathit{prec}'_g(v) = \frac{1}{|R_g^{\circ}|} \sum_{r \in R_g^{\circ}} q'_v(r) , \qquad \Delta' = \mathit{prec}'_g(f) - \mathit{prec}'_g(u) \]
+    for the resulting \emph{specificity gain}, as against $\Delta = \mathit{prec}_g(f) - \mathit{prec}_g(u)$ for the precision gain of Section \ref{classmeasures}.
+
+    What $\Delta'$ states is how much more specific the answers of the refined database are, and nothing about whether that added specificity is warranted. A refinement pushing every read onto an arbitrary single species would attain the largest conceivable $\Delta'$ while destroying precision, so $\Delta'$ cannot \emph{validate} a refinement --- it quantifies one already known to be sound. What makes it informative here is that the refinement is conservative by construction: a $k$-mer is moved only onto a node whose subtree still contains every species whose genomes carry it (Section \ref{dbrefinement}). For a read all of whose matching $k$-mers stem from its own genome the refined assignment therefore still leaves the true species in question, so that $q_f(r) = q'_f(r)$. The two can part company only where read errors, or sequence shared beyond what the reference justifies, produce matches the read's own genome does not account for. The gap between $\Delta$ and $\Delta'$ is thus an artefact of the data rather than of the method, and it should close as the reads improve. The reads responsible can be counted directly: those of $R_g$ that already score zero under the unrefined database, whose assignment agrees with their true taxon down to the genus while naming a \emph{sibling} species below it. For \texttt{cv} they are 0.00 \%, 0.50 \% and 2.67 \% of $R_g$ on the error-free, \enquote{HiSeq} and \enquote{MiSeq} reads respectively --- absent without sequencing errors, and growing with them. They are also the reason the substitute subset is needed: on $R_g$ such a read contributes $q'_u(r) = 1$ against $q_u(r) = 0$ and so lifts $\mathit{prec}'_g(u)$ above $\mathit{prec}_g(u)$, which can push $\Delta'$ \emph{below} $\Delta$ and destroy the bound --- for \enquote{MiSeq} it does, at $0.094$ against $0.106$. On $R_g^{\circ}$ those reads do not arise, since they are not assigned to a node at genus rank in the first place.
+
+    The ratio of the two is what makes an estimate out of a bound. Writing
+\[ \rho_d = \frac{\Delta}{\Delta'} \]
+    for the share of the added specificity that is correct, a real fastq file classified against the same database yields $\hat{\Delta} = \rho_d \cdot \Delta'$. The index $d$ is deliberate: $\rho$ is a property of the database as much as of the reads, so it has to be determined per database on data whose ground truth is known, and cannot be carried across from another.
+
+    Which $\rho_d$ applies depends on how damaged the reads are, and that is not always as easy to establish as the trend suggests. For the Illumina sets it is: their quality strings are informative, and the per-base error of Table \ref{simdata} is measured from them. For the Nanopore data it is not. The tick runs deposited in the SRA carry placeholder qualities --- two distinct values, $Q3$ for some 90 \% of the bases and $Q30$ for the rest --- and NanoSim, which trains its base-quality model on exactly those, reproduces the defect in the simulated reads. An error rate read off either file is meaningless. What is meaningful there is the rate NanoSim derives from the \emph{alignment} of the real reads against the reference genomes, counting mismatches and indels; that is the 11.25 \% of Table \ref{simdata}, and it is the figure to quote whenever quality strings cannot be trusted. Since Genestrip classifies on $k$-mers and ignores quality scores altogether, nothing but this choice of yardstick is affected by the defect.
+
+    Two caveats remain, and both argue for reporting $\Delta'$ in its own right rather than only as a stepping stone to $\hat{\Delta}$. First, the agreement between $R_g^{\circ}$ and $R_g$ has to be read in both directions, and only one of them is reassuring. Almost every read of $R_g^{\circ}$ is also in $R_g$ --- but that is a property of \emph{simulated} data, where the reads are drawn from the very genomes the database was built from, so a read assigned to a genus almost always does belong to it. The converse, how much of $R_g$ the substitute recovers, is the direction that bounds what the estimate can see, and it is the one to report. A real sample contains organisms the database never covered, whose reads may still be assigned to some genus and would enter $R_g^{\circ}$ without belonging to $R_g$. The calibration must therefore be performed on $R_g^{\circ}$ throughout --- as it is here --- and never fitted on $R_g$ and applied to $R_g^{\circ}$; and $\rho_d$ transfers to a real sample only to the extent that its off-target content resembles the simulation, which is the assumption a reader should be told about rather than one to hide in a ratio. Second, $\Delta'$ answers a question worth asking on its own --- by how much a refinement narrows the answers it gives on a given sample --- and that statement requires no calibration, claims no knowledge of the truth, and remains available exactly where $\hat{\Delta}$ is not.
+
     \section{Results}\label{results}
     
     \subsection{Node precision and subtree precision}
@@ -709,67 +776,25 @@ $A^{*}_m = \bigcup_{n} A_n$ be the set of $k$-mers stored at the nodes $n$ of th
     
     \subsection{Classification quality}\label{classificationquality}
 
-    The measures of Section \ref{intrinsicqms} assess a database as such. We now turn to what the refinement means for the analysis of actual reads, using simulated fastq files whose ground truth is known by construction. Section \ref{classmeasures} introduces the measures. Section \ref{groundtruthfree} derives from them an estimate that a sample \emph{without} known ground truth still admits, and reports what both say about the simulated data. Sections \ref{simreads} and \ref{realreads} describe that data and the real sequencing runs the estimate is then applied to.
+    The measures of Section \ref{intrinsicqms} assess a database as such. We now turn to what the refinement means for the analysis of actual reads, using simulated fastq files whose ground truth is known by construction. The measures themselves are those of Section \ref{classmeasures}, together with the estimate of Section \ref{groundtruthfree} that a sample \emph{without} known ground truth still admits; Sections \ref{simreads} and \ref{realreads} describe the simulated data and the real sequencing runs they are applied to.
 
-    \subsubsection{Measuring classification quality}\label{classmeasures}
+    Table \ref{genusonly} puts $\rho_d$ of Section \ref{groundtruthfree} at both databases. On \texttt{cv} it is exactly one on error-free reads and falls to $0.993$ as the per-base error rises to $0.73$ \%, in the order the argument there predicts; across the Illumina range $\Delta'$ thus exceeds $\Delta$ by less than one percent of the latter.
 
-    Let $r$ be a read, let $\sigma(r)$ be the species taxon its underlying genome belongs to and let $\kappa(r)$ be the taxon the analysis assigns to it, which is undefined if $r$ remains unclassified. Reads whose $\sigma(r)$ cannot be determined are excluded from all counts below, as they can be neither right nor wrong.
+    Read that way, $\rho_{\texttt{tb}} = 0.9914$ at a per-base error of $11.25$ \% sits barely below $\rho_{\texttt{cv}} = 0.9927$ at $0.73$ \%, although the tick reads are an order of magnitude more damaged and indel-heavy where the Illumina ones are not. Over that range $\rho$ therefore varies by little more than a thousandth, and not in proportion to the error rate: it is a property of the database as much as of the data, which is what the index $d$ has said all along. A calibration is accordingly cheap to state but has to be established per database rather than carried across.
 
-    The customary way to score such an assignment is a \emph{boolean positive count}: $r$ counts as a hit if $\kappa(r)$ is equal to or below $\sigma(r)$, and as a miss otherwise, and likewise one rank higher with the genus in place of the species. Both variants, however, are blind to what a refinement does. A refinement introduces nodes \emph{between} a genus and its species and moves $k$-mers onto them, so a read that used to be classified to its genus now tends to end up at one of these new nodes. That is a substantial gain --- the read is narrowed down from all species of the genus to a handful --- yet the boolean count at the genus rank scores it as a hit in both cases and the one at the species rank as a miss in both cases. Neither of them registers the improvement at all.
-
-    We therefore refine the count in proportion to how far the assignment narrows the species down. For a node $n$ of $d$'s taxonomy tree let
-\[ \Sigma(n) = \{ s : s \text{ is a species taxon of } d \text{ and } s \text{ lies on a common path to the root with } n \} \]
-    be the set of \emph{species in question} at $n$, i.e.\ the species that are still consistent with an assignment to $n$: those below $n$ and, if there are none because $n$ itself lies below the species rank, the one above it. The \emph{ratio-based positive count} of a read then is
-\[ q(r) = \begin{cases} \dfrac{1}{|\Sigma(\kappa(r))|} & \text{if } \sigma(r) \in \Sigma(\kappa(r)), \\[2ex] 0 & \text{otherwise,} \end{cases} \]
-    and $q(r) = 0$ for an unclassified read. So an assignment that pins the species down scores $1$, an assignment to a genus comprising $40$ species scores $1/40$, and one to a refined node covering $3$ of them scores $1/3$. In particular $q(r)$ agrees with the boolean count at the species rank whenever the species is actually determined, and it grades the cases in between that the boolean counts collapse.
-
-    Two points deserve attention when $\Sigma(n)$ is determined. First, the species are counted over the \emph{entire} subtree rooted at $n$ rather than among its children, because a taxonomy may well place intermediate nodes such as a subgenus between a genus and its species; counting children would let such a node hide the species underneath it. Second, the counting takes place in the taxonomy of the database at hand. Since the refinement adds nodes but neither adds nor removes species taxa, $\Sigma(n)$ is the same in the refined and the unrefined database for every node $n$ that exists in both. What differs between the two is $\kappa(r)$ --- the node a read is assigned to --- which is precisely the effect to be measured.
-
-    From these counts we obtain precision, recall and the $F_1$-score in the usual way: with $R$ denoting the reads of a fastq file whose species is known and $R_c \subseteq R$ those that were classified at all,
-\[ \mathit{prec} = \frac{\sum_{r \in R_c} q(r)}{|R_c|}, \qquad \mathit{rec} = \frac{\sum_{r \in R} q(r)}{|R|}, \qquad F_1 = \frac{2 \cdot \mathit{prec} \cdot \mathit{rec}}{\mathit{prec} + \mathit{rec}} , \]
-    and analogously for the boolean counts, which we report alongside for comparison with the literature.
-
-    One further effect must be accounted for before these averages can be read as a statement about the refinement. They range over \emph{all} reads, yet the vast majority of them is already assigned to a single species by the unrefined database, and such a read scores $q(r) = 1$ before and after a refinement. It cannot improve, but it does enter the average and thereby dilutes whatever happens to the reads that can. A read can only profit from the refinement if the unrefined database classified it correctly down to its genus but no further --- correct at that rank, yet not specific enough to name the species.
-
-    We therefore report the same measure a second time, restricted to exactly these reads. Let $\kappa_u$ and $\kappa_f$ denote the assignment of the unrefined and the refined database and let $q_u$ and $q_f$ be the corresponding counts. With
-\[ R_g = \{ r \in R : \text{the lowest ranked common ancestor of } \sigma(r) \text{ and } \kappa_u(r) \text{ is the genus of } \sigma(r) \} \]
-    being the \emph{genus-only subset}, the \emph{restricted precision} of a variant $v \in \{u, f\}$ is
-\[ \mathit{prec}_g(v) = \frac{1}{|R_g|} \sum_{r \in R_g} q_v(r) . \]
-    Note that $R_g$ is determined by the unrefined run and then kept fixed, so that both variants are scored on the very same reads and the difference $\mathit{prec}_g(f) - \mathit{prec}_g(u)$ states the gain where a gain was possible at all. Note also that the denominator is $|R_g|$ rather than the number of classified reads among them, which makes no difference here: every read of $R_g$ was classified by construction, since an unclassified read has no common ancestor with its true taxon to begin with.
-
-    \subsubsection{Estimating the gain without ground truth}\label{groundtruthfree}
-
-    Both measures of Section \ref{classmeasures} rest on $\sigma(r)$, the species a read actually stems from. A simulation supplies it, a real sample does not. Of a real fastq file we can therefore still ask how far a classification narrows the species down --- only not whether it does so correctly. Dropping precisely that test from $q$ leaves
-\[ q'(r) = \frac{1}{|\Sigma(\kappa(r))|} \]
-    for a classified read, and $q'(r) = 0$ for an unclassified one. Since $q(r)$ is $q'(r)$ multiplied by the indicator of $\sigma(r) \in \Sigma(\kappa(r))$, we have $q(r) \le q'(r)$ read by read, and hence for every average over reads as well. This needs no distributional assumption: $q'$ bounds $q$ pointwise.
-
-    The genus-only subset is defined through $\sigma(r)$ too and needs a substitute of the same kind. We take the reads the unrefined database assigned to a node \emph{at genus rank},
-\[ R_g^{\circ} = \{ r \in R : \kappa_u(r) \text{ is a node of rank genus} \} , \]
-    which keeps the observable half of the original condition --- classified no further than to a genus --- and drops the unobservable half --- that this genus is the right one. As before the subset is fixed by the unrefined run so that both variants are scored on the very same reads, and we write
-\[ \mathit{prec}'_g(v) = \frac{1}{|R_g^{\circ}|} \sum_{r \in R_g^{\circ}} q'_v(r) , \qquad \Delta' = \mathit{prec}'_g(f) - \mathit{prec}'_g(u) \]
-    for the resulting \emph{specificity gain}, as against $\Delta = \mathit{prec}_g(f) - \mathit{prec}_g(u)$ for the precision gain of Section \ref{classmeasures}.
-
-    What $\Delta'$ states is how much more specific the answers of the refined database are, and nothing about whether that added specificity is warranted. A refinement pushing every read onto an arbitrary single species would attain the largest conceivable $\Delta'$ while destroying precision, so $\Delta'$ cannot \emph{validate} a refinement --- it quantifies one already known to be sound. What makes it informative here is that the refinement is conservative by construction: a $k$-mer is moved only onto a node whose subtree still contains every species whose genomes carry it (Section \ref{dbrefinement}). For a read all of whose matching $k$-mers stem from its own genome the refined assignment therefore still leaves the true species in question, so that $q_f(r) = q'_f(r)$. The two can part company only where read errors, or sequence shared beyond what the reference justifies, produce matches the read's own genome does not account for. The gap between $\Delta$ and $\Delta'$ is thus an artefact of the data rather than of the method, and it should close as the reads improve. The reads responsible can be counted directly: those of $R_g$ that already score zero under the unrefined database, whose assignment agrees with their true taxon down to the genus while naming a \emph{sibling} species below it. For \texttt{cv} they are 0.00 \%, 0.50 \% and 2.67 \% of $R_g$ on the error-free, \enquote{HiSeq} and \enquote{MiSeq} reads respectively --- absent without sequencing errors, and growing with them. They are also the reason the substitute subset is needed: on $R_g$ such a read contributes $q'_u(r) = 1$ against $q_u(r) = 0$ and so lifts $\mathit{prec}'_g(u)$ above $\mathit{prec}_g(u)$, which can push $\Delta'$ \emph{below} $\Delta$ and destroy the bound --- for \enquote{MiSeq} it does, at $0.094$ against $0.106$. On $R_g^{\circ}$ those reads do not arise, since they are not assigned to a node at genus rank in the first place.
-
-    Table \ref{genusonly} bears that out. Writing
-\[ \rho_d = \frac{\Delta}{\Delta'} \]
-    for the share of the added specificity that is correct, $\rho_{\texttt{cv}}$ is exactly one on error-free reads and falls to $0.993$ as the per-base error rises to $0.73$ \%, in the order the argument predicts. Across the Illumina range $\Delta'$ thus exceeds $\Delta$ by less than one percent of the latter, and a real fastq file classified against the same database yields the estimate $\hat{\Delta} = \rho_d \cdot \Delta'$, with the error rate of its reads --- readable from their quality strings --- selecting which $\rho_d$ applies. \todo{The three read sets span only 0.01 \% to 0.73 \% per-base error, so they pin $\rho_d$ down for Illumina data and say nothing about the error-rich end. The NanoSim runs are what will extend the range; until they are in, the estimate must not be claimed for long-read data.}
-
-    The index $d$ is deliberate. $\rho$ is a property of the database and of the reads it is fed, not a constant of the method, and it has to be established per database rather than carried over from another one. \todo{Fill in the \texttt{tb} block of Table \ref{genusonly} once its read sets exist. A second database is what turns $\rho_d$ from a single observation into a claim, and \texttt{tb} is the case where a $k$-mer is most often shared between close relatives --- exactly the situation in which a spurious match can push a read below the node its genome justifies.}
-
-    Two caveats remain, and both argue for reporting $\Delta'$ in its own right rather than only as a stepping stone to $\hat{\Delta}$. First, that $R_g^{\circ}$ agrees with $R_g$ as closely as Table \ref{genusonly} reports is a property of \emph{simulated} data: the reads are drawn from the very genomes the database was built from, so a read assigned to a genus almost always does belong to it. A real sample contains organisms the database never covered, whose reads may still be assigned to some genus and would enter $R_g^{\circ}$ without belonging to $R_g$. The calibration must therefore be performed on $R_g^{\circ}$ throughout --- as it is here --- and never fitted on $R_g$ and applied to $R_g^{\circ}$; and $\rho_d$ transfers to a real sample only to the extent that its off-target content resembles the simulation, which is the assumption a reader should be told about rather than one to hide in a ratio. Second, $\Delta'$ answers a question worth asking on its own --- by how much a refinement narrows the answers it gives on a given sample --- and that statement requires no calibration, claims no knowledge of the truth, and remains available exactly where $\hat{\Delta}$ is not.
+    Both values are close enough to one that $\Delta'$ is a serviceable stand-in for $\Delta$ on either database: it overstates the gain by three quarters of a percent on \texttt{cv} and by less than one percent on \texttt{tb}. \todo{Fill in the \texttt{tb} block of Table \ref{genusonly} once its read sets exist. A second database is what turns $\rho_d$ from a single observation into a claim, and \texttt{tb} is the case where a $k$-mer is most often shared between close relatives --- exactly the situation in which a spurious match can push a read below the node its genome justifies.}
 
 
 
     Table \ref{classquality} confirms empirically what Section \ref{classmeasures} argued on principle: the boolean counts hardly register the refinement. At the genus rank the $F_1$-score is unchanged to ten decimal places for \texttt{cv} under every one of the three read sets; at the species rank the largest change is $0.0001$. This is not a shortcoming of the refinement but of the measure --- a read moved from a genus to a node grouping three of its species has not reached its species, so the species count still scores it as a miss, and it has not left the genus subtree either, so the genus count scored it as a hit all along.
 
-    The candidate-weighted measure, in contrast, does register it: precision rises by between $0.0080$ and $0.0097$ for \texttt{cv}, consistently across all three read sets. These figures are small in absolute terms, and Table \ref{genusonly} shows why. Only between 7.3\,\% and 10.1\,\% of the reads can be improved on at all --- for the remainder the assignment is either already at the species or wrong above the genus, and in neither case can a refinement change anything. Restricted to those reads, the same measure roughly \emph{doubles}: from $0.104$ to $0.211$ under \enquote{MiSeq} and from $0.105$ to $0.201$ under \enquote{HiSeq}, a gain of $\Delta = 0.106$ and $\Delta = 0.096$. In other words, the refinement halves the number of species left in question for a read that the unrefined database could not resolve.
+    The candidate-weighted measure, in contrast, does register it: precision rises by between $0.0080$ and $0.0097$ for \texttt{cv}, consistently across all three read sets. These figures are small in absolute terms, and Table \ref{genusonly} shows why. Only between 7.4\,\% and 10.3\,\% of the reads can be improved on at all --- for the remainder the assignment is either already at the species or wrong above the genus, and in neither case can a refinement change anything. Restricted to those reads, the same measure roughly \emph{doubles}: from $0.104$ to $0.208$ under \enquote{MiSeq} and from $0.106$ to $0.200$ under \enquote{HiSeq}, a gain of $\Delta = 0.104$ and $\Delta = 0.094$. In other words, the refinement halves the number of species left in question for a read that the unrefined database could not resolve.
 
-    The ungated columns of the same table say what an analysis without ground truth would have seen: $\Delta' = 0.107$ and $\Delta' = 0.096$ for the two Illumina models, above $\Delta$ as they must be and within $0.8$\,\% of it, so that the estimate of Section \ref{groundtruthfree} would have been accurate to the third decimal place. How far that carries is read off the error-free row, where $\rho_{\texttt{cv}}$ is exactly one: over the range these three sets span, the estimate is as good as the measurement it stands in for.
+    The ungated columns of the same table say what an analysis without ground truth would have seen: $\Delta' = 0.105$ and $\Delta' = 0.094$ for the two Illumina models, above $\Delta$ as they must be and within $0.8$\,\% of it, so that the estimate of Section \ref{groundtruthfree} would have been accurate to the third decimal place. How far that carries is read off the error-free row, where $\rho_{\texttt{cv}}$ is exactly one: over the range these three sets span, the estimate is as good as the measurement it stands in for.
 
     A small part of the gain even reaches the species rank: of the genus-only reads $R_g$, the refined database pins $0.15$\,\% down to a single species under \enquote{MiSeq}, where the unrefined one pins none by construction. The bulk of the effect, however, is the narrowing that the boolean counts cannot see.
 
-    The subset is larger under \enquote{HiSeq} than under \enquote{MiSeq} --- $10.1$\,\% against $7.3$\,\%. The two models differ in read length and in error profile at once, so this contrast alone cannot attribute the effect to either: a shorter read carries fewer $k$-mers and a more error-prone one carries fewer \emph{matching} $k$-mers, and both make a classification come to rest higher up in the taxonomy. The error-free runs separate the two, since InSilicoSeq's \enquote{perfect} mode keeps the read length and introduces no errors at all; they also bound what the refinement can achieve when nothing but the taxonomy limits the classification.
+    The subset is larger under \enquote{HiSeq} than under \enquote{MiSeq} --- $10.3$\,\% against $7.4$\,\%. The two models differ in read length and in error profile at once, so this contrast alone cannot attribute the effect to either: a shorter read carries fewer $k$-mers and a more error-prone one carries fewer \emph{matching} $k$-mers, and both make a classification come to rest higher up in the taxonomy. The error-free runs separate the two, since InSilicoSeq's \enquote{perfect} mode keeps the read length and introduces no errors at all; they also bound what the refinement can achieve when nothing but the taxonomy limits the classification.
 
 \todo{Section on the error rate removed here, see the note in the source below. It rested entirely on \texttt{gp} and does not survive the switch to \texttt{cv}; rewrite it once \texttt{tb} is measured.}
 
@@ -802,9 +827,7 @@ $A^{*}_m = \bigcup_{n} A_n$ be the set of $k$-mers stored at the nodes $n$ of th
                                          & MiSeq      & 301 &  0.7274 & 1000000 &  997918 & 0\\
                                          & HiSeq      & 126 &  0.1952 & 1000000 & 1000000 & 0\\
             \hline
-            \multirow{3}{*}{\texttt{tb}} & error-free & 125 & {---} & {---} & {---} & {---}\\
-                                         & MiSeq      & 301 & {---} & {---} & {---} & {---}\\
-                                         & HiSeq      & 126 & {---} & {---} & {---} & {---}\\
+            \texttt{tb} & NanoSim & 377 & 11.2503 & {---} & 1322010 & 0\\
         \end{tabular}
         \caption{The simulated fastq files underlying Tables \ref{classquality} and \ref{genusonly}. Reads are drawn from all RefSeq genomes of the category a database builds on --- \enquote{Viral} for \texttt{cv} and \enquote{Bacteria} for \texttt{tb} --- so that only a fraction of them lies within the scope of \texttt{tb}, which requests twelve genera of that category. Read lengths are per mate; both files of a pair are analyzed together. The per-base error is measured from the quality strings of the generated reads rather than taken from the model's nominal setting; the error-free reads carry the floor of 0.01 \% that InSilicoSeq imposes on its quality scores. \enquote{MiSeq} and \enquote{HiSeq} differ in read length \emph{and} error profile at once, so the error-free set is what separates the two effects: it keeps the read length and removes the errors.}\label{simdata}
     \end{table}
@@ -817,32 +840,40 @@ $A^{*}_m = \bigcup_{n} A_n$ be the set of $k$-mers stored at the nodes $n$ of th
 
     Neither collection admits the measures of Section \ref{classmeasures}: the organisms in a saliva sample or a field-collected tick are what the analysis is meant to find out, so there is no $\sigma(r)$ to score against. What Table \ref{realgain} reports is therefore $\Delta'$, together with the size of the observable subset it is averaged over, and the estimate $\hat{\Delta} = \rho_d \cdot \Delta'$ that follows from the calibration of Table \ref{genusonly}. The reads carry their own error rate in their quality strings, which is what selects the $\rho_d$ to apply.
 
-    \todo{Fill in Table \ref{realgain}. The saliva runs are fetched with \texttt{bin/fetch\_saliva.sh} and the tick reads are already in place from Section \ref{simreads}; \texttt{bin/run\_classification\_exps.sh real} writes the CSV both halves of the table are read from. Note that $\rho_{\texttt{tb}}$ has to exist before the last column can be filled, i.e.\ the \texttt{tb} block of Table \ref{genusonly} comes first.}
+    The first of the saliva runs has been measured once, and has to be measured again: that run predates the correction of $R_g^{\circ}$ set out in Section \ref{classmeasures}, and \texttt{cv} carries 77 subgenus nodes and some thirteen thousand unranked ones, every one of which the earlier subset passed over. What it did establish is the scale. Of the 981 million reads the unrefined database classifies just under two percent, and of those only about one in a thousand comes to rest at a genus --- so the measure rests on a few tens of thousands of reads out of a billion, and the table reports $|R_g^{\circ}|$ beside $\Delta'$ for that reason.
+
+    The gain came out below the $0.094$ to $0.105$ the simulated reads of Table \ref{genusonly} show, and the reason is visible in the reads themselves: measured from their quality strings they carry a mean per-base error of $2.07$\,\% at 101 base pairs, three times the error of the most error-prone simulated set. The subset they can improve is correspondingly small.
+
+    It also puts the sample outside the range over which $\rho_{\texttt{cv}}$ was calibrated, which spans $0.01$\,\% to $0.73$\,\%. Since $\rho_d$ decreases with the error rate, the value of Table \ref{genusonly} nearest below --- $\rho_{\texttt{cv}} = 0.9927$ at $0.73$\,\% --- overstates it, so the $\hat{\Delta}$ of Table \ref{realgain} is an upper bound on the precision gain and not an estimate of it. That much holds however the re-measurement turns out, since $\Delta \le \Delta'$ is true by construction whatever $\rho_{\texttt{cv}}$ is at this error rate.
+
+    \todo{Calibrate $\rho_{\texttt{cv}}$ at an error rate of a few percent so that $\hat{\Delta}$ becomes a point estimate rather than a bound. Real Illumina data sits well above the simulated sets, which is an argument for keeping one error-rich read set among them after all. Then fill in the remaining rows of Table \ref{realgain}: the other two saliva runs with \texttt{bin/fetch\_saliva.sh}, and the tick samples, for which $\rho_{\texttt{tb}}$ has to exist first, i.e.\ the \texttt{tb} block of Table \ref{genusonly} comes before it.}
 
     \begin{table}[htbp]
         \centering
 \sisetup{table-alignment-mode = format, table-number-alignment = center, group-separator = {,}, group-minimum-digits = 4, group-digits = integer}
-        \begin{tabular}{c|l|S[table-format=9.0]|S[table-format=8.0]|S[table-format=2.1]|S[table-format=1.4, round-mode=places, round-precision=4]|S[table-format=1.4, round-mode=places, round-precision=4]}
+        \setlength{\tabcolsep}{4pt}
+        \begin{tabular}{c|l|S[table-format=9.0]|S[table-format=8.0]|S[table-format=6.0]|S[table-format=1.4, round-mode=places, round-precision=4]|S[table-format=1.4, round-mode=places, round-precision=4]|S[table-format=1.4, round-mode=places, round-precision=4]}
             \textbf{DB} & \textbf{Sample} &
             \multicolumn{1}{c|}{\textbf{Reads}} &
+            \multicolumn{1}{c|}{\textbf{Classified}} &
             \multicolumn{1}{c|}{\textbf{$|R_g^{\circ}|$}} &
-            \multicolumn{1}{c|}{\textbf{\shortstack{Share of\\reads (\%)}}} &
+            \multicolumn{1}{c|}{\textbf{\shortstack{Share of\\classified (\%)}}} &
             \multicolumn{1}{c|}{\textbf{$\Delta'$}} &
             \multicolumn{1}{c}{\textbf{$\hat{\Delta}$}}\\
             \hline
-            \multirow{3}{*}{\texttt{cv}} & SRR5571991 & {---} & {---} & {---} & {---} & {---}\\
-                                         & SRR5571990 & {---} & {---} & {---} & {---} & {---}\\
-                                         & SRR5571985 & {---} & {---} & {---} & {---} & {---}\\
+            \multirow{3}{*}{\texttt{cv}} & SRR5571991 & 980879835 & 19197093 & {---} & {---} & {---} & {---}\\
+                                         & SRR5571990 & {---} & {---} & {---} & {---} & {---} & {---}\\
+                                         & SRR5571985 & {---} & {---} & {---} & {---} & {---} & {---}\\
             \hline
-            \multirow{7}{*}{\texttt{tb}} & Tick 1 & {---} & {---} & {---} & {---} & {---}\\
-                                         & Tick 2 & {---} & {---} & {---} & {---} & {---}\\
-                                         & Tick 3 & {---} & {---} & {---} & {---} & {---}\\
-                                         & Tick 4 & {---} & {---} & {---} & {---} & {---}\\
-                                         & Tick 6 & {---} & {---} & {---} & {---} & {---}\\
-                                         & Tick 7 & {---} & {---} & {---} & {---} & {---}\\
-                                         & Tick 8 & {---} & {---} & {---} & {---} & {---}\\
+            \multirow{7}{*}{\texttt{tb}} & Tick 1 & {---} & {---} & {---} & {---} & {---} & {---}\\
+                                         & Tick 2 & {---} & {---} & {---} & {---} & {---} & {---}\\
+                                         & Tick 3 & {---} & {---} & {---} & {---} & {---} & {---}\\
+                                         & Tick 4 & {---} & {---} & {---} & {---} & {---} & {---}\\
+                                         & Tick 6 & {---} & {---} & {---} & {---} & {---} & {---}\\
+                                         & Tick 7 & {---} & {---} & {---} & {---} & {---} & {---}\\
+                                         & Tick 8 & {---} & {---} & {---} & {---} & {---} & {---}\\
         \end{tabular}
-        \caption{The specificity gain $\Delta'$ of Section \ref{groundtruthfree} on real sequencing data, for which no ground truth exists: the human saliva runs of \citep{genestrip-pub} against \texttt{cv} and the tick samples of \citep{nanoporeticks} against \texttt{tb}. $|R_g^{\circ}|$ is the number of reads the unrefined database assigned to a node at genus rank, i.e.\ those a refinement can act on at all, and $\Delta'$ is the increase in the reciprocal number of candidate species over exactly those reads. $\hat{\Delta} = \rho_d \cdot \Delta'$ is the precision gain estimated from it, with $\rho_d$ taken from Table \ref{genusonly} for the same database. Tick 5 is omitted, as in the first study, where KrakenUniq did not complete on it.}\label{realgain}
+        \caption{The specificity gain $\Delta'$ of Section \ref{groundtruthfree} on real sequencing data, for which no ground truth exists: the human saliva runs of \citep{genestrip-pub} against \texttt{cv} and the tick samples of \citep{nanoporeticks} against \texttt{tb}. $|R_g^{\circ}|$ is the number of reads the unrefined database assigned to a node at genus rank, i.e.\ those a refinement can act on at all, and $\Delta'$ is the increase in the reciprocal number of candidate species over exactly those reads. The share relates it to the classified reads rather than to all of them, since a read the database does not recognise at all could never have been improved: of SRR5571991 not quite two percent are classified, and of those about one in a thousand is left at a genus. $\hat{\Delta} = \rho_d \cdot \Delta'$ is the precision gain estimated from it; the value given uses the largest $\rho_{\texttt{cv}}$ of Table \ref{genusonly} that lies below the sample's own error rate, which makes it an upper bound rather than a point estimate --- see the text. Tick 5 is omitted, as in the first study, where KrakenUniq did not complete on it.}\label{realgain}
     \end{table}
 
 
@@ -915,17 +946,9 @@ $A^{*}_m = \bigcup_{n} A_n$ be the set of $k$-mers stored at the nodes $n$ of th
               & unrefined & 0.9814581829 & 0.8783070741 & 0.8913479045 & 0.8911732003 & 0.8912605438\\
             & & refined   & 0.9814581829 & 0.8783090743 & 0.9010015065 & 0.9008249103 & 0.9009131997\\
             \hline
-            \multirow{6}{*}{\texttt{tb}} & \multirow{2}{*}{error-free}
-              & unrefined & {---} & {---} & {---} & {---} & {---}\\
-            & & refined   & {---} & {---} & {---} & {---} & {---}\\
-          \cmidrule{2-8}
-            & \multirow{2}{*}{MiSeq}
-              & unrefined & {---} & {---} & {---} & {---} & {---}\\
-            & & refined   & {---} & {---} & {---} & {---} & {---}\\
-          \cmidrule{2-8}
-            & \multirow{2}{*}{HiSeq}
-              & unrefined & {---} & {---} & {---} & {---} & {---}\\
-            & & refined   & {---} & {---} & {---} & {---} & {---}\\
+            \multirow{2}{*}{\texttt{tb}} & \multirow{2}{*}{NanoSim}
+              & unrefined & 0.8407103282 & 0.7694587070 & 0.8860169648 & 0.6822915717 & 0.7709221666\\
+            & & refined   & 0.8407086189 & 0.7694963131 & 0.8973296451 & 0.6910030826 & 0.7807653146\\
         \end{tabular}
         \caption{Read classification quality of the unrefined and the refined database for the simulated fastq files of Table \ref{simdata}. The boolean counts at the genus and the species rank are given as $F_1$-scores; the candidate-weighted species count of Section \ref{classmeasures} is broken down into precision, recall and $F_1$. Both variants of a database were run with Genestrip's default classification settings.}\label{classquality}
     \end{table}
@@ -934,7 +957,7 @@ $A^{*}_m = \bigcup_{n} A_n$ be the set of $k$-mers stored at the nodes $n$ of th
         \centering
 \sisetup{table-alignment-mode = format, table-number-alignment = center, group-separator = {,}, group-minimum-digits = 4, group-digits = integer}
         \setlength{\tabcolsep}{3pt}
-        \begin{tabular}{c|l|S[table-format=6.0]|S[table-format=2.1]|S[table-format=1.4, round-mode=places, round-precision=4]|S[table-format=1.4, round-mode=places, round-precision=4]|S[table-format=1.4, round-mode=places, round-precision=4]|S[table-format=1.4, round-mode=places, round-precision=4]|S[table-format=1.4, round-mode=places, round-precision=4]|S[table-format=1.4, round-mode=places, round-precision=4]|S[table-format=1.4, round-mode=places, round-precision=4]}
+        \begin{tabular}{c|l|S[table-format=6.0]|S[table-format=2.1, round-mode=places, round-precision=1]|S[table-format=1.4, round-mode=places, round-precision=4]|S[table-format=1.4, round-mode=places, round-precision=4]|S[table-format=1.4, round-mode=places, round-precision=4]|S[table-format=1.4, round-mode=places, round-precision=4]|S[table-format=1.4, round-mode=places, round-precision=4]|S[table-format=1.4, round-mode=places, round-precision=4]|S[table-format=1.4, round-mode=places, round-precision=4]}
             & & & & \multicolumn{3}{c|}{\textbf{Gated ($q$)}} & \multicolumn{3}{c|}{\textbf{Ungated ($q'$)}} & \\
             \textbf{DB} & \textbf{Model} &
             \multicolumn{1}{c|}{\textbf{$|R_g^{\circ}|$}} &
@@ -947,13 +970,10 @@ $A^{*}_m = \bigcup_{n} A_n$ be the set of $k$-mers stored at the nodes $n$ of th
             \multicolumn{1}{c|}{\textbf{$\Delta'$}} &
             \multicolumn{1}{c}{\textbf{$\rho_d$}}\\
             \hline
-            \multirow{3}{*}{\texttt{cv}} & error-free &  99234 &  9.9 & 0.1074231703 & 0.2002715315 & 0.0928483612 & 0.1074231703 & 0.2002715315 & 0.0928483612 & 1.0000\\
-                                         & MiSeq      &  72380 &  7.3 & 0.1043330915 & 0.2105753725 & 0.1062422809 & 0.1043716587 & 0.2113865585 & 0.1070148998 & 0.9928\\
-                                         & HiSeq      & 100584 & 10.1 & 0.1053380599 & 0.2010415379 & 0.0957034780 & 0.1053415113 & 0.2012618676 & 0.0959203563 & 0.9977\\
+            \gainrows{cv}{results/viral_iss_perfect_summary.csv}
+            \gainrows{cv}{results/viral_iss_summary.csv}
             \hline
-            \multirow{3}{*}{\texttt{tb}} & error-free & {---} & {---} & {---} & {---} & {---} & {---} & {---} & {---} & {---}\\
-                                         & MiSeq      & {---} & {---} & {---} & {---} & {---} & {---} & {---} & {---} & {---}\\
-                                         & HiSeq      & {---} & {---} & {---} & {---} & {---} & {---} & {---} & {---} & {---}\\
+            \gainrows{tb}{results/tick-borne_nanosim_summary.csv}
         \end{tabular}
         \caption{The candidate-weighted species precision restricted to the reads a refinement can improve on at all, with $u$ for the unrefined and $f$ for the refined database. The subset is determined by the unrefined run and kept fixed, so both variants are scored on the same reads. It is the observable subset $R_g^{\circ}$ of Section \ref{groundtruthfree} rather than the genus-only subset $R_g$ of Section \ref{classmeasures}, so that the gated columns and the ungated ones refer to one and the same set of reads and $\Delta' \ge \Delta$ holds as it should; on $R_g$ it does not, for the reason given in Section \ref{groundtruthfree}. The two subsets are of a similar size --- for \texttt{cv}, $R_g$ holds 101,151, 75,748, 103,141 and 54,668 reads against the four values of $|R_g^{\circ}|$ above --- but they differ in kind: only the ungated block can be obtained from a fastq file whose ground truth is unknown, and $\rho_d = \Delta / \Delta'$ is the factor by which such an estimate has to be corrected. It is one on error-free reads and falls monotonically as the per-base error of Table \ref{simdata} grows.}\label{genusonly}
     \end{table}
