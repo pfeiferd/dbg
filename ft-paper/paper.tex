@@ -83,10 +83,12 @@
 \newcommand{\dbstat}[2]{\ifcsname dbstat@#1@#2\endcsname\csname dbstat@#1@#2\endcsname\else\sysUnknown\fi}
 
 \providecommand{\sysWorkers}{\sysUnknown}
-% Total threads doing work: the workers plus the thread that reads and parses the input.
-% \numexpr needs a number, so it is only used when sysinfo.sh reported one.
-\ifdefined\ifsysWorkersKnown\else\newif\ifsysWorkersKnown\fi
-\newcommand{\sysTotalThreads}{\ifsysWorkersKnown\the\numexpr\sysWorkers+1\relax\else\sysUnknown\fi}
+% Total threads doing work: the workers plus the thread that reads and parses the input. sysinfo.sh
+% computes it, so the paper needs neither arithmetic nor a flag saying whether the value is a number.
+% It used to be derived here from a \newif flag, which is what broke this preamble: TeX counts the
+% \if... token of a `\newif\ifX' while skipping the branch it sits in, so the guard around it ate its
+% own \fi and the run died with "Incomplete \ifdefined".
+\providecommand{\sysTotalThreads}{\sysUnknown}
 \providecommand{\sysRamGB}{\sysUnknown}
 \providecommand{\sysRamGiB}{\sysUnknown}
 \providecommand{\sysSwap}{\sysUnknown}
@@ -707,7 +709,7 @@ $A^{*}_m = \bigcup_{n} A_n$ be the set of $k$-mers stored at the nodes $n$ of th
     
     \subsection{Classification quality}\label{classificationquality}
 
-    The measures of Section \ref{intrinsicqms} assess a database as such. We now turn to what the refinement means for the analysis of actual reads, using simulated fastq files whose ground truth is known by construction. Section \ref{classmeasures} introduces the measures, Section \ref{simreads} the simulated data they are applied to, and Section \ref{classresults} reports the outcome.
+    The measures of Section \ref{intrinsicqms} assess a database as such. We now turn to what the refinement means for the analysis of actual reads, using simulated fastq files whose ground truth is known by construction. Section \ref{classmeasures} introduces the measures. Section \ref{groundtruthfree} derives from them an estimate that a sample \emph{without} known ground truth still admits, and reports what both say about the simulated data. Sections \ref{simreads} and \ref{realreads} describe that data and the real sequencing runs the estimate is then applied to.
 
     \subsubsection{Measuring classification quality}\label{classmeasures}
 
@@ -735,178 +737,156 @@ $A^{*}_m = \bigcup_{n} A_n$ be the set of $k$-mers stored at the nodes $n$ of th
 \[ \mathit{prec}_g(v) = \frac{1}{|R_g|} \sum_{r \in R_g} q_v(r) . \]
     Note that $R_g$ is determined by the unrefined run and then kept fixed, so that both variants are scored on the very same reads and the difference $\mathit{prec}_g(f) - \mathit{prec}_g(u)$ states the gain where a gain was possible at all. Note also that the denominator is $|R_g|$ rather than the number of classified reads among them, which makes no difference here: every read of $R_g$ was classified by construction, since an unclassified read has no common ancestor with its true taxon to begin with.
 
+    \subsubsection{Estimating the gain without ground truth}\label{groundtruthfree}
+
+    Both measures of Section \ref{classmeasures} rest on $\sigma(r)$, the species a read actually stems from. A simulation supplies it, a real sample does not. Of a real fastq file we can therefore still ask how far a classification narrows the species down --- only not whether it does so correctly. Dropping precisely that test from $q$ leaves
+\[ q'(r) = \frac{1}{|\Sigma(\kappa(r))|} \]
+    for a classified read, and $q'(r) = 0$ for an unclassified one. Since $q(r)$ is $q'(r)$ multiplied by the indicator of $\sigma(r) \in \Sigma(\kappa(r))$, we have $q(r) \le q'(r)$ read by read, and hence for every average over reads as well. This needs no distributional assumption: $q'$ bounds $q$ pointwise.
+
+    The genus-only subset is defined through $\sigma(r)$ too and needs a substitute of the same kind. We take the reads the unrefined database assigned to a node \emph{at genus rank},
+\[ R_g^{\circ} = \{ r \in R : \kappa_u(r) \text{ is a node of rank genus} \} , \]
+    which keeps the observable half of the original condition --- classified no further than to a genus --- and drops the unobservable half --- that this genus is the right one. As before the subset is fixed by the unrefined run so that both variants are scored on the very same reads, and we write
+\[ \mathit{prec}'_g(v) = \frac{1}{|R_g^{\circ}|} \sum_{r \in R_g^{\circ}} q'_v(r) , \qquad \Delta' = \mathit{prec}'_g(f) - \mathit{prec}'_g(u) \]
+    for the resulting \emph{specificity gain}, as against $\Delta = \mathit{prec}_g(f) - \mathit{prec}_g(u)$ for the precision gain of Section \ref{classmeasures}.
+
+    What $\Delta'$ states is how much more specific the answers of the refined database are, and nothing about whether that added specificity is warranted. A refinement pushing every read onto an arbitrary single species would attain the largest conceivable $\Delta'$ while destroying precision, so $\Delta'$ cannot \emph{validate} a refinement --- it quantifies one already known to be sound. What makes it informative here is that the refinement is conservative by construction: a $k$-mer is moved only onto a node whose subtree still contains every species whose genomes carry it (Section \ref{dbrefinement}). For a read all of whose matching $k$-mers stem from its own genome the refined assignment therefore still leaves the true species in question, so that $q_f(r) = q'_f(r)$. The two can part company only where read errors, or sequence shared beyond what the reference justifies, produce matches the read's own genome does not account for. The gap between $\Delta$ and $\Delta'$ is thus an artefact of the data rather than of the method, and it should close as the reads improve. The reads responsible can be counted directly: those of $R_g$ that already score zero under the unrefined database, whose assignment agrees with their true taxon down to the genus while naming a \emph{sibling} species below it. For \texttt{cv} they are 0.00 \%, 0.50 \% and 2.67 \% of $R_g$ on the error-free, \enquote{HiSeq} and \enquote{MiSeq} reads respectively --- absent without sequencing errors, and growing with them. They are also the reason the substitute subset is needed: on $R_g$ such a read contributes $q'_u(r) = 1$ against $q_u(r) = 0$ and so lifts $\mathit{prec}'_g(u)$ above $\mathit{prec}_g(u)$, which can push $\Delta'$ \emph{below} $\Delta$ and destroy the bound --- for \enquote{MiSeq} it does, at $0.094$ against $0.106$. On $R_g^{\circ}$ those reads do not arise, since they are not assigned to a node at genus rank in the first place.
+
+    Table \ref{genusonly} bears that out. Writing
+\[ \rho_d = \frac{\Delta}{\Delta'} \]
+    for the share of the added specificity that is correct, $\rho_{\texttt{cv}}$ is exactly one on error-free reads and falls to $0.993$ as the per-base error rises to $0.73$ \%, in the order the argument predicts. Across the Illumina range $\Delta'$ thus exceeds $\Delta$ by less than one percent of the latter, and a real fastq file classified against the same database yields the estimate $\hat{\Delta} = \rho_d \cdot \Delta'$, with the error rate of its reads --- readable from their quality strings --- selecting which $\rho_d$ applies. \todo{The three read sets span only 0.01 \% to 0.73 \% per-base error, so they pin $\rho_d$ down for Illumina data and say nothing about the error-rich end. The NanoSim runs are what will extend the range; until they are in, the estimate must not be claimed for long-read data.}
+
+    The index $d$ is deliberate. $\rho$ is a property of the database and of the reads it is fed, not a constant of the method, and it has to be established per database rather than carried over from another one. \todo{Fill in the \texttt{tb} block of Table \ref{genusonly} once its read sets exist. A second database is what turns $\rho_d$ from a single observation into a claim, and \texttt{tb} is the case where a $k$-mer is most often shared between close relatives --- exactly the situation in which a spurious match can push a read below the node its genome justifies.}
+
+    Two caveats remain, and both argue for reporting $\Delta'$ in its own right rather than only as a stepping stone to $\hat{\Delta}$. First, that $R_g^{\circ}$ agrees with $R_g$ as closely as Table \ref{genusonly} reports is a property of \emph{simulated} data: the reads are drawn from the very genomes the database was built from, so a read assigned to a genus almost always does belong to it. A real sample contains organisms the database never covered, whose reads may still be assigned to some genus and would enter $R_g^{\circ}$ without belonging to $R_g$. The calibration must therefore be performed on $R_g^{\circ}$ throughout --- as it is here --- and never fitted on $R_g$ and applied to $R_g^{\circ}$; and $\rho_d$ transfers to a real sample only to the extent that its off-target content resembles the simulation, which is the assumption a reader should be told about rather than one to hide in a ratio. Second, $\Delta'$ answers a question worth asking on its own --- by how much a refinement narrows the answers it gives on a given sample --- and that statement requires no calibration, claims no knowledge of the truth, and remains available exactly where $\hat{\Delta}$ is not.
+
+
+
+    Table \ref{classquality} confirms empirically what Section \ref{classmeasures} argued on principle: the boolean counts hardly register the refinement. At the genus rank the $F_1$-score is unchanged to ten decimal places for \texttt{cv} under every one of the three read sets; at the species rank the largest change is $0.0001$. This is not a shortcoming of the refinement but of the measure --- a read moved from a genus to a node grouping three of its species has not reached its species, so the species count still scores it as a miss, and it has not left the genus subtree either, so the genus count scored it as a hit all along.
+
+    The candidate-weighted measure, in contrast, does register it: precision rises by between $0.0080$ and $0.0097$ for \texttt{cv}, consistently across all three read sets. These figures are small in absolute terms, and Table \ref{genusonly} shows why. Only between 7.3\,\% and 10.1\,\% of the reads can be improved on at all --- for the remainder the assignment is either already at the species or wrong above the genus, and in neither case can a refinement change anything. Restricted to those reads, the same measure roughly \emph{doubles}: from $0.104$ to $0.211$ under \enquote{MiSeq} and from $0.105$ to $0.201$ under \enquote{HiSeq}, a gain of $\Delta = 0.106$ and $\Delta = 0.096$. In other words, the refinement halves the number of species left in question for a read that the unrefined database could not resolve.
+
+    The ungated columns of the same table say what an analysis without ground truth would have seen: $\Delta' = 0.107$ and $\Delta' = 0.096$ for the two Illumina models, above $\Delta$ as they must be and within $0.8$\,\% of it, so that the estimate of Section \ref{groundtruthfree} would have been accurate to the third decimal place. How far that carries is read off the error-free row, where $\rho_{\texttt{cv}}$ is exactly one: over the range these three sets span, the estimate is as good as the measurement it stands in for.
+
+    A small part of the gain even reaches the species rank: of the genus-only reads $R_g$, the refined database pins $0.15$\,\% down to a single species under \enquote{MiSeq}, where the unrefined one pins none by construction. The bulk of the effect, however, is the narrowing that the boolean counts cannot see.
+
+    The subset is larger under \enquote{HiSeq} than under \enquote{MiSeq} --- $10.1$\,\% against $7.3$\,\%. The two models differ in read length and in error profile at once, so this contrast alone cannot attribute the effect to either: a shorter read carries fewer $k$-mers and a more error-prone one carries fewer \emph{matching} $k$-mers, and both make a classification come to rest higher up in the taxonomy. The error-free runs separate the two, since InSilicoSeq's \enquote{perfect} mode keeps the read length and introduces no errors at all; they also bound what the refinement can achieve when nothing but the taxonomy limits the classification.
+
+\todo{Section on the error rate removed here, see the note in the source below. It rested entirely on \texttt{gp} and does not survive the switch to \texttt{cv}; rewrite it once \texttt{tb} is measured.}
+
+%
+
     \subsubsection{Simulated read data}\label{simreads}
 
     Following the first study on Genestrip \citep{genestrip-pub}, the simulated reads are produced with InSilicoSeq \citep{10.1093/bioinformatics/bty630}. Its two Illumina error models \enquote{MiSeq} and \enquote{HiSeq} are applied to \emph{all} RefSeq genomes of the category that the database under consideration draws from, yielding one pair of paired-end fastq files with one million reads per model. The models differ in read length as well as in error profile: InSilicoSeq emits 301 base pairs per mate for \enquote{MiSeq} and 126 for \enquote{HiSeq}.
 
     The ground truth follows from how InSilicoSeq names its reads: each read carries the accession of the fasta record it was drawn from, which Genestrip's accession map resolves to a taxon. A read whose accession cannot be resolved is reported as \emph{unresolved} and excluded from every count, in line with Section \ref{classmeasures}; a number substantially above zero would point at a mismatch between the reads and the accession map rather than at a property of the database, which is why we report it in Table \ref{simdata}.
 
-    Since the reads are drawn from an entire RefSeq category, they need not fall within what a database was built to cover. We therefore count a read towards $R$ only if its true taxon lies at or below a taxon that the database explicitly requests. A read outside that scope can still be classified into it, and it then counts as a false positive, i.e.\ towards the classified reads but not towards $R$. Consequently the number of classified reads may exceed $|R|$, as it does for \texttt{gp} in Table \ref{simdata}. Where a database requests an entire category, as \texttt{cv} does, every read is in scope anyway and the restriction changes nothing.
+    Since the reads are drawn from an entire RefSeq category, they need not fall within what a database was built to cover. We therefore count a read towards $R$ only if its true taxon lies at or below a taxon that the database explicitly requests. A read outside that scope can still be classified into it, and it then counts as a false positive, i.e.\ towards the classified reads but not towards $R$. Consequently the number of classified reads may exceed $|R|$, as it does for \texttt{tb} in Table \ref{simdata}. Where a database requests an entire category, as \texttt{cv} does, every read is in scope anyway and the restriction changes nothing.
 
-    Besides \texttt{cv} from Table \ref{dbdesc} we use a second database \texttt{gp} here, covering the ten gut protozoan genera that Lokmer et al.\ \citep{lokmer2019protozoa} survey in human stool samples: Blastocystis, Chilomastix, Cryptosporidium, Dientamoeba, Endolimax, Entamoeba, Enteromonas, Giardia, Iodamoeba and Pentatrichomonas. It complements \texttt{cv} in two respects. It is small and shallow where \texttt{cv} is large and species-rich, and it is built from a genomically poorly covered group: five of the ten genera have no assembled genome in either RefSeq or Genbank at all, so that \texttt{gp} spans five genera in practice.\footnote{Genestrip was configured to fall back to Genbank wherever RefSeq holds fewer than three genomes for a species, which roughly doubles the number of species the database can distinguish. Reads of the five unsequenced genera are in scope but cannot be classified correctly by construction --- a property of the reference data, not of the database.} \todo{Move \texttt{gp} into Table \ref{dbdesc} once its \texttt{dbinfo} CSV is available; the refined database stores 355,054,940 $k$-mers.}
+    Besides \texttt{cv} we use \texttt{tb} from Table \ref{dbdesc} as the second database here. The two complement each other in the respect the refinement is about: \texttt{cv} is large and taxonomically broad, whereas \texttt{tb} is dense with close relatives --- twelve bacterial genera holding 1,120 taxa at the species rank and below --- which is the regime in which the LCA update strands the most $k$-mers above the species and a refinement therefore has the most to recover.
 
-\todo{Internal note below in the source: do not present \texttt{gp} as a case where we succeed and Lokmer et al.\ struggled. Their difficulties are upstream of the classifier.}
-
-%
-% ---------------------------------------------------------------------------------------------
-% INTERNAL NOTE (added 2026-08-05) -- NOT FOR SUBMISSION AS IT STANDS.
-%
-% Why our high accuracy on gp says nothing about the difficulties Lokmer et al. report, and why we
-% must not claim otherwise. A reviewer familiar with that literature will ask, so the answer has to
-% be ours rather than theirs.
-%
-% What they were actually fighting -- all of it upstream of the classification step:
-%
-%  1. Contaminated reference assemblies. Their words: shotgun reads "may map to contaminating
-%     sequences (such as vectors or sequences originating from other organisms) that publicly
-%     available genomes often contain, which may result in a high number of hits concentrated in
-%     few regions and very low breadth of coverage". They cite Beghini et al., who estimate that
-%     1-30 % of the nucleotides in the available Blastocystis genomes are of bacterial or archaeal
-%     origin. They filter against 120 bacterial genomes, UniVec and BBmap's artifact file, then
-%     inspect the hit distribution over scaffolds and compute breadth of coverage as a check.
-%  2. Detection rather than discrimination. Their question is presence or absence of a rare
-%     eukaryote in a stool metagenome dominated by bacterial and host DNA; they need a 5-10 %
-%     positive-contig threshold and a uniform hit distribution before calling a genus present.
-%  3. References that do not resolve. "As no reads mapped uniquely to E. histolytica, we excluded
-%     it from final analysis." Five of the ten genera have no assembled genome at all, forcing 18S
-%     rRNA for the rest.
-%  4. Real strain diversity, including the mixed-subtype colonisations they are first to report.
-%
-% Why our setup does not exercise any of that. Our reads are simulated from the very genomes the
-% database is built from (goal `extractrefseqcsv'), which makes the evaluation self-consistent by
-% construction and cancels exactly their problem: if a Blastocystis assembly carries bacterial
-% contamination, we simulate reads from that contaminating sequence, label them Blastocystis by
-% ground truth, and the database -- built from the same file -- classifies them as Blastocystis.
-% The reference error becomes invisible instead of becoming a false positive. Add no bacterial or
-% host background, no strain divergence and known abundances. We measure how specifically a read of
-% known origin can be placed; they measure whether a genus is present in a real sample and whether
-% the hits can be trusted. Our 0.99 species precision speaks only to the first.
-%
-% The one concession worth making, if we say anything at all. Part of their difficulty is
-% methodological: alignment with hard filters offers no principled way to report a common ancestor
-% when two species share the evidence, so they dropped E. histolytica entirely and downgraded all
-% Entamoeba to 18S "to obtain comparable data", sacrificing resolution. A comprehensive LCA update
-% is precisely the machinery for that case, and Genestrip's argument about small databases
-% provoking false positives speaks to their contamination worries. So better software would
-% plausibly have let them report more, and more safely -- but it would not have created genomes for
-% the five missing genera, decontaminated the assemblies, or raised protozoan abundance in stool.
-%
-% Consequence for the text. We borrow their genus panel because it is a real, published selection
-% of organisms of interest, and we should say only that. See also the internal note in Section
-% \ref{classresults} on why gp is an easy classification target in the first place.
-% ---------------------------------------------------------------------------------------------
-%
+\todo{This section still describes the superseded way of generating the reads. They are no longer drawn from an entire RefSeq category but from exactly the genomes the database was built from (goal \texttt{extractrefseqcsv}), so that virtually every read is in scope --- for \texttt{cv} 997,918 of 1,000,000 with none unresolved. The paragraph on the scope restriction above and the column \enquote{In scope $|R|$} of Table \ref{simdata} have to be rewritten accordingly. The \emph{numbers} in Tables \ref{simdata}, \ref{classquality} and \ref{genusonly} are current as of 2026-08-06 and were all taken from that one run; it is the surrounding description that lags.}
 
    \begin{table}[htbp]
         \centering
-\sisetup{table-alignment-mode = format, table-number-alignment = center, group-separator = {,}, group-minimum-digits = 4}
-        \begin{tabular}{c|l|S[table-format=3.0]|S[table-format=7.0]|S[table-format=6.0]|S[table-format=3.0]}
+\sisetup{table-alignment-mode = format, table-number-alignment = center, group-separator = {,}, group-minimum-digits = 4, group-digits = integer}
+        \begin{tabular}{c|l|S[table-format=3.0]|S[table-format=2.4]|S[table-format=7.0]|S[table-format=7.0]|S[table-format=3.0]}
             \textbf{DB} & \textbf{Model} &
             \multicolumn{1}{c|}{\textbf{\shortstack{Read length\\(bp)}}} &
+            \multicolumn{1}{c|}{\textbf{\shortstack{Per-base\\error (\%)}}} &
             \multicolumn{1}{c|}{\textbf{Simulated}} &
             \multicolumn{1}{c|}{\textbf{In scope $|R|$}} &
             \multicolumn{1}{c}{\textbf{Unresolved}}\\
             \hline
-            \multirow{2}{*}{\texttt{cv}} & MiSeq & 301 & 1000000 & 996736 &  30\\
-                                         & HiSeq & 126 & 1000000 & 999958 &  42\\
+            \multirow{3}{*}{\texttt{cv}} & error-free & 125 &  0.0100 & 1000000 & 1000000 & 0\\
+                                         & MiSeq      & 301 &  0.7274 & 1000000 &  997918 & 0\\
+                                         & HiSeq      & 126 &  0.1952 & 1000000 & 1000000 & 0\\
             \hline
-            \multirow{2}{*}{\texttt{gp}} & MiSeq & 301 & 1000000 & 117220 &  86\\
-                                         & HiSeq & 126 & 1000000 & 122848 & 120\\
+            \multirow{3}{*}{\texttt{tb}} & error-free & 125 & {---} & {---} & {---} & {---}\\
+                                         & MiSeq      & 301 & {---} & {---} & {---} & {---}\\
+                                         & HiSeq      & 126 & {---} & {---} & {---} & {---}\\
         \end{tabular}
-        \caption{The simulated fastq files underlying Table \ref{classquality}. Reads are drawn from all RefSeq genomes of the category a database builds on --- \enquote{Viral} for \texttt{cv} and \enquote{Protozoa} for \texttt{gp} --- so that only a fraction of them lies within the scope of \texttt{gp}, which requests ten genera of that category. Read lengths are per mate; both files of a pair are analyzed together.}\label{simdata}
+        \caption{The simulated fastq files underlying Tables \ref{classquality} and \ref{genusonly}. Reads are drawn from all RefSeq genomes of the category a database builds on --- \enquote{Viral} for \texttt{cv} and \enquote{Bacteria} for \texttt{tb} --- so that only a fraction of them lies within the scope of \texttt{tb}, which requests twelve genera of that category. Read lengths are per mate; both files of a pair are analyzed together. The per-base error is measured from the quality strings of the generated reads rather than taken from the model's nominal setting; the error-free reads carry the floor of 0.01 \% that InSilicoSeq imposes on its quality scores. \enquote{MiSeq} and \enquote{HiSeq} differ in read length \emph{and} error profile at once, so the error-free set is what separates the two effects: it keeps the read length and removes the errors.}\label{simdata}
     \end{table}
 
-    \subsubsection{Results}\label{classresults}
+    \subsubsection{Real read data}\label{realreads}
 
-    Table \ref{classquality} confirms empirically what Section \ref{classmeasures} argued on principle: the boolean counts hardly register the refinement. At the genus rank the $F_1$-score is unchanged to four decimal places for \texttt{cv} and moves by at most $0.0002$ for \texttt{gp}; at the species rank the largest change is $0.0003$. This is not a shortcoming of the refinement but of the measure --- a read moved from a genus to a node grouping three of its species has not reached its species, so the species count still scores it as a miss, and it has not left the genus subtree either, so the genus count scored it as a hit all along.
+    The measure of Section \ref{groundtruthfree} exists so that a refinement can be assessed on data that no simulation produced. We therefore apply it to the two collections of real sequencing data of the first study on Genestrip \citep{genestrip-pub}, so that the databases and the samples are the ones that study already characterised.
 
-    The candidate-weighted measure, in contrast, does register it: precision rises by $0.0086$ and $0.0088$ for \texttt{cv} and by $0.0079$ and $0.0143$ for \texttt{gp}. These figures are small in absolute terms, and Table \ref{genusonly} shows why. Only between 6.9\,\% and 10.1\,\% of the reads are in the genus-only subset at all --- for the remainder the assignment is either already at the species or wrong above the genus, and in neither case can a refinement change anything. Restricted to the subset, the same measure roughly \emph{doubles}: from $0.104$ to $0.213$ for \texttt{cv} under \enquote{MiSeq} and from $0.090$ to $0.198$ for \texttt{gp}, with the largest gain of $0.140$ for \texttt{gp} under \enquote{HiSeq}. In other words, the refinement halves the number of species left in question for a read that the unrefined database could not resolve, and it does so consistently across two databases that differ substantially in size, depth and taxonomic breadth.
+    For \texttt{cv} these are the runs from DNA sequencing human saliva, deposited in the Sequence Read Archive \citep{10.1093/nar/gkab1053}: deep metagenomic paired-end data of 605 to 981 million read pairs each, which the first study used to show that a database of narrow coverage provokes false positives that a comprehensive one avoids. For \texttt{tb} these are the Nanopore runs of the tick surveillance study \citep{nanoporeticks} --- the very samples the simulated reads of Section \ref{simreads} are modelled on, so that the simulated and the real case can be read against each other for one and the same database.
 
-    A small part of that gain even reaches the species rank: of the genus-only reads, the refined database pins $0.12$\,\% (\texttt{cv}) and $0.14$\,\% (\texttt{gp}) down to a single species under \enquote{MiSeq}, where the unrefined one pins none by construction. The bulk of the effect, however, is the narrowing that the boolean counts cannot see.
+    Neither collection admits the measures of Section \ref{classmeasures}: the organisms in a saliva sample or a field-collected tick are what the analysis is meant to find out, so there is no $\sigma(r)$ to score against. What Table \ref{realgain} reports is therefore $\Delta'$, together with the size of the observable subset it is averaged over, and the estimate $\hat{\Delta} = \rho_d \cdot \Delta'$ that follows from the calibration of Table \ref{genusonly}. The reads carry their own error rate in their quality strings, which is what selects the $\rho_d$ to apply.
 
-    Both databases show a larger genus-only subset under \enquote{HiSeq} than under \enquote{MiSeq} --- $10.1$\,\% against $7.8$\,\% and $10.1$\,\% against $6.9$\,\%, respectively. The two models differ in read length and in error profile at once, so this contrast alone cannot attribute the effect to either: a shorter read carries fewer $k$-mers and a more error-prone one carries fewer \emph{matching} $k$-mers, and both make a classification come to rest higher up in the taxonomy. \todo{Separate the two by adding the error-free runs (InSilicoSeq's \enquote{perfect} mode keeps the read length but introduces no errors), which also give the upper bound of what the refinement can achieve when nothing but the taxonomy limits the classification.}
+    \todo{Fill in Table \ref{realgain}. The saliva runs are fetched with \texttt{bin/fetch\_saliva.sh} and the tick reads are already in place from Section \ref{simreads}; \texttt{bin/run\_classification\_exps.sh real} writes the CSV both halves of the table are read from. Note that $\rho_{\texttt{tb}}$ has to exist before the last column can be filled, i.e.\ the \texttt{tb} block of Table \ref{genusonly} comes first.}
 
-    Whether the effect depends on the error rate of the sequencing device can be tested directly, since the simulation is free to impose any error it likes. Besides the two Illumina models we therefore generated two further read sets: an error-free one, which bounds what the refinement can achieve when nothing but the taxonomy limits the classification, and one carrying a uniform per-base error of 10 \%, the middle of the range of 5 \% to 15 \% that the first study on Genestrip reports for Nanopore devices \citep{genestrip-pub}. Figure \ref{errorgain} plots the gain of Table \ref{genusonly} against the per-base error the reads actually carry.
-
-    The gain does not follow the error. Over a thousandfold range, from 0.01 \% to 10 \%, it stays between 0.123 and 0.131 as long as the read length is held constant, and a regression against the logarithm of the error rate is flat within noise ($-0.001$ per decade, $R^2 = 0.13$). The one point that does sit lower is \enquote{MiSeq} with 0.101, and it is the only one with a read length of 301 rather than 125 base pairs. What governs the size of the effect is therefore the read length, not the error rate: a longer read carries more $k$-mers, so the unrefined database resolves it further on its own and less is left for a refinement to recover.
-
-    This matters for what to expect of long, error-rich reads. Nanopore data combines a high error rate, which by this measurement does not diminish the gain, with long reads, which by the same measurement do. \todo{Confirm against the NanoSim results for \texttt{tb}, where both act at once and in opposite directions.}
-
-\todo{Internal note below in the source: why \texttt{gp} is an easy database, and the open question of how to present that once \texttt{tb} is measured. Not for the submitted text as it stands.}
-
-%
-% ---------------------------------------------------------------------------------------------
-% INTERNAL NOTE (added 2026-08-05) -- NOT FOR SUBMISSION AS IT STANDS.
-%
-% Why gut-protozoa (gp) classifies so easily, and why our gains on it are probably a floor.
-%
-% The observation. On gp the unrefined database already reaches a candidate-weighted species
-% precision of 0.99 on the long-read set, and the genus-only subset -- the only reads a refinement
-% can act on at all -- is a mere 1.04 % of reads. On the 125 bp sets it is 3.9 % to 5.7 %. By
-% contrast the first Genestrip paper reports, for the NanoSim tick data against tb, a species
-% precision of 0.601 with a genus precision of 0.776: roughly a quarter of the reads that reach the
-% correct genus never reach a species.
-%
-% It is not the error rate. Measured with Genestrip's own `mean class error' -- the column the
-% first paper used for its 83 % (real tick data) and 88 % (its NanoSim data) -- our long reads sit
-% at 97.3 % of k-mers inconsistent with the assigned taxon, i.e. *more* damaged than either. An
-% independent check against the source contigs agrees: 96.2 % of 31-mers are corrupted, against a
-% theoretical 96.2 % for the 10 % per-base error imposed. So the reads are not the easy part.
-%
-% It is the database. A 3,926 bp read retains some 145 clean 31-mers even at that error rate. In gp
-% -- five genera with assembled genomes, ~37 taxa, organisms far apart -- 145 specific k-mers pin a
-% species almost every time. In tb -- 1,120 species across twelve genera of closely related
-% bacteria -- a large share of k-mers are shared between species and the LCA update has already
-% moved them to the genus, so surviving the read errors is not sufficient: the k-mer must be
-% species-specific in the first place. The size of the genus-only subset is therefore a property of
-% the reference set, not of the sequencing.
-%
-% Consequence for the argument. gp sits near the easy end of the spectrum the refinement addresses.
-% Its gains are closer to a lower bound than to a ceiling, and tb is the case where the method
-% should tell most -- it is precisely the "many close relatives, many k-mers stranded at the genus"
-% regime that Section \ref{background} motivates.
-%
-% The open question, to settle once tb is measured. If tb confirms this, the natural framing is
-% that the refinement matters most exactly where a database is dense with close relatives, and gp
-% then serves as the honest control showing the effect does not vanish on easy data either. If tb
-% does not confirm it, this reasoning has to be revisited rather than quietly dropped -- in that
-% case the small genus-only subset on gp would need another explanation. Either way the numbers
-% above (0.99 vs 0.601 species precision, 1.04 % vs ~22 % of genus-correct reads stuck at the
-% genus, 97.3 % vs 88 % class error) are the ones to argue from.
-% ---------------------------------------------------------------------------------------------
-%
-
-\todo{Add \texttt{cv} and \texttt{protozoa} to Figure \ref{errorgain} once their read sets are regenerated; with three databases the fit rests on more than four points.}
-
-    \begin{figure}[htbp]
+    \begin{table}[htbp]
         \centering
-        \begin{tikzpicture}
-            \begin{axis}[
-                width=9cm, height=6cm,
-                xmode=log, log basis x=10,
-                xlabel={per-base error of the reads (\%)},
-                ylabel={gain of $\mathit{prec}_g$},
-                xmin=0.005, xmax=20, ymin=0.09, ymax=0.14,
-                grid=major, grid style={gray!25},
-                legend pos=south west, legend style={font=\footnotesize, fill=white, draw=gray!50},
-                tick label style={font=\footnotesize}, label style={font=\small},
-                every axis plot/.append style={mark size=2.5pt},
-            ]
-            % 125-126 bp read sets: error varies over three orders of magnitude, the gain does not.
-            \addplot[only marks, mark=*, color=black] coordinates {
-                (0.010, 0.13067) (0.198, 0.12281) (9.999, 0.12725)
-            };
-            \addlegendentry{125--126 bp}
-            % The 301 bp read set, plotted apart because its read length differs.
-            \addplot[only marks, mark=square, color=black] coordinates {(0.732, 0.10114)};
-            \addlegendentry{301 bp}
-            % Regression over the equal-length points, on log10 of the error rate.
-            \addplot[domain=0.005:20, samples=2, dashed, color=gray] {0.12637 - 0.00095*log10(x)};
-            \addlegendentry{fit, 125--126 bp}
-            \end{axis}
-        \end{tikzpicture}
-        \caption{Gain in the candidate-weighted species precision on the genus-only subset, $\mathit{prec}_g(f) - \mathit{prec}_g(u)$ of Table \ref{genusonly}, against the per-base error of the read set, for the database \texttt{gp}. The error rate is measured from the quality strings of the generated reads rather than taken from the model's nominal setting. The error-free reads are plotted at 0.01 \%, the floor InSilicoSeq imposes on its quality scores, since a logarithmic axis admits no zero. Filled circles mark the read sets of 125 to 126 base pairs, whose read length is effectively constant; the square marks \enquote{MiSeq} at 301 base pairs.}\label{errorgain}
-    \end{figure}
+\sisetup{table-alignment-mode = format, table-number-alignment = center, group-separator = {,}, group-minimum-digits = 4, group-digits = integer}
+        \begin{tabular}{c|l|S[table-format=9.0]|S[table-format=8.0]|S[table-format=2.1]|S[table-format=1.4, round-mode=places, round-precision=4]|S[table-format=1.4, round-mode=places, round-precision=4]}
+            \textbf{DB} & \textbf{Sample} &
+            \multicolumn{1}{c|}{\textbf{Reads}} &
+            \multicolumn{1}{c|}{\textbf{$|R_g^{\circ}|$}} &
+            \multicolumn{1}{c|}{\textbf{\shortstack{Share of\\reads (\%)}}} &
+            \multicolumn{1}{c|}{\textbf{$\Delta'$}} &
+            \multicolumn{1}{c}{\textbf{$\hat{\Delta}$}}\\
+            \hline
+            \multirow{3}{*}{\texttt{cv}} & SRR5571991 & {---} & {---} & {---} & {---} & {---}\\
+                                         & SRR5571990 & {---} & {---} & {---} & {---} & {---}\\
+                                         & SRR5571985 & {---} & {---} & {---} & {---} & {---}\\
+            \hline
+            \multirow{7}{*}{\texttt{tb}} & Tick 1 & {---} & {---} & {---} & {---} & {---}\\
+                                         & Tick 2 & {---} & {---} & {---} & {---} & {---}\\
+                                         & Tick 3 & {---} & {---} & {---} & {---} & {---}\\
+                                         & Tick 4 & {---} & {---} & {---} & {---} & {---}\\
+                                         & Tick 6 & {---} & {---} & {---} & {---} & {---}\\
+                                         & Tick 7 & {---} & {---} & {---} & {---} & {---}\\
+                                         & Tick 8 & {---} & {---} & {---} & {---} & {---}\\
+        \end{tabular}
+        \caption{The specificity gain $\Delta'$ of Section \ref{groundtruthfree} on real sequencing data, for which no ground truth exists: the human saliva runs of \citep{genestrip-pub} against \texttt{cv} and the tick samples of \citep{nanoporeticks} against \texttt{tb}. $|R_g^{\circ}|$ is the number of reads the unrefined database assigned to a node at genus rank, i.e.\ those a refinement can act on at all, and $\Delta'$ is the increase in the reciprocal number of candidate species over exactly those reads. $\hat{\Delta} = \rho_d \cdot \Delta'$ is the precision gain estimated from it, with $\rho_d$ taken from Table \ref{genusonly} for the same database. Tick 5 is omitted, as in the first study, where KrakenUniq did not complete on it.}\label{realgain}
+    \end{table}
+
+
+% ---------------------------------------------------------------------------------------------
+% INTERNAL NOTE (rewritten 2026-08-06 when gut-protozoa was dropped) -- NOT FOR SUBMISSION.
+%
+% What was here, and why it went. This section used to carry a database `gp' (gut protozoa, the ten
+% genera of Lokmer et al.) alongside cv, plus Figure `errorgain' plotting the gain against the
+% per-base error of the reads. Both rested on gp alone. gp was dropped because it is not in
+% Table \ref{dbdesc}, because presenting it invited a comparison with Lokmer et al. that our setup
+% cannot support -- their difficulties are upstream of the classifier -- and because its own numbers
+% put it at the easy end of the spectrum the refinement addresses. tb is the case the method is
+% designed for and replaces it.
+%
+% The error-rate finding does NOT survive the switch, which is why the text was removed rather than
+% re-pointed. On gp the gain was flat over three decades of error (0.123 to 0.131) and the single
+% 301 bp point sat lowest at 0.101, which read as "read length governs the gain, not the error
+% rate". Recomputed on cv from the current CSVs (column `genus only precision species cand',
+% refined minus unrefined) the ordering inverts:
+%
+%     regime      read len   per-base error   gain
+%     perfect     ~125 bp    0.01 %           0.0911
+%     HiSeq        126 bp    0.198 %          0.0938
+%     nanopore     125 bp    10 %             0.0631
+%     MiSeq        301 bp    0.732 %          0.1055   <- highest, not lowest
+%
+% So on cv the gain does fall with the error rate (roughly -0.009 per decade over the equal-length
+% points, ten times the slope seen on gp) and the 301 bp point is the best rather than the worst.
+% One of the two databases is therefore not telling the general story, and with two points we cannot
+% say which. Do not restate either claim until tb is measured; the error rates above are InSilicoSeq
+% model properties and carry over, the gains do not.
+%
+% The live prediction, to check against tb. The size of the genus-only subset looks like a property
+% of the reference set rather than of the sequencing: gp reached 0.99 candidate-weighted species
+% precision unrefined on a 3,926 bp 10 %-error set with only 1.04 % of reads stuck at the genus,
+% while its reads were *more* damaged than the first paper's tick data (97.3 % of k-mers
+% inconsistent with the assigned taxon, against 88 % there). A long read keeps ~145 clean 31-mers
+% even at that error rate, and in a sparse database that pins a species; in tb -- 1,120 species
+% across twelve genera of close relatives -- many k-mers are shared and the LCA update has already
+% moved them to the genus, so surviving the errors is not sufficient. If tb bears this out, the
+% framing is that the refinement matters most exactly where a database is dense with close
+% relatives. If it does not, this reasoning has to be revisited rather than quietly dropped.
+% ---------------------------------------------------------------------------------------------
+%
 
     \todo{Add \texttt{protozoa} and the NanoSim-based \texttt{tb} results to both tables, and revisit the wording once they are in --- long, error-rich Nanopore reads probe a different corner of the space than either Illumina model.}
 
@@ -915,7 +895,7 @@ $A^{*}_m = \bigcup_{n} A_n$ be the set of $k$-mers stored at the nodes $n$ of th
 \sisetup{table-alignment-mode = format, table-number-alignment = center, table-format = 1.4, round-mode = places, round-precision = 4}
         \setlength{\tabcolsep}{4pt}
         \begin{tabular}{c|c|l|S|S|S|S|S}
-            & & & \multicolumn{2}{c|}{\textbf{Boolean count}} & \multicolumn{3}{c}{\textbf{Candidate-weighted}}\\
+            & & & \multicolumn{2}{c|}{\textbf{Boolean count}} & \multicolumn{3}{c}{\textbf{Candidate-weighted ($q$)}}\\
             \textbf{DB} & \textbf{Model} & \textbf{Variant} &
             \multicolumn{1}{c|}{\textbf{$F_1$ genus}} &
             \multicolumn{1}{c|}{\textbf{$F_1$ species}} &
@@ -923,21 +903,29 @@ $A^{*}_m = \bigcup_{n} A_n$ be the set of $k$-mers stored at the nodes $n$ of th
             \multicolumn{1}{c|}{\textbf{Recall}} &
             \multicolumn{1}{c}{\textbf{$F_1$}}\\
             \hline
-            \multirow{4}{*}{\texttt{cv}} & \multirow{2}{*}{MiSeq}
-              & unrefined & 0.9853741689 & 0.9069068738 & 0.9167426816 & 0.9166681823 & 0.9167054304\\
-            & & refined   & 0.9853751723 & 0.9069550329 & 0.9252928852 & 0.9252176910 & 0.9252552866\\
+            \multirow{6}{*}{\texttt{cv}} & \multirow{2}{*}{error-free}
+              & unrefined & 0.9807263725 & 0.8795694548 & 0.8915363038 & 0.8914319941 & 0.8914841459\\
+            & & refined   & 0.9807263725 & 0.8795694548 & 0.9007510962 & 0.9006457083 & 0.9006983992\\
+          \cmidrule{2-8}
+            & \multirow{2}{*}{MiSeq}
+              & unrefined & 0.9879245196 & 0.9120131964 & 0.9213559221 & 0.9212275864 & 0.9212917498\\
+            & & refined   & 0.9879245196 & 0.9120843495 & 0.9293256000 & 0.9291961543 & 0.9292608727\\
           \cmidrule{2-8}
             & \multirow{2}{*}{HiSeq}
-              & unrefined & 0.9813682611 & 0.8804584274 & 0.8924483184 & 0.8922608964 & 0.8923545976\\
-            & & refined   & 0.9813682611 & 0.8804624280 & 0.9012625294 & 0.9010732564 & 0.9011678830\\
+              & unrefined & 0.9814581829 & 0.8783070741 & 0.8913479045 & 0.8911732003 & 0.8912605438\\
+            & & refined   & 0.9814581829 & 0.8783090743 & 0.9010015065 & 0.9008249103 & 0.9009131997\\
             \hline
-            \multirow{4}{*}{\texttt{gp}} & \multirow{2}{*}{MiSeq}
-              & unrefined & 0.9813841016 & 0.9120809290 & 0.9186799189 & 0.9189698964 & 0.9188248848\\
-            & & refined   & 0.9815971334 & 0.9123709581 & 0.9266123761 & 0.9264542781 & 0.9265333204\\
+            \multirow{6}{*}{\texttt{tb}} & \multirow{2}{*}{error-free}
+              & unrefined & {---} & {---} & {---} & {---} & {---}\\
+            & & refined   & {---} & {---} & {---} & {---} & {---}\\
+          \cmidrule{2-8}
+            & \multirow{2}{*}{MiSeq}
+              & unrefined & {---} & {---} & {---} & {---} & {---}\\
+            & & refined   & {---} & {---} & {---} & {---} & {---}\\
           \cmidrule{2-8}
             & \multirow{2}{*}{HiSeq}
-              & unrefined & 0.9626820685 & 0.8617582847 & 0.8738705173 & 0.8725616464 & 0.8732155914\\
-            & & refined   & 0.9627092133 & 0.8618224625 & 0.8881466869 & 0.8867513666 & 0.8874484783\\
+              & unrefined & {---} & {---} & {---} & {---} & {---}\\
+            & & refined   & {---} & {---} & {---} & {---} & {---}\\
         \end{tabular}
         \caption{Read classification quality of the unrefined and the refined database for the simulated fastq files of Table \ref{simdata}. The boolean counts at the genus and the species rank are given as $F_1$-scores; the candidate-weighted species count of Section \ref{classmeasures} is broken down into precision, recall and $F_1$. Both variants of a database were run with Genestrip's default classification settings.}\label{classquality}
     \end{table}
@@ -945,21 +933,29 @@ $A^{*}_m = \bigcup_{n} A_n$ be the set of $k$-mers stored at the nodes $n$ of th
      \begin{table}[htbp]
         \centering
 \sisetup{table-alignment-mode = format, table-number-alignment = center, group-separator = {,}, group-minimum-digits = 4, group-digits = integer}
-        \begin{tabular}{c|c|S[table-format=6.0]|S[table-format=2.1]|S[table-format=1.4, round-mode=places, round-precision=4]|S[table-format=1.4, round-mode=places, round-precision=4]|S[table-format=1.4, round-mode=places, round-precision=4]}
+        \setlength{\tabcolsep}{3pt}
+        \begin{tabular}{c|l|S[table-format=6.0]|S[table-format=2.1]|S[table-format=1.4, round-mode=places, round-precision=4]|S[table-format=1.4, round-mode=places, round-precision=4]|S[table-format=1.4, round-mode=places, round-precision=4]|S[table-format=1.4, round-mode=places, round-precision=4]|S[table-format=1.4, round-mode=places, round-precision=4]|S[table-format=1.4, round-mode=places, round-precision=4]|S[table-format=1.4, round-mode=places, round-precision=4]}
+            & & & & \multicolumn{3}{c|}{\textbf{Gated ($q$)}} & \multicolumn{3}{c|}{\textbf{Ungated ($q'$)}} & \\
             \textbf{DB} & \textbf{Model} &
-            \multicolumn{1}{c|}{\textbf{$|R_g|$}} &
+            \multicolumn{1}{c|}{\textbf{$|R_g^{\circ}|$}} &
             \multicolumn{1}{c|}{\textbf{\shortstack{Share of\\$|R|$ (\%)}}} &
             \multicolumn{1}{c|}{\textbf{$\mathit{prec}_g(u)$}} &
             \multicolumn{1}{c|}{\textbf{$\mathit{prec}_g(f)$}} &
-            \multicolumn{1}{c}{\textbf{Difference}}\\
+            \multicolumn{1}{c|}{\textbf{$\Delta$}} &
+            \multicolumn{1}{c|}{\textbf{$\mathit{prec}'_g(u)$}} &
+            \multicolumn{1}{c|}{\textbf{$\mathit{prec}'_g(f)$}} &
+            \multicolumn{1}{c|}{\textbf{$\Delta'$}} &
+            \multicolumn{1}{c}{\textbf{$\rho_d$}}\\
             \hline
-            \multirow{2}{*}{\texttt{cv}} & MiSeq &  78208 &  7.8 & 0.1038372502 & 0.2133605591 & 0.1095233089\\
-                                         & HiSeq & 100895 & 10.1 & 0.1064978375 & 0.1939734670 & 0.0874756295\\
+            \multirow{3}{*}{\texttt{cv}} & error-free &  99234 &  9.9 & 0.1074231703 & 0.2002715315 & 0.0928483612 & 0.1074231703 & 0.2002715315 & 0.0928483612 & 1.0000\\
+                                         & MiSeq      &  72380 &  7.3 & 0.1043330915 & 0.2105753725 & 0.1062422809 & 0.1043716587 & 0.2113865585 & 0.1070148998 & 0.9928\\
+                                         & HiSeq      & 100584 & 10.1 & 0.1053380599 & 0.2010415379 & 0.0957034780 & 0.1053415113 & 0.2012618676 & 0.0959203563 & 0.9977\\
             \hline
-            \multirow{2}{*}{\texttt{gp}} & MiSeq &   8125 &  6.9 & 0.0899188811 & 0.1977723832 & 0.1078535021\\
-                                         & HiSeq &  12389 & 10.1 & 0.1034073889 & 0.2435736934 & 0.1401663045\\
+            \multirow{3}{*}{\texttt{tb}} & error-free & {---} & {---} & {---} & {---} & {---} & {---} & {---} & {---} & {---}\\
+                                         & MiSeq      & {---} & {---} & {---} & {---} & {---} & {---} & {---} & {---} & {---}\\
+                                         & HiSeq      & {---} & {---} & {---} & {---} & {---} & {---} & {---} & {---} & {---}\\
         \end{tabular}
-        \caption{The candidate-weighted species precision restricted to the genus-only subset $R_g$ of Section \ref{classmeasures}, i.e.\ to those reads that the \emph{unrefined} database classified correctly down to their genus but no further. These are the only reads a refinement can improve on; $u$ denotes the unrefined and $f$ the refined database. The subset is determined by the unrefined run and kept fixed, so both variants are scored on the same reads.}\label{genusonly}
+        \caption{The candidate-weighted species precision restricted to the reads a refinement can improve on at all, with $u$ for the unrefined and $f$ for the refined database. The subset is determined by the unrefined run and kept fixed, so both variants are scored on the same reads. It is the observable subset $R_g^{\circ}$ of Section \ref{groundtruthfree} rather than the genus-only subset $R_g$ of Section \ref{classmeasures}, so that the gated columns and the ungated ones refer to one and the same set of reads and $\Delta' \ge \Delta$ holds as it should; on $R_g$ it does not, for the reason given in Section \ref{groundtruthfree}. The two subsets are of a similar size --- for \texttt{cv}, $R_g$ holds 101,151, 75,748, 103,141 and 54,668 reads against the four values of $|R_g^{\circ}|$ above --- but they differ in kind: only the ungated block can be obtained from a fastq file whose ground truth is unknown, and $\rho_d = \Delta / \Delta'$ is the factor by which such an estimate has to be corrected. It is one on error-free reads and falls monotonically as the per-base error of Table \ref{simdata} grows.}\label{genusonly}
     \end{table}
 
     \subsection{Performance}\label{performance}
@@ -1022,7 +1018,7 @@ Two effects nevertheless deserve attention when reading the table. First, the re
             \multicolumn{1}{c}{\textbf{RAM (\%)}}\\
             \hline
             \texttt{cv} & 2000000 & \multicolumn{1}{c|}{---} & \multicolumn{1}{c|}{---} & \multicolumn{1}{c|}{---} & \multicolumn{1}{c}{---}\\
-            \texttt{gp} & 2000000 & \multicolumn{1}{c|}{---} & \multicolumn{1}{c|}{---} & \multicolumn{1}{c|}{---} & \multicolumn{1}{c}{---}\\
+            \texttt{tb} & 2000000 & \multicolumn{1}{c|}{---} & \multicolumn{1}{c|}{---} & \multicolumn{1}{c|}{---} & \multicolumn{1}{c}{---}\\
         \end{tabular}
         \caption{Wall time and maximum RAM for classifying the simulated fastq files of Table \ref{simdata} against the unrefined and against the refined database. Both figures of the unrefined run are absolute, those of the refined run are stated relative to them, so that a value below 100 \% means the refined database classified faster or in less memory. The read count covers both error models of a database, which are processed in one run.}\label{matchperf}
     \end{table}
@@ -1129,291 +1125,12 @@ Let $t$ be a data taxon of a database $d$, as defined in Section \ref{pathcorrec
 
     Grouping the pooled counts by the node holding each $k$-mer rather than by data taxon shows how $\overline{pp}_w(m)$ relates to the subtree precision $sp(m)$ of Section \ref{nodeprecision}. Both average the per-$k$-mer precision $p(a)$ over the $k$-mers of the subtree, but $\overline{pp}_w(m)$ weights each $k$-mer by $|D_{\nu(a)}|$, i.e.\ by the number of data taxa its node covers, whereas $sp(m)$ weights all $k$-mers equally. Path precision therefore lets $k$-mers sitting high in the taxonomy dominate the value, while subtree precision does not, which is the reason the main text builds on the latter.
 
-\subsection{Phylogenetic Mapping}
-
-Genestrip-FT's database refinement lends itself to a comprehensive visualization of even large phylogeny trees with evolutionary distances being integrated. Resulting tree representations refine the existing NCBI taxonomy \cite{taxonomy} and derive from a refined $k$-mer database. Here, we briefly discuss computational aspects for embedding the evolutionary distance in such trees.
-
-   \subsubsection{The evolutionary distance $d$}
-    
-We briefly introduce an approximation of the evolutionary distance $d$ as a ratio of mutations in genomes or sequences, respectively. The approximation has been derived before in \cite{skmer} where it is expressed via the Jaccard index over shared $k$-mers between genomes. Besides, \cite{Ondov:2016aa} pointed out a similar approximation. For clarity of discussion, we also derive $d$, but express it in terms of counts available in a Genestrip database and related taxonomy trees. Afterwards, we build on these considerations to adequately integrate $d$ into depicted, refined trees such as produced via Genestrip-FT. 
-    
-The following assumptions are essentially the same as in \cite{skmer} and \cite{Ondov:2016aa}:
-    Let $|s|$ be the length of a sequence $s$ transformed to a sequence $s'$ via mutations of bases. We assume that $|s| = |s'|$ and consider the number of observable mutations $m$, i.e. all base positions $1 \leq i \leq |s|$ where $s(i) \neq s'(i)$. We also assume that these mutations are uniformly distributed over $s'$.
-    Let $X$ be a random variable for the number of differing $k$-mers between $s$ and $s'$ depending on the $m$ mutations. For simplicity we assume that there are no duplicate $k$-mers in either $s$ or $s'$ so that $X$ is also the number of differing \emph{unique} $k$-mers. As our last simplification, we consider observations of $k$-mers within $s$ and analogously within $s'$ to be mutually independent. 
-
-    A mutation occurs at a chance of $m/|s|$. So the probability for a changed $k$-mer, which must contain at least one mutation, is $p(m) = 1 - (1 - m/|s|)^k$. Since the number of $k$-mers in $s$ and $s'$ is $|s|-k+1$, $X$ follows the binomial distribution $X \sim B(|s|-k+1, p(m))$.         
-    In our context, \emph{we measure the number $E$ of unique $k$-mers differing between $s$ and $s'$ but we want to estimate the distance $d:=m/|s|$ as a ratio of mutations over the sequence $s$}. We therefore approximate $E \approx E[X] = (|s|-k+1) \cdot p(m)$ and solve by $d$:
- \begin{equation}
-d \approx 1 - \sqrt[k]{1 - E / (|s| - k + 1)} \approx 1 - \sqrt[k]{1 - E / |s|} =: d(E/|s|)\label{distanceapprox} 	
- \end{equation} 
-Figure \ref{nfunc} shows a plot of the function $d(E/|s|)$: It starts with a slope of $1/k$ because each mutation affects about $k$ $k$-mers (those spanning the mutated position), so $E \approx k \cdot m$ for small $m$, giving $d = m/|s| \approx (E/|s|)/k$. The estimate $d(E/|s|)$ becomes very sensitive, i.e. less reliable, when $E$ reaches $|s|$. For practical considerations, we therefore indicate it in taxonomy trees, when $d$ exceeds a configurable threshold $t_d$.
-
-\begin{figure}[h]
-\centering
-\begin{tikzpicture}
-\begin{axis}[
-    ylabel={$d(E/|s|)$},
-    xlabel={$E / |s|$},
-    trig format plots = rad,
-    samples     = 500,
-    domain      = 0:1,
-    no markers, smooth]
-  \addplot[name path=f1, black, thick] {(1 - (1 - x)^(1/31))};
-  \addplot[name path=f1, red, thick] {(1 - (1 - x*1.1)^(1/31))};
-  \addplot[name path=f1, red, thick] {(1 - (1 - x*0.9)^(1/31))};
-  %\addplot[name path=f1, red, thick] {(1 - x)^((1/31) - 1))};
-\end{axis}
-\end{tikzpicture}
-\caption{A plot of the function $d(E/|s|)$ with $k = 31$ in black. The red curves simulate the effect of an error of $\pm 10\%$ when measuring $E$.}\label{nfunc}
-\end{figure}
-
-\subsubsection{Embedding of $d$ in taxonomy trees}
-
-We want to apply $d$ to a node $n$ in the context of a taxonomy tree such as in Figure \ref{simplerefdb}. More precisely, we estimate $d_n$ to be the maximum evolutionary distance \emph{from $n$'s parent to the data taxa\footnote{See Section~\ref{intrinsicqms} for the definition of the term \enquote{data taxon}.} under $n$}:
-\begin{itemize}
-\item
-For that, $above(n)$ shall sum over the $k$-mers assigned to nodes above $n$ towards the tree's root excluding $n$. 
-\item 
-Regarding $below(n)$, we consider each path starting from $n$ to any leaf node under $n$ including $n$ itself. We sum over the $k$-mers assigned to all nodes along each path and set $below(n)$ to be the maximum sum from such paths. $p_n$ denotes some path leading to the maximum sum of $below(n)$. 
-\end{itemize}
-We set $d_n := d(E_n/|s_n|)$ by letting $E_n := below(n)$ and $|s_n| := above(n) + below(n)$.
-This way, $d_n$ measures the evolutionary distance from $n$'s parent to the leaf of $p_n$. 
-Since we use the maximum sum in $below(n)$, this estimate is conservative for $n$.
-However, to depict evolutionary distances in a given taxonomy tree we must represent the portion $dp_n$ of $d_n$ relating to the branch from a node $n$'s parent to $n$ itself.
-Let $c$ be the child of $n$ on the path $p_n$. It can be shown that $d_n \geq d_c$,\footnote{$E_n = below(n) = k_n + below(c) = k_n + E_c \geq E_c$ (where $k_n \geq 0$ is the number of $k$-mers stored at $n$ itself), while $|s_n| = above(n) + below(n) = above(n) + k_n + E_c = above(c) + below(c) = |s_c|$, so $E_n/|s_n| \geq E_c/|s_c|$, and therefore $d_n \geq d_c$ by monotonicity of $d$.} so we simply set $dp_n := d_n - d_{c}\geq 0$.
-
-Figure \ref{simplerefdbdist} depicts a resulting taxonomy tree for the same database as in Figure \ref{simplerefdb} but with horizontal line lengths encoding distance portions.\footnote{We configuratively set the horizontal line lengths of the highest ranked nodes to a minimum although their $dp_n$ might be large. This is because the resulting distance portion is too unreliable and tends to cause a large but non-informative indentation in the tree. In Figure \ref{simplerefdbdist}, this exception affects the node \enquote{Viruses (10239) acellular root} only.}
-
-  \begin{figure}[h]%
-        \centering
-\dbfig[width=12.95cm]{results/orthopox3_ftsvgtaxtree}
-         \caption{Tree representation of a Genestrip $k$-mer database including three Orthopoxvirus species. The database is in the state \emph{right after the refinement} as in Figure \ref{ftsketch} (4). The tree depicts the same database as in Figure \ref{simplerefdb} but here, the length of a horizontal line to a node $n$ encodes the evolutionary distance portion $dp_n$. Both $d_n$ and $dp_n$ are also printed in brackets. The reddened lines indicate the branch for the $p_n$ starting from node $n$.
-% Dashed lines signal less reliable evolutionary distances $d_n > t_n := 0.8$.
- }\label{simplerefdbdist}
-    \end{figure}
-
-The relatively compact depiction of taxonomy trees such as in Figure \ref{simplerefdbdist} allows for combining many species or even genera in a single representation and enables a fine-grained \emph{mapping of evolutionary relationships}. Hereby, the refinements resulting from Genestrip-FT integrate into the established NCBI taxonomy tree and support the visual display of the evolutionary distance $d$ via horizontal indentations. Figure \ref{borr_map} exemplifies this kind of mapping on a slightly larger scale with regard to the genus Borrelia (138).\footnote{The generation of such a map can be executed as a goal included by standard in Genestrip-FT. A resulting SVG file may be generated for any refined and unrefined Genestrip database.}
-            
-  \begin{figure}[h]%
-        \centering
-\dbfig[width=13cm]{results/borrelia_ftsvgtaxtree}
-         \caption{Example of a phylogenetic mapping for the genus Borrelia (138) via a refined taxonomic tree with evolutionary distances included. The presentation approach is the same as in Figure \ref{simplerefdbdist}}\label{borr_map}
-    \end{figure}
-
-\subsection{Evolutionary distance distribution}
-
-\subsubsection{Posterior distribution for the evolutionary distance}
-
-We derive the probability distribution of $d$ given the observed count $E$ of differing unique $k$-mers, using Bayes' theorem. Let $N := |s|-k+1$ be the number of $k$-mers in $s$. We adopt a uniform prior $\pi(d) = 1$ on $d\in[0,1]$, reflecting no preference for any particular mutation rate. The binomial model from above gives the likelihood
-\[
-  P(E \mid d) = \binom{N}{E}\,p(d)^E\,[1-p(d)]^{N-E}, \qquad p(d) = 1-(1-d)^k.
-\]
-By Bayes' theorem the posterior satisfies
-\[
-  P(d \mid E) \;\propto\; [1-(1-d)^k]^E\,(1-d)^{k(N-E)}.
-\]
-To identify the normalising constant we substitute $v := (1-d)^k$, so $d = 1-v^{1/k}$ and $\mathrm{d}d = \frac{1}{k}\,v^{1/k-1}\,\mathrm{d}v$. The posterior density in $v$ becomes
-\[
-  P(v \mid E) \;\propto\; v^{\,N-E+\frac{1}{k}-1}(1-v)^{E},
-\]
-which is recognised as a $\mathrm{Beta}\!\left(N-E+\tfrac{1}{k},\;E+1\right)$ density. Hence the normalised posterior for $d$ is
-\begin{equation}
-  P(d \mid E) \;=\;
-  \frac{k\,(1-d)^{k(N-E)}\bigl[1-(1-d)^k\bigr]^E}
-       {B\!\left(N-E+\tfrac{1}{k},\;E+1\right)},
-  \qquad d\in[0,1].
-  \label{eq:dposterior}
-\end{equation}
-
-\subsubsection{Posterior mean and variance}
-
-Since $d = 1-v^{1/k}$ with $v\sim\mathrm{Beta}\!\left(N-E+\tfrac{1}{k},\,E+1\right)$, and the $t$-th moment of a $\mathrm{Beta}(\alpha,\beta)$ variable equals $B(\alpha+t,\beta)/B(\alpha,\beta)$, the posterior mean is
-\begin{equation}
-  E[d\mid E] \;=\; 1 \;-\;
-  \frac{B\!\left(N-E+\tfrac{2}{k},\;E+1\right)}
-       {B\!\left(N-E+\tfrac{1}{k},\;E+1\right)}.
-  \label{eq:dpostmean}
-\end{equation}
-For the variance we use $\mathrm{Var}(d\mid E) = \mathrm{Var}(v^{1/k}\mid E) = E[v^{2/k}\mid E]-(E[v^{1/k}\mid E])^2$, giving
-\begin{equation}
-  \mathrm{Var}(d\mid E) \;=\;
-  \frac{B\!\left(N-E+\tfrac{3}{k},\;E+1\right)}
-       {B\!\left(N-E+\tfrac{1}{k},\;E+1\right)}
-  \;-\;
-  \left(\frac{B\!\left(N-E+\tfrac{2}{k},\;E+1\right)}
-             {B\!\left(N-E+\tfrac{1}{k},\;E+1\right)}\right)^{\!2}.
-  \label{eq:dpostvar}
-\end{equation}
-
-\subsubsection{Delta method approximation for large $|s|$}
-
-For genomic sequences $|s|$ is in the millions, so the posterior concentrates tightly around the point estimate $\hat{d} = d(E/|s|) = 1-(1-E/|s|)^{1/k}$ from Eq.~\eqref{distanceapprox}. Setting $\hat{v} = (1-\hat{d})^k$, the posterior variance of $v$ is approximately $\mathrm{Var}(v\mid E)\approx \hat{v}(1-\hat{v})/|s|$. Applying the delta method to $d = g(v) = 1-v^{1/k}$ with $g'(v) = -\tfrac{1}{k}\,v^{1/k-1}$ yields
-\begin{equation}
-  \mathrm{Var}(d\mid E) \;\approx\;
-  \frac{(1-\hat{d})^{2-k}\bigl[1-(1-\hat{d})^k\bigr]}{k^2\,|s|}.
-  \label{eq:ddeltavar}
-\end{equation}
-An approximate $\pm 1\sigma$ credible interval for $d$ is therefore $\hat{d}\,\pm\,\sqrt{\mathrm{Var}(d\mid E)}$. The bands are tight for moderate $E/|s|$ but widen rapidly as $E$ approaches $|s|$, confirming that the estimate becomes unreliable in that regime.
-
-\iffalse
-\begin{figure}[h]
-\centering
-\begin{tikzpicture}
-\begin{axis}[
-    name=sigfull,
-    ylabel={$d(E/|s|)$},
-    xlabel={$E / |s|$},
-    height=5cm, width=6cm,
-    samples=500, domain=0:1,
-    no markers, smooth]
-  \addplot[black, thick] {(1 - (1-x)^(1/31))};
-  \addplot[blue, thick, domain=0:0.9999] {(1-(1-x)^(1/31)) + x^0.5*(1-x)^(-29/62)/3100};
-  \addplot[blue, thick, domain=0:0.9999] {(1-(1-x)^(1/31)) - x^0.5*(1-x)^(-29/62)/3100};
-  \addplot[orange, thick, domain=0:0.9999] {(1-(1-x)^(1/31)) + x^0.5*(1-x)^(-29/62)/980};
-  \addplot[orange, thick, domain=0:0.9999] {(1-(1-x)^(1/31)) - x^0.5*(1-x)^(-29/62)/980};
-\end{axis}
-\begin{axis}[
-    at={(sigfull.east)}, anchor=west, xshift=1.2cm,
-    xlabel={$E / |s|$},
-    xmin=0.9, xmax=1,
-    height=5cm, width=6cm,
-    samples=2000,
-    no markers]
-  \addplot[black, thick, domain=0.9:1] {(1 - (1-x)^(1/31))};
-  \addplot[blue, thick, domain=0.9:0.9999] {(1-(1-x)^(1/31)) + x^0.5*(1-x)^(-29/62)/3100};
-  \addplot[blue, thick, domain=0.9:0.9999] {(1-(1-x)^(1/31)) - x^0.5*(1-x)^(-29/62)/3100};
-  \addplot[orange, thick, domain=0.9:0.9999] {(1-(1-x)^(1/31)) + x^0.5*(1-x)^(-29/62)/980};
-  \addplot[orange, thick, domain=0.9:0.9999] {(1-(1-x)^(1/31)) - x^0.5*(1-x)^(-29/62)/980};
-\end{axis}
-\end{tikzpicture}
-\caption{Left: $\hat{d}\pm\sigma_d$ from Eq.~\eqref{eq:ddeltavar} with $k=31$ (black: $d(E/|s|)$; blue: $|s|=10^4$; orange: $|s|=10^3$). Right: zoomed view of $E/|s|\in[0.9,1]$ showing the bands widening as $E$ approaches $|s|$.}\label{nfuncsigma}
-\end{figure}
-\fi
-
-   \subsection{Application to phylogeny}
-
-    \subsubsection{Node precision for taxonomy improvements}
-
-\todo{Internal note in the source below: what the refreshed subtree precisions do and do not say about this section, and the validation it would take to settle it.}
-
 %
-% ---------------------------------------------------------------------------------------------
-% INTERNAL NOTE (added 2026-08-05) -- NOT FOR SUBMISSION AS IT STANDS.
+% The phylogenetic material that used to follow here -- the evolutionary distance $d$, its
+% embedding in taxonomy trees, its posterior distribution, the application to phylogeny and the
+% validation against established trees -- was moved to ../phyl_paper on 2026-08-06. It is to become
+% a paper of its own and is no longer part of this one. Nothing in this paper referred to it.
 %
-% Do the numbers of Table \ref{dbsp} support using these measures for phylogeny? Partly, and not in
-% the way the absolute values suggest.
-%
-% What speaks for it. Low values are rare and concentrated rather than scattered, which is the shape
-% a usable flag would have. Over the 3,161 viral genera that hold k-mers the median sp in the
-% refined database is exactly 1.0000; only 127 fall below 0.9 and none below 0.5. The tail is short
-% and carries real mass rather than looking like noise:
-%
-%   Tequatrovirus   sp = 0.5352   (1,624,769 k-mers)
-%   Cheoctovirus    sp = 0.5452   (  764,030 k-mers)
-%   Pbunavirus      sp = 0.5929   (  505,574 k-mers)
-%
-% All three are phage genera. Whether that is a signal about their taxonomy or a property of phage
-% taxonomy being unsettled to begin with is precisely the open question -- it is the first thing to
-% look at, since a known-contentious group scoring low would be the cheapest possible evidence.
-%
-% What does not follow. A high average says flaws are rare; it does not say that a low value is
-% *specific* to a structural flaw, which is what this section needs. Three confounders produce low
-% values with no taxonomic meaning at all, and the first two grew with the move to all genomes:
-%
-%   - Incomplete genomes. Section \ref{nodeprecision} already notes that np deteriorates when the
-%     genomes under a node are incomplete. Draft assemblies now dominate the eukaryotic databases.
-%     This is why the sentence below prescribes complete genomes only, and it means the phylogeny
-%     application needs its own database build rather than the one the rest of the paper uses.
-%   - Contaminated assemblies. Lokmer et al. cite estimates of 1-30 % of nucleotides being of
-%     bacterial or archaeal origin in the available Blastocystis genomes; such sequence distorts
-%     c(a) directly.
-%   - Bloom filter noise, measured here at the order of 1e-3 -- the same order as some of the
-%     deviations one would want to interpret (see the footnote to Table \ref{dbsp}).
-%
-% How to settle it. Build a complete-genomes-only database, take a set of genera whose taxonomy was
-% independently revised in recent years, and show that low sp discriminates them from the cases that
-% missing or contaminated data explains. Until that discrimination is demonstrated the measure
-% flags something real but unidentified, which is the reason this material sits in the appendix.
-%
-% One caveat that applies to reading Table \ref{dbsp} at all, phylogeny or not: after the leaf
-% transformation every k-mer at a data taxon has |D| = 1 and hence p(a) = 1 by construction, so
-% sp is bounded below by the share of k-mers stored at data taxa -- 99.4 % for parasites, 87.1 %
-% for protozoa, 84.1 % for cv, 61.7 % for tb. The absolute values are therefore mostly bookkeeping;
-% the refinement's *gain*, and tb where a real majority of the mass is at stake, are the informative
-% parts.
-% ---------------------------------------------------------------------------------------------
-%
-    Using a refined database with its refined taxonomy and with complete genomes only, low node precision allows for spotting potential structural flaws in the original, unrefined taxonomy. Figure \ref{npflaw} presents a basic example to highlight this use case:
-    In (1), $X$ and $Y$ are not placed under the same node, even though their genomes are \emph{identical}. This causes a lowered node precision at their lowest common ancestor $W$.
-    After correcting the taxonomy, node precision in (4) ends up being $1$ for every node that stores $k$-mers.
-
-%The example from Figure \ref{npflaw} can be generalized: When the nodes of two data taxa, like $X$ and $Y$ from above, are falsely \emph{not} close enough together in the taxonomy, this \emph{always} manifests itself in a lowered node precision at \emph{their lowest common ancestor} $W$.
-%This is because the LCA update will move every joint $k$-mer $a$ from $X$ and $Y$ to $W$ but the refinement must keep it there to maintain a path recall of $1$ for both.
-%With $X$ and $Y$ being apart, this implies that another data taxon $Z$ exists near $X$ or $Y$ that does not contain $a$, therefore driving down $W$'s node precision.
-
-    \begin{figure}[h]%
-        \centering
-        \small
-        \begin{minipage}[c]{0.25\textwidth}
-            \begin{flushleft}(1) Given $k = 2$ and $X$, $Y$, $Z$ under $W$ with associated sequences:\\
-                $X$: \texttt{CCT}, $Y$: \texttt{CCT}, $Z$: \texttt{GCA}\\
-                Here, the taxonomy groups $X$ and $Z$ under the intermediate node $V$.
-            \end{flushleft}
-        \end{minipage}
-        \begin{minipage}[c]{0.2\textwidth}
-            \begin{tikzpicture}
-                \tikzset{every tree node/.style={align=center,anchor=north}}
-                \Tree [.$W$ [.$V$ $X$ $Z$ ] $Y$ ]
-            \end{tikzpicture}
-        \end{minipage}
-        \begin{minipage}[c]{0.25\textwidth}
-            \begin{flushleft}(2) After the LCA update: \texttt{CC} and \texttt{CT} occur in both $X$ and $Y$ and so they move up to $W$. With $|D_W| = 3$, $|A_W| = 2$ and $c(\texttt{CC}) = c(\texttt{CT}) = 2$, this yields $np(W) = 2/3 < 1$.
-            \end{flushleft}
-        \end{minipage}
-        \begin{minipage}[c]{0.2\textwidth}
-            \begin{tikzpicture}
-                \tikzset{every tree node/.style={align=center,anchor=north}}
-                \Tree [.{$W$\\\texttt{CC},\texttt{CT}} [.$V$ $X$ {$Z$\\\texttt{GC},\texttt{CA}} ] $Y$ ]
-            \end{tikzpicture}
-        \end{minipage}
-
-        \vspace{0.2cm}
-
-        \begin{minipage}[c]{0.25\textwidth}
-            \begin{flushleft}(3) The lowered $np(W)$ suggests that $Y$ rather than $Z$ belongs next to $X$. Correcting the taxonomy accordingly groups $X$ and $Y$ under $V$.
-            \end{flushleft}
-        \end{minipage}
-        \begin{minipage}[c]{0.2\textwidth}
-            \begin{tikzpicture}
-                \tikzset{every tree node/.style={align=center,anchor=north}}
-                \Tree [.$W$ [.$V$ $X$ $Y$ ] $Z$ ]
-            \end{tikzpicture}
-        \end{minipage}
-        \begin{minipage}[c]{0.25\textwidth}
-            \begin{flushleft}(4) The resulting database with the \emph{corrected} tree and $2$-mers assigned accordingly: \texttt{CC} and \texttt{CT} now reside at $V$ and $np(n) = 1$ holds for every node $n$ that stores $k$-mers.\end{flushleft}
-        \end{minipage}
-        \begin{minipage}[c]{0.2\textwidth}
-            \begin{tikzpicture}
-                \tikzset{every tree node/.style={align=center,anchor=north}}
-                \Tree [.$W$ [.{$V$\\\texttt{CC},\texttt{CT}} $X$ $Y$ ] {$Z$\\ \texttt{GC},\texttt{CA}} ]
-            \end{tikzpicture}
-        \end{minipage}
-
-        \vspace{0.2cm}
-
-        \caption{Using node precision to spot a structural flaw in a taxonomy. In (2), $np(W) = 2/3$ lies below one, which indicates that the intermediate node $V$ groups the wrong data taxa. The corrected taxonomy in (3) yields $np(n) = 1$ for all $k$-mer-storing nodes in (4).}\label{npflaw}
-    \end{figure}
-
-  \subsection{Validation against other tools}
-    
- 
-% like so: $d(E_n / k_n)$. But unfortunately, the following does not hold: $d_n(E_n/l_n) \neq \sum_i d_{n_i}(E_i/k_i)$.
-
-    \subsubsection{Comparison with established phylogeny trees}
-    
-    Example candidates: Borrelia, Babesia, Malaria, Orthopoxvirus
-
-
 \clearpage
 
 \bibliography{sn-bibliography}
