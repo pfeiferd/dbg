@@ -825,7 +825,39 @@ $A^{*}_m = \bigcup_{n} A_n$ be the set of $k$-mers stored at the nodes $n$ of th
         \end{tabular}
          \caption{Subtree precision $sp(m)$ for the databases of Table \ref{dbdesc}. The two columns on the right give $sp^{*}(m)$, the same average over the $k$-mers stored above the data taxa. That is where a refinement can act; the share of $k$-mers that sit at a data taxon and are thereby fixed at a precision of one is \dbstat{leafshare}{viral}\,\% for \texttt{cv}, \dbstat{leafshare}{tick-borne}\,\% for \texttt{tb}, \dbstat{leafshare}{strepto}\,\% for \texttt{strepto}, \dbstat{leafshare}{protozoa}\,\% for \texttt{protozoa}, \dbstat{leafshare}{vineyard}\,\% for \texttt{vineyard} and \dbstat{leafshare}{parasites}\,\% for \texttt{parasites}, so $sp^{*}$ rests on a correspondingly small part of the database, for \texttt{parasites} on well under one percent of it. The \emph{root} row of each block gives $sp(m)$ for $m$ the taxonomic root, so the average runs over every $k$-mer in the database. The rows below break the same measure down by genus. For each database, the five genera with the largest $|A^{*}_m|$ are listed in decreasing order of $|A^{*}_m|$; \texttt{strepto} holds one genus and is listed with that one. For \texttt{cv}, the genus Orthopoxvirus is listed in addition, as it serves as the running example of Section \ref{dbrefinement}. The genera are a selection and do not average to the \emph{root} row above them.}\label{dbsp}
     \end{table}      
-    
+
+    \paragraph{What the taxonomy contributes to $sp^{*}$.} A refinement can only move $k$-mers between
+    nodes that exist, so what a database can reach depends on the tree it is given --- and the tree
+    carries more than named taxa. Below a genus the NCBI taxonomy commonly places a bucket of genomes
+    it cannot assign to a species, named \emph{unclassified} after that genus, and those genomes are
+    not passive. Under the least common ancestor update a $k$-mer that a named species shares with one
+    of them has its ancestor at the \emph{genus}, since the bucket hangs off the genus as a sibling of
+    the whole lineage the species belongs to. The species loses the $k$-mer, and it loses it to a
+    genome that carries no name to be told apart from.
+
+    How much sits in such buckets varies widely across the databases of Table \ref{dbdesc}. In
+    \texttt{tb} nine of them hold \num{349} species and \num{127243373} $k$-mers, \num{24}\,\% of
+    that database, one under each of the genera the study is about --- \emph{Bartonella} alone
+    contributes \num{225} unnamed species. In \texttt{protozoa} four hold \num{49297699} (\num{4}\,\%),
+    in \texttt{parasites} one holds \num{9295}, and in \texttt{vineyard} none sits below a genus at
+    all. Two kinds of node that look similar must be kept out of this count, and the criterion is what
+    they contain rather than what they are called: an \emph{incertae sedis} node holds \emph{named}
+    species whose placement is unsettled --- \emph{Trypanosoma theileri}, \emph{Plasmodium simium},
+    and in \texttt{vineyard} the study organism \emph{Trichothecium roseum} --- and in \texttt{cv}
+    every one of the \num{826} species below such buckets carries a name, because in virus taxonomy
+    \emph{unclassified} usually marks a genus that is not yet subdivided. Excluding those would delete
+    content, not filler.
+
+    \todo{Genestrip can now leave such branches out of both the database and the update
+    (\texttt{taxids.txt} with a leading \texttt{-}, plus \texttt{refseq.updateScope=allButExcluded});
+    \texttt{tb}, \texttt{protozoa} and \texttt{parasites} are configured for it and await a rebuild.
+    What is \emph{not} yet established is how much it buys: striking the branches from the database
+    alone left \emph{S.~pneumoniae} at its \num{656} own $k$-mers, unchanged, because the update
+    still read the excluded genomes. Report $sp$ and $sp^{*}$ before and after for \texttt{protozoa}
+    --- \emph{Cryptosporidium} and \emph{Babesia} start at $sp^{*}$ of $0.254$ and $0.234$ and each
+    has exactly one unnamed neighbour, so they are where an effect should show first --- and say
+    plainly if there is none.}
+
     \subsection{Classification quality}\label{classificationquality}
 
     The measures of Section \ref{intrinsicqms} assess a database as such. We now turn to what the refinement means for the analysis of actual reads, using simulated fastq files whose ground truth is known by construction. The measures themselves are those of Section \ref{classmeasures}, together with the estimate of Section \ref{groundtruthfree} that a sample \emph{without} known ground truth still admits; Sections \ref{simreads} and \ref{realreads} describe the simulated data and the real sequencing runs they are applied to.
@@ -1211,24 +1243,32 @@ Two effects nevertheless deserve attention when reading the table. First, the re
     it cannot resolve it. The assay is still required; it is no longer the only thing that would have revealed the need
     for it.
 
-    \paragraph{What a refinement cannot repair.} It does not follow that the pneumococcus becomes nameable, and in this
-    database it does not. \emph{S.~pneumoniae} keeps \num{397} $k$-mers of its own where \emph{S.~oralis} keeps
-    \num{206674} and \emph{S.~pseudopneumoniae} \num{20311}; across the \num{83} clinical samples of
-    Section~\ref{streptoreads} not one classification ever landed below it. The cause is not the refinement but what the
-    genus brings with it. Two of the \num{147} children of \emph{Streptococcus} carry no name --- \emph{unclassified
-    Streptococcus}, with \num{468} species below it, and \emph{environmental samples} --- and they are not empty
-    placeholders: those \num{468} hold \num{45614308} $k$-mers between them, \num{109} of them more than \num{100000}
-    each, so they are whole genomes. Under an LCA update such a genome is not neutral but a sink. A $k$-mer shared between a
-    pneumococcus and an unnamed draft has its lowest common ancestor at the \emph{genus}, because the draft hangs off a
-    sibling branch of the entire mitis lineage; one such genome suffices to lift a species' $k$-mers clear out of it. A
-    refinement can restore structure --- it did build the mitis node --- but it cannot restore an identity the taxonomy
-    never carried, since it only moves $k$-mers between nodes that exist.
+    \paragraph{What a refinement cannot repair.} It does not follow that the pneumococcus becomes
+    nameable, and in this database it does not. \emph{S.~pneumoniae} keeps \num{656} $k$-mers of its
+    own, \num{1053} counting its whole subtree; across the \num{83} clinical samples of
+    Section~\ref{streptoreads} not one classification ever landed below it.
 
-    This is worth stating as a rule for anyone assembling a database rather than as a peculiarity of this one: unnamed draft
-    genomes cost species-level resolution silently, and they cost it for exactly the species their unnamed relatives
-    resemble most. \todo{The test: \texttt{streptonamed}, the same database built from the \num{145} named children of the
-    genus instead of the genus itself. If the cause is what we say it is, the $k$-mers at \emph{S.~pneumoniae} rise from
-    \num{397} by orders of magnitude. Fill in the figure and, if it holds, say what the clinical consequence is.}
+    The cause is the neighbourhood, and the genus supplies its own control for that. \emph{S.~mutans},
+    which has no close relative among the \num{626} species here, keeps \num{1837054} --- a factor of
+    \num{1700} between two species of one genus, in one database, under one update. The depleted ones
+    are precisely the four of the mitis complex: \emph{S.~mitis} keeps nothing at all,
+    \emph{S.~pseudopneumoniae} \num{566}, \emph{S.~oralis} \num{37252}. They are direct children of
+    the genus, so a $k$-mer any two of them share has its lowest common ancestor at the genus and
+    nowhere lower --- and after the refinement it has the mitis node, which is why that node exists but
+    holds only \num{37567} $k$-mers. What the refinement cannot supply is the distinction itself: the
+    $k$-mers that would separate \emph{S.~pneumoniae} from \emph{S.~mitis} are, for the most part,
+    not there to be moved. That is a fact about the mitis complex, not about the method, and it is why
+    \citet{lrinanopore} needed a \emph{ply} assay rather than a better classifier.
+
+    The genus also carries \num{468} unnamed genomes under \emph{unclassified Streptococcus}, holding
+    \num{45614308} $k$-mers between them, and by the argument of Section \ref{results} they should
+    take their share too. Striking them out of the database alone did not: \emph{S.~pneumoniae} kept
+    the same \num{656} $k$-mers, because the update reads the RefSeq release whether or not a branch
+    was excluded from the database's content. \todo{The measurement that decides it is running:
+    \texttt{streptonamed} with \texttt{refseq.updateScope=allButExcluded}, which keeps those genomes
+    out of the update as well. If the \num{656} move, say by how much and add the unnamed branch to
+    the account above; if they do not, say that the mitis complex accounts for all of it, and drop
+    \texttt{streptonamed} in favour of the same two lines in \texttt{strepto}.}
 
     \todo{And: how many of the degree-two $k$-mers the clustering actually places. The branching-degree figures above come
     from the unrefined database and are a bound, not a result.}
@@ -1414,10 +1454,11 @@ The work behind this publication was not funded.
 
 \subsection{Authors' contributions}
 
-DP designed and developed the software, crafted the presented evaluations and wrote the manuscript.
+DP developed the software, designed the evaluation scheme and wrote the manuscript.
 AA developed a prototypical version of the presented clustering procedure for comparison with Genestrip-FT's own clustering implementation. HZ designed and implemented foundational experiments to test Genestrip-FT's refinement quality as well as its clustering quality.
 
-During the preparation of this manuscript, the authors used Claude, Opus 4.8 in order to destill figures and tables but also to improve readability and grammatical flow. After using this AI tool, the authors reviewed and edited the content as needed and take full responsibility for the content of this publication. Claude, Opus 4.8 was also used to enhance and optimize Genstrip-FT's code base and further, to implement the scripts regarding the experiments presented in Section \ref{results}. Both, the code base and the scripts were manually verified, tested, and audited by the authors to ensure correctness and mathematical accuracy.
+During the preparation of this manuscript, the authors used Claude (Anthropic; Opus 4.8 and Opus 5) not only to produce figures and tables but also to improve readability and grammatical flow.
+The tool was used to extend and optimize Genestrip-FT's code base and to produce the measurements the evaluations rest on. Furthermore, it assisted in implementing the scripts for the experiments from Section \ref{results}. Both the code base and the scripts were verified, tested and audited by the authors to ensure correctness and mathematical accuracy. After using Claude, the authors reviewed and edited the content as needed and take full responsibility for this publication.
 
 \subsection{Acknowledgements}
 
