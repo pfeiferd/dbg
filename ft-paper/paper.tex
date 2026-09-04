@@ -168,6 +168,36 @@
 }{\texttt{#1} & {---} & {---} & {---} & {---} & {---} & {---} & {---} & {---} & {---}\\}%
 }
 
+% One aggregated row of Table \ref{realgain}, read from the macros paper_stats.sh writes rather
+% than from the CSV directly. `strepto' has eighty-three samples, which no table can print and no
+% \csvreader can average; the script does the weighting (by $|R'_g|$, not by sample) and this macro
+% only lays the result out. #1 = database label, #2 = row label, #3 = dbstat key prefix, #4 = group
+% tag, empty for all samples. The two estimate columns stay empty for want of a calibration.
+\newcommand{\realgainagg}[4]{%
+\texttt{#1} & #2 &
+\dbstat{rg}{#3/#4groupreads} & \dbstat{rg}{#3/#4groupclassified} & \dbstat{rg}{#3/#4subset} &
+\dbstat{rg}{#3/#4groupshare} & \dbstat{rg}{#3/#4precu} & \dbstat{rg}{#3/#4precf} & {---} & {---}\\}
+
+% One row of Table \ref{nearestnode}: the samples of one currency and one database variant, bucketed
+% by how many species the node their evidence stopped at still leaves open. #1 = currency, #2 =
+% variant, #3 = dbstat key prefix, #4 = the median share cell, which only a refined row has.
+% A bucket cell of Table \ref{nearestnode}: how many samples stopped there and, in brackets, the
+% median evidence the node holds. A bucket no sample reached has no median, and prints none rather
+% than a bracketed zero -- there is nothing to take a median of.
+\newcommand{\nnc}[2]{%
+\dbstat{nn}{#1/#2}\ifcsname dbstat@nn@#1/#2med\endcsname\,(\num{\dbstat{nn}{#1/#2med}})\fi}
+
+% A generated figure that wants \num formatting. Undefined it must still render, and as the marker
+% rather than as a siunitx error: the file it comes from is written by a run of the experiment, and
+% the paper has to build before that run as well as after it.
+\newcommand{\nnnum}[2]{%
+\ifcsname dbstat@nn@#1/#2\endcsname\num{\csname dbstat@nn@#1/#2\endcsname}\else\sysUnknown\fi}
+
+\newcommand{\nearestrow}[3]{%
+#1 & #2 &
+\nnc{#3}{species} & \nnc{#3}{fine} & \nnc{#3}{mid} & \nnc{#3}{coarse} & \nnc{#3}{genus} &
+\dbstat{nn}{#3/none} & \nnnum{#3}{mediantotal}\\}
+
 \newcommand{\dbfig}[2][]{%
 \iffinalsubmission
 \includegraphics[#1]{#2.pdf}%
@@ -851,9 +881,9 @@ $A^{*}_m = \bigcup_{n} A_n$ be the set of $k$-mers stored at the nodes $n$ of th
     \todo{Genestrip can now leave such branches out of both the database and the update
     (\texttt{taxids.txt} with a leading \texttt{-}, plus \texttt{refseq.updateScope=allButExcluded});
     \texttt{tb}, \texttt{protozoa} and \texttt{parasites} are configured for it and await a rebuild.
-    What is \emph{not} yet established is how much it buys: striking the branches from the database
-    alone left \emph{S.~pneumoniae} at its \num{656} own $k$-mers, unchanged, because the update
-    still read the excluded genomes. Report $sp$ and $sp^{*}$ before and after for \texttt{protozoa}
+    What is \emph{not} yet established is how much it buys. The one attempt to measure it, on
+    \texttt{strepto}, is no longer usable: that database changed its per-species genome cap in the
+    same rebuild, so the two effects cannot be told apart. Report $sp$ and $sp^{*}$ before and after for \texttt{protozoa}
     --- \emph{Cryptosporidium} and \emph{Babesia} start at $sp^{*}$ of $0.254$ and $0.234$ and each
     has exactly one unnamed neighbour, so they are where an effect should show first --- and say
     plainly if there is none.}
@@ -1043,7 +1073,7 @@ $A^{*}_m = \bigcup_{n} A_n$ be the set of $k$-mers stored at the nodes $n$ of th
         \footnotesize
 \sisetup{table-alignment-mode = format, table-number-alignment = center, group-separator = {,}, group-minimum-digits = 4, group-digits = integer}
         \setlength{\tabcolsep}{1.5pt}
-        \begin{tabular}{@{}c|l|S[table-format=9.0]|S[table-format=8.0]|S[table-format=6.0]|S[table-format=1.4, round-mode=places, round-precision=4]|S[table-format=1.4, round-mode=places, round-precision=4]|S[table-format=1.4, round-mode=places, round-precision=4]|S[table-format=1.4, round-mode=places, round-precision=4]|S[table-format=1.4, round-mode=places, round-precision=4]@{}}
+        \begin{tabular}{@{}c|l|S[table-format=9.0]|S[table-format=8.0]|S[table-format=6.0]|S[table-format=2.4, round-mode=places, round-precision=4]|S[table-format=1.4, round-mode=places, round-precision=4]|S[table-format=1.4, round-mode=places, round-precision=4]|S[table-format=1.4, round-mode=places, round-precision=4]|S[table-format=1.4, round-mode=places, round-precision=4]@{}}
             \shortstack{\textbf{DB}\\\textbf{$d$}} & \textbf{Sample} &
             \multicolumn{1}{c|}{\textbf{Reads}} &
             \multicolumn{1}{c|}{\textbf{Classified}} &
@@ -1057,8 +1087,13 @@ $A^{*}_m = \bigcup_{n} A_n$ be the set of $k$-mers stored at the nodes $n$ of th
             \realgainrows{cv}{results/viral_saliva_specificity.csv}
             \hline
             \realgainrows{tb}{results/tick-borne_ticks_specificity.csv}
+            \hline
+            \realgainagg{strepto}{All \num{80} samples}{strepto}{}
+            \realgainagg{strepto}{Culture grew \emph{S.~pneumoniae}}{strepto}{cult}
+            \realgainagg{strepto}{Pipeline called it, culture did not}{strepto}{pipe}
+            \realgainagg{strepto}{Neither named it}{strepto}{none}
         \end{tabular}
-        \caption{The ungated precision of Section \ref{groundtruthfree} on real sequencing data, for which no ground truth exists: the human saliva runs of \citep{genestrip-pub} against \texttt{cv} and the tick samples of \citep{nanoporeticks} against \texttt{tb}. $|R'_g|$ is the number of reads the unrefined database left at a genus, i.e.\ those a refinement can act on at all. It is the observable subset: without $\sigma(r)$ there is no telling whether the genus was the right one. $\mathit{prec}'_g(u)$ and $\mathit{prec}'_g(f)$ are the ungated precision over that subset before and after the refinement, the same columns as the right block of Table \ref{genusonly}, read here on samples for which the left block cannot exist. The share relates it to the classified reads rather than to all of them, since a read the database does not recognise could never have been improved: of SRR5571991 not quite two percent are classified, and of those about one in a thousand is left at a genus. The last two columns are those precisions carried to their gated counterparts by $\rho^u_{d,s}$ and $\rho^f_{d,s}$, borrowing the pair of Table \ref{genusonly} whose read set $s$ matches the sample; their difference is the estimated precision gain. Each sample is matched to a set generated for it: a tick to the NanoSim simulation trained on that very sample, the saliva runs to the \enquote{saliva-like} set of Table \ref{simdata}, which reproduces their read length and per-base error. No calibration here is extrapolated. Tick 5 is omitted, as in the first study, where KrakenUniq did not complete on it.}\label{realgain}
+        \caption{The ungated precision of Section \ref{groundtruthfree} on real sequencing data, for which no ground truth exists: the human saliva runs of \citep{genestrip-pub} against \texttt{cv} and the tick samples of \citep{nanoporeticks} against \texttt{tb}. $|R'_g|$ is the number of reads the unrefined database left at a genus, i.e.\ those a refinement can act on at all. It is the observable subset: without $\sigma(r)$ there is no telling whether the genus was the right one. $\mathit{prec}'_g(u)$ and $\mathit{prec}'_g(f)$ are the ungated precision over that subset before and after the refinement, the same columns as the right block of Table \ref{genusonly}, read here on samples for which the left block cannot exist. The share relates it to the classified reads rather than to all of them, since a read the database does not recognise could never have been improved: of SRR5571991 not quite two percent are classified, and of those about one in a thousand is left at a genus. The last two columns are those precisions carried to their gated counterparts by $\rho^u_{d,s}$ and $\rho^f_{d,s}$, borrowing the pair of Table \ref{genusonly} whose read set $s$ matches the sample; their difference is the estimated precision gain. Each sample is matched to a set generated for it: a tick to the NanoSim simulation trained on that very sample, the saliva runs to the \enquote{saliva-like} set of Table \ref{simdata}, which reproduces their read length and per-base error. No calibration here is extrapolated. Tick 5 is omitted, as in the first study, where KrakenUniq did not complete on it. The \texttt{strepto} block is aggregated rather than listed: eighty-three clinical samples would not fit, and the three blocks below the first split them by what the reference standard of Section \ref{streptocase} says about \emph{S.~pneumoniae} --- culture grew it, only the source study's pipeline called it, or neither named it. Each figure is an average over $|R'_g|$ and not over samples, so that a sample leaving one read at the genus does not weigh as much as one leaving four thousand. The first row covers the \dbstat{rg}{strepto/samples} samples that leave any read there; the remaining three of the \num{83} leave none and enter no row. The estimate columns are empty for \texttt{strepto} because no simulated read set of that database exists to calibrate them.}\label{realgain}
     \end{table}
 
 
@@ -1205,73 +1240,110 @@ Two effects nevertheless deserve attention when reading the table. First, the re
     the metagenomic classification.
 
     The reference taxonomy is what creates the difficulty. NCBI places \emph{S.~pneumoniae}, \emph{S.~pseudopneumoniae},
-    \emph{S.~oralis}, \emph{S.~infantis}, \emph{S.~sanguinis}, \emph{S.~gordonii} and \emph{S.~parasanguinis} as direct
-    children of the genus; of the biological mitis group, only \emph{S.~mitis} sits under the node named after it. A $k$-mer
-    that these species share has no common ancestor below \emph{Streptococcus}, so the LCA update leaves it there. The
-    genomes do offer something finer. The tree has nowhere to put it.
+    \emph{S.~oralis}, \emph{S.~infantis}, \emph{S.~sanguinis}, \emph{S.~cristatus} and \emph{S.~gordonii} as direct
+    children of the genus. Of the biological mitis group only \emph{S.~mitis} and \emph{S.~parasanguinis} sit under the
+    node named after it, and \emph{S.~parasanguinis} through a nested \emph{Streptococcus parasanguinis group} of its own.
+    A $k$-mer that these species share has no common ancestor below \emph{Streptococcus}, so the LCA update leaves it
+    there. The genomes do offer something finer. The tree has nowhere to put it.
 
     \subsubsection{Application of refined $k$-mer databases}
-    The database \texttt{strepto} of Table \ref{dbdesc} holds the genus with at most fifty genomes per species. Before any
-    clustering runs, the branching degree of Section \ref{dbrefinement} already shows what the LCA update left at the genus
-    node: how many of the node's child subtrees carry a given $k$-mer. A $k$-mer carried by all of them is core genome and
-    cannot move. One carried by few is what a refined node can take.
+    The database \texttt{strepto} of Table \ref{dbdesc} holds the genus with at most fifty genomes per species. Above the
+    data taxa its genus subtree stores \num{250398829} $k$-mers, and before any clustering runs those sit in exactly three
+    kinds of place: $47.99$\,\% at a species node or below it, $2.37$\,\% at one of the five \emph{species group} nodes
+    NCBI supplies, and $49.64$\,\% at the genus itself. There is nothing in between. The five species groups hold
+    \num{5924657} $k$-mers together against \num{124302068} at the genus, one part in twenty of the material whose
+    placement is at issue.
 
-    Of the \num{222207845} $k$-mers stored at \emph{Streptococcus}, \num{115880185} --- $52.15$\,\% --- sit in exactly two of
-    its \num{147} populated child subtrees, and $99.52$\,\% in ten or fewer. The mean branching degree is $3.02$ of $147$,
-    and nothing is left above degree $C/2$, so the genus has no core to speak of. The five \emph{species group} nodes that
-    NCBI does supply hold \num{850262} $k$-mers between them, against \num{222207845} at the genus itself --- three parts in
-    a thousand of the material whose placement is at issue.
+    \todo{The branching-degree figures that stood here came from \texttt{streptococcus\_branchhistocsv.csv} of
+    2026-08-22, whose genus row totals \num{222207845} $k$-mers against the \num{124302068} of the current build. Rerun
+    the histogram and restate them, including how many of the degree-two $k$-mers the clustering actually places. The old
+    figures cannot be renumbered: they describe a database that still held the unnamed branches and was built under the
+    contig cap.}
 
-    The refinement moves that material a long way down. Of the $k$-mers in the genus's subtree, $50.7$\,\% sit at a node
-    that leaves more than five hundred species open before it runs and $26.9$\,\% afterwards, while the share at a node
-    naming ten species or fewer rises from $0.2$\,\% to $7.0$\,\% --- \num{30786034} $k$-mers, against the \num{850262}
-    of NCBI's own \emph{species group} nodes, a factor of \num{36}. It also builds a node the taxonomy does not. One refined node
-    holds the five species of NCBI's own \emph{Streptococcus mitis group} together with \emph{S.~pneumoniae},
-    \emph{S.~oralis} and \emph{S.~pseudopneumoniae}, which that group leaves outside and which hang off the genus instead
-    --- and those three are the clinically decisive ones, the organisms a pneumococcus is confused with. Before the
-    refinement there is no node a $k$-mer shared between \emph{S.~pneumoniae} and \emph{S.~mitis} could rest at other than
-    the genus itself, since NCBI's group is not an ancestor of the pneumococcus; afterwards there is one, and it leaves
-    eight species open instead of \num{626}.
+    The refinement moves that material a long way down. The share of it at a node leaving more than a hundred species open
+    falls from $49.64$\,\% to $35.80$\,\%, and the share at a node naming ten species or fewer rises from $50.36$\,\% to
+    $60.35$\,\% --- \num{25014786} $k$-mers newly placed there, against the \num{5924657} of NCBI's own \emph{species
+    group} nodes, a factor of $4.2$. It also builds a node the taxonomy does not. One refined node holds the five species
+    of NCBI's own \emph{Streptococcus mitis group} --- \emph{S.~mitis}, \emph{S.~gwangjuensis}, \emph{S.~humanilactis},
+    \emph{S.~chosunensis} and \emph{S.~toyakuensis} --- together with \emph{S.~pneumoniae}, \emph{S.~oralis} and
+    \emph{S.~pseudopneumoniae}, which that group leaves outside and which hang off the genus instead. Those three are the
+    clinically decisive ones, the organisms a pneumococcus is confused with. Before the refinement a $k$-mer shared
+    between \emph{S.~pneumoniae} and \emph{S.~mitis} could rest nowhere but the genus, since NCBI's group is not an
+    ancestor of the pneumococcus; afterwards it rests at a node leaving eight species open instead of \num{157}.
+
+    That node has exactly two children, and the split is the point. One is \emph{S.~pneumoniae}, whose subtree holds
+    \num{1729440} $k$-mers. The other holds the seven commensals and \num{27408759} $k$-mers, and the pneumococcus is not
+    below it. Between the two, \num{707491} $k$-mers stay at the node itself, shared and undecidable --- $2.4$\,\% of the
+    \num{29845690} that reach the mitis complex at all. So the refined database can also answer \emph{a mitis-group
+    commensal, and not the pneumococcus} --- a negative answer on the pathogen, which is the distinction
+    \citet{lrinanopore} had to settle in the laboratory. The unrefined database cannot give it at all: the \num{895103}
+    $k$-mers that carry it sat at the genus, where they named all \num{157} species.
 
     Two qualifications keep that from being more than it is. The node is not the mitis group of the clinical literature:
     \emph{S.~infantis}, \emph{S.~cristatus} and \emph{S.~sanguinis} sit elsewhere in the refined tree, because the
-    clustering groups by shared $k$-mers and not by nomenclature. And it does not separate the pathogen from the
-    commensals --- \emph{S.~pneumoniae} shares it with \emph{S.~pseudopneumoniae}, \emph{S.~mitis} and \emph{S.~oralis},
-    which is exactly the distinction \citet{lrinanopore} needed a \emph{ply}-specific assay for. What the refined database
-    gains here is therefore not a saved confirmation but a truthful answer: where their pipeline named
-    \emph{S.~pneumoniae} and was wrong in five of eighteen samples, a refined LCA database names the complex and says that
-    it cannot resolve it. The assay is still required; it is no longer the only thing that would have revealed the need
-    for it.
+    clustering groups by shared $k$-mers and not by nomenclature. And the \num{707491} $k$-mers at the node itself stay
+    undecidable between the pathogen and its neighbours; that is the residue \citet{lrinanopore} needed a
+    \emph{ply}-specific assay for, and no refinement can move it. The assay is still required. What the refined database
+    adds is that it now says which reads require it.
 
-    \paragraph{What a refinement cannot repair.} It does not follow that the pneumococcus becomes
-    nameable, and in this database it does not. \emph{S.~pneumoniae} keeps \num{656} $k$-mers of its
-    own, \num{1053} counting its whole subtree; across the \num{83} clinical samples of
-    Section~\ref{streptoreads} not one classification ever landed below it.
+    \paragraph{What a refinement cannot repair.} The pneumococcus is nameable in this database, and the credit belongs to
+    the database rather than to the refinement. \emph{S.~pneumoniae} keeps \num{1273715} $k$-mers of its own and
+    \num{1729440} counting its whole subtree, and those are in the unrefined variant too. An earlier build left it
+    \num{656}; that figure was an artefact of a per-species cap that counted fasta entries instead of genomes and so gave
+    the best-sequenced species of the genus two thirds of one assembly. It was not a fact about the mitis complex.
 
-    The cause is the neighbourhood, and the genus supplies its own control for that. \emph{S.~mutans},
-    which has no close relative among the \num{626} species here, keeps \num{1837054} --- a factor of
-    \num{1700} between two species of one genus, in one database, under one update. The depleted ones
-    are precisely the four of the mitis complex: \emph{S.~mitis} keeps nothing at all,
-    \emph{S.~pseudopneumoniae} \num{566}, \emph{S.~oralis} \num{37252}. They are direct children of
-    the genus, so a $k$-mer any two of them share has its lowest common ancestor at the genus and
-    nowhere lower --- and after the refinement it has the mitis node, which is why that node exists but
-    holds only \num{37567} $k$-mers. What the refinement cannot supply is the distinction itself: the
-    $k$-mers that would separate \emph{S.~pneumoniae} from \emph{S.~mitis} are, for the most part,
-    not there to be moved. That is a fact about the mitis complex, not about the method, and it is why
-    \citet{lrinanopore} needed a \emph{ply} assay rather than a better classifier.
+    What the refinement adds to the pneumococcus itself is nothing, and the quality file says so plainly. Its $sp$ goes
+    from $0.26794262$ to $0.26793533$ and its node precision from $0.00652790$ to $0.00652994$. The refinement does move
+    \num{1174677} of its $k$-mers into a strain cluster below the species, but that cluster's node precision is
+    $0.00652806$, which is $1/153$: the $k$-mers are carried by essentially every one of the \num{153} pneumococcal data
+    taxa. They are core genome, and Section \ref{dbrefinement} predicts that core cannot move.
 
-    The genus also carries \num{468} unnamed genomes under \emph{unclassified Streptococcus}, holding
-    \num{45614308} $k$-mers between them, and by the argument of Section \ref{results} they should
-    take their share too. Striking them out of the database alone did not: \emph{S.~pneumoniae} kept
-    the same \num{656} $k$-mers, because the update reads the RefSeq release whether or not a branch
-    was excluded from the database's content. \todo{The measurement that decides it is running:
-    \texttt{streptonamed} with \texttt{refseq.updateScope=allButExcluded}, which keeps those genomes
-    out of the update as well. If the \num{656} move, say by how much and add the unnamed branch to
-    the account above; if they do not, say that the mitis complex accounts for all of it, and drop
-    \texttt{streptonamed} in favour of the same two lines in \texttt{strepto}.}
+    This is also where $sp$ stops tracking the clinical question. Its per-$k$-mer precision is $1/|D(a)|$ over data taxa,
+    and data taxa are genomes, not species: \emph{S.~gordonii} has two of them and a node precision of $0.4997$,
+    \emph{S.~pneumoniae} has \num{153} and $0.006528$. A $k$-mer that names the pneumococcus and nothing else therefore
+    scores $1/153$, and the refined mitis node, which separates the pathogen from seven commensal species, scores
+    $0.0060$. Neither $sp$ nor $sp^{*}$ can express the distinction this case study is about. The read-level $\rho$ of
+    Section \ref{groundtruthfree} has to carry it.
 
-    \todo{And: how many of the degree-two $k$-mers the clustering actually places. The branching-degree figures above come
-    from the unrefined database and are a bound, not a result.}
+    Over the whole database the refinement raises $sp$ from $0.6040$ to $0.6216$ and $sp^{*}$ from $0.2046$ to $0.2401$, a
+    relative gain of $17.4$\,\% and the smallest of the databases in Table \ref{dbsp}. The gain is the right kind even so.
+    A refinement never moves a $k$-mer across the species boundary, so the $sp^{*}$ numerator splits exactly by position
+    in the tree: \num{153303860} $k$-mers sit above the species rank in both variants, and their mean precision rises from
+    $0.0074$ to $0.0535$, a factor of $7.2$. That is $73$\,\% of the gain. The remaining $27$\,\% is strain clustering
+    inside species. The aggregate is small because half the material above the data taxa already sits at a species node,
+    not because the work between species failed.
+
+    The genus supplies its own control for what the neighbourhood costs. \emph{S.~mutans}, which has no close relative
+    here, keeps \num{4118045} $k$-mers in its subtree, \emph{S.~uberis} \num{4251160} and \emph{S.~suis} \num{3847928}.
+    The \num{1729440} of \emph{S.~pneumoniae} is the poorest of the genus's well-sequenced species, but of the same order,
+    not the three orders the earlier build suggested. Part of the remaining gap is the cap and not the biology: it admits
+    fifty of the \num{9263} pneumococcal assemblies, against fifty of \num{259} for \emph{S.~oralis} and fifty of
+    \num{242} for \emph{S.~mitis}, so the pneumococcal accessory genome is by far the most thinly sampled of the three.
+    The figure is a floor.
+
+    The two unnamed branches of the genus --- \emph{unclassified Streptococcus}, with its \num{468} genomes, and
+    \emph{environmental samples} --- are struck out of \texttt{strepto}, and \texttt{refseq.updateScope=allButExcluded}
+    keeps them out of the LCA update as well. Under that update a genome the taxonomy cannot place is a sink: a $k$-mer
+    shared between \emph{S.~pneumoniae} and an unnamed draft has its lowest common ancestor at the genus, so one such
+    genome lifts a species' $k$-mers clear out of it. This is why the database holds \num{157} species where the release
+    has \num{626}. The experiment that ran as a separate project \texttt{streptonamed} is folded into \texttt{strepto} and
+    is no longer reported on its own.
+
+    That exclusion makes a trade, and it is the failure mode this section is about: a $k$-mer that besides a kept species
+    only an excluded genome carries now stays claimed for that species, so where the excluded genome was in truth a
+    different streptococcus, a commensal read could be reported as the pathogen. The six extraction negatives of the
+    study --- the same protocol with no sample --- are what tests it. Across all six, both variants and every ranked
+    position, \emph{S.~pneumoniae} does not appear. The fourteen taxa that do are oral and environmental commensals:
+    \emph{S.~mitis}, \emph{S.~oralis}, \emph{S.~gordonii}, \emph{S.~parasanguinis}, \emph{S.~salivarius} and their
+    like. The trade did not produce a false pathogen. Two limits keep that from being more than it is: the negatives
+    carry \num{176} classified reads between them, so the test has little power, and one of them ranks
+    \emph{S.~pyogenes} first --- a pathogen, on a control with eleven placed reads spread over seven nodes.
+
+    The read-level results of Section \ref{streptoreads} were remade on this build. An earlier run of them, on a
+    database with \num{455031852} stored $k$-mers and a pneumococcus holding \num{656} of its own, found that across the
+    \num{83} samples no classification ever landed below the genus. That finding does not survive the rebuild, and it
+    was a statement about the cap rather than about the genus: with \num{1729440} $k$-mers below it, the pneumococcus is
+    now the top call in four of the samples.
 
     \subsubsection{The reference standard, and what it can decide}
     Tables 1 and 2 of \citet{lrinanopore} give, per sample, the organism routine microbiology grew and the organism their own
@@ -1370,17 +1442,121 @@ Two effects nevertheless deserve attention when reading the table. First, the re
     What we report instead is the measure of Section \ref{groundtruthfree}, unchanged and per read: over the reads the
     unrefined database left at a genus, the reciprocal of the number of species its assignment still leaves open, before and
     after the refinement. It needs no $\sigma(r)$, it is the same quantity already read on the saliva runs and the tick
-    samples, and it rests on \num{2271441} reads rather than on thirteen samples. Table \ref{realgain} carries the figures
+    samples, and it rests on \dbstat{rg}{strepto/reads} reads rather than on thirteen samples. Table \ref{realgain} carries the figures
     beside those two.
 
-    \todo{Fill in the \texttt{strepto} block of Table \ref{realgain} from \texttt{strepto\_lri\_specificity.csv}, and
-    the \texttt{streptonamed} block beside it. The last two columns need $\rho^u$ and $\rho^f$ from simulated reads of the
-    same database; until those exist, leave them empty rather than borrowing a calibration from another database.}
+    The refinement raises it from \dbstat{rg}{strepto/precu} to \dbstat{rg}{strepto/precf}, from
+    \dbstat{rg}{strepto/openu} species still open to \dbstat{rg}{strepto/openf}. That is
+    \dbstat{rg}{strepto/gain}\,\%, over \dbstat{rg}{strepto/subset} reads in
+    \dbstat{rg}{strepto/samples} of the \dbstat{nn}{strepto/samples} samples --- the rest left no read at the genus at all.
+    \dbstat{rg}{strepto/improved} samples improve, \dbstat{rg}{strepto/flat} are unchanged and
+    \dbstat{rg}{strepto/worse} gets worse. The two database variants classify the same reads: the number a sample has
+    classified is identical in every row of \texttt{strepto\_lri\_specificity.csv}, which is what makes the pair
+    comparable at all.
 
-    The sample-level standard keeps a role, but a qualitative one. It says which of the \num{83} runs the clinicians had to
-    settle in the laboratory --- the \num{18} pathobiont-positive ones --- and it is against those that the two variants
-    are worth reading one by one: where the unrefined database can say no more than \emph{Streptococcus}, does the refined
-    one reach the mitis complex, and does it ever reach the species. \todo{That comparison, once the runs are in.}
+    Set that against the $17.4$\,\% by which the same refinement raises $sp^{*}$. The two measures are averages of
+    different things over different sets and neither bounds the other, but the direction of the difference is the one
+    Section \ref{dbrefinement} predicts: $sp^{*}$ divides by data taxa, which are genomes, and fifty near-identical
+    pneumococcal genomes hold it near $1/153$ whatever the refinement does. The read-level measure divides by the species
+    a classification leaves open, which is the quantity a clinician reads, and on it the same refinement is worth a factor
+    of $2.3$.
+
+    Where the pneumococcus actually is, it is worth more. Splitting the samples by what the reference standard says about
+    it gives the three blocks of Table \ref{realgain}: \dbstat{rg}{strepto/cultgain}\,\% where culture grew
+    \emph{S.~pneumoniae}, \dbstat{rg}{strepto/pipegain}\,\% where only the source study's pipeline called it, and
+    \dbstat{rg}{strepto/nonegain}\,\% where neither named it. All six culture-confirmed samples improve, between
+    $76$\,\% and $454$\,\%.
+
+    The relative ordering has a cause worth stating, because it is not that the refinement works better on some samples
+    than on others. Unrefined, a sample with the pneumococcus in it is scored barely half as specifically as one without
+    --- \dbstat{rg}{strepto/cultprecu} against \dbstat{rg}{strepto/noneprecu} --- and it strands twice as large a share
+    of its classified reads at the genus, \dbstat{rg}{strepto/cultgroupshare}\,\% against
+    \dbstat{rg}{strepto/nonegroupshare}\,\%. That deficit is the mitis complex, and it is exactly what Section
+    \ref{streptocase} predicts from the tree. After the refinement the two are \dbstat{rg}{strepto/cultprecf} and
+    \dbstat{rg}{strepto/noneprecf}. The refinement does not favour the pneumococcus; it removes the penalty the
+    pneumococcus's own neighbourhood imposes.
+
+    The last two columns of Table \ref{realgain} stay empty for \texttt{strepto}. Carrying an ungated precision to the
+    gated one it stands for needs $\rho^u$ and $\rho^f$ from simulated reads of this same database, and those do not
+    exist yet. \todo{Generate them --- \texttt{make\_fastqs.sh strepto} and the \texttt{strepto} target of
+    \texttt{run\_classification\_exps.sh} --- and check first whether the extracted genomes under
+    \texttt{data/projects/strepto/fasta/} predate the rebuild of 2026-08-26, since the per-species selection changed with
+    it. Borrowing another database's calibration would be worse than leaving the columns empty.}
+
+    \paragraph{What the sample-level standard says.} The reference standard also allows the cruder comparison, and it is
+    worth reporting because it comes out flat. Naming one taxon per sample below the genus, from
+    \texttt{strepto\_lri\_taxoncall.csv}, the top call is identical between the two variants in all
+    \dbstat{nn}{strepto/topsame} samples, for each of the \dbstat{nn}{strepto/currencies} currencies the report offers
+    --- reads, $k$-mers and unique $k$-mers. Not one sample changes. \emph{S.~pneumoniae} is the top call in
+    \dbstat{nn}{strepto/topnamed} of them, \dbstat{nn}{strepto/topnamedlist}, all of them culture-confirmed, and it is
+    the same set before and after. The \dbstat{nn}{strepto/topmissed} culture-confirmed samples it misses are called
+    \dbstat{nn}{strepto/topmissedlist} --- both mitis-complex neighbours, and both missed by the refined variant too. That is the \dbstat{nn}{strepto/parentkmers} undecidable $k$-mers of the mitis node appearing as clinical error, and no refinement
+    can move them.
+
+    Two things follow. The pneumococcus is named by the unrefined database already, which settles where the credit for
+    that belongs: the per-species genome cap, not the refinement. And a classifier stated per sample cannot see what a
+    refinement does, since the finer node a read reaches carries no name in the reference taxonomy and so cannot be
+    reported as a taxon at all. The decision not to build one is therefore not only a judgement about what a sputum
+    sample is; it is what the measurement shows.
+
+    Table \ref{nearestnode} reads the same file the other way round. Rather than name a taxon, it asks
+    how far towards \emph{S.~pneumoniae} each sample's evidence reached and how many species are still
+    in question there --- which is the only way a refined node can be described at all, since it bears
+    no name of the reference taxonomy. The two unrefined rows have nothing in their middle columns,
+    and that is structural rather than a finding: with the pneumococcus a direct child of the genus,
+    an unrefined database has exactly two answers available to it, the species or the genus. The
+    refinement fills the gap between them.
+
+    What it does not establish is how much of a sample went there. The median share of the in-genus
+    evidence sitting at the reported node is \dbstat{nn}{strepto/reads/f/medianshareat} in reads and
+    \dbstat{nn}{strepto/kmers/f/medianshareat} in $k$-mers, so for many samples the depth reached is
+    the depth one read or one $k$-mer reached. The share at or below the node is far larger ---
+    \dbstat{nn}{strepto/reads/f/mediansharebelow} and \dbstat{nn}{strepto/kmers/f/mediansharebelow}
+    --- but that counts the commensal siblings of the same clade and says nothing about the
+    pneumococcal lineage. Read as a statement about what the tree makes available, the table is sound;
+    read as a statement about what a sample supports, it is not, and the two must not be conflated.
+    None of the samples in those middle columns is one culture confirmed for the pneumococcus: all six
+    of those already reach the species in both variants.
+
+    \todo{Regenerate \texttt{strepto\_lri\_taxoncall.csv}. The file this table is built from predates
+    two corrections. Empty \emph{OTHER} buckets were counted as a candidate species, which added one
+    to every refined node and to no unrefined one, so the genus read one species too many and the mitis node likewise; and the nearest-node walk had no minimum, which is why the
+    shares above are what they are. Rerun with \texttt{gs.taxoncall.minimum} set, compare against the
+    unfloored file before choosing the value, and state it in this caption.}
+
+    One column of that file invites a wrong reading. Its \emph{unplaced} count is the reads not placed at a \emph{named}
+    taxon below the genus, and it rises under the refinement, from \dbstat{nn}{strepto/reads/u/unplaced} to \dbstat{nn}{strepto/reads/f/unplaced}. This is not a regression.
+    A read that lands on a refined node has no taxon name to report and counts as unplaced even where that node sits
+    below the species; the same reads are simultaneously more specific, which is what the
+    \dbstat{rg}{strepto/precu}~$\rightarrow$~\dbstat{rg}{strepto/precf} above measures. The number of contributing nodes
+    rises with it, from \dbstat{nn}{strepto/reads/u/contribnodes} to \dbstat{nn}{strepto/reads/f/contribnodes}.
+
+    \begin{table}[!htbp]
+        \centering
+        \footnotesize
+\sisetup{table-alignment-mode = format, table-number-alignment = center, group-separator = {,}, group-minimum-digits = 4}
+        \setlength{\tabcolsep}{3pt}
+        \begin{tabular}{@{}l|l|c|c|c|c|c|c|r@{}}
+            \multicolumn{1}{c|}{\textbf{Currency}} & \multicolumn{1}{c|}{\textbf{Variant}} &
+            \multicolumn{5}{c|}{\textbf{Species still open where the evidence stopped}} &
+            \multicolumn{1}{c|}{\textbf{\shortstack{Correctly\\off\\lineage}}} &
+            \multicolumn{1}{c}{\textbf{\shortstack{Median\\in-genus\\total}}}\\
+            \cmidrule{3-7}
+            \multicolumn{1}{c|}{} & \multicolumn{1}{c|}{} &
+            \multicolumn{1}{c|}{\textbf{1}} & \multicolumn{1}{c|}{\textbf{2--10}} &
+            \multicolumn{1}{c|}{\textbf{11--50}} & \multicolumn{1}{c|}{\textbf{51--100}} &
+            \multicolumn{1}{c|}{\textbf{\shortstack{101--\dbstat{nn}{strepto/rootspecies}\\(up to the genus)}}} &
+            \multicolumn{1}{c|}{} & \multicolumn{1}{c}{}\\
+            \hline
+            \nearestrow{Reads}{unrefined}{strepto/reads/u}
+            \nearestrow{Reads}{refined}{strepto/reads/f}
+            \hline
+            \nearestrow{$k$-mers}{unrefined}{strepto/kmers/u}
+            \nearestrow{$k$-mers}{refined}{strepto/kmers/f}
+        \end{tabular}
+        \caption{How far towards \emph{S.~pneumoniae} the evidence of each of the \dbstat{nn}{strepto/samples} clinical samples reaches, and how many species are still in question where it stops. The node is the deepest one carrying any signal that is the species itself, anything below it, or one of its ancestors; a sibling is a different organism and does not count as close. The columns bucket the samples by the species that node still leaves open, the pneumococcus included, so \emph{1} means the sample reached the organism. The last of them holds the genus itself, which leaves all \dbstat{nn}{strepto/rootspecies} species of the database open, together with any node still leaving more than a hundred: a node that narrows the answer from \dbstat{nn}{strepto/rootspecies} species to \dbstat{nn}{strepto/reads/f/maxladder} has narrowed nothing worth reporting apart, and giving it a column of its own would suggest otherwise. The genus enters that bucket by its tax id rather than by a count, which keeps it there when the count moves. \emph{Correctly off lineage} counts the samples with no signal there at all, which under a refinement is not the same as failure: the evidence can move to a branch that excludes the pneumococcus, which is a negative answer about it rather than none. It is called correct because in every sample that falls there culture and the source study's own pipeline agree on a Gram-negative --- \emph{K.~pneumoniae}, \emph{E.~coli}, \emph{P.~mirabilis}, \emph{E.~cloacae} --- and neither names any streptococcus. That is as far as a standard reporting what grew can settle the question: it establishes that something else was there rather than that the pneumococcus was not. The claim is a property of these samples and not of the column, so \texttt{paper\_stats.sh} checks it whenever the figures are regenerated and says so if it stops holding. The two unrefined rows are empty in the middle by construction and not by measurement --- NCBI makes \emph{S.~pneumoniae} a direct child of the genus, so an unrefined database has nothing between the two to answer with. The bracketed figure is what those nodes hold: the median, over the samples of that cell, of the evidence sitting \emph{at} the reported node --- whose lowest common ancestor is that node and nothing deeper. It is the one quantity that means the same in every column, since at or below a node between the species and the genus would count the commensal siblings of the same clade, which support nothing about the pneumococcal lineage. A cell no sample reached has no median and carries no bracket. The last column is the denominator these are small against, and it is why a share would mislead here: a sample holds some hundred times more $k$-mers than reads below the genus, so the same evidence expressed as a fraction of the $k$-mer total looks smaller while resting on more observations, not fewer. Read the brackets, not a ratio of them, and they say that the $k$-mer currency carries this measure while the read currency barely does. Two things the brackets do not say. The species column falls between the variants --- \dbstat{nn}{strepto/kmers/u/speciesmed} to \dbstat{nn}{strepto/kmers/f/speciesmed} in $k$-mers --- and that is the refinement moving a species' own $k$-mers into the strain clusters it builds beneath it, not a weaker call: over the same samples the median evidence at or below the species is \dbstat{nn}{strepto/kmers/u/speciesbelowmed} before and \dbstat{nn}{strepto/kmers/f/speciesbelowmed} after, unmoved. It is the same effect as the rise in \emph{unplaced} above, seen from the other side. And a cell holds different samples in the two variants, so the medians of a column are not a before and after of one set: the refined \emph{genus} cell holds the \dbstat{nn}{strepto/reads/f/genus} samples the refinement could not bring below a hundred species, which are the ones with least to move.}\label{nearestnode}
+    \end{table}
+
 
     \subsubsection{Read data}\label{streptoreads}
     The clinical data are the \num{83} nanopore runs of \citet{lrinanopore}, deposited under ENA study PRJEB30781: forty
@@ -1399,6 +1575,28 @@ Two effects nevertheless deserve attention when reading the table. First, the re
     streptococcus shares with \emph{Homo sapiens} is raised above it instead of staying under the streptococcus, where it
     would turn human reads into hits. The saponin depletion of \citet{lrinanopore} reduces host DNA but does not remove it,
     and in a respiratory specimen what remains is still the most common kind of read in the file.
+
+    \paragraph{What this case study shows, in short.} \todo{A working summary, kept for us rather than
+    for a reader, and to be reworked with the rest of the section. It is a good deal stronger than
+    when the genus was picked, and most of it arrived late:}
+    \begin{itemize}
+        \item read-level ungated precision \dbstat{rg}{strepto/precu} $\rightarrow$
+              \dbstat{rg}{strepto/precf}, \textbf{+\dbstat{rg}{strepto/gain}\,\%}, over
+              \dbstat{rg}{strepto/subset} genus-only reads; \dbstat{rg}{strepto/improved} of
+              \dbstat{rg}{strepto/samples} samples improve, \dbstat{rg}{strepto/worse} gets worse
+        \item the clinical gradient: \textbf{+\dbstat{rg}{strepto/cultgain}\,\%} where culture grew
+              the pneumococcus, +\dbstat{rg}{strepto/pipegain}\,\% pipeline-only,
+              +\dbstat{rg}{strepto/nonegain}\,\% where neither named it
+        \item a refined node holding the mitis complex --- eight species, the pneumococcus split from
+              seven commensals, only $2.4$\,\% genuinely undecidable
+        \item negatives clean: no \emph{S.~pneumoniae} in any of the six, both variants, every ranked
+              position
+        \item the pneumococcus nameable at all, in four culture-confirmed samples
+    \end{itemize}
+    \todo{And the weaknesses, so the balance is not lost in the rework: $sp^{*}$ +$17.4$\,\% is the
+    weakest of the five databases that gain; the sample-level call is identical in every sample; the
+    pneumococcus is named by the \emph{unrefined} database, which is the genome-cap fix and not the
+    refinement; and the refinement acts on about a tenth of the classified reads.}
 
     \section{Availability and requirements}
 

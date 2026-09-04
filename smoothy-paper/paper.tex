@@ -1,0 +1,828 @@
+\documentclass[pdflatex,sn-vancouver-num]{sn-jnl}
+
+%
+% Set to \finalsubmissiontrue when compiling on a system without Inkscape and/or
+% -shell-escape (e.g. most cloud/journal LaTeX services). Figures are then taken
+% from pre-rendered PDFs instead of being converted from SVG on the fly; run
+% convert-svgs-to-pdf.sh once beforehand to produce them.
+\newif\iffinalsubmission
+\finalsubmissionfalse
+
+\usepackage{graphicx}%
+\iffinalsubmission\else\usepackage{svg}%
+\fi
+\usepackage{multirow}%
+\usepackage{amsmath,amssymb,amsfonts}%
+\usepackage{amsthm}%
+\usepackage{mathrsfs}%
+\usepackage[title]{appendix}%
+\usepackage{xcolor}%
+\usepackage{textcomp}%
+\usepackage{booktabs}%
+\usepackage{algorithm}%
+\usepackage{algorithmicx}%
+\usepackage{algpseudocode}%
+\usepackage{listings}%
+\usepackage{csquotes}
+\usepackage{siunitx}
+\usepackage{todonotes}
+\usepackage{array}
+\usepackage{csvsimple}
+\usepackage{etoolbox}
+\usepackage{url}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+%
+% Figures float more freely than the class allows by default; the same settings the
+% other papers of this folder use.
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.8}
+\renewcommand{\textfraction}{0.07}
+\renewcommand{\floatpagefraction}{0.75}
+
+%
+% A value that has not been measured yet renders as a visible marker rather than as
+% a blank or a plausible-looking number. Everything numeric in this paper is meant to
+% come from a generated file, as it does in ft-paper: see \dbstat below.
+\providecommand{\sysUnknown}{\textbf{??}}
+
+%
+% Looks up a generated statistic. Values live in results/*.tex, written by whatever
+% script ends up producing them, and are never typed into the prose. An unknown key
+% renders as \sysUnknown so that a missing measurement is visible in the PDF instead
+% of silently absent.
+%   \dbstat{<kind>}{<key>}
+\newcommand{\dbstat}[2]{\ifcsname dbstat@#1@#2\endcsname\csname dbstat@#1@#2\endcsname\else\sysUnknown\fi}
+
+% Pulled in only when it exists, so that the paper builds before any measurement does.
+\IfFileExists{results/smoothystats.tex}{\input{results/smoothystats.tex}}{}
+
+\begin{document}
+
+    \title{Smoothy: Using Topic Modeling for abundance estimation from metagenomic results}
+
+    \author*[1]{\sur{Daniel} \fnm{Pfeifer}}\email{daniel.pfeifer@hs-heilbronn.de}
+
+    \affil*[1]{\orgdiv{IT Faculty}, \orgname{Heilbronn University}, \orgaddress{\street{Max-Planck-Str. 39}, \city{Heilbronn}, \postcode{74081}, \state{Baden-W\"urttemberg}, \country{Germany}}}
+
+    \date{September 2026}
+
+    \abstract{\textbf{Background:}
+
+    \textbf{Results:}
+
+    \textbf{Conclusions:} }
+
+    \keywords{Metagenomics, abundance estimation, topic modeling, latent Dirichlet allocation, read classification, taxonomic profiling}
+
+    \maketitle
+
+    \section{Introduction}\label{introduction}
+    \todo{What abundance estimation has to do that classification does not, and why the assignments a
+    classifier produces are not already an answer. The gap to state precisely: a read that a database
+    leaves at an internal node names no organism, and the share of such reads is not small --- in the
+    clinical runs of the companion paper a tenth of the classified reads sit at a genus, and the node
+    they sit at leaves anywhere from eight to a hundred and fifty-seven species open.}
+
+    \section{Related work}\label{relatedwork}
+    Probabilistic topic modeling begins with probabilistic latent semantic analysis
+    \citep{hofmann1999plsa}, which fits a document as a mixture over topics by maximum likelihood,
+    and with latent Dirichlet allocation \citep{blei2003lda}, which places the mixtures under a
+    Dirichlet prior and makes the model generative. Maximum-a-posteriori estimation of that model was
+    derived by \citet{defreitas2001bayesian} and \citet{chien2008adaptive}; it is Hofmann's fit with
+    the prior entering as a pseudo-count. Of the inference methods that followed, collapsed Gibbs sampling
+    \citep{griffiths2004scientific} is the one this paper reaches for; \citet{asuncion2009smoothing}
+    compare it against the others systematically and give the hyperparameter re-estimation step built
+    on \citet{minka2000dirichlet} that is known as Minka's update.
+    \citet{pfeifer2019topicgrouper} set out the same correspondence between documents, words and
+    topics that this paper carries over to samples, taxonomy nodes and genomes.
+
+    \todo{The other half of the related work, which is abundance estimation itself. The paper has to
+    say what it is not: the re-estimation approaches that redistribute ambiguous assignments down the
+    taxonomy, the expectation-maximisation family that fits a mixture of reference genomes to a read
+    set, and the marker-gene profilers that sidestep the problem by only counting reads they can
+    place. What topic modeling offers that none of them do is the thing to name here.}
+
+    \section{Method}\label{method}
+    \todo{This paper leads the implementation rather than reporting it, so this section is the
+    specification: complete enough to build from, and precise enough that a measurement can
+    contradict it.}
+
+    \subsection{The generative model}\label{model}
+    Shotgun sequencing draws reads from the whole of a genome rather than from one locus, so to a
+    first approximation every $k$-mer of an organism's genome is equally likely to turn up in the
+    reads. That is the assumption the method rests on, and it is why the method does not apply to
+    metabarcoding data.
+
+    Under it, the per-taxon counts a classifier reports are a mixture. Let $G$ be the sequenced
+    genomes the database was built from, $N$ the nodes of the taxonomy it uses, and $c_n$ the
+    $k$-mer count that the analysis of a sample $s$ reports at node $n$. Let $p(n \mid g)$ be the
+    probability that a $k$-mer drawn from genome $g$ is stored at node $n$ of that database, and
+    $p(g \mid s)$ the share of $g$ in the sample --- the abundance we are after. A $k$-mer observed
+    at $n$ may have come from any genome, so
+    %
+    \begin{equation}\label{smoothylikelihood}
+        \widehat{p}(g \mid s) \;=\; \argmax_{p(g \mid s)} \;\prod_{n \in N}
+            \Bigl( \sum_{g \in G} p(n \mid g)\, p(g \mid s) \Bigr)^{c_n}.
+    \end{equation}
+    %
+    The mixing is worst high in the tree, where a single node is fed by many genomes at once. That is
+    exactly where a classifier's own answer says least, which is what the model has to offer: it
+    reads the counts at the ambiguous nodes as evidence rather than discarding them.
+
+    A match result reports two counts per taxon --- the $k$-mers attributed to it and the reads
+    classified to it --- and $c_n$ is the former. Both the reason for that and the cost of it are
+    worth stating.
+
+    The cost is that the $k$-mers of one read overlap and are therefore far from independent: a read
+    of length $L$ contributes $L - k + 1$ of them, and the likelihood counts what is really one
+    observation as hundreds. This does not move the maximiser, since a factor common to every $c_n$
+    cancels out of Equation \eqref{smoothylikelihood}, but it overstates how much evidence there is
+    wherever the magnitude of the counts is read rather than their ratios --- against a prior, in any
+    interval derived from the posterior, and most of all in a sample with few reads to begin with,
+    where a single read landing on an unusual locus can carry a node by itself.
+
+    Against that, $k$-mer counts use the whole of a read rather than a summary of it. A read informs
+    several nodes at once --- its species-specific $k$-mers one, those it shares with a neighbour
+    another, its core $k$-mers a third --- and the ambiguous part, which is the part this method
+    exists to use, is kept rather than resolved away.
+
+    Read counts are not the alternative they appear to be, and the objection is not that they are
+    coarser. A read is placed at one node by the classifier's own rule, and that rule is built to name
+    the most specific taxon the read supports, so it assigns systematically deeper than the nodes at
+    which the read's $k$-mers actually sit --- for good reasons, since naming a genus where a species
+    is warranted is the failure a classifier is designed to avoid. But $p(n \mid g)$ says where the
+    database \emph{stores} the $k$-mers of $g$. It is not a statement about where a classifier would
+    place a read of $g$. Pairing read counts with it would put an observation model and an emission
+    distribution together that describe different processes, and the discrepancy is a systematic
+    skew towards the deep nodes rather than noise, so it would not average away with more data.
+
+    Using read counts would therefore require a different $p(n \mid g)$ altogether: the probability
+    that a \emph{read} of $g$ is classified at $n$, which depends on the classifier's rule, on read
+    length and on error rate. That is a property of the analysis and the sequencing run rather than
+    of the database, so it could no longer be computed once and reused --- and it would have to be
+    obtained by simulation, since nothing in the database implies it.
+
+    The two inputs come from different places, and the difference matters. The $c_n$ describe one
+    sample and are what a tool such as Genestrip already reports. The $p(n \mid g)$ describe the
+    \emph{database} and not the sample: they are fixed once the database is built, so they are
+    computed once and reused for every sample analysed against it.
+
+    This is the correspondence with document-oriented topic modeling
+    \citep{hofmann1999plsa,blei2003lda}, and it is close. A sample $s$ plays the part of a document,
+    a taxonomy node $n$ that of a word, and a sequenced genome $g$ that of a topic; $c_n$ is then the
+    count of a word in a document and $p(n \mid g)$ the topic--word distribution, in the roles set out
+    in \citet{pfeifer2019topicgrouper}. Where the analogy stops is the part that makes the problem easy. Fitting a topic
+    model to a corpus means learning the topics and the per-document mixtures together, and it is the
+    first of those that makes the objective non-convex and the answer dependent on where the fit was
+    started. Here the topics are not learned at all: $p(n \mid g)$ follows from the database, which is
+    known before any sample is seen. What remains is only the per-document mixture $p(g \mid s)$ ---
+    the analogue of inference for an unseen document against an already-fitted model, not of fitting
+    one.
+
+    That is what makes Equation \eqref{smoothylikelihood} well behaved. With the $p(n \mid g)$ fixed,
+    its logarithm is a positive combination of logarithms of functions linear in $p(g \mid s)$, hence
+    concave over the simplex. There are therefore no local optima to be trapped in, and an iteration
+    reaches the maximum wherever it starts. Whether that maximum is a single point is a separate
+    question, and it turns on the taxa being distinguishable from one another; Section \ref{pgn}
+    takes it up, since it is a property of the $p(n \mid g)$ rather than of the objective.
+
+    \todo{Confirm the notation. The idea as given had $p(g \mid n)$ in the first factor; written that
+    way the bracket is an inner product of two distributions over $G$ and is not a probability of
+    anything, and it does not sum to one over $N$. With $p(n \mid g)$ the bracket is $p(n \mid s)$,
+    the likelihood is a proper multinomial over the observed counts, and the quantity the new goal
+    measures --- the $k$-mers of $g$ that the database stores at $n$, normalised over $n$ --- is
+    exactly $p(n \mid g)$. Equation \eqref{smoothylikelihood} is written accordingly.}
+
+    \todo{Confirm the correspondence as written --- sample to document, node to word, genome to topic
+    --- and that only $p(g \mid s)$ is inferred, the topics being given by the database rather than
+    learned from the samples.}
+
+    \subsection{Estimating \texorpdfstring{$p(n \mid g)$}{p(n|g)}}\label{pgn}
+    The topic--word distribution is a property of the database, so it is measured on the database and
+    not fitted to anything. A new Genestrip goal walks the genomes the update phase considers ---
+    which is every genome of the release in scope, and not only those the entry phase stored --- and
+    for each of them looks up every $k$-mer in the database $d$.
+
+    Two cases arise, and the second is the one that matters. If the genome $g$ was entered into $d$,
+    a $k$-mer of $g$ that $d$ holds at node $n$ raises the counter $c(g,n)$. If $g$ was not entered,
+    there is no row to raise: a $k$-mer of $g$ that $d$ holds at $n$ raises that node's
+    \textsc{other} counter $c(\textsc{other},n)$ instead, and a $k$-mer that $d$ does not hold at all
+    raises nothing. Counting is by frequency rather than by distinct $k$-mer, since a $k$-mer shared
+    between genomes is the evidence the mixture is about and discarding its multiplicity would
+    discard the ambiguity the model exists to resolve.
+
+    A row is kept for every taxon and not only for the taxa that carry a genome. For a data taxon the
+    row is that genome's. For a taxon $t$ above the data, every genome subordinate to $t$ contributes
+    its $k$-mers to $t$ and to $t$'s ancestors, and only there: a $k$-mer of such a genome counts
+    towards $t$'s row when the database stores it at $t$ or at a node above $t$, and not when it is
+    stored below. So $c(t,n) = \sum_{g \preceq t} c(g,n)$ for $n$ on the path from $t$ to the root,
+    which is the same restriction the storage layout below rests on: a row never reaches beneath its
+    own taxon.
+
+    So at a rank above the data taxa a topic is not an organism. Inferring at genus rank returns a
+    distribution over genera, and the row read for a genus is the one written at its own node: the
+    pooled contribution of every genome beneath it. The topic is that clade's pan-genome as the
+    reference collection happens to represent it --- and, counting being by frequency, a pan-genome
+    weighted towards whatever its members were sequenced most often. A $k$-mer carried by many
+    genomes of the clade weighs more than one carried by a single draft.
+
+    That weighting is defensible, since a $k$-mer common to a clade is likelier to be observed from
+    it, but it makes the topic a property of the reference collection as much as of the organisms.
+    Where a clade is dominated by one heavily sequenced member --- \emph{S.~pneumoniae} accounts for
+    more than nine thousand of the twenty-two thousand \emph{Streptococcus} assemblies in RefSeq ---
+    the genus topic is largely that member's genome wearing the genus's name.
+
+    The estimate is then
+    %
+    \begin{equation}\label{smoothypng}
+        p(n \mid g) \;=\; \frac{c(g,n)}{\lvert K(g) \rvert},
+    \end{equation}
+    %
+    where $K(g)$ is the set of $k$-mers of $g$ --- all of them, not only those $d$ holds.
+
+    That denominator is deliberate and has a consequence worth being explicit about: the row
+    $p(\cdot \mid g)$ does not sum to one. What is missing is the share of $g$'s $k$-mers the database
+    does not hold anywhere, and leaving it missing is what makes a genome that $d$ covers thinly
+    weigh less than one it covers well. The observed counts $c_n$ are subject to the same omission,
+    since a $k$-mer absent from $d$ can never be reported at a node either.
+
+    The \textsc{other} row plays the part of an organism the database does not contain. Without it
+    every count would have to be explained by some $g \in G$, and a sample holding an organism absent
+    from $d$ would have its abundance pushed onto whichever genomes happen to resemble it. It is the
+    same role the \textsc{other} bucket plays in a refined tree. Its $k$-mers come from many genomes
+    at once, so its denominator pools them:
+    %
+    \begin{equation}\label{smoothyother}
+        p(n \mid \textsc{other}) \;=\;
+            \frac{c(\textsc{other},n)}{\sum_{g \notin d} \lvert K(g) \rvert},
+    \end{equation}
+    %
+    the sum running over every genome the entry phase did not store. \textsc{other} is therefore a
+    genome-weighted average over everything the database left out, rather than a quantity belonging
+    to any one organism.
+
+    Every taxon carries a row, the ones above the data taxa included, but a single inference does not
+    use them all. A rank is chosen and held fixed for the run, and $G$ in
+    Equation \eqref{smoothylikelihood} is then the set of taxa at that rank. The same stored
+    fractions serve every rank, since a row is written for each taxon regardless: choosing the rank
+    is choosing which rows to read, not recomputing them.
+
+    \begin{table}[!htbp]
+        \centering
+        \footnotesize
+        \begin{tabular}{@{}l|l|l@{}}
+            \textbf{Topic modeling} & \textbf{Here} & \textbf{Symbol}\\
+            \hline
+            document $j$ & sample (statistic) $s$ & $s$, or $s_1 \dots s_m$\\
+            word $w$ & taxonomy node & $n \in N$\\
+            topic $k$ & taxon at the chosen rank & $g \in G$\\
+            word count in a document & count reported at a node & $c_n$, corrected $\hat{c}_n$\\
+            topic--word distribution $\varphi_{wk}$ & where a taxon's $k$-mers are stored &
+                $\varphi_{ng} = p(n \mid g)$\\
+            document--topic distribution $\theta_{kj}$ & abundance in the sample &
+                $\theta_g = p(g \mid s)$\\
+            Dirichlet concentration & unchanged & $\alpha$\\
+        \end{tabular}
+        \caption{The correspondence of Section \ref{model} in the symbols each field uses. The
+        indices differ deliberately: $k$ is the $k$-mer length throughout this paper and cannot also
+        be a topic index, and $w$ for a node would say nothing. The distributions keep their usual
+        names, $\varphi$ and $\theta$, so that the equations below read as they do in the literature
+        the method is borrowed from.}\label{correspondence}
+    \end{table}
+
+    Fixing the rank is also what keeps the estimate identifiable. Were an ancestor and its
+    descendants topics at once, the same counts could be explained by either and no data could
+    separate them; at one rank that competition does not arise, because no topic is an ancestor of
+    another.
+
+    One degeneracy survives it, and it is not hypothetical. Two taxa of the chosen rank are
+    distinguishable only where their columns differ, and a taxon that retains none of its own
+    $k$-mers has a column supported entirely on the ancestors it shares with its siblings. Where two
+    such taxa sit under the same parent, their columns are proportional and any split of abundance
+    between them fits the data equally well. This is the mitis complex of the companion paper seen
+    from the estimation side: in a \emph{Streptococcus} database built on the reference taxonomy
+    \emph{S.~mitis} retains nothing at all, so at species rank it cannot be told from the
+    pneumococcus by any amount of sequencing. The condition is a property of the database and can be
+    detected from the stored fractions before a sample is seen, which is the right place to report it
+    rather than leaving a reader to wonder why two abundances trade off.
+
+    \todo{Check the degeneracy argument above before relying on it: that two taxa of the chosen rank
+    are indistinguishable exactly when their columns are proportional, and that a taxon retaining
+    none of its own $k$-mers is the way this happens in practice. If it holds, the implementation can
+    report the affected taxa from the stored fractions alone, before any sample is analysed.}
+
+    \todo{Whether the pooling should be weighted by sequencing effort at all, or whether a clade's
+    genomes should enter its row with equal weight regardless of how many times the clade was
+    sequenced. As written the first holds, which is what the counting gives for free; the second
+    would make the topic a property of the clade rather than of the collection, at the cost of an
+    assumption about which genomes represent it. Decide it, and say which, because the two give
+    different abundances for exactly the clades a reader cares most about.}
+
+    \todo{Which rank to run at is a decision the paper has to give guidance on, not only a parameter.
+    A deep rank buys resolution the data may not support; a shallow one throws away evidence the
+    database does hold. The companion paper's measurements of how far down the tree a sample's
+    evidence actually reaches are the natural place to take that guidance from.}
+
+    \todo{Whether Equation \eqref{smoothypng} should be renormalised over $n$: as written the
+    likelihood of Equation \eqref{smoothylikelihood} is not a proper multinomial, which is
+    defensible --- the missing mass is unobservable and the weighting it induces is the one we want
+    --- but it should be argued rather than passed over.}
+
+    \todo{A consequence of the pooled denominator to check on data rather than to assume away. A
+    stored genome's row nearly sums to one, since the entry phase put its $k$-mers into $d$; the
+    \textsc{other} row does not come close, because most $k$-mers of most unstored genomes are absent
+    from a database built around one clade. In the mixture, a row of small total mass has to be
+    carried by a correspondingly large $p(g \mid s)$ to explain the same counts. So a sample holding
+    an organism the database lacks should still be recognised as such --- nothing else can explain
+    its counts --- but the size of $p(\textsc{other} \mid s)$ will not be on the same scale as the
+    abundances beside it, and reporting it as though it were would misstate how much of the sample is
+    unaccounted for. This belongs to Section \ref{abundances}.}
+
+    \paragraph{Cost and storage.} The goal runs once for a database and writes its result to a
+    serialized file, which every later analysis against that database reads. Nothing here is paid per
+    sample.
+
+    The result is small, and for a reason that belongs to the method rather than to the encoding. A
+    $k$-mer of $g$ is stored by the LCA update at the lowest common ancestor of the taxa that carry
+    it; $g$ is one of them, so that node is an ancestor of $g$'s own taxon or the taxon itself. Every
+    other node is therefore unreachable for $g$, and $p(n \mid g)$ is zero there by construction. The
+    row for $g$ needs no entry for it. What is stored is one array of doubles per taxon, holding the
+    fractions along the path from that taxon up to the root --- an entry for the taxon itself and one
+    for each ancestor, so a path of length $n$ costs $n$ doubles.
+
+    That turns a matrix over genomes and nodes into one over genomes and tree depth. A bacterial
+    taxonomy is some ten to fifteen deep where the data taxa sit, so a database entering a few
+    thousand genomes stores a few hundred kilobytes rather than the tens of megabytes a dense matrix
+    over all its nodes would need.
+
+    \todo{The \textsc{other} row is the exception and needs its own encoding. Its $k$-mers come from
+    genomes the database never stored, so the node a $k$-mer of theirs is found at is the ancestor of
+    whichever \emph{stored} taxa carry it and bears no relation to any path of its own.
+    \textsc{other} therefore ranges over the whole taxonomy and does not compress the way the rows
+    above it do --- one entry per node that carries anything, kept sparsely.}
+
+    \todo{What the pass itself costs. One traversal per genome of the update scope against a built
+    database. For a bacterial project that scope is the whole division, so this is the same order of
+    work as the LCA update rather than a small addition to it. State it honestly and measure it
+    against the update, since it is the one part of the method that is not cheap.}
+
+    \subsection{Correcting the counts for sequencing error}\label{error}
+    A $k$-mer is observed only if all $k$ of its bases were read correctly. With a per-base error rate
+    $e_b$ and errors taken as independent, an instance survives with probability $(1 - e_b)^k$, so the
+    reported counts are a systematic undercount and the corrected count is
+    %
+    \begin{equation}\label{smoothyerror}
+        \hat{c}_n \;=\; \frac{c_n}{(1 - e_b)^k}.
+    \end{equation}
+    %
+    The factor is not a small adjustment. At $k = 31$ it is $0.73$ for $e_b = 1\,\%$, $0.53$ at
+    $2\,\%$ and $0.20$ at the $5\,\%$ of a nanopore run: four $k$-mers in five are lost before
+    anything is counted.
+
+    Two things follow, and the first is the one to say plainly. Applied as written,
+    Equation \eqref{smoothyerror} does not change the estimate at all. It scales every $c_n$ by the
+    same factor, the objective $\sum_n c_n \log (\varphi\theta)_n$ scales with it, and the maximiser over
+    $\theta$ is unchanged. The correction earns its place elsewhere: wherever the magnitude of the
+    counts is read rather than only their ratios --- against a prior, whose weight is otherwise
+    silently multiplied by the error rate; in any absolute quantity reported alongside the
+    distribution; and in comparing samples sequenced at different error rates, where uncorrected
+    counts are not on one scale.
+
+    The second is that $e_b$ need not be a constant. The quality strings carry a per-base estimate,
+    so the surviving fraction can be averaged over the reads actually seen instead of assumed. That
+    matters most where it is largest: nanopore error varies widely between reads, and a mean rate
+    understates the loss because $(1 - e_b)^k$ is convex in $e_b$.
+
+    \paragraph{Counts that the assumption does not fit.} The correction above rescales every node
+    alike and therefore says nothing about whether the assumption behind
+    Equation \eqref{smoothylikelihood} holds at any particular one. There is a measure that does, and
+    it comes from the classifier itself. The $k$-mer consistency ratio of \citet{genestrip-pub}
+    compares the distinct $k$-mers actually seen for a taxon against the number expected if its
+    $k$-mers were drawn uniformly: with $u_{t,d}$ the $k$-mers the database stores for $t$,
+    $k_{t,f,d}$ the count observed and $u_{t,f,d}$ the distinct ones among them,
+    %
+    \begin{equation}\label{smoothyconsistency}
+        E \;=\; u_{t,d} \Bigl( 1 - (1 - 1/u_{t,d})^{k_{t,f,d}} \Bigr),
+        \qquad r_{t,f,d} \;=\; u_{t,f,d} \,/\, E .
+    \end{equation}
+
+    Its assumption is worth reading twice, because it is ours. It holds where every $k$-mer of a taxon
+    is equally likely to be seen and fails on repeats, on genomic dust and under amplification
+    protocols --- which is word for word the assumption Section \ref{model} rests on and the reason
+    this method does not apply to metabarcoding. So $r$ is not an external criterion bolted on. It is
+    the method's own premise, tested against the data, per node and per sample.
+
+    That makes it a weight rather than a filter. A threshold on $r$ would discard a node's counts
+    whole and turn a continuous doubt into a binary one; the same information is better spent
+    attenuating a node's contribution in proportion to how far its counts depart from what the
+    assumption predicts. It enters where the error correction does,
+    %
+    \begin{equation}\label{smoothyweight}
+        \hat{c}_n \;=\; \frac{w(r_n)\, c_n}{(1 - e_b)^k} ,
+    \end{equation}
+    %
+    and unlike that correction it is not a common factor: $w$ varies from node to node, so this one
+    does move the estimate rather than only its scale. That is the point of it.
+
+    A form that meets the requirements below, and the one we propose, is
+    %
+    \begin{equation}\label{smoothyw}
+        w(r) \;=\; \max\Bigl( 0, \; 1 + \lambda \ln \bigl( \min(r, 1) \bigr) \Bigr),
+        \qquad \lambda > 0 .
+    \end{equation}
+    %
+    The inner $\min$ discards the uninformative direction, the logarithm makes the penalty gentle near
+    one and steep as $r$ falls, and the outer $\max$ puts a floor at zero: a node below
+    $r = e^{-1/\lambda}$ contributes nothing. Filtering is therefore not rejected but recovered, as
+    the limiting case of a weight rather than as a separate rule with a threshold of its own.
+
+    One parameter remains, and $\lambda$ says how severely inconsistency is punished. It is worth
+    noting that a calibration point already exists: the worked example of \citet{genestrip-pub} reports
+    $r = 0.8631$ for Epstein--Barr virus in a saliva sample and reads it as \emph{supporting} the
+    consistency of the counts. A node so described should keep most of its weight, which
+    $\lambda = 1$ does not do --- it leaves $0.85$ --- while $\lambda = 1/2$ leaves $0.93$. That
+    suggests $\lambda$ well below one, but it is one example and the value wants measuring.
+
+    What $w$ must satisfy, however $\lambda$ is fixed:
+    %
+    \begin{itemize}
+        \item $w(1) = 1$. A node whose counts match the expectation is not penalised.
+        \item $w$ falls as $r$ falls below one, and smoothly. A step function is a filter wearing a
+              weight's clothes, with a tuning parameter and a cliff.
+        \item $w \approx 1$ for $r$ above one. Seeing appreciably more distinct $k$-mers than expected
+              is not a thing that happens, so that direction carries no information and should not be
+              read as one.
+        \item $w$ depends on the count as well as the ratio. At small $k_{t,f,d}$ the ratio is noise,
+              and a node holding three $k$-mers must not be discounted because its $r$ came out at
+              $0.6$. Equation \eqref{smoothyw} does not yet do this, and the natural repair is to
+              shrink $r$ towards one as the count falls --- replacing $r$ by
+              $1 + (r - 1)\,k_{t,f,d}/(k_{t,f,d} + k_0)$ for some scale $k_0$ --- rather than to
+              complicate $w$ itself.
+        \item $w$ is a heuristic in $r$ and not a tail probability. The exact distribution of
+              $u_{t,f,d}$ is known and approximately normal about $E$, but it is so sharply peaked
+              that small deviations drive it to zero, which is why \citet{genestrip-pub} report the
+              ratio rather than a test.
+    \end{itemize}
+
+    \todo{Fix $\lambda$ and $k_0$ against data rather than by argument, and check
+    Equation \eqref{smoothyw} against alternatives while doing so. The measurements that decide it:
+    how $r$ is distributed across nodes in real samples, and whether the nodes with low $r$ are the
+    ones an independent standard says are wrong.}
+
+    \todo{The effect that would change the estimate is the one not modelled here, and the section
+    should say so rather than leave it implied. A corrupted $k$-mer does not only disappear: it can
+    still be in the database, at some other node. How often depends on how densely the database
+    populates the neighbourhood of the original $k$-mer, and that is not uniform --- a $k$-mer shared
+    across a clade sits in a denser neighbourhood than one specific to a strain. Errors would then
+    move counts between nodes rather than merely shrink them, which no scalar correction can undo.
+    Measure whether it matters before modelling it: mutating the $k$-mers of a simulated read set at a
+    known rate and re-classifying gives the size of the effect directly.}
+
+    \subsection{Priors from the taxonomy}\label{priors}
+    \todo{A metagenomic problem differs from a text one in having a reference taxonomy, so the model
+    need not learn from the data what is already known. Where that knowledge enters, and what it
+    costs when the taxonomy is wrong. This is not the symmetric Dirichlet of
+    Appendix \ref{prior} --- that prior knows nothing about the tree and treats every taxon as
+    exchangeable, which is precisely what a taxonomy says they are not. If anything here survives, it
+    is because it uses structure the Dirichlet throws away.}
+
+    \subsection{Inference}\label{inference}
+    Write $\theta_g = p(g \mid s)$, $\varphi_{ng} = p(n \mid g)$ and $C = \sum_n \hat{c}_n$, following
+    the usual symbols of the topic-modeling literature for the mixture and for the topic--word
+    distribution. The estimate
+    maximises $\ell(\theta) = \sum_n \hat{c}_n \log (\varphi\theta)_n$ over the simplex. Two ways to
+    compute it are worth setting out, because the second follows from the first and needs less
+    apparatus.
+
+    \paragraph{Constrained ascent.} With the constraint in affine form the Lagrangian is
+    %
+    \begin{equation}\label{smoothylagrange}
+        \Lambda(\theta, \lambda) \;=\; \sum_{n \in N} \hat{c}_n \log (\varphi\theta)_n
+            \;-\; \lambda \Bigl( \sum_{g \in G} \theta_g - 1 \Bigr),
+    \end{equation}
+    %
+    and stationarity gives $\sum_n \hat{c}_n \varphi_{ng} / (\varphi\theta)_n = \lambda$ at every topic carrying
+    mass. The multiplier is not left to be solved for: multiplying that condition by $\theta_g$,
+    summing over $g$ and using $\sum_g \varphi_{ng} \theta_g = (\varphi\theta)_n$ collapses the left side to
+    $\sum_n \hat{c}_n$, so
+    %
+    \begin{equation}\label{smoothylambda}
+        \lambda \;=\; C .
+    \end{equation}
+    %
+    Equation \eqref{smoothylagrange} handles $\sum_g \theta_g = 1$ and not $\theta_g \geq 0$, which
+    is the constraint that binds: most taxa are absent from any one sample, so the maximiser lies on
+    the boundary of the simplex and the stationarity condition holds there as the inequality
+    $\sum_n \hat{c}_n \varphi_{ng} / (\varphi\theta)_n \leq C$. Ascent therefore needs either the full
+    Karush--Kuhn--Tucker conditions, or a projection of each iterate back onto the simplex, or a
+    mirror step in the Kullback--Leibler geometry that keeps positivity by construction. All three
+    work, and all three need a step size.
+
+    \paragraph{Expectation--maximisation.} Substituting $\lambda = C$ into the stationarity condition
+    and reading it as a fixed point gives the iteration directly, with no step size and no projection.
+    It is the mixture-proportion step of \citet{hofmann1999plsa} with the topic--word distributions
+    held fixed:
+    %
+    \begin{equation}\label{smoothyem}
+        \theta_g \;\longleftarrow\; \frac{\theta_g}{C} \sum_{n \in N}
+            \frac{\hat{c}_n \, \varphi_{ng}}{(\varphi\theta)_n}.
+    \end{equation}
+    %
+    So the two are not rivals but two readings of one condition. The quantity
+    $\varphi_{ng}\theta_g / (\varphi\theta)_n$ is the share of the count at $n$ that topic $g$ is responsible for;
+    the step reassigns each $\hat{c}_n$ among the topics in that proportion and renormalises. Four
+    properties make it the one to implement.
+
+    It needs no constraint machinery. The update sums to one over $g$ by construction, because the
+    responsibilities do, so the simplex is preserved exactly and no multiplier or projection appears.
+    Non-negativity is preserved for the same reason. It has no step size, so nothing has to be tuned
+    or line-searched. It increases the likelihood at every step, by the usual
+    minorise--maximise argument, and that argument needs only the responsibilities to be a
+    distribution over $g$ --- which holds whether or not the rows of $\varphi$ are normalised over $n$, so
+    the question left open in Section \ref{pgn} does not affect the algorithm. And with the objective
+    concave, the point it converges to is the global maximum rather than a stationary point that
+    happens to be near where it started.
+
+    Each iteration costs one pass over the non-zeros of $\varphi$. Those are few: a column is supported on
+    the path from its taxon to the root, so $\varphi$ has of the order of one entry per taxon per level
+    rather than one per taxon per node.
+
+    \todo{Two known weaknesses to state rather than discover. EM converges linearly, and slowly when
+    two topics are near-collinear --- which is exactly the degenerate case of Section \ref{pgn}, so
+    slow convergence is a symptom worth reporting rather than only a cost. And the update is
+    zero-preserving: a topic that starts at zero stays there, so the iteration is started uniform.
+    If the sizes turn out to warrant it, SQUAREM-style acceleration or a few Newton steps on the
+    support at the end are the usual remedies; measure before adding either.}
+
+    \todo{Exact sparsity, if it is wanted. EM drives absent topics towards zero but reaches it only in
+    the limit, so a report will list every taxon with a small positive abundance unless something is
+    done. A Dirichlet prior with concentration below one turns the step into a MAP update of the same
+    shape and gives genuine zeros; thresholding does not, it only hides them.}
+
+    \subsection{From topics to abundances}\label{abundances}
+    What Equation \eqref{smoothylikelihood} estimates is a share of $k$-mers, and therefore a share of
+    \emph{sequence}. It is not a share of organisms. A genome twice as long contributes twice the
+    $k$-mers at equal cell count, so reporting $\theta_g$ as an abundance overstates the large genomes
+    and understates the small ones by exactly their length ratio. The two quantities are both worth
+    reporting and must not be confused, which in practice they often are.
+
+    Relative abundance follows by reweighting each topic by its genome length and renormalising:
+    %
+    \begin{equation}\label{smoothyabundance}
+        a_g \;=\; \frac{\theta_g \,/\, \lvert K(g) \rvert}
+                       {\sum_{g' \in G \setminus \{\textsc{other}\}}
+                            \theta_{g'} \,/\, \lvert K(g') \rvert} ,
+        \qquad g \in G \setminus \{\textsc{other}\} .
+    \end{equation}
+    %
+    The length is measured in $k$-mers rather than bases, which is the same unit the counts are in and
+    saves a conversion. It also costs nothing to obtain: $\lvert K(g) \rvert$ is already the
+    denominator of Equation \eqref{smoothypng}, so the goal of Section \ref{pgn} has computed it
+    before any sample is analysed and need only store it alongside the fractions.
+
+    Above the data taxa the topic is a pan-genome and the length that belongs to it is the mean over
+    the genomes pooled into it, $\overline{K}_t = \lvert G_t \rvert^{-1} \sum_{g \in G_t}
+    \lvert K(g) \rvert$ with $G_t$ the genomes beneath $t$ --- the mean and not the sum that
+    normalises its row, since what is wanted is the length of one organism of the clade and not the
+    length of all of them together.
+
+    \todo{Two limits of Equation \eqref{smoothyabundance} to state rather than let a reader find. The
+    length is the reference genome's and not the sample organism's, so a strain carrying a large
+    accessory complement is measured against the wrong ruler. And above the data taxa the mean is
+    taken over an unevenly sampled set --- the same sequencing-effort bias that shapes the row itself,
+    now entering the abundance a second time.}
+
+    \paragraph{What the database cannot account for.} \textsc{other} is deliberately absent from
+    Equation \eqref{smoothyabundance}. It is not an organism, it has no genome length worth the name,
+    and dividing it by the mean length of everything the database omits would produce a number that
+    invites comparison with the $a_g$ while meaning something else entirely. It is reported on its
+    own instead, as
+    %
+    \begin{equation}\label{smoothyunaccounted}
+        u \;=\; \theta_{\textsc{other}} ,
+    \end{equation}
+    %
+    the share of the sample's \emph{sequence} that the database cannot name. The $a_g$ then sum to one
+    over the taxa the database does know, and $u$ stands beside them rather than among them: a
+    statement about the database's coverage of this sample, not about an organism in it.
+
+    Its magnitude wants reading with care, and Section \ref{pgn} says why. Writing
+    $\rho_g = \sum_n p(n \mid g)$ for the share of $g$'s $k$-mers the database holds anywhere, a
+    stored genome has $\rho_g$ near one while \textsc{other} does not come close, since most $k$-mers
+    of most omitted genomes are absent from a database built around one clade. A topic with small
+    $\rho$ must carry a larger $\theta$ to explain the same counts, so $u$ overstates the unaccounted
+    fraction by roughly $1/\rho_{\textsc{other}}$. Dividing each $\theta$ by its $\rho$ before
+    comparing puts the topics back on one footing --- which is the same operation as normalising the
+    rows of $P$, the question left open in Section \ref{pgn}. The two are one decision and should be
+    taken together.
+
+    \todo{Whether $u$ is reported raw or divided by $\rho_{\textsc{other}}$, and either way with the
+    caveat stated. A reader will read it as `this fraction of the sample is something you do not have
+    a genome for', and that reading has to be either true or explicitly corrected.}
+
+    \subsection{What it costs}\label{cost}
+    \todo{Time and space, stated before anything is measured, so that the measurement can be held
+    against a prediction rather than merely reported.}
+
+    \section{Results}\label{results}
+    \todo{Nothing here until the method is implemented. Every number in this section must come from
+    a generated file through \texttt{\textbackslash dbstat} or \texttt{\textbackslash csvreader};
+    an unmeasured value shows as \sysUnknown\ rather than as a blank.}
+
+    \todo{Abundance estimation has a ground truth that classification does not: a simulated read set
+    knows the abundance it was drawn at. Say early which simulated sets are used and at which error
+    rates, and keep at least one real sample where the answer is only known qualitatively, so that
+    the method is not only measured where it is easiest to measure.}
+
+    \section{Discussion}\label{discussion}
+    \todo{Including what the method cannot do, which is the part a reader will look for.}
+
+    \section{Conclusions}\label{conclusions}
+    \todo{}
+
+    \begin{appendices}
+
+    \section{A Dirichlet prior and a sampler}\label{prior}
+    Everything above estimates $\theta$ from the counts alone. A symmetric Dirichlet prior
+    $\theta \sim \mathrm{Dir}(\alpha \mathbf{1})$, the scalar concentration of topic modeling, is the
+    natural addition. It is set down here rather than in the method
+    because it does not, on the evidence so far, earn its cost: the useful range of $\alpha$ is
+    exactly the range in which maximising fails, so taking the prior means giving up the fixed point
+    of Section \ref{inference} for a sampler, giving up concavity, and committing to analysing
+    samples in sets rather than singly. That is a different method, not an option within this one.
+    It is kept because the reasoning behind it is worth not repeating from scratch, and because the
+    objection to it is contingent rather than absolute. That objection is the one of
+    Section \ref{model}: $k$-mer counts overstate the evidence by roughly the read length, so a prior
+    has nothing left to weigh against. Read counts would not rescue it --- Section \ref{model} gives
+    the reason they are unusable at all --- but anything that restored an honest sample size would,
+    whether that is thinning the $k$-mers of a read, an explicit overdispersion term, or a likelihood
+    stated per read against a $p(n \mid g)$ built for one.
+
+    \subsection{Where EM still works}\label{mapworks}
+    Maximum-a-posteriori estimation of a topic model
+    \citep{defreitas2001bayesian,chien2008adaptive} adds the prior to the maximum-likelihood fit of
+    \citet{hofmann1999plsa} as a pseudo-count. For $\alpha \geq 1$ the objective is
+    $\ell(\theta) + (\alpha - 1) \sum_g \log \theta_g$ and the iteration keeps its shape, gaining
+    only a pseudo-count:
+    %
+    \begin{equation}\label{smoothymapem}
+        \theta_g \;\longleftarrow\; \frac{\bigl( \sum_n \hat{c}_n \, \varphi_{ng} \theta_g /
+            (\varphi\theta)_n \bigr) + \alpha - 1}{C + \lvert G \rvert (\alpha - 1)} .
+    \end{equation}
+    %
+    The prior then shrinks the estimate towards the uniform distribution. That is smoothing, and it is
+    the opposite of what a Dirichlet prior is usually wanted for here.
+
+    \paragraph{Mode and mean differ by one.} The pseudo-count carries an offset that is easy to lose
+    sight of when the two estimators of this appendix are compared. Equation \eqref{smoothymapem}
+    converges to the posterior \emph{mode},
+    $(m_g + \alpha - 1) / (M + \lvert G \rvert (\alpha - 1))$, while the sampler below reports the
+    posterior \emph{mean}, $(m_g + \alpha) / (M + \lvert G \rvert \alpha)$. The two differ by exactly
+    one in the concentration: the mode at $\alpha$ is the mean at $\alpha - 1$. Setting the same
+    $\alpha$ for both and reading the difference in their output as a difference between maximising
+    and sampling would therefore be a mistake --- part of it is only the offset, and at the small
+    $\alpha$ of interest here that part is not small. It is also why the two have different admissible
+    ranges: the mean is defined for every $\alpha > 0$ and the mode only from $\alpha = 1$ upwards.
+
+    This agrees with the MAP update of \citet{asuncion2009smoothing}, whose estimate
+    $\hat{\theta}_{kj} = (N_{kj} + \alpha - 1)/(N_j + K\alpha - K)$ is
+    Equation \eqref{smoothymapem} in their notation, $K\alpha - K$ being $\lvert G \rvert (\alpha -
+    1)$ here. They reach the same conclusion about the offset from the other direction, observing that
+    MAP offsets by $-1$ against collapsed Gibbs sampling and that the two are brought into agreement
+    by incrementing $\alpha$ by one --- which is why their own hyperparameter search shifts its grid
+    by one for MAP, hyperparameters below one giving it negative probabilities. Only the mixture side
+    of their derivation applies here: they estimate the topic--word distributions as well, and ours
+    are given by the database.
+
+    \subsection{Where it does not}\label{gibbs}
+    Sparsity needs $\alpha < 1$, and there the MAP is not merely harder
+    but ill-posed: the Dirichlet density is unbounded at the corners of the simplex, so the objective
+    has no finite maximum and Equation \eqref{smoothymapem} produces negative numerators that have to
+    be clamped, which is a repair rather than a solution. The remedy is to stop maximising over
+    $\theta$ and integrate it out. Collapsed Gibbs sampling \citep{griffiths2004scientific} does that, and it is markedly cheaper here
+    than in the corpus setting it comes from: the topics are fixed, so only the assignment of each
+    counted $k$-mer occurrence is sampled and never a topic--word distribution. For an occurrence
+    observed at node $n$,
+    %
+    \begin{equation}\label{smoothygibbs}
+        p(z = g \mid \cdot) \;\propto\; \varphi_{ng} \, \bigl( m_g^{\neg} + \alpha \bigr),
+    \end{equation}
+    %
+    with $m_g^{\neg}$ the number of occurrences currently assigned to $g$, that one excluded. A sweep
+    visits every occurrence; the estimate is the posterior mean
+    $\mathbb{E}[\theta_g] = (m_g + \alpha) / (M + \lvert G \rvert \alpha)$ over the retained sweeps,
+    with $M$ the total number of occurrences.
+
+    The path structure of Section \ref{pgn} bounds the work. An occurrence observed at node $n$ can
+    only belong to a topic whose column has support at $n$, and $\varphi_{ng} > 0$ only where $n$ lies on
+    the path from $g$ to the root --- that is, only for the rank-taxa lying beneath $n$. The candidate
+    set is therefore small for a specific node and large only for the nodes near the root, which is
+    the right shape: the sampler spends its time on exactly the occurrences that are ambiguous.
+    Occurrences at one node are moreover exchangeable, so the state is the assignment counts per node
+    rather than a label per $k$-mer, and a sweep re-draws a node's occurrences from the urn in turn
+    instead of touching millions of tokens individually.
+
+    \subsection{Estimating \texorpdfstring{$\alpha$}{alpha} needs more than one sample}
+    Everything so
+    far has concerned a single statistic $s$. A concentration parameter cannot be estimated from it:
+    $\alpha$ describes how $\theta$ varies from one sample to the next, and one sample exhibits no
+    variation. Fitting it anyway returns whatever value best explains the single $\theta$ at hand,
+    which is not an estimate of anything.
+
+    So the estimation is stated over a set. Let $s_1, \dots, s_m$ be statistics produced against the
+    same database, $c^{(i)}_n$ the count that $s_i$ reports at node $n$, and
+    $\theta^{(i)} = p(g \mid s_i)$ its mixture. The samples share the prior and nothing else:
+    %
+    \begin{equation}\label{smoothyjoint}
+        p\bigl(c^{(1)}, \dots, c^{(m)} \bigm| \alpha\bigr) \;=\; \prod_{i=1}^{m} \int
+            \mathrm{Dir}\bigl(\theta^{(i)} \bigm| \alpha \mathbf{1}\bigr)
+            \prod_{n \in N} \bigl(\varphi\theta^{(i)}\bigr)_n^{\,c^{(i)}_n} \, d\theta^{(i)} .
+    \end{equation}
+    %
+    Each $\theta^{(i)}$ stays a quantity of its own sample --- the aim is still one abundance
+    distribution per sample, not a shared one --- while $\alpha$ is common to all $m$ and is what the
+    set is pooled to determine. That is empirical Bayes, and it is why the method analyses samples in
+    sets. A clinical cohort measured on one database is exactly such a set.
+
+    Minka's update is the fixed point for $\alpha$: \citet{asuncion2009smoothing} apply the Dirichlet
+    estimator of \citet{minka2000dirichlet} as a step of the fitting procedure and give it that name.
+    It belongs to the sampler and not to the maximisation of Section \ref{mapworks}: the same authors
+    leave MAP out of their hyperparameter-learning experiments precisely because Minka's update does
+    not apply to it. So the two halves of this appendix do not combine into one procedure. Taking the
+    prior means taking the sampler, and estimating $\alpha$ rather than fixing it means the same
+    again. With $m_{ig}$ the
+    occurrences of $s_i$ currently assigned to topic $g$ and $M_i = \sum_g m_{ig}$,
+    %
+    \begin{equation}\label{smoothyalpha}
+        \alpha \;\longleftarrow\; \alpha \,
+            \frac{\sum_{i=1}^{m} \sum_{g \in G} \bigl( \psi(m_{ig} + \alpha) - \psi(\alpha) \bigr)}
+                 {\lvert G \rvert \sum_{i=1}^{m} \bigl( \psi(M_i + \lvert G \rvert \alpha)
+                     - \psi(\lvert G \rvert \alpha) \bigr)} ,
+    \end{equation}
+    %
+    interleaved with the sampler, which carries an assignment state per sample and sweeps them in
+    turn. The update is derived by bounding the Dirichlet log-likelihood and converges monotonically,
+    so it needs no step size either --- the same property that recommends the iteration of
+    Section \ref{inference} over an ascent method. Alternatively $\alpha$ is given a hyperprior and
+    sampled with the rest, which costs less thought and about as much time.
+
+    \todo{What $m$ has to be for the estimate to mean anything, and what to do below it. A single
+    sample is stated above as uninformative; a handful is not obviously better, and the paper should
+    say where the boundary lies rather than leave a reader to assume any cohort will do. The
+    fallback when $m$ is too small is a fixed $\alpha$ chosen and declared, which is honest, rather
+    than an estimated one that is noise wearing a number.}
+
+    \subsection{Counts that are not integers}
+    A sampler over occurrences needs occurrences, and the
+    corrected $\hat{c}_n$ of Section \ref{error} are not whole numbers. Rounding them is the obvious
+    repair and the wrong one: it distorts the correction most where counts are small, which is where
+    a rare taxon lives. It is not needed. The correction is a single factor $(1 - e_b)^k$ applied to
+    every $c_n$ alike, and what the prior weighs itself against is the ratio of counts to
+    concentration, not their absolute size. Sampling the raw integer occurrences $c_n$ under
+    %
+    \begin{equation}\label{smoothyalphaeff}
+        \alpha_{\mathrm{eff}} \;=\; \alpha \, (1 - e_b)^k
+    \end{equation}
+    %
+    leaves that ratio exactly where $\hat{c}_n$ with $\alpha$ would have put it, and keeps the state
+    integral.
+
+    That holds only while the correction is a single factor, and Section \ref{error} has since given
+    it a second one that is not. The consistency weight $w(r_n)$ differs from node to node, so no
+    rescaling of $\alpha$ can reproduce it: the weights change the counts relative to \emph{each
+    other} and not merely their common size. A sampler would have to carry them as per-occurrence
+    weights, which is no longer collapsed Gibbs sampling but a weighted variant of it, or fall back on
+    rounding $w(r_n) c_n$ with the loss that was the objection in the first place. The iteration of
+    Section \ref{inference} has no such difficulty --- a weighted likelihood is what it already
+    maximises --- which is one more reason the prior sits in this appendix and not in the method.
+
+    \todo{What the sampler costs and how it is run: burn-in, how many sweeps are retained, and what
+    is used to decide that it has mixed. Report it rather than choosing it silently --- a sampler with
+    an undeclared burn-in is not a reproducible measurement. The degenerate taxa of
+    Section \ref{pgn} are where mixing will be worst, since it is precisely there that the posterior
+    has a ridge rather than a peak, so they are the place to look.}
+
+    \end{appendices}
+
+    \backmatter
+
+    \bmhead{Acknowledgements}
+
+    \section*{Declarations}
+
+    \bmhead{Availability of data and materials}
+    \todo{}
+
+    \bmhead{Competing interests}
+    The authors declare that they have no competing interests.
+
+    \bmhead{Funding}
+    \todo{}
+
+    \bmhead{Authors' contributions}
+    \todo{}
+
+    \bibliography{sn-bibliography}
+
+\end{document}
