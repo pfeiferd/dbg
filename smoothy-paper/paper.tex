@@ -318,7 +318,9 @@
     all, and a row that carried mass there would be offering to explain an observation the model
     never sees. Restricting both sides together is what keeps $\varphi$ and $c$ on one footing.
 
-    It is a real restriction and it is worth being plain about the price. At genus rank most of a
+    It is a real restriction and it is worth being plain about the price --- Appendix \ref{folding}
+    sets out the variant that pays it differently, by folding the sub-rank counts into the rank
+    instead of dropping them. At genus rank most of a
     sample's counts sit at species nodes, and those counts are left out of the fit; what remains is
     the evidence at and above the genus, which is the ambiguous part --- and the part a classifier's
     own answer says least about, which is the evidence this method exists to use. The unambiguous
@@ -1018,6 +1020,31 @@
     an undeclared burn-in is not a reproducible measurement. The degenerate taxa of
     Section \ref{pgn} are where mixing will be worst, since it is precisely there that the posterior
     has a ridge rather than a peak, so they are the place to look.}
+
+    \section{Folding the sub-rank counts instead of dropping them}\label{folding}
+    Section \ref{pgn} makes $\varphi$ and $c$ agree by restricting both to the chosen rank and above,
+    which leaves the counts below the rank out of the fit. Folding them in is the alternative, kept
+    here in case the measurement favours it.
+
+    Write $r$ for the chosen rank and $\pi(m)$ for the rank-$r$ ancestor of $m$ if $m$ lies at or
+    below rank $r$, and $m$ itself otherwise. Sum both sides along $\pi$:
+    %
+    \begin{equation}\label{smoothyfold}
+        \tilde{c}_n \;=\; \sum_{m \,:\, \pi(m) = n} c_m ,
+        \qquad
+        \tilde{c}(t,n) \;=\; \sum_{m \,:\, \pi(m) = n} \; \sum_{s \,\preceq\, t} c^{\circ}(s,m) ,
+    \end{equation}
+    %
+    the inner sum over every $m$, not only over $\mathrm{path}(t)$. Everything from
+    Equation \eqref{smoothypng} on is unchanged with $\tilde{c}$ for $c$; $R_g$ becomes the full row
+    total, so Section \ref{abundances} reverts to its unrestricted form. Rows still cost
+    $\lvert \mathrm{path}(t) \rvert$ entries, since everything at or below $t$ folds into the cell at
+    $t$.
+
+    For it: no count is discarded, and $g$ keeps its private mass where $\textsc{rest}_g$ has none,
+    which should separate the two better than dropping does. Against it: the fold asserts that where
+    beneath the rank a count fell carries nothing, and it lets material the classifier has already
+    resolved dominate the fit.
 
     \end{appendices}
 
