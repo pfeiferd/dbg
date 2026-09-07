@@ -28,7 +28,15 @@
 \usepackage{todonotes}
 \usepackage{array}
 \usepackage{csvsimple}
+\usepackage{tikz-qtree}
 \usepackage{etoolbox}
+\newcommand{\motivatingrows}[1]{%
+\IfFileExists{#1}{%
+\csvreader[no head, separator=semicolon, late after line=\\,
+           filter test=\ifnumgreater{\thecsvinputline}{1}]{#1}{}%
+{\csvcoli & \csvcolii & \csvcoliii & \csvcoliv}%
+}{{---} & {---} & {---} & {---}\\}%
+}
 \usepackage{url}
 \DeclareMathOperator*{\argmax}{arg\,max}
 
@@ -78,13 +86,86 @@
     \maketitle
 
     \section{Introduction}\label{introduction}
-    \todo{What abundance estimation has to do that classification does not, and why the assignments a
-    classifier produces are not already an answer. The gap to state precisely: a read that a database
-    leaves at an internal node names no organism, and the share of such reads is not small --- in the
-    clinical runs of the companion paper a tenth of the classified reads sit at a genus, and the node
-    they sit at leaves anywhere from eight to a hundred and fifty-seven species open.}
+    A metagenomic classifier does not answer a question so much as produce a table. Kraken~2 reports,
+    per taxon, the reads assigned to it and the reads assigned at or below it \citep{kraken2};
+    KrakenUniq adds the number of \emph{distinct} $k$-mers seen for a taxon, which is what separates a
+    genuine hit from a few reads landing by chance \citep{krakenuniq}; Genestrip reports $k$-mer
+    counts, unique $k$-mer counts, read counts and a consistency score beside one another
+    \citep{genestrip-pub}. Each column earns its place and each answers a real question. Together they
+    are hard to read, and the difficulty is not that there are several of them.
+
+    \begin{table}[!htbp]
+        \centering
+        \footnotesize
+        \begin{tabular}{@{}l|r|r|r@{}}
+            \textbf{Taxon} & \textbf{Reads} & \textbf{$k$-mers} & \textbf{Unique $k$-mers}\\
+            \hline
+            \motivatingrows{motivating.csv}
+        \end{tabular}
+        \caption{A classifier's output in the shape it usually takes. Each row is a taxon and each
+        column a count made at that taxon's own node: the reads assigned there, the $k$-mer
+        occurrences held there, and the distinct $k$-mers among them. Nothing in it is wrong. What it
+        does not say is which organisms were in the sample, and in what
+        proportion.}\label{motivating}
+    \end{table}
+
+    \todo{Fill Table \ref{motivating} from a real match result rather than an invented one: a few
+    rows of a Genestrip \texttt{.csv}, filtered to one genus with its species and a second genus for
+    contrast, written to \texttt{motivating.csv} with the four columns the macro reads. Pick a
+    sample where the genus row is large --- the point of the table is lost if the reads all sit at
+    species. The paragraph below then wants checking against the figures rather than the other way
+    round.}
+
+    Table \ref{motivating} shows the shape of it. The rows carrying the most evidence are typically
+    the ones that name no organism: the reads at a genus came from some mixture of the species
+    beneath it, and the table says neither which nor how many are in play. The columns need not agree
+    with each other either. A taxon whose reads are mostly shared sequence yields few $k$-mers of its
+    own for each read assigned to it, where a well-distinguished one yields many, so which taxon
+    looks dominant can depend on which column is read; and the share of $k$-mers that are distinct
+    moves with repeat content and with depth. The figures also do not compare across samples, since all
+    of them scale with how much was sequenced. Reading such a table is a skill, exercised through
+    conventions --- a minimum read count here, a minimum unique-$k$-mer count there --- whose
+    thresholds are agreements among practitioners rather than statements about the sample.
+
+    The deeper trouble is that a count at a node is not a count of an organism. The lowest common
+    ancestor rule that makes a classifier precise also sends the $k$-mers an organism shares with its
+    relatives up the tree, so a count high in the taxonomy is fed by several organisms at once and
+    names none of them. By the time one reads a genus the frequencies of its species have mixed, and
+    the mixture is exactly what the table does not resolve. Even where a count does name one organism
+    it is not an abundance: it is a share of $k$-mers, and therefore of sequence, subject to how long
+    the genome is and to how much of it the database happens to hold.
+
+    One thing is missing altogether. No column says how much of the sample the database could not
+    name --- an organism absent from the reference contributes its $k$-mers to whichever relatives it
+    resembles, silently, and nothing in the output marks the difference between a well-covered sample
+    and a poorly covered one.
+
+    A reader without the expertise to reconcile those columns wants the quantity the table is
+    evidence for and does not state: the distribution over the organisms that produced the counts.
+    That is what this paper estimates, together with the share it cannot attribute to anything the
+    database names.
+
+    \todo{Put numbers on the third paragraph, from the companion paper: in its clinical runs a tenth
+    of the classified reads sit at a genus, and the node they sit at leaves anywhere from eight to a
+    hundred and fifty-seven species open. That is the size of what the table declines to resolve, and
+    it is worth stating rather than asserting that the problem exists.}
 
     \section{Related work}\label{relatedwork}
+    Topic modeling was devised for text. A corpus is a set of documents and each document a bag of
+    words, their order discarded. The model supposes a small number of \emph{topics}, each a
+    distribution over the vocabulary, and describes every document as a mixture of them: a paper on
+    protein folding draws heavily on one topic, lightly on a second, and the words it contains are
+    the evidence for both. Fitting the model recovers the two together --- what the topics are, and
+    how much of each a document holds. Its appeal is that a word belonging to several topics is not
+    forced into one of them. It is explained as a blend, in the proportions that best account for the
+    document as a whole.
+
+    That is the shape of the problem here. A sample is a document, and the taxonomy nodes at which a
+    classifier reports counts are its words; the organisms that shed DNA into it are the topics, and
+    we want to know how much of the sample came from each. A $k$-mer sitting at a genus is a word
+    that several topics use, and the mixture resolves it --- not by choosing an organism for it,
+    but by asking which proportions account for the whole table at once.
+
     Probabilistic topic modeling begins with probabilistic latent semantic analysis
     \citep{hofmann1999plsa}, which fits a document as a mixture over topics by maximum likelihood,
     and with latent Dirichlet allocation \citep{blei2003lda}, which places the mixtures under a
@@ -96,6 +177,35 @@
     on \citet{minka2000dirichlet} that is known as Minka's update.
     \citet{pfeifer2019topicgrouper} set out the same correspondence between documents, words and
     topics that this paper carries over to samples, taxonomy nodes and genomes.
+
+    \begin{table}[!htbp]
+        \centering
+        \footnotesize
+        \begin{tabular}{@{}l|l@{}}
+            \textbf{Topic modeling} & \textbf{Here}\\
+            \hline
+            document & a sample\\
+            word & a node of the taxonomy\\
+            topic & one genome, or a placeholder for what the database cannot name\\
+            count of a word in a document & count the classifier reports at a node\\
+            topic--word distribution & where a topic's $k$-mers are stored in the database\\
+            document--topic distribution & the share of the sample's sequence each topic contributed\\
+        \end{tabular}
+        \caption{The correspondence the method rests on: the vocabulary of topic modeling on the
+        left, what each part is here on the right. Section \ref{model} restates it in symbols and
+        Section \ref{pgn} says how the topic--word distribution is obtained. The last row is a share
+        of \emph{sequence} and not yet of organisms: a long genome contributes more sequence at the
+        same cell count, and Section \ref{abundances} makes the conversion.}\label{correspondence}
+    \end{table}
+
+    The analogy stops at the point that makes this problem the easier one. Fitting a topic model to a
+    corpus means learning the topics and the per-document mixtures together, and it is the first of
+    those that makes the objective non-convex and the answer dependent on where the fit was started.
+    Here the topics are not learned at all. Where a taxon's $k$-mers are stored follows from the
+    database, which is fixed before any sample is seen, so what remains is only the per-document
+    mixture --- the analogue of inference for an unseen document against an already-fitted model,
+    not of fitting one. Section \ref{model} draws the consequence: the objective is concave, and an
+    iteration reaches its maximum wherever it starts.
 
     Topic modeling has reached metagenomics before, but at a different level. The larger body of work
     treats a sample as a document and a \emph{taxon} as a word, and learns topics that turn out to be
@@ -146,7 +256,17 @@
     \subsection{The generative model}\label{model}
     Shotgun sequencing draws reads from the whole of a genome rather than from one locus, so to a
     first approximation every $k$-mer of an organism's genome is equally likely to turn up in the
-    reads. That is the assumption the method rests on, and it is why the method does not apply to
+    reads. It is the sampling model \citet{landerwaterman} built the coverage of a shotgun project
+    on, and how nearly it holds is a property of the protocol rather than of sequencing as such.
+    \citet{ross2013bias} measure coverage across four platforms and find library construction the
+    significant influence on it, evenness varying from one platform to the next. Where a protocol
+    reads native molecules the ground for a compositional bias largely goes: nanopore sequencing is
+    not expected to show the GC bias in coverage at all, GC telling there on the error rate instead
+    \citep{ontbias} --- which is Section \ref{error}'s concern and not this one. In this paper's own
+    setting \citet{nanoporeticks} report the whole-genome half of the assumption, the reads they
+    recover from field-collected ticks spanning each assembled pathogen genome, at varying depths of
+    coverage. Both halves are the point --- across the whole genome, and only approximately evenly.
+    That is the assumption the method rests on, and it is why the method does not apply to
     metabarcoding data as it stands --- Section \ref{amplicon} sets out what has to change for it to.
 
     Under it, the per-taxon counts a classifier reports are a mixture. Let $G$ be the topics --- the
@@ -175,8 +295,8 @@
     its own. They do not all land at one node --- a read spans conserved sequence and specific
     sequence, so its $k$-mers are stored at several --- but they land on a single lineage, the update
     holding a $k$-mer of an organism at an ancestor of its taxon or at that taxon itself. Which nodes
-    along the lineage are hit is informative and the $k$-mers differ there. Which lineage it is, is
-    what $\theta$ is about, and on that every $k$-mer of the read says the same thing.
+    along the lineage are hit is informative and the $k$-mers differ there. But $\theta$ is about
+    which lineage it is, and on that every $k$-mer of the read says the same thing.
 
     So the overcount depends on the question asked of the counts. For the shape along a lineage it is
     about $k$: consecutive $k$-mers share $k-1$ bases, so each step brings one new base and a read
@@ -214,19 +334,11 @@
     \emph{database} and not the sample: they are fixed once the database is built, so they are
     computed once and reused for every sample analysed against it.
 
-    This is the correspondence with document-oriented topic modeling
-    \citep{hofmann1999plsa,blei2003lda}, and it is close. A sample $s$ plays the part of a document,
-    a taxonomy node $n$ that of a word, and a sequenced genome $g$ that of a topic; $c_n$ is then the
-    count of a word in a document and $p(n \mid g)$ the topic--word distribution, in the roles set out
-    in \citet{pfeifer2019topicgrouper}. Where the analogy stops is the part that makes the problem easy. Fitting a topic
-    model to a corpus means learning the topics and the per-document mixtures together, and it is the
-    first of those that makes the objective non-convex and the answer dependent on where the fit was
-    started. Here the topics are not learned at all: $p(n \mid g)$ follows from the database, which is
-    known before any sample is seen. What remains is only the per-document mixture $p(g \mid s)$ ---
-    the analogue of inference for an unseen document against an already-fitted model, not of fitting
-    one.
+    In the terms of Table \ref{correspondence}, $s$ is the document, $n$ the word, $g$ the topic,
+    $c_n$ the count of a word in a document and $p(n \mid g)$ the topic--word distribution. Only
+    $p(g \mid s)$ is inferred; $p(n \mid g)$ is read off the database, as Section \ref{pgn} sets out.
 
-    That is what makes Equation \eqref{smoothylikelihood} well behaved. With the $p(n \mid g)$ fixed,
+    This makes Equation \eqref{smoothylikelihood} well behaved. With the $p(n \mid g)$ fixed,
     its logarithm is a positive combination of logarithms of functions linear in $p(g \mid s)$, hence
     concave over the simplex. There are therefore no local optima to be trapped in, and an iteration
     reaches the maximum wherever it starts. Whether that maximum is a single point is a separate
@@ -239,8 +351,8 @@
     which is every genome of the release in scope, and not only those the entry phase stored --- and
     for each of them looks up every $k$-mer in the database $d$.
 
-    What the goal produces is a counter for each genome $d$ stores and one at each taxon for the
-    genomes beneath it that nothing names. The topics the method fits are those two: a data taxon,
+    The goal produces a counter for each genome $d$ stores and one at each taxon for the genomes
+    beneath it that nothing names. The topics the method fits are those two: a data taxon,
     which by the transformation set out next is a single genome, and the unnamed material of a clade,
     pooled over what lies below it. Rows are written at every taxon as well, because it costs nothing
     and because Appendix \ref{fixedrank} wants them, but the method reads the genomes and the
@@ -254,32 +366,75 @@
     $N$ is the whole tree. A coarser answer is not a coarser fit but a sum over the fitted one, as
     Section \ref{abundances} sets out.
 
-    For that topic set to be estimable, no topic may be an ancestor of another. Were an ancestor and
-    its descendants topics at once, the same counts could be explained by either and no data could
-    separate them. Two things would otherwise violate it, and one device repairs both.
+    For that topic set to be estimable, no topic may be an ancestor of another. If an ancestor and
+    its descendants were topics at once, the same counts could be explained by either and no data
+    could separate them. Two things would otherwise violate it, and one device repairs both.
 
-    A taxon carrying a genome may itself have descendants --- a species with strains beneath it is
-    both --- and a taxon carrying several genomes gathers them into one topic whether they are alike
-    or not. The companion paper meets the first with a tree transformation, which we restate because
-    the method depends on it and apply in its stronger form \citep{genestrip-pub}. There, wherever a
-    taxon $X$ has a genome attached and also has descendants, a fresh node $h_X$ is inserted as a
-    child of $X$ and $X$'s own genomes --- with the $k$-mers stored for them --- are moved to it, so
-    that $X$ is no longer a data taxon, $h_X$ is, and $h_X$ is a leaf.
+    A \emph{data taxon} is a taxon with a complete genome directly associated, whose $k$-mers the
+    database stores \citep{genestrip-pub}. In RefSeq such genomes usually attach at the rank of
+    species or below. Two things then go wrong at once. A data taxon may have descendants --- a
+    species with strains beneath it is both --- and a data taxon may carry several genomes, which
+    would enter one topic however unlike each other they are.
 
-    We apply it per genome rather than per taxon: each genome of $X$ is given a leaf of its own
-    beneath $X$, and carries the $k$-mers stored for it there. The companion paper uses this form
-    where a taxonomy has no strain nodes to cluster; here it is the rule, and it buys three things
-    beyond making the data taxa leaves. A topic is then one genome, so nothing is pooled and no
-    average has to stand in for the organism present. Nothing is weighted by sequencing effort, a
-    clade with nine thousand assemblies contributing nine thousand topics rather than one topic nine
-    thousand times over. And $\lvert K(g) \rvert$ in Section \ref{abundances} is a genome's length
-    rather than a clade's mean. The transformation adds nodes but moves no genome between clades, so
-    the phylogenetic structure of the taxonomy is left as it was.
+    The companion paper answers the first with a tree transformation, drawn in
+    Figure \ref{fttrans}, which we restate because the method depends on it and apply in its stronger
+    form. We take the per-genome form: every genome the entry phase stored is given a leaf of its
+    own beneath its taxon and carries its $k$-mers there. The companion paper uses this form where a
+    taxonomy has no strain nodes to cluster; here it is the rule, and it settles the second problem
+    with the first. A topic is then one genome, so nothing is pooled and no average stands in for the
+    organism present; nothing is weighted by sequencing effort, a clade with nine thousand assemblies
+    contributing nine thousand topics rather than one topic nine thousand times over; and
+    $\lvert K(g) \rvert$ in Section \ref{abundances} is a genome's length rather than a clade's mean.
+    The transformation adds nodes but moves no genome between clades, so the phylogenetic structure
+    of the taxonomy is left as it was.
 
-    What it costs is topics: as many as the reference collection has assemblies, and assemblies of
-    one species share nearly all their $k$-mers. The admission rule that follows is what makes that
+    \begin{figure}[!htbp]
+        \centering
+        \small
+        \begin{minipage}[c]{0.30\textwidth}
+        \begin{flushleft}(1) $X$ carries the genomes $g_1$ and $g_2$, $Y$ carries $g_3$. Both are
+        data taxa, but $X$ is not a leaf and its two genomes share one row.\end{flushleft}
+        \end{minipage}
+        \begin{minipage}[c]{0.16\textwidth}
+        \begin{tikzpicture}
+        \tikzset{every tree node/.style={align=center,anchor=north}}
+        \Tree [.$W$ [.$X$ $Y$ ] $Z$ ]
+        \end{tikzpicture}
+        \end{minipage}
+        \begin{minipage}[c]{0.16\textwidth}
+        \begin{tikzpicture}
+        \tikzset{every tree node/.style={align=center,anchor=north}}
+        \Tree [.$W$ [.$X$ $h_X$ $Y$ ] $Z$ ]
+        \end{tikzpicture}
+        \end{minipage}
+        \begin{minipage}[c]{0.30\textwidth}
+        \begin{flushleft}(2) Per taxon, as the companion paper has it: one fresh node $h_X$ takes
+        $X$'s genomes, so $X$ is no longer a data taxon and $h_X$ is a leaf.\end{flushleft}
+        \end{minipage}
+
+        \vspace{0.3cm}
+
+        \begin{minipage}[c]{0.30\textwidth}
+        \begin{flushleft}(3) Per genome, as used here: each stored genome takes a leaf of its own,
+        so every topic is a leaf and every topic is a single genome.\end{flushleft}
+        \end{minipage}
+        \begin{minipage}[c]{0.24\textwidth}
+        \begin{tikzpicture}
+        \tikzset{every tree node/.style={align=center,anchor=north}}
+        \Tree [.$W$ [.$X$ $g_1$ $g_2$ [.$Y$ $g_3$ ] ] $Z$ ]
+        \end{tikzpicture}
+        \end{minipage}
+        \caption{Making every data taxon a leaf, after \citet{genestrip-pub}. In (1) the data taxon
+        $X$ is an ancestor of the data taxon $Y$, so the two would be topics at once and no data
+        could separate them. The transformation inserts nodes and moves genomes down to them; it adds
+        no taxon above any genome that was not already above it, so the phylogeny is
+        unchanged.}\label{fttrans}
+    \end{figure}
+
+    It costs topics: as many as the reference collection has assemblies, and assemblies of
+    one species share nearly all their $k$-mers. The admission rule that follows makes that
     workable --- a genome with no $k$-mers of its own is never a topic --- and the aggregation of
-    Section \ref{abundances} is what makes the remainder harmless, since which of a set of
+    Section \ref{abundances} makes the remainder harmless, since which of a set of
     near-identical assemblies is credited does not change their sum.
 
     The second violation is $\textsc{rest}_t$, which attaches at $t$ and would otherwise sit above
@@ -329,7 +484,7 @@
 
     Passing the test is a necessary condition and not a claim of presence: $c_t > 0$ may be the
     clade's own genomes pushing $k$-mers up, just as $c_g > 0$ may be a near-identical relative of
-    $g$. Which it is, is what the fit is for. A topic admitted but truly absent is a smaller matter
+    $g$. The fit is there to decide between them. A topic admitted but truly absent is a smaller matter
     and not nothing --- the iteration takes it towards zero and arrives only in the limit, so
     Appendix \ref{sparsity} sets out what to do if exact zeros are wanted. And the counts of a
     rejected topic do not vanish; they are explained by whatever remains, usually the
@@ -362,7 +517,7 @@
     not store, of which there are many, Genestrip entering at most a fixed number of genomes per
     taxon. It is not unnamed and does not belong in $\textsc{rest}$ --- counting it there would put
     the bulk of RefSeq into the unnamed share and leave $u$ reporting the entry cap rather than the
-    state of the reference collection. Nor is it a topic, having no row of its own. It is represented
+    state of the reference collection. It is not a topic either, having no row of its own. It is represented
     by the conspecifics that were stored, and it has already done its work: it took part in the LCA
     update, so the node positions every row is read from account for it. So
     $p(n \mid \textsc{rest}_g)$ is the probability that a count observed at $n$ came from material
@@ -409,7 +564,7 @@
     over the children $h$ of $t$, which a single post-order traversal computes for every taxon at
     once. At a data taxon with nothing below it the sum has one term and $c$ and $c^{\circ}$ coincide.
 
-    The range is what keeps the rows from overlapping. A row of $t$ is read on $t$'s own lineage:
+    The range keeps the rows from overlapping. A row of $t$ is read on $t$'s own lineage:
     what the database stores \emph{beneath} $t$ belongs to the topics sitting there and not to $t$,
     and without the restriction $\textsc{rest}_t$ would carry the mass of every $\textsc{rest}_s$
     below it while those are topics in their own right. At a data taxon, being a leaf, the
@@ -441,9 +596,9 @@
     weighted towards whatever its members were sequenced most often. A $k$-mer carried by many
     genomes of the clade weighs more than one carried by a single draft.
 
-    That weighting is defensible, since a $k$-mer common to a clade is likelier to be observed from
+    The weighting is defensible, since a $k$-mer common to a clade is likelier to be observed from
     it, but it makes the topic a property of the reference collection as much as of the organisms.
-    Where a clade is dominated by one heavily sequenced member --- \emph{S.~pneumoniae} accounts for
+    If a clade is dominated by one heavily sequenced member --- \emph{S.~pneumoniae} accounts for
     more than nine thousand of the twenty-two thousand \emph{Streptococcus} assemblies in RefSeq ---
     a genus row is largely that member's genome wearing the genus's name. The data taxa are free of
     it, each being one genome and pooling nothing; it is $\textsc{rest}$ and the fixed-rank variant
@@ -463,7 +618,7 @@
     The genomes behind a $\textsc{rest}$ row were never stored and are held only where they overlap
     something that was, so there the row describes the shared part and not the material itself.
 
-    Where it binds, the condition is not a concession. The counts $c_n$ are subject to the same one --- a $k$-mer absent from $d$ is never
+    The condition is not a concession where it binds. The counts $c_n$ are subject to the same one --- a $k$-mer absent from $d$ is never
     reported at a node either --- so both sides of
     Equation \eqref{smoothylikelihood} speak about the
     same observable population, and the likelihood is a proper multinomial over it. What the database
@@ -481,7 +636,7 @@
     absent from $d$ would have its abundance pushed onto whichever genomes happen to resemble it.
     Equation \eqref{smoothypng} applies to it unchanged --- $\textsc{rest}_g$ is a topic and is read
     like one, over its own row and its own total --- which is the whole of what has to be said about
-    it. What that row averages is local: a genome-weighted average over the taxa \emph{of $g$'s
+    it. That row averages locally: a genome-weighted average over the taxa \emph{of $g$'s
     clade} that the database omits, and not over everything it omits.
 
     The row is skewed, though, in a way a data taxon's is not. A genome the entry phase stored has
@@ -492,41 +647,18 @@
     material itself, weighted towards whatever is conserved. Read as a description of the organisms
     the database cannot name, or of the reference collection at large, it is simply wrong.
 
-    It is nonetheless the right row for the model, because the sample is censored in the same way. A
+    It is still the right row for the model, because the sample is censored in the same way. A
     read from an organism $d$ does not contain yields $k$-mers, and only those $d$ holds are reported
     at a node; the particular ones are as absent from $c_n$ as they are from the row. Both sides of
     Equation \eqref{smoothylikelihood} therefore speak about the shared part and about nothing else,
     which is the conditioning that makes $p(\cdot \mid g)$ a distribution at all, applied to a topic
     with no genome behind it.
 
-    And accounting for the observable is the whole of what $\textsc{rest}$ is asked to do. It is not
+    Accounting for the observable is all that $\textsc{rest}$ is asked to do. It is not
     there to portray an absent organism but to take up the counts the named topics cannot carry: a
     slack term, fitted like any other topic, whose value says how much of what was observed nothing
     in $d$ can name. Skewed with respect to the organism, faithful with respect to the observable ---
     and the likelihood is written over the observable.
-
-    \begin{table}[!htbp]
-        \centering
-        \footnotesize
-        \begin{tabular}{@{}l|l|l@{}}
-            \textbf{Topic modeling} & \textbf{Here} & \textbf{Symbol}\\
-            \hline
-            document $j$ & sample (statistic) $s$ & $s$, or $s_1 \dots s_m$\\
-            word $w$ & taxonomy node & $n \in N$\\
-            topic $k$ & one genome, or a \textsc{rest} node & $g \in G$\\
-            word count in a document & count reported at a node & $c_n$, corrected $\hat{c}_n$\\
-            topic--word distribution $\varphi_{wk}$ & where a topic's $k$-mers are stored &
-                $\varphi_{ng} = p(n \mid g)$\\
-            document--topic distribution $\theta_{kj}$ & abundance in the sample &
-                $\theta_g = p(g \mid s)$\\
-            Dirichlet concentration & unchanged & $\alpha$\\
-        \end{tabular}
-        \caption{The correspondence of Section \ref{model} in the symbols each field uses. The
-        indices differ deliberately: $k$ is the $k$-mer length throughout this paper and cannot also
-        be a topic index, and $w$ for a node would say nothing. The distributions keep their usual
-        names, $\varphi$ and $\theta$, so that the equations below read as they do in the literature
-        the method is borrowed from.}\label{correspondence}
-    \end{table}
 
     One degeneracy remains after all this, and it is not hypothetical. Two topics are
     distinguishable only where their columns differ, and a genome that retains none of its own
@@ -741,7 +873,8 @@
     \subsection{Inference}\label{inference}
     Write $\theta_g = p(g \mid s)$, $\varphi_{ng} = p(n \mid g)$ and $C = \sum_n \hat{c}_n$, following
     the usual symbols of the topic-modeling literature for the mixture and for the topic--word
-    distribution. The estimate
+    distribution. The indices differ from that literature deliberately: $k$ is the $k$-mer length
+    throughout this paper and cannot also be a topic index, and $w$ for a node would say nothing. The estimate
     maximises $\ell(\theta) = \sum_n \hat{c}_n \log (\varphi\theta)_n$ over the simplex. Two ways to
     compute it are worth setting out, because the second follows from the first and needs less
     apparatus.
@@ -829,8 +962,8 @@
         a_g \;=\; \frac{\tilde{a}_g}{\sum_{g' \in G} \tilde{a}_{g'}} .
     \end{equation}
     %
-    Including \textsc{rest} is what makes $a$ an account of the sample rather than of the part of it
-    the database happens to cover. The narrower reading is not lost by it: dividing among the named
+    Including \textsc{rest} makes $a$ an account of the sample rather than of the part of it the
+    database happens to cover. The narrower reading is not lost by it: dividing among the named
     taxa alone is $a_g / (1 - \sum a_{\textsc{rest}})$, summing over the \textsc{rest} topics, one
     division away for a reader who wants
     it,
@@ -854,8 +987,8 @@
     $\textsc{rest}$ is the one topic that reads differently, and it reads differently because it is
     the one topic that is not a genome. $\textsc{rest}_g$ pools every genome the tree cannot name
     beneath $g$, so $R_{\textsc{rest}_g}$ is the database's hold on all of them together and dividing
-    by it would count copies of the whole set rather than organisms of it. What is wanted is the hold
-    on one member, so the divisor is the mean: $R_{\textsc{rest}_g}$ over the number of genomes
+    by it would count copies of the whole set rather than organisms of it. The hold on one member is
+    what is needed, so the divisor is the mean: $R_{\textsc{rest}_g}$ over the number of genomes
     pooled, which the goal of Section \ref{pgn} stores beside the row. The pooled rows of
     Appendix \ref{fixedrank} are read the same way and for the same reason.
 
@@ -870,7 +1003,7 @@
     and not over $\theta$: an abundance is a share of organisms and organisms add, whereas $\theta$ is
     a share of $k$-mers weighted by how much of each genome the database holds, and those do not.
 
-    Aggregating rather than refitting is what makes the degeneracy of Section \ref{pgn} harmless.
+    Aggregating rather than refitting makes the degeneracy of Section \ref{pgn} harmless.
     Where two topics cannot be told apart their split is arbitrary, but their sum is determined, and
     at any taxon above them the sum is what Equation \eqref{smoothyagg} reports. The same holds of the
     admission rule: a topic it rejects contributes its counts to its neighbours, and the aggregate
@@ -987,7 +1120,7 @@
     length in $R^{A}_g$ is the wrong length, and since windows differ between taxa the error does not
     cancel but tilts the profile towards whichever taxa have the longer windows.
 
-    \paragraph{What does not survive.} Resolution. A conserved marker separates taxa far less than a
+    \paragraph{What the change costs.} Resolution. A conserved marker separates taxa far less than a
     genome does, so the proportional columns of Section \ref{pgn} become the rule at species rank
     rather than the exception, and an amplicon run should be read at genus or above. The consistency
     ratio of Section \ref{error} has to be recomputed over $A(g)$ as well --- $u_{t,d}$ being the
@@ -1175,7 +1308,7 @@
     against counts that overstate the evidence by a factor between $k$ and $L - k + 1$ is switching
     sparsity on and regularising nothing, and $\alpha$ should not be read as though it had a strength.
     The same inflation makes the posterior sure of itself: a taxon carried by two reads can be pruned
-    with none of the doubt that ought to attach to it. Nor can $\alpha$ carry the threshold of
+    with none of the doubt that ought to attach to it. And $\alpha$ cannot carry the threshold of
     Section \ref{pgn}: rejecting what fewer than $T$ $k$-mers support would take
     $\alpha \gtrsim T$, above one for any useful $T$ and past the point where anything is sparse.
 
@@ -1195,7 +1328,7 @@
     \paragraph{Dropping.} Restrict $N$ to the nodes at rank $r$ and above, so a count below the rank
     does not enter Equation \eqref{smoothylikelihood} at all. The rows need nothing further, being
     read on $\mathrm{path}(t)$ already. It is exact and it discards data --- at genus
-    rank most of a sample's counts sit at species nodes. What remains is the ambiguous evidence, which
+    rank most of a sample's counts sit at species nodes. The ambiguous evidence remains, and it
     is the evidence the method exists to use, and the discarded remainder was already answered by the
     classification. It costs nothing in accuracy: $\theta_g$ and $R_g$ are restricted alike, so the
     restriction cancels in $\theta_g / R_g$ and only precision is lost.
