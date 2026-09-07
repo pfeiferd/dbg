@@ -661,13 +661,13 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
 \vspace{0.2cm}
 
 \begin{minipage}[c]{0.25\textwidth}
-\begin{flushleft}(3) The tree transformation introduces the node $h$ under $X$ and moves \texttt{CCT} away from $X$ to $h$. So $X$ is no data taxon anymore but $h_X$ is.
+\begin{flushleft}(3) The tree transformation introduces a node $h$ under each data taxon and moves that taxon's sequences to it. So $X$, $Y$ and $Z$ are no data taxa anymore, but $h_X$, $h_Y$ and $h_Z$ are, and each of them is a leaf.
 \end{flushleft}
 \end{minipage}
 \begin{minipage}[c]{0.2\textwidth}
 \begin{tikzpicture}
 \tikzset{every tree node/.style={align=center,anchor=north}}
-\Tree [.$W$ [.$X$ $h_X$ $Y$ ] $Z$ ]
+\Tree [.$W$ [.$X$ $h_X$ [.$Y$ $h_Y$ ] ] [.$Z$ $h_Z$ ] ]
 \end{tikzpicture}
 \end{minipage}
 \begin{minipage}[c]{0.25\textwidth}
@@ -676,7 +676,7 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
 \begin{minipage}[c]{0.2\textwidth}
 \begin{tikzpicture}
 \tikzset{every tree node/.style={align=center,anchor=north}}
-\Tree [.$W$ [{$h_X$\\\texttt{CC}} {$Y$\\\texttt{TT}} ].{$X$\\\texttt{CT}} {$Z$\\ \texttt{TC},\texttt{CA}} ]
+\Tree [.$W$ [{$h_X$\\\texttt{CC}} [{$h_Y$\\\texttt{TT}} ].{$Y$} ].{$X$\\\texttt{CT}} [{$h_Z$\\ \texttt{TC},\texttt{CA}} ].{$Z$} ]
 \end{tikzpicture}
 \end{minipage}
 
