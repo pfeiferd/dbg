@@ -69,7 +69,7 @@
 
     \title{Smoothy: Using Topic Modeling for abundance estimation from metagenomic results}
 
-    \author*[1]{\sur{Daniel} \fnm{Pfeifer}}\email{daniel.pfeifer@hs-heilbronn.de}
+    \author*[1]{\fnm{Daniel} \sur{Pfeifer}}\email{daniel.pfeifer@hs-heilbronn.de}
 
     \affil*[1]{\orgdiv{IT Faculty}, \orgname{Heilbronn University}, \orgaddress{\street{Max-Planck-Str. 39}, \city{Heilbronn}, \postcode{74081}, \state{Baden-W\"urttemberg}, \country{Germany}}}
 
@@ -358,30 +358,30 @@
     and because Appendix \ref{fixedrank} wants them, but the method reads the genomes and the
     $\textsc{rest}$ nodes.
 
-    \paragraph{The topics.} Every taxon carries a row, the ones above the data taxa included, but an
-    inference does not use them all. $G$ in Equation \eqref{smoothylikelihood} is the \emph{data
-    taxa} --- one per genome, by the transformation set out next, which is the finest resolution the
-    database supports
-    --- together with one $\textsc{rest}_t$ at each node that has unnamed genomes attached to it.
-    $N$ is the whole tree. A coarser answer is not a coarser fit but a sum over the fitted one, as
+    \paragraph{The topics.} A \emph{data taxon} is a taxon with a complete genome directly
+    associated, whose $k$-mers the database stores \citep{genestrip-ft}; in RefSeq such genomes
+    usually attach at the rank of species or below. Every taxon carries a row, the ones above the
+    data taxa included, but an inference does not use them all. $G$ in
+    Equation \eqref{smoothylikelihood} is the data taxa --- one per genome, once the transformation
+    below has been applied, which is the finest resolution the database supports --- together with
+    one $\textsc{rest}_t$ at each node that has unnamed genomes attached to it. $N$ is the whole
+    tree. A coarser answer is not a coarser fit but a sum over the fitted one, as
     Section \ref{abundances} sets out.
 
-    For that topic set to be estimable, no topic may be an ancestor of another. If an ancestor and
+    Three things stand in the way of that topic set, and one device settles all three. A data taxon
+    may have descendants, a species with strains beneath it being both. A data taxon may carry
+    several genomes, which would enter one topic however unlike each other they are. And
+    $\textsc{rest}_t$ attaches at $t$, above $t$'s own topics. The first and the last break the
+    condition the set has to meet, that no topic may be an ancestor of another: if an ancestor and
     its descendants were topics at once, the same counts could be explained by either and no data
-    could separate them. Two things would otherwise violate it, and one device repairs both.
+    could separate them. The middle one is not a matter of ancestry but of pooling.
 
-    A \emph{data taxon} is a taxon with a complete genome directly associated, whose $k$-mers the
-    database stores \citep{genestrip-pub}. In RefSeq such genomes usually attach at the rank of
-    species or below. Two things then go wrong at once. A data taxon may have descendants --- a
-    species with strains beneath it is both --- and a data taxon may carry several genomes, which
-    would enter one topic however unlike each other they are.
-
-    The companion paper answers the first with a tree transformation, drawn in
-    Figure \ref{fttrans}, which we restate because the method depends on it and apply in its stronger
-    form. We take the per-genome form: every genome the entry phase stored is given a leaf of its
-    own beneath its taxon and carries its $k$-mers there. The companion paper uses this form where a
-    taxonomy has no strain nodes to cluster; here it is the rule, and it settles the second problem
-    with the first. A topic is then one genome, so nothing is pooled and no average stands in for the
+    The companion paper answers the first with a tree transformation, which inserts a node beneath a
+    data taxon and moves that taxon's sequence data to it, leaving the taxon internal and the new
+    node a leaf \citep{genestrip-ft}. We restate it because the method depends on it, and apply it
+    per genome: every genome the entry phase stored is given a leaf of its own beneath its taxon and
+    carries its $k$-mers there, as Figure \ref{fttrans} draws. That settles the second problem with
+    the first. A topic is then one genome, so nothing is pooled and no average stands in for the
     organism present; nothing is weighted by sequencing effort, a clade with nine thousand assemblies
     contributing nine thousand topics rather than one topic nine thousand times over; and
     $\lvert K(g) \rvert$ in Section \ref{abundances} is a genome's length rather than a clade's mean.
@@ -391,45 +391,36 @@
     \begin{figure}[!htbp]
         \centering
         \small
-        \begin{minipage}[c]{0.30\textwidth}
-        \begin{flushleft}(1) $X$ carries the genomes $g_1$ and $g_2$, $Y$ carries $g_3$. Both are
-        data taxa, but $X$ is not a leaf and its two genomes share one row.\end{flushleft}
+        \begin{minipage}[c]{0.32\textwidth}
+        \begin{flushleft}(1) $X$ carries the genomes $g_1$ and $g_2$, $Y$ carries $g_3$ and $Z$
+        carries $g_4$. All three are data taxa, but $X$ is an ancestor of $Y$, and $X$'s two genomes
+        would share one row.\end{flushleft}
         \end{minipage}
-        \begin{minipage}[c]{0.16\textwidth}
+        \begin{minipage}[c]{0.18\textwidth}
         \begin{tikzpicture}
         \tikzset{every tree node/.style={align=center,anchor=north}}
         \Tree [.$W$ [.$X$ $Y$ ] $Z$ ]
         \end{tikzpicture}
         \end{minipage}
-        \begin{minipage}[c]{0.16\textwidth}
+        \begin{minipage}[c]{0.26\textwidth}
         \begin{tikzpicture}
         \tikzset{every tree node/.style={align=center,anchor=north}}
-        \Tree [.$W$ [.$X$ $h_X$ $Y$ ] $Z$ ]
+        \Tree [.$W$ [.$X$ $g_1$ $g_2$ [.$Y$ $g_3$ ] ] [.$Z$ $g_4$ ] ]
         \end{tikzpicture}
         \end{minipage}
-        \begin{minipage}[c]{0.30\textwidth}
-        \begin{flushleft}(2) Per taxon, as the companion paper has it: one fresh node $h_X$ takes
-        $X$'s genomes, so $X$ is no longer a data taxon and $h_X$ is a leaf.\end{flushleft}
+        \begin{minipage}[c]{0.20\textwidth}
+        \begin{flushleft}(2) Every stored genome is given a leaf of its own.\end{flushleft}
         \end{minipage}
-
-        \vspace{0.3cm}
-
-        \begin{minipage}[c]{0.30\textwidth}
-        \begin{flushleft}(3) Per genome, as used here: each stored genome takes a leaf of its own,
-        so every topic is a leaf and every topic is a single genome.\end{flushleft}
-        \end{minipage}
-        \begin{minipage}[c]{0.24\textwidth}
-        \begin{tikzpicture}
-        \tikzset{every tree node/.style={align=center,anchor=north}}
-        \Tree [.$W$ [.$X$ $g_1$ $g_2$ [.$Y$ $g_3$ ] ] $Z$ ]
-        \end{tikzpicture}
-        \end{minipage}
-        \caption{Making every data taxon a leaf, after \citet{genestrip-pub}. In (1) the data taxon
+        \caption{Making every data taxon a leaf, after \citet{genestrip-ft}. In (1) the data taxon
         $X$ is an ancestor of the data taxon $Y$, so the two would be topics at once and no data
-        could separate them. The transformation inserts nodes and moves genomes down to them; it adds
-        no taxon above any genome that was not already above it, so the phylogeny is
-        unchanged.}\label{fttrans}
+        could separate them, and $X$'s two genomes would enter one row however unlike each other they
+        are. The transformation of (2) settles both: it inserts a node per genome and moves that
+        genome's $k$-mers down to it, so no data taxon is an ancestor of another and no topic pools
+        two genomes. It adds no taxon above any genome that was not already above it, so the
+        phylogeny is unchanged.\protect\footnotemark}\label{fttrans}
     \end{figure}
+    \footnotetext{Genestrip builds this under \texttt{genomeNodes=true}, which inserts one node of
+    rank \texttt{GENOME} per genome.}
 
     It costs topics: as many as the reference collection has assemblies, and assemblies of
     one species share nearly all their $k$-mers. The admission rule that follows makes that
@@ -437,8 +428,8 @@
     Section \ref{abundances} makes the remainder harmless, since which of a set of
     near-identical assemblies is credited does not change their sum.
 
-    The second violation is $\textsc{rest}_t$, which attaches at $t$ and would otherwise sit above
-    $t$'s own topics. The same device answers it: $\textsc{rest}_t$ is entered as a further leaf
+    The third stands apart, $\textsc{rest}_t$ having no genome of its own to be given a leaf. The
+    same device answers it all the same: $\textsc{rest}_t$ is entered as a further leaf
     child of $t$. It is a leaf with no $k$-mers of its own --- the update stored none at a node it
     never saw --- so the node is a place in the topic set and not a place in the database, and the
     row remains the one Equation \eqref{smoothyrows} builds.
@@ -511,7 +502,8 @@
     which is what material genuinely outside it looks like --- has no leaf and no taxon it could
     honestly be attributed to. It raises $c^{\circ}(\textsc{rest}_t,n)$ at the nearest ancestor $t$
     the tree does have, and only where $d$ holds the $k$-mer at all, which for such a genome is only
-    where it overlaps something stored.
+    where it overlaps something stored. So $p(n \mid \textsc{rest}_g)$ is the probability that a count
+    observed at $n$ came from material that belongs under $g$ and that the database names nowhere.
 
     A genome between the two raises nothing: one whose taxon $d$ names but which the entry phase did
     not store, of which there are many, Genestrip entering at most a fixed number of genomes per
@@ -519,14 +511,12 @@
     the bulk of RefSeq into the unnamed share and leave $u$ reporting the entry cap rather than the
     state of the reference collection. It is not a topic either, having no row of its own. It is represented
     by the conspecifics that were stored, and it has already done its work: it took part in the LCA
-    update, so the node positions every row is read from account for it. So
-    $p(n \mid \textsc{rest}_g)$ is the probability that a count observed at $n$ came from material
-    that belongs under $g$ and that the database names nowhere.
+    update, so the node positions every row is read from account for it.
 
     \textsc{rest} is not a node, and that is worth separating from a construct of the companion
     paper which shares the intuition and nothing else. Genestrip-FT's \textsc{other} is a node: the
     refinement inserts it into the tree as a further child of the node it refines, so the LCA update
-    has somewhere to leave a $k$-mer it must not push further down \citep{genestrip-pub}. It is a
+    has somewhere to leave a $k$-mer it must not push further down \citep{genestrip-ft}. It is a
     piece of tree structure, it holds $k$-mers, and it exists only where the refinement was applied.
     $\textsc{rest}_t$ is a pan-genome: a set of genomes pooled into a topic, holding no $k$-mers of
     its own and occupying no position in the taxonomy. It is defined at every taxon, refined or not,
@@ -543,8 +533,8 @@
     between genomes is the evidence the mixture is about and discarding its multiplicity would
     discard the ambiguity the model exists to resolve.
 
-    Two quantities have to be kept apart. The counters above are what the genomes sitting at a taxon
-    contribute; a row is what a whole clade beneath a taxon does. At a data taxon they coincide,
+    Two quantities have to be kept apart. The counters above are what a single genome contributes at
+    its own leaf; a row is what a whole clade beneath a taxon does. At a data taxon they coincide,
     the transformation having left it a leaf with nothing beneath it, and that row is read as
     it stands. Pooling is what $\textsc{rest}$ needs, its node sitting at an internal taxon and
     standing for everything unnamed below. Writing $s \preceq t$ for a taxon at or below $t$, the two
@@ -948,14 +938,15 @@
     and understates the small ones by exactly their length ratio. The two quantities are both worth
     reporting and must not be confused, which in practice they often are.
 
-    Relative abundance follows by reweighting each topic. The unnormalised quantity is defined for
-    every topic, \textsc{rest} included:
+    Relative abundance follows by reweighting each topic. For a data taxon the unnormalised quantity
+    is
     %
     \begin{equation}\label{smoothyabundance}
         \tilde{a}_g \;=\; \frac{\theta_g}{R_g} ,
     \end{equation}
     %
-    with $R_g$ the row total of Equation \eqref{smoothypng}. The abundance is that quantity normalised over all topics,
+    with $R_g$ the row total of Equation \eqref{smoothypng}; $\textsc{rest}$ divides by a mean
+    instead, for the reason given below. The abundance is that quantity normalised over all topics,
     \textsc{rest} among them:
     %
     \begin{equation}\label{smoothynorm}
