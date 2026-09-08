@@ -63,11 +63,11 @@
 \newcommand{\dbstat}[2]{\ifcsname dbstat@#1@#2\endcsname\csname dbstat@#1@#2\endcsname\else\sysUnknown\fi}
 
 % Pulled in only when it exists, so that the paper builds before any measurement does.
-\IfFileExists{results/smoothystats.tex}{\input{results/smoothystats.tex}}{}
+\IfFileExists{results/gemixstats.tex}{\input{results/gemixstats.tex}}{}
 
 \begin{document}
 
-    \title{Smoothy: Using Topic Modeling for abundance estimation from metagenomic results}
+    \title{Gemix: Using Topic Modeling for abundance estimation from metagenomic results}
 
     \author*[1]{\fnm{Daniel} \sur{Pfeifer}}\email{daniel.pfeifer@hs-heilbronn.de}
 
@@ -241,12 +241,164 @@
     too will not identify that species.} The \textsc{rest} topics of Section \ref{pgn} exist for
     exactly that case.
 
-    \todo{The rest of the field, once read rather than recalled: the expectation--maximisation
-    estimators that fit a mixture of reference genomes to a read set, and the marker-gene profilers
-    that sidestep ambiguity by counting only reads they can place. The first family is the closer of
-    the two and the comparison with Equation \eqref{smoothyem} has to be made carefully, since a
-    mixture fitted by EM is what they and this method both are; what differs is the space it is
-    fitted over.}
+    The correction that turns a count into an abundance is older than the mixture models that use it.
+    GAAS \citep{gaas} states the reason plainly: a metagenome is a set of fragments drawn from the
+    genomes present, so at equal abundance a longer genome yields more of them, and an estimate that
+    does not divide by genome length reports length as though it were abundance. Its normalisation is
+    the same division Section \ref{abundances} performs, arrived at from BLAST similarities weighted
+    by E-value rather than from stored $k$-mers, and its second output --- the average genome length
+    of a community --- is the quantity a mixture needs and cannot always obtain.
+
+    The line this paper stands in begins with GRAMMy \citep{grammy}, which put genome relative
+    abundance as a finite mixture and fitted it by expectation--maximisation. It reaches that mixture
+    from statistics and not from text: the word \emph{topic} does not appear in it, and nothing is
+    borrowed from the corpus literature Section \ref{relatedwork} opens with. Its components are the
+    reference genomes themselves, one per genome and none for a taxon, and the set of them is fixed
+    before the fit rather than searched over --- as it is here, and unlike metaMix below. The
+    taxonomy enters only afterwards, genome-level estimates being combined upward to give species and
+    genus figures, which is the step Equation \eqref{gemixagg} repeats here for the same reason.
+
+    The first difference is where the mixture weights come from, and it decides what each method
+    needs to be given. GRAMMy does the read assignment itself: it takes the read set and the
+    reference genomes, aligns the reads or compares $k$-mer \emph{composition} profiles, and builds a
+    matrix of probabilities that read $i$ came from genome $j$, which is what the fit then consumes.
+    The assignment is soft rather than hard --- that is the point of it, and what GRAMMy shows to be
+    worth doing --- but it is read classification all the same, carried out inside the estimator and
+    repeated for every sample. Simulation appears in that paper only to benchmark the result, not to
+    obtain the probabilities, which is where Bracken differs from it in turn.
+
+    This method does none of that. It begins after a classifier has run and reads only what the
+    classifier reported: $k$-mer counts at taxonomy nodes, which are decisions already taken and
+    written down. It never sees a read, never aligns anything and needs no reference sequence at
+    analysis time --- $p(n \mid g)$ comes from the database and is counted once for all samples. The
+    input is a table rather than a read set, so the method composes with any classifier that produces
+    one, and what it adds to an existing pipeline is a fit over that table.
+
+    The cost of standing downstream is that the classifier's decisions are inherited, errors
+    included, and no fitting recovers a $k$-mer the classifier placed wrongly. What is gained is that
+    the ambiguity the classifier could not resolve --- the counts left high in the tree --- is
+    precisely what the fit is given to work on, rather than being resolved twice by two different
+    rules. GRAMMy's $k$-mer option should not be read as this method tried and found wanting, either:
+    there a genome is a frequency distribution over short words and a read is scored by a multinomial
+    pseudo-likelihood under it \citep{sandberg2001composition}, where a $31$-mer here is an address,
+    and what separates two genomes is which $k$-mers they hold and where the update placed them.
+
+    The second difference is the length correction, and GRAMMy has it in the right place. The
+    abundance vector is a transformation of the mixing parameters that divides out genome length, in
+    the manner GAAS set out, so the correction sits inside the model rather than being applied to its
+    output --- as it does here. What differs is where the length comes from. GRAMMy takes it as an
+    input, supposing the genome sizes known, which is why its $k$-mer variant loses the correction
+    altogether: \enquote{there is no genome size bias correction if `k-mer' method is used without
+    prior knowledge of genome lengths.} Here the divisor is $R_g$, which the goal of
+    Section \ref{pgn} produces on the way to the fractions, so a $k$-mer method keeps the correction
+    instead of forfeiting it.
+
+    That is also what separates the two on the unknown component, and the reason is worth quoting.
+    GRAMMy admits a $(K+1)$-th component for \enquote{the collective of unknown genomes}, and then:
+    \enquote{Since the effective genome length for the unknown genomes is not available, we cannot
+    estimate the relative abundance of the unknown component.} The unnamed material enters the model
+    and is left unquantified. $R_g$ is not a length looked up but a count the database yields for a
+    $\textsc{rest}$ row as readily as for a genome, so the quantity GRAMMy could not reach is the one
+    this paper reports as $u$. What metaMix puts in its place is taken up below.
+
+    metaMix \citep{metamix} is nearer still in form, and its likelihood is the shape of
+    Equation \eqref{gemixlikelihood}: $P(X \mid w) = \prod_i \sum_j w_j p_{ij}$ over reads $x_i$ and
+    species $j$, a product over observations of a sum over sources. Like GRAMMy it comes at the
+    mixture from statistics and not from text, and like GRAMMy it does its own read assignment ---
+    more of it, in fact. Its pipeline assembles the unmapped reads, strips ribosomal sequence against
+    Silva and runs \textsc{blastx} of every read and contig against a protein database, from which
+    $p_{ij} = \mathrm{Pois}(m; \lambda)/l_g$ follows out of the mismatch count. All of that is per
+    sample, and none of it is what this method asks for.
+
+    What it does with the ambiguity is the instructive part, because the aim is the same and the
+    direction opposite. metaMix objects to precisely the convention this method builds on: assigning
+    an ambiguous read to the lowest common ancestor of its candidates, as MEGAN does, is \enquote{accurate
+    on a higher taxonomic level} and no lower, so metaMix goes back to the reads and resolves them
+    probabilistically to species. This method leaves the reads alone and resolves the same ambiguity
+    from the other end, by modelling where the database stores each genome's $k$-mers. Both undo the
+    push-up the $\mathrm{LCA}$ rule performs; one by re-deciding it, one by taking it as evidence.
+
+    Two further differences follow. The first is what is inferred. metaMix estimates the species
+    \emph{set} as well as the weights, exploring model space by parallel tempering and paying a prior
+    penalty per species admitted; within a candidate set it fits $w$ by EM or by a Gibbs sampler, and
+    reports the two as giving similar answers with EM the faster. That inner fit is what this paper
+    does --- once, over a set the admission rule of Section \ref{pgn} has already fixed --- and the
+    outer search is what it declines. The exchange is real and worth naming: metaMix returns a
+    posterior probability that a species is present, where Section \ref{pgn} offers a threshold and
+    nothing more.
+
+    The second is the unknown, and here the three methods form a sequence. GRAMMy admits the
+    component and cannot quantify it for want of a length. metaMix quantifies it by supplying one:
+    the $p_{ij}$ of its unknown category are approximated by the reciprocal of \enquote{median genome
+    length in the reference database}, a single figure standing for whatever is missing. This paper
+    divides by $R_{\textsc{rest}_g}$ over the genomes it pools --- measured, not assumed, and measured
+    over the omitted members of \emph{that clade} rather than over the whole collection. And because
+    a $\textsc{rest}_t$ sits at every node that needs one where the \emph{unknown} is a single
+    category, metaMix can say how much of a sample it cannot name while this method can also say
+    where.
+
+    PathoScope \citep{pathoscope} belongs to the same family and shows how far it can be taken.
+    It is a Bayesian missing-data mixture over reads and genomes, fitted by EM, with an indicator
+    saying which single genome a read came from; it weighs each read by its mapping quality, and its
+    reassignment deliberately penalises non-unique reads where unique ones are present, which is a
+    rule about evidence rather than a term in a likelihood. It is built for the clinical question
+    this paper's companion is built for --- identify the pathogen, attribute the strain --- and it
+    counts an absent reference among the cases it must handle. The distances are the ones already
+    named: it aligns the sample's reads itself and therefore needs them, its components are genomes
+    with no place for a clade, and what it reports about material outside the database is which reads
+    it could not place rather than how much of the sample they are.
+
+    \begin{table}[!htbp]
+        \centering
+        \footnotesize
+        \begin{tabular}{@{}l|p{2.0cm}|p{2.2cm}|p{2.6cm}|p{3.0cm}@{}}
+            \textbf{Method} & \textbf{Analysis base} & \textbf{Read probabilities from} &
+                \textbf{Estimator} & \textbf{Unnamed material}\\
+            \hline
+            GAAS \citep{gaas} & reads & own \textsc{blast} or \textsc{blat} search, weighted by
+                E-value &
+                weighted hit counting, length-normalised & not modelled\\
+            GRAMMy \citep{grammy} & reads & own mapping (\textsc{blat}), or own $k$-mer composition
+                model &
+                finite mixture, EM & a $(K{+}1)$-th component, left unquantified\\
+            PathoScope \citep{pathoscope} & reads & own alignment (\textsc{blast}, Bowtie~2 or
+                GNUMAP), weighted by mapping quality &
+                Bayesian mixture, EM & reads left unplaced\\
+            metaMix \citep{metamix} & reads and contigs & own assembly (Velvet) and
+                \textsc{blastx}; Poisson on mismatch count &
+                Bayesian mixture with search over the species set & one global category, length taken
+                as the database median\\
+            Bracken \citep{lu2017bracken} & reads classified at a node & reads simulated across each
+                genome and put through Kraken &
+                Bayes' rule, one pass & cannot be reported\\
+            \textbf{this paper} & $k$-mer counts at nodes & \emph{none}: no per-read quantity is
+                formed, and $p(n \mid g)$ is counted off the database &
+                mixture / topic model, EM & a $\textsc{rest}$ per node, quantified from the
+                database\\
+        \end{tabular}
+        \caption{The methods of this section by what they consume and what they do with it. The third
+        column is the divide. Every method but the last rests on a probability tying an individual
+        \emph{read} to a genome --- as an emission $p(r \mid g)$ or as an assignment $p(g \mid r)$,
+        the mixture relating the two --- and the row says where that probability is obtained: from an
+        alignment the estimator runs, from a composition model it fits, or, for Bracken, from reads
+        simulated across each genome and put through a fixed classifier. This paper forms no such
+        quantity. Nothing in it is per read; $p(n \mid g)$ is a property of the database, counted
+        once, and the observations are counts at nodes. That is what removes the aligner, the
+        simulator and the read set from analysis time, and it is why the column cannot be filled for
+        the last row rather than merely being empty there. The arrangements also couple differently:
+        an assignment step the estimator owns is a swappable front end --- PathoScope reports
+        \textsc{blast}, Bowtie~2 and GNUMAP as agreeing to within a percent, and GRAMMy offers two
+        modes --- whereas a method reading a classifier's output is tied to the format that
+        classifier writes and inherits the decisions recorded in it. The last column is where this
+        paper differs again, and Section \ref{abundances} is why: a divisor for the unnamed material
+        is available here because it is counted rather than assumed.}\label{priorwork}
+    \end{table}
+
+    \todo{What is left of the field: Sigma and Centrifuge's EM step, which follow GRAMMy, and the
+    marker-gene profilers, which sidestep ambiguity by counting only reads they can place. The EM
+    family is the closer, and the comparison with Equation \eqref{gemixem} has to be made carefully,
+    since a mixture fitted by EM is what they and this method both are; what differs is the space it
+    is fitted over.}
 
     \section{Method}\label{method}
     \todo{This paper leads the implementation rather than reporting it, so this section is the
@@ -277,7 +429,7 @@
     database, and $p(g \mid s)$ the share of $g$ in the sample --- the abundance we are after. A
     $k$-mer observed at $n$ may have come from any topic, so
     %
-    \begin{equation}\label{smoothylikelihood}
+    \begin{equation}\label{gemixlikelihood}
         \widehat{p}(g \mid s) \;=\; \argmax_{p(g \mid s)} \;\prod_{n \in N}
             \Bigl( \sum_{g \in G} p(n \mid g)\, p(g \mid s) \Bigr)^{c_n}.
     \end{equation}
@@ -303,7 +455,7 @@
     carries some $(L-k+1)/k$ items. For the choice between topics it is $L - k + 1$, a read being one
     draw from one organism however many nodes its $k$-mers touch. At $k = 31$ and $L = 150$ that is
     $31$ against $120$, and the larger figure is the one that governs $\theta$. This does not move the maximiser, since a factor common to every $c_n$
-    cancels out of Equation \eqref{smoothylikelihood}, but it overstates how much evidence there is
+    cancels out of Equation \eqref{gemixlikelihood}, but it overstates how much evidence there is
     wherever the magnitude of the counts is read rather than their ratios --- against a prior, in any
     interval derived from the posterior, and most of all in a sample with few reads to begin with,
     where a single read landing on an unusual locus can carry a node by itself.
@@ -338,7 +490,7 @@
     $c_n$ the count of a word in a document and $p(n \mid g)$ the topic--word distribution. Only
     $p(g \mid s)$ is inferred; $p(n \mid g)$ is read off the database, as Section \ref{pgn} sets out.
 
-    This makes Equation \eqref{smoothylikelihood} well behaved. With the $p(n \mid g)$ fixed,
+    This makes Equation \eqref{gemixlikelihood} well behaved. With the $p(n \mid g)$ fixed,
     its logarithm is a positive combination of logarithms of functions linear in $p(g \mid s)$, hence
     concave over the simplex. There are therefore no local optima to be trapped in, and an iteration
     reaches the maximum wherever it starts. Whether that maximum is a single point is a separate
@@ -362,7 +514,7 @@
     associated, whose $k$-mers the database stores \citep{genestrip-ft}; in RefSeq such genomes
     usually attach at the rank of species or below. Every taxon carries a row, the ones above the
     data taxa included, but an inference does not use them all. $G$ in
-    Equation \eqref{smoothylikelihood} is the data taxa --- one per genome, once the transformation
+    Equation \eqref{gemixlikelihood} is the data taxa --- one per genome, once the transformation
     below has been applied, which is the finest resolution the database supports --- together with
     one $\textsc{rest}_t$ at each node that has unnamed genomes attached to it. $N$ is the whole
     tree. A coarser answer is not a coarser fit but a sum over the fitted one, as
@@ -432,7 +584,7 @@
     same device answers it all the same: $\textsc{rest}_t$ is entered as a further leaf
     child of $t$. It is a leaf with no $k$-mers of its own --- the update stored none at a node it
     never saw --- so the node is a place in the topic set and not a place in the database, and the
-    row remains the one Equation \eqref{smoothyrows} builds.
+    row remains the one Equation \eqref{gemixrows} builds.
 
     After both, every topic is a leaf of the transformed tree and no topic is an ancestor of another.
 
@@ -523,7 +675,7 @@
     and a database carrying no refinement at all has the full complement of them. Neither implies the
     other, and reading one for the other inverts what the rows mean.
 
-    $\textsc{rest}_t$ nests as $t$ does --- Equation \eqref{smoothyrows} below writes the two side by
+    $\textsc{rest}_t$ nests as $t$ does --- Equation \eqref{gemixrows} below writes the two side by
     side. Where $c(t,n)$ pools the genomes $d$ stores beneath $t$, $c(\textsc{rest}_t,n)$ pools the
     ones nothing names, so both kinds of row are written once per taxon and an inference reads them
     rather than recomputing anything. What matters is
@@ -540,7 +692,7 @@
     standing for everything unnamed below. Writing $s \preceq t$ for a taxon at or below $t$, the two
     rows of $t$ are
     %
-    \begin{equation}\label{smoothyrows}
+    \begin{equation}\label{gemixrows}
         c(t,n) \;=\; \sum_{s \,\preceq\, t} c^{\circ}(s,n) ,
         \qquad
         c(\textsc{rest}_t,n) \;=\; \sum_{s \,\preceq\, t} c^{\circ}(\textsc{rest}_s,n) ,
@@ -596,7 +748,7 @@
 
     The estimate is then
     %
-    \begin{equation}\label{smoothypng}
+    \begin{equation}\label{gemixpng}
         p(n \mid g) \;=\; \frac{c(g,n)}{R_g} ,
         \qquad R_g \;=\; \sum_{m \,\in\, N} c(g,m) ,
     \end{equation}
@@ -610,7 +762,7 @@
 
     The condition is not a concession where it binds. The counts $c_n$ are subject to the same one --- a $k$-mer absent from $d$ is never
     reported at a node either --- so both sides of
-    Equation \eqref{smoothylikelihood} speak about the
+    Equation \eqref{gemixlikelihood} speak about the
     same observable population, and the likelihood is a proper multinomial over it. What the database
     does not hold is not modelled here at all; Section \ref{abundances} is where it re-enters, since
     it is a question about abundance rather than about attribution.
@@ -624,7 +776,7 @@
     A $\textsc{rest}$ row plays the part of an organism the database does not contain. Without one,
     every count would have to be explained by some named topic, and a sample holding an organism
     absent from $d$ would have its abundance pushed onto whichever genomes happen to resemble it.
-    Equation \eqref{smoothypng} applies to it unchanged --- $\textsc{rest}_g$ is a topic and is read
+    Equation \eqref{gemixpng} applies to it unchanged --- $\textsc{rest}_g$ is a topic and is read
     like one, over its own row and its own total --- which is the whole of what has to be said about
     it. That row averages locally: a genome-weighted average over the taxa \emph{of $g$'s
     clade} that the database omits, and not over everything it omits.
@@ -640,7 +792,7 @@
     It is still the right row for the model, because the sample is censored in the same way. A
     read from an organism $d$ does not contain yields $k$-mers, and only those $d$ holds are reported
     at a node; the particular ones are as absent from $c_n$ as they are from the row. Both sides of
-    Equation \eqref{smoothylikelihood} therefore speak about the shared part and about nothing else,
+    Equation \eqref{gemixlikelihood} therefore speak about the shared part and about nothing else,
     which is the conditioning that makes $p(\cdot \mid g)$ a distribution at all, applied to a topic
     with no genome behind it.
 
@@ -703,7 +855,7 @@
     sample.
 
     The result is small, and for a reason that belongs to the method rather than to the encoding.
-    Equation \eqref{smoothyrows} leaves a row with exactly $\lvert \mathrm{path}(t) \rvert$ entries,
+    Equation \eqref{gemixrows} leaves a row with exactly $\lvert \mathrm{path}(t) \rvert$ entries,
     one double per ancestor and one for the taxon, so what is stored per taxon is an array of the
     tree's depth and never of its size: a dozen or so where a bacterial data taxon sits, and no more
     at any rank.
@@ -713,11 +865,11 @@
     rather than at every taxon.
 
     The row total $R_g$ goes beside each array and cannot be recovered from it: it is divided out by
-    Equation \eqref{smoothypng}, so a normalised row sums to one whatever $R_g$ was, and
-    Equation \eqref{smoothyabundance} wants it back. It is known while the row is being built and so
+    Equation \eqref{gemixpng}, so a normalised row sums to one whatever $R_g$ was, and
+    Equation \eqref{gemixabundance} wants it back. It is known while the row is being built and so
     written with it rather than recomputed, at a cost of one long against an array of $n$ doubles.
     A data taxon needs nothing further; a $\textsc{rest}$ row carries the number of genomes it pools
-    as well, since Equation \eqref{smoothyabundance} takes their mean.
+    as well, since Equation \eqref{gemixabundance} takes their mean.
 
     That turns a matrix over taxa and nodes into one over taxa and tree depth, so a database entering
     a few thousand genomes stores a few hundred kilobytes rather than the tens of megabytes a dense
@@ -736,7 +888,7 @@
     $e_b$ and errors taken as independent, an instance survives with probability $(1 - e_b)^k$, so the
     reported counts are a systematic undercount and the corrected count is
     %
-    \begin{equation}\label{smoothyerror}
+    \begin{equation}\label{gemixerror}
         \hat{c}_n \;=\; \frac{c_n}{(1 - e_b)^k}.
     \end{equation}
     %
@@ -745,15 +897,15 @@
     anything is counted.
 
     Two things follow, and the first is the one to say plainly. Applied as written,
-    Equation \eqref{smoothyerror} does not change the estimate at all. It scales every $c_n$ by one
+    Equation \eqref{gemixerror} does not change the estimate at all. It scales every $c_n$ by one
     factor common to every $n$, so the objective $\sum_n c_n \log (\varphi\theta)_n$ scales with it and
     the maximiser over the simplex is unchanged; the cancellation runs through
-    Equation \eqref{smoothyem} in the same way, since $\hat{c}_n$ and $C = \sum_n \hat{c}_n$ carry the
+    Equation \eqref{gemixem} in the same way, since $\hat{c}_n$ and $C = \sum_n \hat{c}_n$ carry the
     factor alike. Under maximum likelihood the correction is inert, and $e_b$ need not be estimated at
     all to obtain $\hat{\theta}$, the abundances or $u$.
 
     It earns its place wherever the magnitude of the counts is read and not only their ratios, and
-    two such places are in this paper. In the MAP iteration of Equation \eqref{smoothymapem} the
+    two such places are in this paper. In the MAP iteration of Equation \eqref{gemixmapem} the
     likelihood term scales and the $\alpha - 1$ beside it does not, so uncorrected counts silently
     multiply the weight of the prior by $(1 - e_b)^k$ --- a factor of five at nanopore rates, which is
     not a subtlety but the difference between a prior that regularises and one that dominates. And in
@@ -768,13 +920,13 @@
 
     \paragraph{Counts that the assumption does not fit.} The correction above rescales every node
     alike and therefore says nothing about whether the assumption behind
-    Equation \eqref{smoothylikelihood} holds at any particular one. There is a measure that does, and
+    Equation \eqref{gemixlikelihood} holds at any particular one. There is a measure that does, and
     it comes from the classifier itself. The $k$-mer consistency ratio of \citet{genestrip-pub}
     compares the distinct $k$-mers actually seen for a taxon against the number expected if its
     $k$-mers were drawn uniformly: with $u_{t,d}$ the $k$-mers the database stores for $t$,
     $k_{t,f,d}$ the count observed and $u_{t,f,d}$ the distinct ones among them,
     %
-    \begin{equation}\label{smoothyconsistency}
+    \begin{equation}\label{gemixconsistency}
         E \;=\; u_{t,d} \Bigl( 1 - (1 - 1/u_{t,d})^{k_{t,f,d}} \Bigr),
         \qquad r_{t,f,d} \;=\; u_{t,f,d} \,/\, E .
     \end{equation}
@@ -791,7 +943,7 @@
     attenuating a node's contribution in proportion to how far its counts depart from what the
     assumption predicts. It enters where the error correction does,
     %
-    \begin{equation}\label{smoothyweight}
+    \begin{equation}\label{gemixweight}
         \hat{c}_n \;=\; \frac{w(r_n)\, c_n}{(1 - e_b)^k} ,
     \end{equation}
     %
@@ -800,7 +952,7 @@
 
     A form that meets the requirements below, and the one we propose, is
     %
-    \begin{equation}\label{smoothyw}
+    \begin{equation}\label{gemixw}
         w(r) \;=\; \max\Bigl( 0, \; 1 + \lambda \ln \bigl( \min(r, 1) \bigr) \Bigr),
         \qquad \lambda > 0 .
     \end{equation}
@@ -828,7 +980,7 @@
               read as one.
         \item $w$ depends on the count as well as the ratio. At small $k_{t,f,d}$ the ratio is noise,
               and a node holding three $k$-mers must not be discounted because its $r$ came out at
-              $0.6$. Equation \eqref{smoothyw} does not yet do this, and the natural repair is to
+              $0.6$. Equation \eqref{gemixw} does not yet do this, and the natural repair is to
               shrink $r$ towards one as the count falls --- replacing $r$ by
               $1 + (r - 1)\,k_{t,f,d}/(k_{t,f,d} + k_0)$ for some scale $k_0$ --- rather than to
               complicate $w$ itself.
@@ -839,7 +991,7 @@
     \end{itemize}
 
     \todo{Fix $\lambda$ and $k_0$ against data rather than by argument, and check
-    Equation \eqref{smoothyw} against alternatives while doing so. The measurements that decide it:
+    Equation \eqref{gemixw} against alternatives while doing so. The measurements that decide it:
     how $r$ is distributed across nodes in real samples, and whether the nodes with low $r$ are the
     ones an independent standard says are wrong.}
 
@@ -871,7 +1023,7 @@
 
     \paragraph{Constrained ascent.} With the constraint in affine form the Lagrangian is
     %
-    \begin{equation}\label{smoothylagrange}
+    \begin{equation}\label{gemixlagrange}
         \Lambda(\theta, \lambda) \;=\; \sum_{n \in N} \hat{c}_n \log (\varphi\theta)_n
             \;-\; \lambda \Bigl( \sum_{g \in G} \theta_g - 1 \Bigr),
     \end{equation}
@@ -881,11 +1033,11 @@
     summing over $g$ and using $\sum_g \varphi_{ng} \theta_g = (\varphi\theta)_n$ collapses the left side to
     $\sum_n \hat{c}_n$, so
     %
-    \begin{equation}\label{smoothylambda}
+    \begin{equation}\label{gemixlambda}
         \lambda \;=\; C .
     \end{equation}
     %
-    Equation \eqref{smoothylagrange} handles $\sum_g \theta_g = 1$ and not $\theta_g \geq 0$, which
+    Equation \eqref{gemixlagrange} handles $\sum_g \theta_g = 1$ and not $\theta_g \geq 0$, which
     is the constraint that can still bind. The admission rule of Section \ref{pgn} keeps topics with
     no evidence out of $G$ altogether, which is most of them, but passing that rule is necessary and
     not sufficient: a topic whose counts its neighbours explain better is driven to zero all the same.
@@ -898,10 +1050,11 @@
 
     \paragraph{Expectation--maximisation.} Substituting $\lambda = C$ into the stationarity condition
     and reading it as a fixed point gives the iteration directly, with no step size and no projection.
-    It is the mixture-proportion step of \citet{hofmann1999plsa} with the topic--word distributions
+    It is expectation--maximisation \citep{dempster1977em} in the form
+    \citet{hofmann1999plsa} gives it for mixture proportions, with the topic--word distributions
     held fixed:
     %
-    \begin{equation}\label{smoothyem}
+    \begin{equation}\label{gemixem}
         \theta_g \;\longleftarrow\; \frac{\theta_g}{C} \sum_{n \in N}
             \frac{\hat{c}_n \, \varphi_{ng}}{(\varphi\theta)_n}.
     \end{equation}
@@ -932,7 +1085,7 @@
     support at the end are the usual remedies; measure before adding either.}
 
     \subsection{From topics to abundances}\label{abundances}
-    What Equation \eqref{smoothylikelihood} estimates is a share of $k$-mers, and therefore a share of
+    What Equation \eqref{gemixlikelihood} estimates is a share of $k$-mers, and therefore a share of
     \emph{sequence}. It is not a share of organisms. A genome twice as long contributes twice the
     $k$-mers at equal cell count, so reporting $\theta_g$ as an abundance overstates the large genomes
     and understates the small ones by exactly their length ratio. The two quantities are both worth
@@ -941,15 +1094,15 @@
     Relative abundance follows by reweighting each topic. For a data taxon the unnormalised quantity
     is
     %
-    \begin{equation}\label{smoothyabundance}
+    \begin{equation}\label{gemixabundance}
         \tilde{a}_g \;=\; \frac{\theta_g}{R_g} ,
     \end{equation}
     %
-    with $R_g$ the row total of Equation \eqref{smoothypng}; $\textsc{rest}$ divides by a mean
+    with $R_g$ the row total of Equation \eqref{gemixpng}; $\textsc{rest}$ divides by a mean
     instead, for the reason given below. The abundance is that quantity normalised over all topics,
     \textsc{rest} among them:
     %
-    \begin{equation}\label{smoothynorm}
+    \begin{equation}\label{gemixnorm}
         a_g \;=\; \frac{\tilde{a}_g}{\sum_{g' \in G} \tilde{a}_{g'}} .
     \end{equation}
     %
@@ -960,10 +1113,13 @@
     it,
     whereas the whole-sample account cannot be recovered from the narrower one at all.
 
-    For a data taxon the divisor is the genome's own $k$-mer count and nothing more. $\theta_g$ is a
+    For a data taxon the divisor is the genome's own $k$-mer count and nothing more. That a length
+    has to be divided out at all is not a nicety: \citet{beszteri2010} show genome size to be a
+    source of bias in comparative metagenomics in its own right, one that moves conclusions drawn
+    between samples rather than only the figures within one. $\theta_g$ is a
     share of $k$-mers, so dividing by the number a single organism of $g$ contributes ---
     $\lvert K(g) \rvert = \sum_c (\lvert c \rvert - k + 1)$ over its contigs --- turns a share of
-    sequence into a count of organisms. That Equation \eqref{smoothyabundance} divides by $R_g$
+    sequence into a count of organisms. That Equation \eqref{gemixabundance} divides by $R_g$
     instead is a convenience and not a second correction: the entry phase stores every $k$-mer of a
     genome it enters, so all of them are somewhere in $d$ and $R_g = \lvert K(g) \rvert$ exactly. The
     goal of Section \ref{pgn} produces $R_g$ on the way to the fractions, so no length has to be
@@ -986,7 +1142,7 @@
     \paragraph{Coarser answers.} The topics are the data taxa, so the fit is at the finest resolution
     the database supports. An answer at any coarser taxon is a sum over it,
     %
-    \begin{equation}\label{smoothyagg}
+    \begin{equation}\label{gemixagg}
         a_t \;=\; \sum_{g \,\preceq\, t} a_g ,
     \end{equation}
     %
@@ -996,7 +1152,7 @@
 
     Aggregating rather than refitting makes the degeneracy of Section \ref{pgn} harmless.
     Where two topics cannot be told apart their split is arbitrary, but their sum is determined, and
-    at any taxon above them the sum is what Equation \eqref{smoothyagg} reports. The same holds of the
+    at any taxon above them the sum is what Equation \eqref{gemixagg} reports. The same holds of the
     admission rule: a topic it rejects contributes its counts to its neighbours, and the aggregate
     over a clade containing both is unmoved. Near-identical assemblies of one species are the case
     that matters, and the case the per-genome transformation creates.
@@ -1004,7 +1160,7 @@
     Amplicon data changes this equation in one place and the rest of the method in one; both are set
     out in Section \ref{amplicon}.
 
-    \todo{Two limits of Equation \eqref{smoothyabundance} to state rather than let a reader find. The
+    \todo{Two limits of Equation \eqref{gemixabundance} to state rather than let a reader find. The
     lengths implicit in $R_g$ are those of the reference genomes and not of the sample's organisms, so
     a strain carrying a large accessory complement is measured against the wrong ruler. And above the
     data taxa the pooling runs over an unevenly sampled set --- the sequencing-effort bias that shapes
@@ -1013,7 +1169,7 @@
     \paragraph{What the database cannot account for.} One figure per topic is reported on its own and
     is not an abundance at all,
     %
-    \begin{equation}\label{smoothyunaccounted}
+    \begin{equation}\label{gemixunaccounted}
         u_g \;=\; \theta_{\textsc{rest}_g} ,
     \end{equation}
     %
@@ -1030,7 +1186,7 @@
     of it the database happens to hold: a topic with thin coverage does not have to carry a larger
     $\theta$ to explain the same counts.
 
-    The entries $a_{\textsc{rest}_g}$ of Equation \eqref{smoothynorm} read as the share of organisms
+    The entries $a_{\textsc{rest}_g}$ of Equation \eqref{gemixnorm} read as the share of organisms
     the database could not name in that clade. They are the entries of the profile to be read with more
     caution than the rest, and the caution belongs on them rather than on the choice of denominator.
     Leaving them out of the sum would not make the others safer: $\theta$ is fitted with the
@@ -1067,8 +1223,8 @@
     before the counter is raised, admitting the $k$-mer when its position lies inside $A(g)$ and
     discarding it otherwise. The database $d$ is untouched and the LCA positions are the ones it
     already holds, so only which $k$-mers are counted changes. The own counts, the pooling of
-    Equation \eqref{smoothyrows} and the $\textsc{rest}$ rule carry over verbatim, and
-    Equation \eqref{smoothypng} reads $p(n \mid g) = c^{A}(g,n) / R^{A}_g$ with both terms computed
+    Equation \eqref{gemixrows} and the $\textsc{rest}$ rule carry over verbatim, and
+    Equation \eqref{gemixpng} reads $p(n \mid g) = c^{A}(g,n) / R^{A}_g$ with both terms computed
     over $A(g)$.
 
     The test is on the position and not on the $k$-mer: the same sequence may occur inside the region
@@ -1085,9 +1241,9 @@
     \paragraph{The abundances.} One factor changes in Section \ref{abundances} and nothing else does.
     The row total is $R^{A}_g$, so the divisor carries the length of the amplified region where it
     carried the length of the genome --- which is what the counts are now a sample of.
-    Equation \eqref{smoothyabundance} is otherwise unaltered:
+    Equation \eqref{gemixabundance} is otherwise unaltered:
     %
-    \begin{equation}\label{smoothyamplicon}
+    \begin{equation}\label{gemixamplicon}
         \tilde{a}_g \;=\; \frac{\theta_g}{R^{A}_g} .
     \end{equation}
     %
@@ -1117,6 +1273,17 @@
     ratio of Section \ref{error} has to be recomputed over $A(g)$ as well --- $u_{t,d}$ being the
     distinct $k$-mers of the amplified region that $d$ stores for $t$ --- after which $r$ measures
     what it was built to measure and $\lambda$ wants fixing again against amplicon data.
+
+    \section{Evaluation}\label{evaluation}
+    \todo{To be written once there is an implementation. The benchmark to start from is FAMeS
+    \citep{fames}, the simulated data sets built to test the fidelity of metagenomic processing
+    methods and the ones GRAMMy measured itself against --- so using them puts this method on the
+    same footing as the mixture models of Section \ref{relatedwork} rather than on a footing of its
+    own. A known composition is what most of the open questions need: whether the abundances are
+    right, and against which of the three variants of Appendix \ref{fixedrank}; where to fix $T$;
+    and whether $u$ tracks material actually withheld from the build, which a simulated set can
+    arrange deliberately and a clinical sample cannot. The companion paper's tick and
+    \emph{Streptococcus} read sets give the real-data half.}
 
     \section{Discussion}\label{discussion}
     \todo{Including what the method cannot do, which is the part a reader will look for.}
@@ -1149,7 +1316,7 @@
     $\ell(\theta) + (\alpha - 1) \sum_g \log \theta_g$ and the iteration keeps its shape, gaining
     only a pseudo-count:
     %
-    \begin{equation}\label{smoothymapem}
+    \begin{equation}\label{gemixmapem}
         \theta_g \;\longleftarrow\; \frac{\bigl( \sum_n \hat{c}_n \, \varphi_{ng} \theta_g /
             (\varphi\theta)_n \bigr) + \alpha - 1}{C + \lvert G \rvert (\alpha - 1)} .
     \end{equation}
@@ -1158,7 +1325,7 @@
     the opposite of what a Dirichlet prior is usually wanted for here.
 
     \paragraph{Mode and mean differ by one.} The pseudo-count carries an offset that is easy to lose
-    sight of when the two estimators of this appendix are compared. Equation \eqref{smoothymapem}
+    sight of when the two estimators of this appendix are compared. Equation \eqref{gemixmapem}
     converges to the posterior \emph{mode},
     $(m_g + \alpha - 1) / (M + \lvert G \rvert (\alpha - 1))$, while the sampler below reports the
     posterior \emph{mean}, $(m_g + \alpha) / (M + \lvert G \rvert \alpha)$. The two differ by exactly
@@ -1170,7 +1337,7 @@
 
     This agrees with the MAP update of \citet{asuncion2009smoothing}, whose estimate
     $\hat{\theta}_{kj} = (N_{kj} + \alpha - 1)/(N_j + K\alpha - K)$ is
-    Equation \eqref{smoothymapem} in their notation, $K\alpha - K$ being $\lvert G \rvert (\alpha -
+    Equation \eqref{gemixmapem} in their notation, $K\alpha - K$ being $\lvert G \rvert (\alpha -
     1)$ here. They reach the same conclusion about the offset from the other direction, observing that
     MAP offsets by $-1$ against collapsed Gibbs sampling and that the two are brought into agreement
     by incrementing $\alpha$ by one --- which is why their own hyperparameter search shifts its grid
@@ -1181,14 +1348,14 @@
     \subsection{Where it does not}\label{gibbs}
     Sparsity needs $\alpha < 1$, and there the MAP is not merely harder
     but ill-posed: the Dirichlet density is unbounded at the corners of the simplex, so the objective
-    has no finite maximum and Equation \eqref{smoothymapem} produces negative numerators that have to
+    has no finite maximum and Equation \eqref{gemixmapem} produces negative numerators that have to
     be clamped, which is a repair rather than a solution. The remedy is to stop maximising over
     $\theta$ and integrate it out. Collapsed Gibbs sampling \citep{griffiths2004scientific} does that, and it is markedly cheaper here
     than in the corpus setting it comes from: the topics are fixed, so only the assignment of each
     counted $k$-mer occurrence is sampled and never a topic--word distribution. For an occurrence
     observed at node $n$,
     %
-    \begin{equation}\label{smoothygibbs}
+    \begin{equation}\label{gemixgibbs}
         p(z = g \mid \cdot) \;\propto\; \varphi_{ng} \, \bigl( m_g^{\neg} + \alpha \bigr),
     \end{equation}
     %
@@ -1217,7 +1384,7 @@
     same database, $c^{(i)}_n$ the count that $s_i$ reports at node $n$, and
     $\theta^{(i)} = p(g \mid s_i)$ its mixture. The samples share the prior and nothing else:
     %
-    \begin{equation}\label{smoothyjoint}
+    \begin{equation}\label{gemixjoint}
         p\bigl(c^{(1)}, \dots, c^{(m)} \bigm| \alpha\bigr) \;=\; \prod_{i=1}^{m} \int
             \mathrm{Dir}\bigl(\theta^{(i)} \bigm| \alpha \mathbf{1}\bigr)
             \prod_{n \in N} \bigl(\varphi\theta^{(i)}\bigr)_n^{\,c^{(i)}_n} \, d\theta^{(i)} .
@@ -1237,7 +1404,7 @@
     again. With $m_{ig}$ the
     occurrences of $s_i$ currently assigned to topic $g$ and $M_i = \sum_g m_{ig}$,
     %
-    \begin{equation}\label{smoothyalpha}
+    \begin{equation}\label{gemixalpha}
         \alpha \;\longleftarrow\; \alpha \,
             \frac{\sum_{i=1}^{m} \sum_{g \in G} \bigl( \psi(m_{ig} + \alpha) - \psi(\alpha) \bigr)}
                  {\lvert G \rvert \sum_{i=1}^{m} \bigl( \psi(M_i + \lvert G \rvert \alpha)
@@ -1264,7 +1431,7 @@
     every $c_n$ alike, and what the prior weighs itself against is the ratio of counts to
     concentration, not their absolute size. Sampling the raw integer occurrences $c_n$ under
     %
-    \begin{equation}\label{smoothyalphaeff}
+    \begin{equation}\label{gemixalphaeff}
         \alpha_{\mathrm{eff}} \;=\; \alpha \, (1 - e_b)^k
     \end{equation}
     %
@@ -1317,7 +1484,7 @@
     topic to claim it. Two ways, kept here in case the measurement favours one.
 
     \paragraph{Dropping.} Restrict $N$ to the nodes at rank $r$ and above, so a count below the rank
-    does not enter Equation \eqref{smoothylikelihood} at all. The rows need nothing further, being
+    does not enter Equation \eqref{gemixlikelihood} at all. The rows need nothing further, being
     read on $\mathrm{path}(t)$ already. It is exact and it discards data --- at genus
     rank most of a sample's counts sit at species nodes. The ambiguous evidence remains, and it
     is the evidence the method exists to use, and the discarded remainder was already answered by the
@@ -1327,13 +1494,13 @@
     \paragraph{Folding.} Keep the counts and sum both sides along the rank. Write $\pi(m)$ for the
     rank-$r$ ancestor of $m$ if $m$ lies at or below rank $r$, and $m$ itself otherwise:
     %
-    \begin{equation}\label{smoothyfold}
+    \begin{equation}\label{gemixfold}
         \tilde{c}_n \;=\; \sum_{m \,:\, \pi(m) = n} c_m ,
         \qquad
         \tilde{c}(t,n) \;=\; \sum_{m \,:\, \pi(m) = n} c(t,m) .
     \end{equation}
     %
-    Everything from Equation \eqref{smoothypng} on is unchanged with $\tilde{c}$ for $c$. No count is
+    Everything from Equation \eqref{gemixpng} on is unchanged with $\tilde{c}$ for $c$. No count is
     discarded, and $g$ keeps its private mass in the cell at $g$ where $\textsc{rest}_g$ has none,
     which separates the two better than dropping does. Against it: the fold asserts that where beneath
     the rank a count fell carries nothing, and it lets material the classifier has already resolved
@@ -1352,7 +1519,7 @@
         \end{tabular}
         \caption{The three ways of reaching an answer at a chosen taxon. \emph{Topics} is the size of
         $G$. \emph{Counts used} is which of the reported $c_n$ enter
-        Equation \eqref{smoothylikelihood}. The fourth column asks whether the rows of $g$ and
+        Equation \eqref{gemixlikelihood}. The fourth column asks whether the rows of $g$ and
         $\textsc{rest}_g$ differ enough to fix $u$: under dropping both are built from the shared
         material of one clade and may come out near-proportional, where folding returns $g$'s private
         mass to the cell at $g$ and the method of Section \ref{pgn} leaves it at $g$'s own node.
