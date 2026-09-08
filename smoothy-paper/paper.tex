@@ -124,7 +124,7 @@
         \centering
         \footnotesize
         \begin{tabular}{@{}l|r|r|r@{}}
-            \textbf{Taxon} & \textbf{Reads} & \textbf{$k$-mers} & \textbf{Unique $k$-mers}\\
+            \textbf{Taxon} ($n$) & \textbf{Reads} & \textbf{$k$-mers} ($c_n$) & \textbf{Unique $k$-mers}\\
             \hline
             \motivatingrows{motivating.csv}
         \end{tabular}
@@ -132,7 +132,8 @@
         column a count made at that taxon's own node: the reads assigned there, the $k$-mer
         occurrences held there, and the distinct $k$-mers among them. Nothing in it is wrong. What it
         does not say is which organisms were in the sample, and in what
-        proportion.}\label{motivating}
+        proportion. The two bracketed symbols are the notation used from here on: $n$ for a node of
+        the taxonomy and $c_n$ for the $k$-mer count reported there.}\label{motivating}
     \end{table}
 
     \todo{Fill Table \ref{motivating} from a real match result rather than an invented one: a few
@@ -170,6 +171,118 @@
     evidence for and does not state: the distribution over the organisms that produced the counts.
     That is what this paper estimates, together with the share it cannot attribute to anything the
     database names.
+
+    Throughout, $d$ is a $k$-mer database over an underlying taxonomy whose nodes are written $n$,
+    holding the $k$-mers of a set of genomes $g$. Each $k$-mer is tied to a node by the lowest common
+    ancestor rule: it is held at the lowest taxon shared by every genome that carries it. The rule
+    was introduced for reads by \citet{megan} and carried to $k$-mers by \citet{kraken}, as an index
+    built once and consulted per read; this paper calls the operation the $\mathrm{LCA}$ update.
+
+    Figure \ref{pngfig} puts the whole of it in one picture. Panel (1) is what $d$ contributes. Its
+    genomes $g$ sit at the leaves of the taxonomy, and each of them holds a distribution
+    $p(n \mid g)$ over the nodes $n$, drawn here as a coloured band whose width at a node is the
+    share of that genome's $k$-mers $d$ keeps there. The distribution is supported on the path from
+    the genome's own node up to the root, by the $\mathrm{LCA}$ update, and it sums to one over that
+    path. Where paths meet, the bands are drawn alongside
+    one another rather than merged, so the total width at a node is what a count observed there has
+    to be explained by. It is these distributions that carry the information and not the shape of the
+    tree: $g_3$ is the only genome under $n_2$, so almost nothing of it is kept there and its band
+    passes through in a waist.
+
+    Each $p(n \mid g)$ is measured once, by consulting the genome behind $g$ in the $k$-mer
+    database, and then stays fixed. The same distributions serve every later sample whose counts
+    that database produced, so measuring them belongs to building a database and not to analysing a
+    sample.
+
+    Panel (2) is what a sample contributes: the $k$-mer counts $c_n$, as dots at the nodes where
+    they were made. They carry no colour, and that is the whole of the difficulty --- a count says how many
+    $k$-mers were seen at a node and never which genome they came from. They have to come from the
+    very database the distributions were measured on, for the reason Section \ref{model} gives.
+    Panel (3) is what is wanted, the same dots coloured by the genome they are owed to.
+
+    The arrow between the two is the estimate, which Section \ref{model} states precisely. The
+    sample drawn here holds $g_1$ and $g_3$ and no $g_2$, and the empty node under $g_2$ settles
+    $n_1$ as well: those counts could have come from either genome below it, and with $g_2$ absent
+    they are $g_1$'s. Only $n_{\text{root}}$ stays divided, which is the general case --- the higher
+    the node, the more genomes feed it.
+
+    \begin{figure}[!htbp]
+        \centering
+        \def\yL{0}\def\yM{2.1}\def\yR{4.2}\def\dd{0.20}
+        % a node, drawn behind whatever passes through it
+        \newcommand{\pnplate}[3]{\fill[black!14,rounded corners=1.5pt]
+           ({#1-#3},{#2-\dd-0.05}) rectangle ({#1+#3},{#2+\dd+0.05});}
+        \newcommand{\pnnodes}{\pnplate{1.25}{\yM}{0.50}\pnplate{4.6}{\yM}{0.28}%
+           \pnplate{2.6}{\yR}{0.42}\pnplate{0.5}{\yL}{0.40}\pnplate{2.0}{\yL}{0.37}%
+           \pnplate{4.6}{\yL}{0.47}}
+        \newcommand{\pnedges}{%
+           \draw[black!30,thin] (0.5,\yL) -- (1.25,\yM) -- (2.6,\yR) -- (4.6,\yM) -- (4.6,\yL);
+           \draw[black!30,thin] (2.0,\yL) -- (1.25,\yM);}
+        % #1 dots in rows of three from #2,#3; the first #4 in colour #5, the rest in #6
+        \newcommand{\pndots}[6]{\foreach \i in {1,...,#1}{%
+           \pgfmathsetmacro{\kk}{\i-1}\pgfmathsetmacro{\cc}{mod(\kk,3)}%
+           \pgfmathsetmacro{\rr}{floor(\kk/3)}%
+           \ifnum\i>#4\relax\def\dc{#6}\else\def\dc{#5}\fi
+           \fill[\dc] ({#2+\cc*0.17},{#3+\rr*0.17}) circle (0.065);}}
+        % every node label sits just left of its own node
+        \newcommand{\pnlabels}{%
+           \node[font=\scriptsize,anchor=east] at (2.10,\yR) {$n_{\text{root}}$};
+           \node[font=\scriptsize,anchor=east] at (0.65,\yM) {$n_1$};
+           \node[font=\scriptsize,anchor=east] at (4.22,\yM) {$n_2$};
+           \node[font=\scriptsize] at (0.5,\yL-0.5) {$g_1$};
+           \node[font=\scriptsize] at (2.0,\yL-0.5) {$g_2$};
+           \node[font=\scriptsize] at (4.6,\yL-0.5) {$g_3$};}
+        % the sample's counts, shared by (2) and (3); #1..#3 pick the colouring
+        \newcommand{\pncounts}[6]{%
+           \pndots{5}{3.12}{4.115}{#1}{#5}{#6}%
+           \pndots{5}{1.85}{2.015}{#2}{#5}{#6}%
+           \pndots{2}{4.98}{2.10}{#3}{#5}{#6}%
+           \pndots{9}{1.00}{-0.17}{#4}{#5}{#6}%
+           \pndots{11}{5.17}{-0.255}{0}{#5}{#6}}
+        %
+        \begin{tikzpicture}[x=0.70cm,y=0.70cm]
+            % ---- (1) the database
+            \begin{scope}
+                % a band for one genome: a centre and a width at its leaf, at the
+                % middle node and at the root.
+                \newcommand{\band}[7]{%
+                  \fill[#1,opacity=.85]
+                    ({#2-#3/2},\yL) -- ({#2-#3/2},\yL+\dd)
+                      to[out=90,in=-90] ({#4-#5/2},\yM-\dd) -- ({#4-#5/2},\yM+\dd)
+                      to[out=90,in=-90] ({#6-#7/2},\yR-\dd) -- ({#6-#7/2},\yR+\dd)
+                    -- ({#6+#7/2},\yR+\dd) -- ({#6+#7/2},\yR-\dd)
+                      to[out=-90,in=90] ({#4+#5/2},\yM+\dd) -- ({#4+#5/2},\yM-\dd)
+                      to[out=-90,in=90] ({#2+#3/2},\yL+\dd) -- ({#2+#3/2},\yL) -- cycle;}
+                \pnnodes
+                \band{red!55}           {0.5}{0.55} {1.075}{0.30} {2.425}{0.15}
+                \band{green!60!black!55}{2.0}{0.50} {1.40}{0.35}  {2.575}{0.15}
+                \band{blue!55}          {4.6}{0.70} {4.6}{0.13}   {2.75}{0.17}
+                \pnlabels
+            \end{scope}
+            % ---- (2) the sample
+            \begin{scope}[shift={(5.8,0)}]
+                \pnedges\pnnodes
+                \pncounts{0}{0}{0}{0}{black!55}{black!55}
+                \pnlabels
+            \end{scope}
+            % ---- (3) what the model makes of it
+            \begin{scope}[shift={(12.8,0)}]
+                \pnedges\pnnodes
+                \pncounts{2}{5}{0}{9}{red!60}{blue!60}
+                \pnlabels
+            \end{scope}
+            \draw[-{Stealth[length=2.6mm,width=2.2mm]},black!55,line width=1.1pt]
+                (11.65,\yM) -- (12.55,\yM);
+            \node[font=\footnotesize] at (2.8,5.05)  {(1)~$p(n \mid g)$};
+            \node[font=\footnotesize] at (8.6,5.05)  {(2)~$c_n$ for a sample $s$};
+            \node[font=\footnotesize] at (15.6,5.05) {(3)~$p(g \mid s)$};
+        \end{tikzpicture}
+        \caption{The approach in brief, over three genomes and the taxonomy that holds them.
+        (1) $p(n \mid g)$, where the database keeps each genome's $k$-mers: one band per genome, its
+        width at a node the share kept there. (2) $c_n$, the $k$-mer counts of one sample, as dots at
+        the nodes where they were made. (3) $p(g \mid s)$, the share of the sample owed to each
+        genome, shown by colouring the same dots.}\label{pngfig}
+    \end{figure}
 
     \todo{Put numbers on the third paragraph, from the companion paper: in its clinical runs a tenth
     of the classified reads sit at a genus, and the node they sit at leaves anywhere from eight to a
@@ -327,9 +440,11 @@
     $\textsc{rest}$ row as readily as for a genome, so the quantity GRAMMy could not reach is the one
     this paper reports as $u$. What metaMix puts in its place is taken up below.
 
-    metaMix \citep{metamix} is nearer still in form, and its likelihood is the shape of
-    Equation \eqref{smoothylikelihood}: $P(X \mid w) = \prod_i \sum_j w_j p_{ij}$ over reads $x_i$ and
-    species $j$, a product over observations of a sum over sources. Like GRAMMy it comes at the
+    metaMix \citep{metamix} is nearer still in form, and its likelihood is similar in shape to
+    Equation \eqref{smoothylikelihood}: $P(X \mid w) = \prod_i \sum_j p_{ij}\, w_j$ over reads $x_i$ and
+    species $j$, a product over observations of a sum over sources. The resemblance stops at the
+    index, since that product runs over reads and carries no exponent --- the difference
+    Table \ref{modelstructure} turns on. Like GRAMMy it comes at the
     mixture from statistics and not from text, and like GRAMMy it does its own read assignment ---
     more of it, in fact. Its pipeline assembles the unmapped reads, strips ribosomal sequence against
     Silva and runs \textsc{blastx} of every read and contig against a protein database, from which
@@ -337,12 +452,15 @@
     sample, and none of it is what this method asks for.
 
     What it does with the ambiguity is the instructive part, because the aim is the same and the
-    direction opposite. metaMix objects to precisely the convention this method builds on: assigning
-    an ambiguous read to the lowest common ancestor of its candidates, as MEGAN does, is \enquote{accurate
-    on a higher taxonomic level} and no lower, so metaMix goes back to the reads and resolves them
-    probabilistically to species. This method leaves the reads alone and resolves the same ambiguity
-    from the other end, by modelling where the database stores each genome's $k$-mers. Both undo the
-    push-up the $\mathrm{LCA}$ rule performs; one by re-deciding it, one by taking it as evidence.
+    direction opposite. metaMix objects to the $\mathrm{LCA}$ convention as a way of placing
+    \emph{reads}: assigning an ambiguous read to the lowest common ancestor of its candidates, as
+    MEGAN \citep{megan} does, is \enquote{accurate on a higher taxonomic level} and no lower, so metaMix goes back
+    to the reads and resolves them probabilistically to species. This method has no read assignment
+    to object to. The same rule reaches it one level down, as the rule by which the database stores a
+    $k$-mer at the lowest taxon shared by the genomes carrying it, and that is what $p(n \mid g)$
+    measures. Both answer the push-up the $\mathrm{LCA}$ rule performs: one by re-deciding it read by
+    read, the other by modelling where it puts a genome's $k$-mers and reading the counts that
+    result as evidence.
 
     Two further differences follow. The first is what is inferred. metaMix estimates the species
     \emph{set} as well as the weights, exploring model space by parallel tempering and paying a prior
@@ -492,9 +610,19 @@
     where the others do not. This method never sees an individual $k$-mer. What a classifier hands
     it is $c_n$, the number of occurrences at each node, and the occurrences behind that number are
     gone by the time it arrives. A likelihood over tokens is therefore not available to write, and
-    one over types with the counts as exponents is the only form the input admits. That form is
-    available because every $k$-mer at $n$ is interchangeable under the model: $p(n \mid g)$ is a
-    property of the database, and it says nothing about which occurrence is which.
+    one over types with the counts as exponents is the only form the input admits. Nothing is given
+    up in that, the two being one product written over tokens and over types,
+    %
+    \begin{equation*}
+        \prod_{i=1}^{M} \sum_{g \in G} \varphi_{n_i g}\, \theta_g
+        \;=\;
+        \prod_{n \in N} \Bigl( \sum_{g \in G} \varphi_{ng}\, \theta_g \Bigr)^{c_n} ,
+    \end{equation*}
+    %
+    with $n_i$ the node of the $i$-th of the $M$ observations and
+    $\varphi_{ng} = p(n \mid g)$. The grouping on the right is available because every $k$-mer at
+    $n$ is interchangeable under the model: $p(n \mid g)$ is a property of the database, and says
+    nothing about which occurrence is which.
 
     The others need no exponent, because nothing in their input repeats. Each read carries an
     emission row of its own --- an alignment score computed for that read against each genome --- so
@@ -519,17 +647,17 @@
             \textbf{Model} & \textbf{One observation} & \textbf{Emission} & \textbf{Objective}\\
             \hline
             GRAMMy \citep{grammy} & a read & $p_{ig}$, indexed by the read; from its own mapping &
-                $\prod_i \sum_g \theta_g\, p_{ig}$\\
+                $\prod_i \sum_g p_{ig}\, \theta_g$\\
             PathoScope \citep{pathoscope} & a read & $q_{ig}$, indexed by the read; a scaled mapping
                 quality &
-                $\prod_i \sum_g \pi_g\, q_{ig}$, with a second parameter reassigning the non-unique
+                $\prod_i \sum_g q_{ig}\, \pi_g$, with a second parameter reassigning the non-unique
                 reads\\
             HTTMM \citep{httmm} & a read & \mbox{$\Pr(r_i \mid z)$}, indexed by the read; a match between
                 profiles, not a density &
-                $\prod_i \sum_z \Pr(z) \Pr(r_i \mid z)$\\
+                $\prod_i \sum_z \Pr(r_i \mid z)\, \Pr(z)$\\
             metaMix \citep{metamix} & a read or a contig & $p_{ij}$, indexed by the read; Poisson on
                 the mismatch count &
-                $\prod_i \sum_j w_j\, p_{ij}$, the species set itself a parameter\\
+                $\prod_i \sum_j p_{ij}\, w_j$, the species set itself a parameter\\
             MetaPalette \citep{metapalette} & the sample, as one palette vector & the columns of $A$,
                 the reference palettes &
                 $\min_{z \geq 0} \lVert Az - y \rVert_2^2$\\
@@ -538,7 +666,7 @@
                 $\prod_w \bigl( \sum_k \varphi_{wk} \theta_{dk} \bigr)^{n_{dw}}$, per document\\
             \textbf{Smoothy} & a $k$-mer occurrence at a node & \mbox{$p(n \mid g)$}, indexed by the
                 node; counted off the database &
-                $\prod_n \bigl( \sum_g \theta_g\, \varphi_{ng} \bigr)^{c_n}$\\
+                $\prod_n \bigl( \sum_g \varphi_{ng}\, \theta_g \bigr)^{c_n}$\\
         \end{tabular}
         \caption{The same methods as Table \ref{priorwork}, compared as models rather than as
         pipelines, and with a topic model in the penultimate row as the reference the others are
@@ -595,99 +723,20 @@
     %
     The mixing is worst high in the tree, where a single node is fed by many genomes at once. That is
     exactly where a classifier's own answer says least, which is what the model has to offer: it
-    reads the counts at the ambiguous nodes as evidence rather than discarding them.
+    reads the counts at the ambiguous nodes as evidence rather than discarding them. Figure \ref{pngfig} is
+    Equation \eqref{smoothylikelihood} drawn over a tree of three genomes, its three panels the
+    $p(n \mid g)$, the $c_n$ and the $p(g \mid s)$ of the equation in that order.
 
-    \begin{figure}[!htbp]
-        \centering
-        \def\yL{0}\def\yM{2.1}\def\yR{4.2}\def\dd{0.20}
-        % a node, drawn behind whatever passes through it
-        \newcommand{\pnplate}[3]{\fill[black!14,rounded corners=1.5pt]
-           ({#1-#3},{#2-\dd-0.05}) rectangle ({#1+#3},{#2+\dd+0.05});}
-        \newcommand{\pnnodes}{\pnplate{1.25}{\yM}{0.50}\pnplate{4.6}{\yM}{0.28}%
-           \pnplate{2.6}{\yR}{0.42}\pnplate{0.5}{\yL}{0.40}\pnplate{2.0}{\yL}{0.37}%
-           \pnplate{4.6}{\yL}{0.47}}
-        \newcommand{\pnedges}{%
-           \draw[black!30,thin] (0.5,\yL) -- (1.25,\yM) -- (2.6,\yR) -- (4.6,\yM) -- (4.6,\yL);
-           \draw[black!30,thin] (2.0,\yL) -- (1.25,\yM);}
-        % #1 dots in rows of three from #2,#3; the first #4 in colour #5, the rest in #6
-        \newcommand{\pndots}[6]{\foreach \i in {1,...,#1}{%
-           \pgfmathsetmacro{\kk}{\i-1}\pgfmathsetmacro{\cc}{mod(\kk,3)}%
-           \pgfmathsetmacro{\rr}{floor(\kk/3)}%
-           \ifnum\i>#4\relax\def\dc{#6}\else\def\dc{#5}\fi
-           \fill[\dc] ({#2+\cc*0.17},{#3+\rr*0.17}) circle (0.065);}}
-        % every node label sits just left of its own node
-        \newcommand{\pnlabels}{%
-           \node[font=\scriptsize,anchor=east] at (2.10,\yR) {$n_{\text{root}}$};
-           \node[font=\scriptsize,anchor=east] at (0.65,\yM) {$n_1$};
-           \node[font=\scriptsize,anchor=east] at (4.22,\yM) {$n_2$};
-           \node[font=\scriptsize] at (0.5,\yL-0.5) {$g_1$};
-           \node[font=\scriptsize] at (2.0,\yL-0.5) {$g_2$};
-           \node[font=\scriptsize] at (4.6,\yL-0.5) {$g_3$};}
-        % the sample's counts, shared by (2) and (3); #1..#3 pick the colouring
-        \newcommand{\pncounts}[6]{%
-           \pndots{5}{3.12}{4.115}{#1}{#5}{#6}%
-           \pndots{5}{1.85}{2.015}{#2}{#5}{#6}%
-           \pndots{2}{4.98}{2.10}{#3}{#5}{#6}%
-           \pndots{9}{1.00}{-0.17}{#4}{#5}{#6}%
-           \pndots{11}{5.17}{-0.255}{0}{#5}{#6}}
-        %
-        \begin{tikzpicture}[x=0.70cm,y=0.70cm]
-            % ---- (1) the database
-            \begin{scope}
-                % a band for one genome: a centre and a width at its leaf, at the
-                % middle node and at the root.
-                \newcommand{\band}[7]{%
-                  \fill[#1,opacity=.85]
-                    ({#2-#3/2},\yL) -- ({#2-#3/2},\yL+\dd)
-                      to[out=90,in=-90] ({#4-#5/2},\yM-\dd) -- ({#4-#5/2},\yM+\dd)
-                      to[out=90,in=-90] ({#6-#7/2},\yR-\dd) -- ({#6-#7/2},\yR+\dd)
-                    -- ({#6+#7/2},\yR+\dd) -- ({#6+#7/2},\yR-\dd)
-                      to[out=-90,in=90] ({#4+#5/2},\yM+\dd) -- ({#4+#5/2},\yM-\dd)
-                      to[out=-90,in=90] ({#2+#3/2},\yL+\dd) -- ({#2+#3/2},\yL) -- cycle;}
-                \pnnodes
-                \band{red!55}           {0.5}{0.55} {1.075}{0.30} {2.425}{0.15}
-                \band{green!60!black!55}{2.0}{0.50} {1.40}{0.35}  {2.575}{0.15}
-                \band{blue!55}          {4.6}{0.70} {4.6}{0.13}   {2.75}{0.17}
-                \pnlabels
-            \end{scope}
-            % ---- (2) the sample
-            \begin{scope}[shift={(5.8,0)}]
-                \pnedges\pnnodes
-                \pncounts{0}{0}{0}{0}{black!55}{black!55}
-                \pnlabels
-            \end{scope}
-            % ---- (3) what the model makes of it
-            \begin{scope}[shift={(12.8,0)}]
-                \pnedges\pnnodes
-                \pncounts{2}{5}{0}{9}{red!60}{blue!60}
-                \pnlabels
-            \end{scope}
-            \draw[-{Stealth[length=2.6mm,width=2.2mm]},black!55,line width=1.1pt]
-                (11.65,\yM) -- (12.55,\yM);
-            \node[font=\footnotesize] at (2.8,5.05)  {(1)~$p(n \mid g)$};
-            \node[font=\footnotesize] at (8.6,5.05)  {(2)~$c_n$ for a sample $s$};
-            \node[font=\footnotesize] at (15.6,5.05) {(3)~$p(g \mid s)$};
-        \end{tikzpicture}
-        \caption{What the method relates, over the same three genomes. (1) $p(n \mid g)$, where the
-        database keeps each genome's $k$-mers. Every genome has a band whose width at a node is the
-        share of its $k$-mers stored there. A band runs from the genome's own node up to the root,
-        because the update holds a $k$-mer at the lowest taxon shared by all the genomes carrying it,
-        and the widths of one band sum to one over the nodes of its path. Where paths meet the bands
-        run alongside one another rather than merging, so the total width at a node is what a count
-        observed there has to be explained by. The widths are what the model reads and not the shape
-        of the tree --- $g_3$ is the only genome under $n_2$, so almost nothing of it is stored there
-        and its band passes through in a waist.
-        (2) $c_n$, what one sample gives: the counts, as dots at the nodes where they were made. They
-        carry no colour, which is the whole of the difficulty --- a count says how many $k$-mers were
-        seen at a node and never which genome they came from.
-        (3) $p(g \mid s)$, the same dots once the model has accounted for them. The arrow is
-        Equation \eqref{smoothylikelihood}, which reads (2) against the bands of (1). This sample
-        holds $g_1$ and $g_3$ and no $g_2$, and the empty node under $g_2$ settles $n_1$ as well:
-        those counts could have come from either genome below it, and with $g_2$ absent they are
-        $g_1$'s. Only $n_{\text{root}}$ stays divided, which is the general case --- the higher the
-        node, the more genomes feed it.}\label{pngfig}
-    \end{figure}
-
+    The two inputs have to come from one and the same database, and the condition is worth stating
+    rather than assuming. $p(n \mid g)$ describes where one particular build keeps a genome's
+    $k$-mers: which genomes were entered, which taxa the tree carries, and where the update placed
+    each $k$-mer. The $c_n$ are what classifying a sample against a build reports. Pair them across
+    two builds and the rows describe a storage pattern the counts do not follow --- a genome entered
+    in the one and not the other draws counts to nodes where its row has no mass, and the fit has to
+    account for them out of whatever else is at hand. What is required is not merely the same
+    reference genomes but the same build of them: the same $k$, the same taxonomy, and the same
+    update scope. Section \ref{pgn} obtains $p(n \mid g)$ by walking the database itself, which is
+    what makes the condition easy to meet rather than easy to overlook.
     A match result reports two counts per taxon --- the $k$-mers attributed to it and the reads
     classified to it --- and $c_n$ is the former. Both the reason for that and the cost of it are
     worth stating.
