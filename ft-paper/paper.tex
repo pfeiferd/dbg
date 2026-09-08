@@ -59,7 +59,28 @@
 %\usepgfplotslibrary{external}
 %\tikzexternalize
 \usepackage{xr}
-\usepackage{todonotes}
+% Working notes. todonotes set these in the margin, where the longer ones ran off
+% the page and were silently clipped. They now sit in the text flow, break across
+% pages, and keep out of the way. \showtodosfalse hides every one for a clean read.
+\newif\ifshowtodos \showtodostrue
+\newcommand{\todo}[1]{%
+  \ifshowtodos
+    \par\addvspace{0.7\baselineskip}%
+    \begin{list}{}{%
+      \setlength{\leftmargin}{1.5em}%
+      \setlength{\rightmargin}{1.5em}%
+      \setlength{\topsep}{0pt}%
+      \setlength{\partopsep}{0pt}%
+      \setlength{\parsep}{0.5\baselineskip}%
+      \setlength{\itemsep}{0pt}%
+    }%
+    \item[]\footnotesize\color{black!70}%
+      \textcolor{orange!65!black}{\rule[-0.2ex]{2pt}{1.15ex}}\hspace{0.55em}%
+      \textcolor{orange!65!black}{\textsc{todo}}\hspace{0.6em}\ignorespaces#1%
+    \end{list}%
+    \addvspace{0.7\baselineskip}%
+  \fi%
+}
 \externaldocument{supplements}
 
 \usepackage{array}
@@ -389,7 +410,7 @@ Figure \ref{kmerongenusborrelia} illustrates the effect on the distribution of $
 
     To the best of our knowledge, none of the established $k$-mer based classification tools makes use of this potential. Reads whose $k$-mers would suffice to narrow the candidates down to two or three species are therefore often reported on the genus, even though the information about which species actually share these $k$-mers is fully contained in the underlying genomes.
 
-One route to improving the database is to correct the classification results afterwards. E.g., Bracken \citep{lu2017bracken} re-estimates species-level abundances from the output of a Kraken-style classification by redistributing the reads assigned to higher ranks according to a background distribution, which describes how the $k$-mers of each species in the database are expected to spread across the taxonomy. Nasko et al. \citep{Nasko:2018aa} confirm that this mitigates the shift described above, but also that it struggles with novel genomes. The approach differs from a refinement of the database itself: First, Bracken does not add information but reallocates counts on the basis of \emph{probabilistic assumptions} about which species are present and how their $k$-mers distribute. Its estimates degrade when a sample deviates from these assumptions such as for rare or unexpected organisms. Second, it operates on aggregated abundances of an entire sample rather than on individual reads, so that a single read remains classified on the genus even after the re-estimation. A refined database, in contrast, relies on \emph{hard data}: which species actually share a given $k$-mer is known exactly from the underlying genomes, and this knowledge is encoded in the database itself. Each read is then classified more specifically by construction rather than by estimation.
+One route to improving the database is to correct the classification results afterwards. E.g., Bracken \citep{lu2017bracken} re-estimates species-level abundances from the output of a Kraken-style classification by redistributing the reads assigned to higher ranks according to a background distribution, which describes how the $k$-mers of each species in the database are expected to spread across the taxonomy. Nasko et al. \citep{Nasko:2018aa} confirm that this mitigates the shift described above, but also that it struggles with novel genomes. The approach differs from a refinement of the database itself: First, Bracken does not add information but reallocates counts on the basis of \emph{probabilistic assumptions} about which species are present and how their $k$-mers distribute. Its estimates degrade when a sample deviates from these assumptions such as for rare or unexpected organisms. Second, it operates on aggregated abundances of an entire sample rather than on individual reads, so that a single read remains classified on the genus even after the re-estimation. A refined database, in contrast, relies on \emph{hard data}: which species actually share a given $k$-mer is known exactly from the underlying genomes, and this knowledge is encoded in the database itself. Each read is then classified more specifically by construction rather than by estimation. HTTMM \citep{httmm} answers the same shift in the opposite direction: instead of redistributing the reads of a higher rank, it estimates an abundance for the internal nodes themselves alongside the species, so that sequence shared among relatives is reported at the clade. The probability that a node accounts for a read is assumed there as well, being uniform over the genomes below it and thus derived from the shape of the taxonomy rather than from the genomes, which is precisely what a refined database replaces by the $k$-mers themselves.
 %... , and any subsequent analysis -- including an abundance estimation -- benefits from it.
 
     \subsection{Approach}
