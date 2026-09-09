@@ -625,7 +625,7 @@
     \begin{equation*}
         \prod_{i=1}^{M} \sum_{g \in G} \varphi_{n_i g}\, \theta_g
         \;=\;
-        \prod_{n \in N} \Bigl( \sum_{g \in G} \varphi_{ng}\, \theta_g \Bigr)^{c_n} ,
+        \prod_{n \in N_s} \Bigl( \sum_{g \in G} \varphi_{ng}\, \theta_g \Bigr)^{c_n} ,
     \end{equation*}
     %
     with $n_i$ the node of the $i$-th of the $M$ observations and
@@ -720,14 +720,15 @@
     Under it, the per-taxon counts a classifier reports are a mixture. Let $G$ be the topics --- the
     nodes of the taxonomy the sample gives evidence at, a topic standing for the genomes beneath its
     node and for one genome where that node is a leaf, all fixed in Section \ref{pgn} --- $N$ the
-    nodes of the taxonomy the database uses, and $c_n$ the
+    nodes that survive the modelling-phase drop of Section \ref{pgn}, which is a property of the
+    database alone, $N_s \subseteq N$ those of them the sample $s$ gives counts at, and $c_n$ the
     $k$-mer count that the analysis of a sample $s$ reports at node $n$. Let $p(n \mid g)$ be the
     probability that a $k$-mer drawn from the genomes behind topic $g$ is stored at node $n$ of that
     database, and $p(g \mid s)$ the share of $g$ in the sample --- the abundance we are after. A
     $k$-mer observed at $n$ may have come from any topic, so
     %
     \begin{equation}\label{smoothylikelihood}
-        \widehat{p}(g \mid s) \;=\; \argmax_{p(g \mid s)} \;\prod_{n \in N}
+        \widehat{p}(g \mid s) \;=\; \argmax_{p(g \mid s)} \;\prod_{n \in N_s}
             \Bigl( \sum_{g \in G} p(n \mid g)\, p(g \mid s) \Bigr)^{c_n}.
     \end{equation}
     %
@@ -814,7 +815,11 @@
 
     \subsection{Estimating \texorpdfstring{$p(n \mid g)$}{p(n|g)}}\label{pgn}
     The topic--word distribution is a property of the database, so it is measured on the database and
-    not fitted to anything. A new Genestrip goal walks the genomes the update phase considers ---
+    not fitted to a sample. One number in it is chosen rather than counted --- the $\lambda$ of
+    Equation \eqref{smoothysmooth}, which regularises the measurement before the fit reads it --- and
+    that changes nothing about when the work is done: the rows are still fixed before any sample is
+    seen and reused for every one of them. A new Genestrip goal walks the genomes the update phase
+    considers ---
     which is every genome of the release in scope, and not only those the entry phase stored --- and
     for each of them looks up every $k$-mer in the database $d$.
 
@@ -823,17 +828,49 @@
     shares with something stored. A row is then written at every taxon from those counters, because
     it costs nothing and because the admission rule below may put a topic at any of them: at a data
     taxon the row is one genome's, and higher up it is the clade's, the unnamed material among it.
-    Beside every row the
-    goal stores $\lvert G \rvert$, the number of genomes pooled into it --- one at a data taxon and
-    more above --- which Section \ref{abundances} needs and which costs one integer per row. Storing
-    it everywhere, including where it is one, is what keeps the abundance a single expression.
+    One quantity has to be named at genome granularity, which $c^{\circ}$ does not provide. Write
+    $\kappa(h,n)$ for the number of $k$-mers of a single genome $h$ that $d$ holds at node $n$. The
+    own counts are its sums, $c^{\circ}(s,n) = \sum_{h \in H(s)} \kappa(h,n)$ over the genomes $H(s)$
+    attaching at taxon $s$ --- one genome at a data taxon, and at an internal taxon the unnamed ones
+    the update left there. Write $\mathrm{path}(t)$ for the nodes from $t$ up to the root, $t$ among
+    them, which is where the update can have left a $k$-mer of anything sitting at or below $t$.
+    What a genome contributes to the row of $t$ is then
+    %
+    \begin{equation}\label{smoothyrho}
+        \rho_h(t) \;=\; \sum_{m \,\in\, \mathrm{path}(t)} \kappa(h,m) ,
+        \qquad
+        R_t \;=\; \sum_{h \,\preceq\, t} \rho_h(t) ,
+    \end{equation}
+    %
+    with $h \preceq t$ meaning that $h$'s taxon lies at or below $t$: every genome of the release in
+    scope there, entered or not. The second equality groups those $k$-mers by genome where
+    Equation \eqref{smoothyrows} below groups the same ones by taxon, so the row total is what the
+    genomes beneath $t$ contribute between them either way. The argument $t$ is carried because
+    $\rho$ depends on the range the row is read on, and it is dropped below wherever one topic is in
+    view.
+
+    Beside every row the goal stores what Section \ref{abundances} needs to divide by: that sum,
+    which is the row total, and the sum $\sum_h \rho_h^{2}$ of the squares, from which the effective
+    number of genomes follows. Both accumulate while the row is being pooled, at a cost of two
+    numbers per row. The squares have to be taken \emph{per genome} and not per taxon, which is the
+    one place the two granularities part: $c^{\circ}$ gathers the unentered genomes of a taxon into
+    one counter, and squaring that would call a hundred unnamed organisms a single large one. The
+    goal sees them singly on its walk, so it adds each $\rho_h$ into the taxon's counter and each
+    $\rho_h^{2}$ into the sum of squares as it goes. The plain count is worth keeping alongside them,
+    not because the abundance uses it but because the two together say how uneven a clade's pool is
+    --- a count of forty against an effective three is a fact about the reference collection worth
+    reporting. Storing all of it everywhere, including at the data taxa where the effective count is
+    one, is what keeps the abundance a single expression.
 
     \paragraph{The topics.} A \emph{data taxon} is a taxon with a complete genome directly
     associated, whose $k$-mers the database stores \citep{genestrip-ft}; in RefSeq such genomes
     usually attach at the rank of species or below. Every taxon carries a row, the ones above the
     data taxa included, but an inference does not use them all. $G$ in
     Equation \eqref{smoothylikelihood} is a set of nodes drawn from them, which the admission rule of
-    Equation \eqref{smoothyadmit} settles; $N$ is the whole tree. A coarser answer is not a coarser
+    Equation \eqref{smoothyadmit} settles. Two node sets are in play and they are dropped to at
+    different times: $N$ is what the modelling-phase drop leaves and belongs to the database, while
+    $N_s$ is what the sample leaves of $N$ and belongs to the analysis. At $T = 1$ the admitted
+    topics are exactly $N_s$, so every node still standing is a topic. A coarser answer is not a coarser
     fit but a sum over the fitted one, as Section \ref{abundances} sets out.
 
     The material the database cannot name needs no topic of its own. A genome that was never entered
@@ -940,7 +977,7 @@
     Admit each node whose count reaches $T$,
     %
     \begin{equation}\label{smoothyadmit}
-        A \;=\; \bigl\{\, n \in N \;:\; c_n \geq T \,\bigr\} ,
+        A \;=\; \bigl\{\, n \in N_s \;:\; c_n \geq T \,\bigr\} ,
     \end{equation}
     %
     and let the members of $A$ be the topics. At a data taxon this is the rule above and nothing
@@ -977,16 +1014,37 @@
     leaves it out of $c(n,\cdot)$ exactly as the sample counts there are left out of the likelihood.
     It is a drop and not a fold, and the two sides drop the same thing.
 
-    The genome count is the exception, and deliberately so: $\lvert G_n \rvert$ counts $h$'s genomes
-    among those pooled at $n$, private $k$-mers or not, because they are organisms the estimate at
-    $n$ now stands for. The divisor of Equation \eqref{smoothyabundance} is therefore a mean over a
-    set that includes $h$, which is what makes an estimate at $n$ a share of one organism of the
-    clade rather than of the clade entire.
+    The divisor is the exception, and deliberately so: $h$'s genomes join the pool at $n$, because
+    they are organisms the estimate at $n$ now stands for. They join it weighted by what they
+    contribute there, which is the whole point of the effective count of
+    Equation \eqref{smoothyabundance}: a dropped leaf that holds a great deal at $n$ and above moves
+    the divisor, and one holding almost nothing barely moves it, as a member of a pool should. That
+    is what makes an estimate at $n$ a share of one organism of the clade rather than of the clade
+    entire.
+
+    What $\rho_h$ measures, read against the drops, is the part of $h$ that $n$ has to account for,
+    and the range of the row is what makes it so. A genome struck out by the modelling drop retains
+    nothing at its own node, so every $k$-mer of it sits at an ancestor and its whole size falls
+    inside $\mathrm{path}(n)$: it enters the pool at $n$ as a full member. That is right, because it
+    is a real organism that has just lost the topic which would have spoken for it. A genome
+    distinguished from all its relatives is the mirror of it --- everything it holds is at its own
+    node, which is not on $\mathrm{path}(n)$, so $\rho_h = 0$ and it leaves the divisor of $n$
+    without a rule being written for it. That is right too, since it keeps a topic of its own. The
+    genomes the drop strips of a topic are the ones that weigh most at $n$, and the ones that keep a
+    topic weigh least.
+
+    A leaf that keeps its topic and still shares $k$-mers higher up falls between the two, and there
+    the pooling is an approximation rather than an identity: its shared part counts towards $n$'s
+    divisor although its abundance is being estimated separately. Removing it would mean knowing
+    which topics the admission rule kept, which is a property of the sample, and the divisor would
+    stop being something the database can be asked for once. The error runs one way and is bounded by
+    how much of a resolved genome is shared, which is the same quantity Section \ref{pgn} reports
+    when it lists what each genome retains at its own node.
 
     Equation \eqref{smoothylikelihood} is untouched. Equation \eqref{smoothyabundance} is not:
     $R_t$ is the total of the pooled row and so sums the counts of every genome beneath $t$, which is
     the database's hold on the clade and not on one member of it. The divisor is therefore
-    $R_t / \lvert G_t \rvert$, for the reason Section \ref{abundances} gives.
+    $R_t / \lvert G_t \rvert_{\mathrm{eff}}$, for the reason Section \ref{abundances} gives.
 
     One thing follows for the report. An estimate at such a topic is a share of the clade and not of
     a genome, and it has to be named as the clade: a figure reported against a species the sample
@@ -1012,9 +1070,13 @@
 
     \paragraph{What the database must be.} The method requires that $d$ was built with its LCA update
     ranging over the whole RefSeq category and not only over the entered genomes --- in Genestrip's
-    terms, \texttt{refseq.updateScope=allButExcluded} rather than a scope narrowed to the database's
-    own taxa \citep{genestrip-pub}. This is the default a Genestrip-FT database is built under, so
-    the requirement costs nothing in practice, but it is a requirement and not a convenience. It is
+    terms, \texttt{refseq.updateScope=all} rather than a scope narrowed to the database's own taxa
+    \citep{genestrip-pub}. That is Genestrip's default, so the requirement costs nothing in practice,
+    but it is a requirement and not a convenience. The narrowings each cost it in their own way:
+    \texttt{ownTaxaOnly} leaves a $k$-mer claimed for a requested taxon although a genome of another
+    carries it, and \texttt{allButExcluded} does the same in the small, for the taxa struck out of
+    \texttt{taxids.txt} --- which is the case Section \ref{pgn} returns to below, since an excluded
+    branch is precisely a set of genomes the database does not hold and cannot account for. It is
     what puts a genome's $k$-mers at or above its own taxon, and every locality claim below rests on
     that. Under a narrowed scope a genome absent from $d$ leaves them wherever its stored relatives
     happen to carry them, so an unnamed genome's counts spread across the tree instead of gathering
@@ -1051,10 +1113,11 @@
     between genomes is the evidence the mixture is about and discarding its multiplicity would
     discard the ambiguity the model exists to resolve.
 
-    Two quantities have to be kept apart. The counters above are what a single genome contributes at
-    its own leaf; a row is what a whole clade beneath a taxon does. At a data taxon they coincide,
-    the transformation having left it a leaf with nothing beneath it, and that row is read as
-    it stands. Writing $s \preceq t$ for a taxon at or below $t$, the row of $t$ is
+    Two quantities have to be kept apart. A counter $c^{\circ}(s,\cdot)$ is what a taxon holds of its
+    own --- at a data taxon the $k$-mers of the one genome the transformation left there, at an
+    internal taxon those of the unnamed genomes attaching to it --- while a row is what a whole clade
+    beneath a taxon does. At a data taxon the two coincide, the transformation having left it a leaf
+    with nothing beneath it, and that row is read as it stands. Writing $s \preceq t$ for a taxon at or below $t$, the row of $t$ is
     %
     \begin{equation}\label{smoothyrows}
         c(t,n) \;=\; \sum_{s \,\preceq\, t} c^{\circ}(s,n) ,
@@ -1112,10 +1175,11 @@
     %
     \begin{equation}\label{smoothypng}
         p(n \mid g) \;=\; \frac{c(g,n)}{R_g} ,
-        \qquad R_g \;=\; \sum_{m \,\in\, N} c(g,m) ,
+        \qquad R_g \;=\; \sum_{m \,\in\, \mathrm{path}(g)} c(g,m) ,
     \end{equation}
     %
-    the row total, so $p(\cdot \mid g)$ sums to one over $N$ by construction.
+    the row total over the nodes the row occupies, so $p(\cdot \mid g)$ sums to one over
+    $\mathrm{path}(g)$ by construction, and over any node set containing it.
     It is the distribution of where a $k$-mer of $g$ is stored, \emph{given that the database holds
     it at all} --- a condition that binds only above the data taxa. A data taxon is a genome the
     entry phase stored, so $d$ holds every $k$-mer of it and its row accounts for the whole genome. A
@@ -1166,8 +1230,10 @@
 
     One degeneracy remains after all this, and it is not hypothetical. Two topics are
     distinguishable only where their columns differ, and a genome that retains none of its own
-    $k$-mers has a column supported entirely on the ancestors it shares with its siblings. Where two
-    such genomes sit under the same parent, their columns are proportional and any split of abundance
+    $k$-mers has a column that is zero at its own node and carries weight only on the ancestors it
+    shares with its siblings. Where two such genomes sit under the same parent, their columns are
+    equal --- and the smoothing of Equation \eqref{smoothysmooth} does not separate them, adding the
+    same background to both and any split of abundance
     between them fits the data equally well. Near-identical assemblies of one species are the common
     case of it, and the reason the transformation of Section \ref{pgn} needs the admission rule
     beside it. This is the mitis complex of the companion paper seen
@@ -1183,11 +1249,22 @@
     Such a leaf can therefore be struck from $G$ in the modelling phase rather than failing the
     admission rule again for every sample.
 
-    That settles where the fit can go wrong. After it, a leaf is either dropped, and then reports no
-    counts either, or kept, and then carries its own topic with $p(n \mid n) > 0$ to cover the counts
-    it does report. Only an \emph{inner} node can be left with counts that no topic reaches, and only
-    where the threshold rejects it: that is the whole of what
-    Equation \eqref{smoothysmooth} has to repair.
+    It also settles where a row can be zero. A leaf that survives the drop holds $k$-mers of its own,
+    so its row is positive at its own node; a row's zeros therefore lie at \emph{inner} nodes of its
+    path, where the database records nothing of that genome exclusively. Those are the zeros
+    Section \ref{pgn} smooths, and there are no others to smooth: a leaf is either dropped, and then
+    reports no counts either, or kept, and then carries a row positive where its own counts are.
+
+    A different question is whether a node can be left that \emph{no} topic reaches, which would take
+    Equation \eqref{smoothylikelihood} to zero outright. At $T = 1$ none can: a node with any count
+    is admitted and lies on its own path. Above $T = 1$ one can, leaf or inner alike --- it takes a
+    node whose counts fall below the threshold with every node beneath it below too, which is a
+    lineage the sample touched in traces and nowhere strongly enough to admit anything. Its counts
+    then leave the product with the topics they would have supported. That is what raising $T$ means:
+    evidence below the threshold is set aside, and setting the topics aside while keeping their
+    counts would ask the remaining topics to explain what was already judged too thin to fit on. It
+    is the same drop applied on both sides, as with a dropped leaf, and it is arithmetic rather than
+    modelling --- those counts carry nothing the fit was going to use.
 
     The admission rule above meets it head on, which is the second reason for that rule. A taxon
     retaining none of its own $k$-mers has an empty node, so it never passes the threshold and never
@@ -1225,65 +1302,113 @@
     are indistinguishable within it, and nothing in the sample separates them. That bounds the resolution and not the correctness, but it should be stated where
     a reader will look for it.}
 
-    One thing has to be repaired before the fit, and it is the price of the range. A row is zero off
-    its own lineage, so a node carrying counts that no admitted topic's path reaches has
-    $\sum_g p(n \mid g)\, \theta_g = 0$ there, and $0^{c_n}$ takes the whole of
-    Equation \eqref{smoothylikelihood} to zero with it. At $T = 1$ this cannot arise --- counts are
-    integers, so a node with any count at all is admitted and lies on its own path --- but at any
-    higher threshold a node with $0 < c_n < T$ and nothing admitted at or below it is left uncovered.
-    Such a node is always an inner one, for the reason given with the modelling-phase drop above.
+    What follows is not a repair of the arithmetic. After the two drops every node still contributing
+    a factor holds counts, so at $T = 1$ it is admitted and is its own topic, and its own row is
+    positive there --- a count is reported at a node only because the database holds a $k$-mer there,
+    so $c(n,n) > 0$ wherever $c_n > 0$. Every such node is therefore covered by the topic sitting on
+    it, and Equation \eqref{smoothylikelihood} is positive with no smoothing whatever. What follows
+    is a modelling choice, and the case for it has to be made on those terms.
+
+    A row is zero at more nodes than its own path, and it can be zero on that path too. The database
+    holds nothing of $g$ at a node where $g$ shares no $k$-mer exclusively with the clade below it,
+    and $p(n \mid g) = 0$ there. A count at such a node then tells against $g$ with the whole weight
+    the likelihood can bring: it is explained by whatever topics do reach $n$ and not at all by $g$,
+    so $\theta_g$ is pushed down however much of $g$ the sample really holds. One node where the
+    database happens to record nothing can put a genome out of the report.
 
     Smoothing the rows settles it. After the topics are fixed, interpolate each row with a uniform
-    background,
+    background over the nodes the row lives on,
     %
     \begin{equation}\label{smoothysmooth}
-        \tilde{p}(n \mid g) \;=\; (1 - \lambda)\, p(n \mid g) \;+\; \frac{\lambda}{\lvert N \rvert} ,
+        \tilde{p}(n \mid g) \;=\; (1 - \lambda)\, p(n \mid g) \;+\; \frac{\lambda}{\lvert
+        \mathrm{path}(g) \rvert} ,
+        \qquad n \in \mathrm{path}(g),
         \qquad 0 < \lambda \ll 1 ,
     \end{equation}
     %
-    which still sums to one over $N$ and is positive everywhere, so no node can zero the product and
-    every topic can account a little for anything. This is Jelinek--Mercer smoothing
-    \citep{jelinekmercer}, linear interpolation of an estimated distribution with a background one.
+    and zero off the path as before. It still sums to one, and it is positive at every node of
+    $\mathrm{path}(g)$, so no node of a topic's own lineage can drive that topic out. This is
+    Jelinek--Mercer smoothing \citep{jelinekmercer}, linear interpolation of an estimated
+    distribution with a background one, the background being uniform over the row's support. Taking
+    that background over the node set instead is the obvious alternative and the wrong one;
+    Appendix \ref{nodesmooth} sets out why, since the reason is not the one it appears to be.
 
-    What $\lambda$ is matters as much as what it does. It is a share of the \emph{whole}
-    distribution, handed to the background and spread evenly over the nodes, so every row gives up
-    the same $\lambda$ whatever its shape. It is not an amount added at each node: that would hand a
-    row as much mass as it has nodes to receive it, and since a row is supported on the path from its
-    node to the root, a topic deep in the taxonomy would be smoothed harder than a shallow one for no
-    reason but its depth. A long lineage is a fact about where a genome sits, not evidence about a
-    sample, and the smoothing must not turn one into the other.
+    The denominator is $\lvert \mathrm{path}(g) \rvert$ and the numerator a constant, which is what
+    keeps the tree's shape out of it. $\lambda$ is a share of the \emph{whole} row, handed to the
+    background and spread evenly over the nodes that row occupies, so every topic gives up the same
+    $\lambda$ whatever its depth. An amount added at each node instead would hand a row as much mass
+    as it has nodes to receive it, and since a row is supported on the path from its node to the
+    root, a topic deep in the taxonomy would be smoothed harder than a shallow one for no reason but
+    its depth. A long lineage is a fact about where a genome sits, not evidence about a sample, and
+    the smoothing must not turn one into the other.
 
     The same objection rules out additive smoothing, which the form otherwise resembles: adding
     $\alpha$ to every count is the same interpolation with
-    $\lambda = \alpha \lvert N \rvert / (R_g + \alpha \lvert N \rvert)$, so the background share
-    falls as the row's total rises and a thinly held topic is smoothed hardest. Here $\lambda$ is the
-    same for every row by choice, since what it repairs --- a node no topic reaches --- has nothing
-    to do with how much of any one genome the database holds, nor with how deep in the tree it sits.
-    \citet{zhailafferty} compare the two on retrieval models, where the distinction is the same one.
+    $\lambda = \alpha \lvert \mathrm{path}(g) \rvert / (R_g + \alpha \lvert \mathrm{path}(g) \rvert)$,
+    so the background share falls as the row's total rises and a thinly held topic is smoothed
+    hardest. Here $\lambda$ is the same for every row by choice, since what it repairs --- a node of
+    a lineage the database records nothing at --- has nothing to do with how much of any one genome
+    the database holds, nor with how deep in the tree it sits. \citet{zhailafferty} compare the two
+    on retrieval models, where the distinction is the same one.
 
     What that dependence would cost is worth being concrete about, because it falls on the topics
-    least able to bear it. Under $\tilde{p}(n \mid g) = (c(g,n) + \alpha) / (R_g + \alpha \lvert N
-    \rvert)$ a node the row does not reach receives $\alpha / (R_g + \alpha \lvert N \rvert)$, which
-    grows as $R_g$ falls: the smaller the genome, the more probability it is handed at nodes holding
-    none of its $k$-mers. A small genome would become a better explanation for counts anywhere in the
-    tree than a large one, for no reason but its size. And the error would not stay where it was
-    made --- Equation \eqref{smoothyabundance} divides $\theta_g$ by $R_g$, so a small genome that
-    absorbed counts it should not have is amplified by the same smallness a second time. A constant
-    $\lambda$ has no such gradient: every row gives up the same share and receives the same floor,
-    whatever its total.
+    least able to bear it. Under $\tilde{p}(n \mid g) = (c(g,n) + \alpha) / (R_g + \alpha \lvert
+    \mathrm{path}(g) \rvert)$ a node the row does not reach receives $\alpha / (R_g + \alpha \lvert
+    \mathrm{path}(g) \rvert)$, which grows as $R_g$ falls: the smaller the genome, the more
+    probability it is handed at nodes holding none of its $k$-mers. A small genome would become a
+    better explanation for counts along its lineage than a large one, for no reason but its size. And
+    the error would not stay where it was made --- Equation \eqref{smoothyabundance} divides
+    $\theta_g$ by $R_g$, so a small genome that absorbed counts it should not have is amplified by
+    the same smallness a second time. A constant $\lambda$ has no such gradient: every row gives up
+    the same share and receives the same floor, whatever its total.
 
-    A count nothing else explains is then spread evenly over the topics, which is the right reading
-    of it: it is evidence for none of them in particular. The cost is bounded by $\lambda$ and falls
-    only where a row was zero, since where it was not the correction is a rescaling common to the
-    whole row.
+    Nor does the share depend on how many topics there are. It is fixed once and applies to each row
+    on its own, so admitting one more topic changes no other row's floor. That is worth setting
+    against the rule of thumb the topic-modeling literature offers for the prior of
+    Appendix \ref{prior}, $\alpha = 50 / \lvert G \rvert$, which scales with the size of the topic
+    set by design: a prior divides a fixed amount of belief among however many topics are on offer,
+    where $\lambda$ makes a statement about one row at a time. A quantity that moved with $\lvert G
+    \rvert$ would make a topic's floor depend on which \emph{other} topics the sample happened to
+    admit, and nothing about the database's silence at a node has anything to do with that.
 
-    Nothing is paid for it in the fit. The sparsity Appendix \ref{prior} relies on is untouched,
-    because $\lambda$ enters as a rank-one term: $(\varphi\theta)_n$ becomes
-    $(1 - \lambda)(\varphi\theta)_n + \lambda / \lvert N \rvert$ with $\varphi$ the sparse matrix as
-    before, so the iteration of Equation \eqref{smoothyem} still walks the non-zeros and adds one
-    constant. And $R_g$ is untouched as well: the smoothing is applied to the emission the fit reads
-    and not to the counts the database yields, so Equation \eqref{smoothyabundance} divides by what it
-    always did.
+    That settles what $\lambda$ is for, and it is more than a guard against a zero. It is the floor
+    on how hard a count at one node may press against a topic whose lineage runs through it: with
+    $\lambda = 0$ a large enough $c_n$ drives a topic recording nothing at $n$ to zero, and with
+    $\lambda > 0$ it cannot fall below what the background allows. That is the model's main evidence
+    about which lineage a sample holds, so how far one node's silence may go towards excluding a
+    lineage is a modelling decision --- a question about how completely the database is trusted to
+    record a genome --- and not a numerical tolerance.
+
+    \todo{Fix $\lambda$ against data, as with $\beta$ in Section \ref{error}. The two ends are clear
+    and the middle is not: too small and one node the database is silent at can exclude a lineage the
+    sample really holds, too large and the rows stop discriminating between lineages at all. A known
+    composition with a genome deliberately withheld from the build is what settles it, since that is
+    the case the floor exists for.}
+
+    It is worth saying plainly how this stands to Bayesian practice, since a floor that keeps a topic
+    off zero looks like a prior and is not one. The prior version of smoothing a row is additive: put
+    a symmetric Dirichlet $\mathrm{Dir}(\alpha \mathbf{1})$ on $p(\cdot \mid g)$, observe the counts
+    $c(g,\cdot)$, and the posterior mean is Lidstone exactly, rejected above. A constant $\lambda$ is
+    the Dirichlet whose concentration $\alpha = \lambda R_g / \bigl( (1 - \lambda) \lvert
+    \mathrm{path}(g) \rvert \bigr)$ grows with the row it is applied to, and a prior that reads the
+    data before deciding its own strength is not a prior.
+
+    The difference has a consequence rather than being a matter of naming. A prior is swamped as the
+    counts grow; $\lambda$ is not, because it changes the emission and therefore the likelihood
+    itself. The floor it puts under a topic at a silent node of its own lineage survives any amount
+    of sequencing, which is what makes it a statement about the database --- that the database's
+    silence at a node is not evidence of absence --- rather than a belief to be overruled by
+    evidence. That also spares it the objection Appendix \ref{prior} raises against the Dirichlet on
+    $\theta$: there the inflated $k$-mer counts leave a prior nothing to weigh against, and here
+    there is nothing being weighed. The two act on different objects in any case, $\alpha$ on the
+    mixture and $\lambda$ on the rows, and neither substitutes for the other.
+
+    Nothing is paid for it in the fit. The smoothing enters as a rank-one term on each row's own
+    support, so the rows need never be stored smoothed: the iteration of
+    Equation \eqref{smoothyem} walks the non-zeros of the rows as Equation \eqref{smoothyrows} leaves
+    them and adds one constant per node of the path. And $R_g$ is untouched: the smoothing is applied
+    to the emission the fit reads and not to the counts the database yields, so
+    Equation \eqref{smoothyabundance} divides by what it always did.
 
     \paragraph{Cost and storage.} The goal runs once for a database and writes its result to a
     serialized file, which every later analysis against that database reads. Nothing here is paid per
@@ -1302,8 +1427,9 @@
     Equation \eqref{smoothypng}, so a normalised row sums to one whatever $R_g$ was, and
     Equation \eqref{smoothyabundance} wants it back. It is known while the row is being built and so
     written with it rather than recomputed, at a cost of one long against an array of $n$ doubles.
-    A data taxon needs nothing further; a row above them carries the number of genomes it pools as
-    well, since Equation \eqref{smoothyabundance} takes their mean.
+    A data taxon needs nothing further; a row above them carries the sum of squares of its members'
+    contributions as well, since Equation \eqref{smoothyabundance} divides by the effective number of
+    genomes rather than by a count of them.
 
     That turns a matrix over taxa and nodes into one over taxa and tree depth, so a database entering
     a few thousand genomes stores a few hundred kilobytes rather than the tens of megabytes a dense
@@ -1447,9 +1573,11 @@
     is because it uses structure the Dirichlet throws away.}
 
     \subsection{Inference}\label{inference}
-    Write $\theta_g = p(g \mid s)$, $\varphi_{ng} = p(n \mid g)$ and $C = \sum_n \hat{c}_n$, following
-    the usual symbols of the topic-modeling literature for the mixture and for the topic--word
-    distribution. The indices differ from that literature deliberately: $k$ is the $k$-mer length
+    Write $\theta_g = p(g \mid s)$, $\varphi_{ng} = \tilde{p}(n \mid g)$ and $C = \sum_n \hat{c}_n$,
+    following the usual symbols of the topic-modeling literature for the mixture and for the
+    topic--word distribution. It is the \emph{smoothed} rows of Equation \eqref{smoothysmooth} that
+    $\varphi$ stands for, those being what the fit reads; how they are stored is a separate matter,
+    set out with that equation. The indices differ from that literature deliberately: $k$ is the $k$-mer length
     throughout this paper and cannot also be a topic index, and $w$ for a node would say nothing. The estimate
     maximises $\ell(\theta) = \sum_n \hat{c}_n \log (\varphi\theta)_n$ over the simplex. Two ways to
     compute it are worth setting out, because the second follows from the first and needs less
@@ -1458,7 +1586,7 @@
     \paragraph{Constrained ascent.} With the constraint in affine form the Lagrangian is
     %
     \begin{equation}\label{smoothylagrange}
-        \Lambda(\theta, \nu) \;=\; \sum_{n \in N} \hat{c}_n \log (\varphi\theta)_n
+        \Lambda(\theta, \nu) \;=\; \sum_{n \in N_s} \hat{c}_n \log (\varphi\theta)_n
             \;-\; \nu \Bigl( \sum_{g \in G} \theta_g - 1 \Bigr),
     \end{equation}
     %
@@ -1489,7 +1617,7 @@
     held fixed:
     %
     \begin{equation}\label{smoothyem}
-        \theta_g \;\longleftarrow\; \frac{\theta_g}{C} \sum_{n \in N}
+        \theta_g \;\longleftarrow\; \frac{\theta_g}{C} \sum_{n \in N_s}
             \frac{\hat{c}_n \, \varphi_{ng}}{(\varphi\theta)_n}.
     \end{equation}
     %
@@ -1507,9 +1635,12 @@
     concave, the point it converges to is the global maximum rather than a stationary point that
     happens to be near where it started.
 
-    Each iteration costs one pass over the non-zeros of $\varphi$. Those are few: a column is supported on
-    the path from its taxon to the root, so $\varphi$ has of the order of one entry per taxon per level
-    rather than one per taxon per node.
+    Each iteration costs one pass over the non-zeros of $\varphi$. Those are few: a column is
+    supported on the path from its taxon to the root, so $\varphi$ has of the order of one entry per
+    taxon per level rather than one per taxon per node. The smoothing of
+    Equation \eqref{smoothysmooth} does not change that, being spread over a row's own path rather
+    than over the tree: it fills in the zeros a column had \emph{within} its support and adds none
+    outside it.
 
     \todo{Two known weaknesses to state rather than discover. EM converges linearly, and slowly when
     two topics are near-collinear --- which is exactly the degenerate case of Section \ref{pgn}, so
@@ -1528,12 +1659,19 @@
     Relative abundance follows by reweighting each topic. The unnormalised quantity is
     %
     \begin{equation}\label{smoothyabundance}
-        \tilde{a}_g \;=\; \frac{\theta_g}{R_g / \lvert G_g \rvert} ,
+        \tilde{a}_g \;=\; \frac{\theta_g}{R_g / \lvert G_g \rvert_{\mathrm{eff}}} ,
+        \qquad
+        \lvert G_g \rvert_{\mathrm{eff}} \;=\;
+            \frac{R_g^{2}}{\sum_{h \,\preceq\, g} \rho_h(g)^{2}} ,
     \end{equation}
     %
-    with $R_g$ the row total of Equation \eqref{smoothypng} and $\lvert G_g \rvert$ the number of
-    genomes pooled into the topic. At a data taxon $\lvert G_g \rvert = 1$ and the divisor is $R_g$
-    itself; above the data taxa it is more, for the reason given below. The abundance is that quantity
+    with $R_g$ the row total of Equation \eqref{smoothypng} and $\rho_h(g)$ the contribution of a
+    single genome to it, both as Equation \eqref{smoothyrho} defines them. The sum runs over the
+    genomes that equation sums, those whose taxon lies at or below $g$'s node, and the numerator is
+    their total squared: $R_g^{2} = \bigl( \sum_{h \preceq g} \rho_h(g) \bigr)^{2}$ by the same
+    equation, which is why only the squares have to be stored beside the row. At a data taxon there is one of them,
+    $\lvert G_g \rvert_{\mathrm{eff}} = 1$ and the divisor is $R_g$ itself; above the data taxa it is
+    more, for the reason given below. The abundance is that quantity
     normalised over all topics, the ones above the data taxa among them:
     %
     \begin{equation}\label{smoothynorm}
@@ -1569,14 +1707,63 @@
     the tree cannot name among them. Its row counts by
     frequency, so its total is the sum over the genomes pooled --- the database's hold on all of them
     together --- and dividing by that would count copies of the whole set rather than organisms of
-    it. The hold on one member is what is needed, and it is the mean. That is the work
-    $\lvert G_g \rvert$ does in Equation \eqref{smoothyabundance}, and why the goal of
-    Section \ref{pgn} stores it beside every row.
+    it. The hold on one member is what is needed. That is the work
+    $\lvert G_g \rvert_{\mathrm{eff}}$ does in Equation \eqref{smoothyabundance}, and why the goal of
+    Section \ref{pgn} stores what it needs beside every row.
 
-    What the mean is a mean \emph{of} is settled by the range of the row, and settled in the way the
-    estimate needs. Read on $\mathrm{path}(t)$, the row of $t$ carries what each genome beneath
+    Why the count is effective and not plain is worth a paragraph, because the plain one fails badly
+    and fails often. A reference collection is full of fragments: a clade may hold one finished
+    genome and a draft contributing a single $k$-mer, and a count of members calls that a pool of
+    two. The total $R_t$ hardly moves --- one $k$-mer --- while the divisor halves, so the abundance
+    doubles. Three such fragments quadruple it. What is wanted is not how many genomes were pooled
+    but how many the pool amounts to, and
+    $\lvert G_t \rvert_{\mathrm{eff}} = \bigl( \sum_{h \preceq t} \rho_h(t) \bigr)^2 /
+    \sum_{h \preceq t} \rho_h(t)^{2}$ is that: one finished
+    genome beside a one-$k$-mer draft gives $1.000$, two comparable genomes $1.994$, ten comparable
+    ones exactly $10$. Where the members are alike it is the count, and it departs from it only
+    where the count was misreporting. Appendix \ref{effexample} sets those four pools out side by
+    side with the divisor each produces.
+
+    Where the square comes from is worth setting out, together with what it assumes, because the
+    exponent does real work and is not derived from nothing. Written out,
+    $R_t / \lvert G_t \rvert_{\mathrm{eff}} = \sum_{h \preceq t} \rho_h(t)^{2} / \sum_{h \preceq t}
+    \rho_h(t)$, which is the hold of the genome that a $k$-mer drawn at random from the pool belongs
+    to. The two factors of $\rho$ are not the same kind of quantity, and it is worth keeping them
+    apart since $\rho$ is a count of $k$-mers and one of them is being used as a probability. Draw a
+    $k$-mer uniformly from the $R_t$ the pool holds. It is $h$'s with probability
+    $\rho_h(t) / R_t$ --- a count over a count, and dimensionless --- and the genome it then turns
+    out to belong to holds $\rho_h(t)$ of them. So the expected hold is
+    %
+    \begin{equation}\label{smoothysizebias}
+        \sum_{h \,\preceq\, t} \frac{\rho_h(t)}{R_t} \, \rho_h(t)
+        \;=\; \frac{\sum_{h \preceq t} \rho_h(t)^{2}}{R_t} ,
+    \end{equation}
+    %
+    which is the divisor above, $R_t$ being $\sum_h \rho_h(t)$ by Equation \eqref{smoothyrho}. One
+    factor of $\rho$ is normalised and one is not; the normalisation is the $R_t$ in the denominator,
+    and what comes out is a count of $k$-mers, as a divisor for $\theta_t$ has to be.
+
+    That is a proxy, and what it stands in for is not available. Write $a_h$ for the abundance of
+    each genome of the clade. What the sample yields from the clade goes as $\sum_h a_h \rho_h$ and
+    what is wanted is $\sum_h a_h$, so the divisor that would be exactly right is the mean of $\rho$
+    weighted by $a$ --- and $a$ is what the estimate is for. Every choice of divisor is therefore a
+    guess at $a$. The arithmetic mean guesses that the members are equally likely to be present,
+    which is what admits the fragment; the effective count guesses $a_h \propto \rho_h$, which is
+    what excludes it.
+
+    Neither guess is true, and the second is not defended by supposing a large genome likelier to be
+    present, which it is not. It is defended on narrower ground: a fragment's $\rho$ being tiny goes
+    with its not being a distinct organism at all, but a poorly assembled record of a relative
+    already in the pool. Weighting it down is right for that reason rather than the one the algebra
+    suggests. The exponent is a convention on top of it --- $(\sum \rho)^2 / \sum \rho^2$ is the
+    inverse Simpson index, the effective count of order two, and other orders reduce to the plain
+    count for equal members just as well. Two is the one with a closed form and long use behind it.
+
+    What the divisor is a hold \emph{of} is settled by the range of the row, and settled in the way
+    the estimate needs. Read on $\mathrm{path}(t)$, the row of $t$ carries what each genome beneath
     contributes at $t$ and above and nothing it holds privately lower down, so $R_t$ is the shared
-    hold of the clade and $R_t / \lvert G_t \rvert$ the shared hold of one member of it. That is the
+    hold of the clade and $R_t / \lvert G_t \rvert_{\mathrm{eff}}$ the shared hold of one member of
+    it. That is the
     right scale for what a topic at $t$ actually estimates. Where the counts at $t$ are owed to an
     organism the database cannot name, that organism stands in $d$ only where it overlaps something
     stored --- by its shared part and nothing else --- so it is measured against a divisor built the
@@ -1614,7 +1801,10 @@
     lengths implicit in $R_g$ are those of the reference genomes and not of the sample's organisms, so
     a strain carrying a large accessory complement is measured against the wrong ruler. And above the
     data taxa the pooling runs over an unevenly sampled set --- the sequencing-effort bias that shapes
-    the row itself, entering the abundance a second time.}
+    the row itself, entering the abundance a second time. The effective count meets the second
+    halfway and no further: it stops a fragment counting for a genome in the divisor, but a clade
+    sequenced a thousand times over still enters its own row a thousand times, and that is a property
+    of the collection rather than of the organisms. Say which half is fixed.}
 
     \paragraph{What the database cannot account for.} One figure per topic is reported on its own and
     is not an abundance at all,
@@ -1647,8 +1837,10 @@
     far they can be trusted.
 
     And they are crude, for a reason worth stating rather than hedging about --- one that is not
-    peculiar to them but only at its worst there. Every pooled topic divides by a mean and thereby
-    assumes the organism present is typical of the set pooled into it. A data taxon pools nothing,
+    peculiar to them but only at its worst there. Every pooled topic divides by a hold averaged over
+    its members and thereby assumes the organism present is typical of the sequence pooled into it.
+    Weighting by contribution makes that assumption less wrong than a plain mean would --- a
+    fragment no longer counts for as much as a finished genome --- but it does not make it right. A data taxon pools nothing,
     being one genome; a topic above them pools the members of its clade, the ones the database cannot
     name among them, which is where the assumption is at its weakest and the figure at its crudest.
     It is, however, far better than it would be with a single global residue: the assumption is then
@@ -1678,7 +1870,10 @@
     already holds, so only which $k$-mers are counted changes. The own counts, the pooling of
     Equation \eqref{smoothyrows} carries over verbatim, and
     Equation \eqref{smoothypng} reads $p(n \mid g) = c^{A}(g,n) / R^{A}_g$ with both terms computed
-    over $A(g)$.
+    over $A(g)$. The smoothing of Equation \eqref{smoothysmooth} carries over as it stands, over the
+    same $\mathrm{path}(g)$, and it earns its place here more than in the shotgun case: a marker is
+    shared more widely than a genome, so an amplicon row is concentrated higher in the tree and has
+    more zeros along its own path for one silent node to exploit.
 
     The test is on the position and not on the $k$-mer: the same sequence may occur inside the region
     in one genome and outside it in another, and it is where it sits that decides whether a read
@@ -1691,13 +1886,18 @@
     marker being shared more widely than a genome, which is a fact about the data and not a defect in
     the estimate.
 
-    \paragraph{The abundances.} One factor changes in Section \ref{abundances} and nothing else does.
-    The row total is $R^{A}_g$, so the divisor carries the length of the amplified region where it
-    carried the length of the genome --- which is what the counts are now a sample of.
+    \paragraph{The abundances.} The divisor changes in Section \ref{abundances} and nothing else
+    does. The contributions $\rho_h$ are the restricted ones, counted over $A(h)$ like everything
+    else here, so the row total is $R^{A}_g$ and the effective count is taken over the same
+    restricted contributions. Both parts of the divisor therefore carry the length of the amplified
+    region where they carried the length of the genome --- which is what the counts are now a sample
+    of. The effective count does not simply survive the restriction, since the marker is not a fixed
+    share of every genome: a member carrying more copies of it keeps proportionally more, and the
+    pool is measured as the survey sees it rather than as the assemblies stand.
     Equation \eqref{smoothyabundance} is otherwise unaltered:
     %
     \begin{equation}\label{smoothyamplicon}
-        \tilde{a}_g \;=\; \frac{\theta_g}{R^{A}_g / \lvert G_g \rvert} .
+        \tilde{a}_g \;=\; \frac{\theta_g}{R^{A}_g / \lvert G_g \rvert_{\mathrm{eff}}} .
     \end{equation}
     %
     Both corrections a marker survey needs are inside that divisor, and neither is to be applied
@@ -1823,11 +2023,12 @@
     $\mathbb{E}[\theta_g] = (m_g + \alpha) / (M + \lvert G \rvert \alpha)$ over the retained sweeps,
     with $M$ the total number of occurrences.
 
-    The path structure of Section \ref{pgn} bounds the work. An occurrence observed at node $n$ can
-    only belong to a topic whose column has support at $n$, and $\varphi_{ng} > 0$ only where $n$ lies on
-    the path from $g$ to the root --- that is, only for the topics lying at or beneath $n$. The candidate
-    set is therefore small for a specific node and large only for the nodes near the root, which is
-    the right shape: the sampler spends its time on exactly the occurrences that are ambiguous.
+    The path structure of Section \ref{pgn} bounds the work, and the smoothing leaves it alone. An
+    occurrence observed at node $n$ can only belong to a topic whose column has support at $n$, and
+    $\varphi_{ng} > 0$ only where $n$ lies on the path from $g$ to the root --- that is, only for the
+    topics lying at or beneath $n$. The candidate set is therefore small for a specific node and
+    large only for the nodes near the root, which is the right shape: the sampler spends its time on
+    exactly the occurrences that are ambiguous.
     Occurrences at one node are moreover exchangeable, so the state is the assignment counts per node
     rather than a label per $k$-mer, and a sweep re-draws a node's occurrences from the urn in turn
     instead of touching millions of tokens individually.
@@ -1846,7 +2047,7 @@
     \begin{equation}\label{smoothyjoint}
         p\bigl(c^{(1)}, \dots, c^{(m)} \bigm| \alpha\bigr) \;=\; \prod_{i=1}^{m} \int
             \mathrm{Dir}\bigl(\theta^{(i)} \bigm| \alpha \mathbf{1}\bigr)
-            \prod_{n \in N} \bigl(\varphi\theta^{(i)}\bigr)_n^{\,c^{(i)}_n} \, d\theta^{(i)} .
+            \prod_{n \in N_{s_i}} \bigl(\varphi\theta^{(i)}\bigr)_n^{\,c^{(i)}_n} \, d\theta^{(i)} .
     \end{equation}
     %
     Each $\theta^{(i)}$ stays a quantity of its own sample --- the aim is still one abundance
@@ -1934,6 +2135,142 @@
     or replace the fixed point of Section \ref{inference} with an optimiser that reaches the boundary,
     projected gradient or an active set, which gives exact zeros in finitely many steps and leaves the
     objective alone.
+
+    \section{Two ways of getting the smoothing's scope wrong}\label{nodesmooth}
+    Equation \eqref{smoothysmooth} spreads a fixed share $\lambda$ over the nodes of
+    $\mathrm{path}(g)$. Two other scopes suggest themselves --- the whole node set, and a fixed
+    share at each node rather than across them --- and both are set out here, since each fails for a
+    reason worth knowing rather than an obvious one.
+
+    \subsection{Over the node set}\label{nodesmoothset}
+    Equation \eqref{smoothysmooth} spreads a row's background over $\mathrm{path}(g)$. The obvious
+    alternative is to spread it over the nodes the sample reports, $\tilde{p}(n \mid g) = (1 -
+    \lambda) p(n \mid g) + \lambda / \lvert N_s \rvert$ for every $n \in N_s$, which is what a reader
+    coming from the retrieval literature would reach for: the background there is the collection, not
+    a per-document support. It is kept here because it is the natural first attempt and because the
+    reason it fails is not the obvious one.
+
+    The obvious objection is that it wastes its mass. A row occupies $\lvert \mathrm{path}(g) \rvert$
+    nodes, ten or twenty, against an $\lvert N_s \rvert$ in the hundreds or thousands, so all but a
+    small fraction of $\lambda$ lands where the row has no business being --- and it asserts, of a
+    genome whose $k$-mers the update guarantees are on its own lineage, that they might be anywhere.
+    It also fills $\varphi$ in, which costs the sparsity the cost argument of
+    Section \ref{inference} and the candidate set of Appendix \ref{prior} both rest on. None of that
+    is fatal on its own.
+
+    What is fatal is that it inverts the purpose. A topic's own node is covered by no other topic:
+    under Equation \eqref{smoothysmooth} the mixture there is $\theta_g$ times that row and nothing
+    else, so $\theta_g = 0$ would make the mixture zero where a count stands and the likelihood with
+    it. A genome the sample gives evidence for at its own node therefore \emph{cannot} be driven out,
+    whatever happens elsewhere on its lineage --- which is what the smoothing was introduced to
+    guarantee. Spread the background over $N_s$ and every other topic acquires a floor at that node
+    too. They can then account for the genome's own evidence between them, $\theta_g = 0$ becomes
+    feasible, and where a node of the lineage carries enough counts it becomes optimal: the
+    stationarity score of the excluded topic falls below $C$ and the boundary is a genuine maximiser.
+
+    A constructed example makes the size of it plain. Take a genome present in the sample with $50$
+    counts at its own node, silent at a shared node carrying $c_B$, fitted against a competitor that
+    is not silent there. Under Equation \eqref{smoothysmooth} the estimate falls with $c_B$ but never
+    reaches zero --- $2.2 \times 10^{-2}$, $2.5 \times 10^{-3}$, $2.5 \times 10^{-4}$ as $c_B$ runs
+    over $2 \times 10^3$, $2 \times 10^4$, $2 \times 10^5$ --- and exclusion stays impossible at
+    every $c_B$. Smoothing over $N_s$ instead gives $2.0 \times 10^{-2}$, $8.6 \times 10^{-5}$ and
+    then zero exactly. At ordinary counts the two agree to a percent; they part where the floor is
+    the only thing holding the topic in, which is the case it exists for.
+
+    So the choice is not between a tighter and a looser floor. Spreading over the path puts the floor
+    where a genome's evidence can be contradicted and nowhere else; spreading over the node set puts
+    it everywhere, and thereby dissolves the one place a genome cannot be argued away from.
+
+    \subsection{A fixed share at each node}\label{nodesmoothper}
+    The second alternative keeps to the path and changes how the share is divided: give each node of
+    $\mathrm{path}(g)$ a mass $\lambda$ of its own rather than $\lambda / \lvert \mathrm{path}(g)
+    \rvert$, so that $\tilde{p}(n \mid g) = (1 - \lambda \lvert \mathrm{path}(g) \rvert) p(n \mid g)
+    + \lambda$. The motivation is exact: under Equation \eqref{smoothysmooth} a deep genome's floor
+    is smaller than a shallow one's, and path length is a fact about where a genome sits rather than
+    evidence about a sample, so a floor that does not vary with it looks like an improvement.
+
+    It is one, and it is worth almost nothing. Where the floor binds --- a genome present, silent at
+    a node carrying two million counts --- the fixed-share-per-node scheme is exactly flat across
+    depth and Equation \eqref{smoothysmooth} drifts by half a percent between a path of three nodes
+    and one of forty. That is the whole of the gain.
+
+    The cost is not almost nothing. Giving each node $\lambda$ makes the background of a row total
+    $\lambda \lvert \mathrm{path}(g) \rvert$, so a deep row is mostly background and its real
+    structure washes out. At $\lambda = 0.01$ and forty nodes, two fifths of the row is flat, and a
+    topic that is \emph{not} silent --- which is the ordinary case, at almost every node --- comes
+    out a quarter lower than under Equation \eqref{smoothysmooth} for no reason but its depth. The
+    dependence on path length is therefore not removed by the change. It is moved from the floor,
+    where it costs half a percent and only where a topic is nearly evicted, to the signal, where it
+    costs a quarter and applies everywhere.
+
+    A constraint comes with it. The scheme needs $\lambda \lvert \mathrm{path}(g) \rvert < 1$ for
+    every topic, so $\lambda$ is capped by the deepest lineage the database carries and one
+    finely-resolved clade lowers it for everything else. Setting $\lambda$ to match
+    Equation \eqref{smoothysmooth}'s floor at one depth then leaves it several times weaker at
+    shallower ones.
+
+    Behind all of it is a scale that Equation \eqref{smoothysmooth} gets right by construction. A row
+    spread over $L$ nodes has entries of order $1 / L$, so a share of $\lambda / L$ is a constant
+    \emph{fraction} of what the row holds at a node, whatever $L$ is. A fixed $\lambda$ per node is a
+    constant absolute quantity instead: negligible beside a shallow row's entries and comparable to a
+    deep row's. The floor should be measured against the row it protects, and dividing the share is
+    what measures it that way.
+
+    \section{The effective genome count, worked through}\label{effexample}
+    Equation \eqref{smoothyabundance} divides by $R_t / \lvert G_t \rvert_{\mathrm{eff}}$ rather than
+    by $R_t / \lvert G_t \rvert$, and the difference is easiest to see on four pools. Recall that
+    $\rho_h$ is what one genome contributes to the row of $t$ --- its $k$-mers that $d$ holds at the
+    nodes $\mathrm{path}(t)$ --- so $\sum_h \rho_h = R_t$, and that the goal accumulates that sum and
+    the sum of squares as it walks. Take a clade whose complete member contributes two million
+    $k$-mers at $t$ and above.
+
+    \begin{table}[!htbp]
+        \centering
+        \footnotesize
+        \setlength{\tabcolsep}{4pt}
+        \begin{tabular}{@{}l|r|r|r|r|r|r@{}}
+            \textbf{the pool at $t$} & $R_t$ & $\sum_h \rho_h^{2}$ &
+                $\lvert G_t \rvert$ & $\lvert G_t \rvert_{\mathrm{eff}}$ &
+                $R_t / \lvert G_t \rvert$ & $R_t / \lvert G_t \rvert_{\mathrm{eff}}$\\
+            \hline
+            complete $+$ one-$k$-mer draft & 2\,000\,001 & $4.0 \times 10^{12}$ & 2 & 1.000 &
+                1\,000\,000 & 1\,999\,999\\
+            complete $+$ three such drafts & 2\,000\,009 & $4.0 \times 10^{12}$ & 4 & 1.000 &
+                500\,002 & 1\,999\,991\\
+            two comparable genomes & 3\,800\,000 & $7.2 \times 10^{12}$ & 2 & 1.994 &
+                1\,900\,000 & 1\,905\,263\\
+            ten comparable genomes & 20\,000\,000 & $4.0 \times 10^{13}$ & 10 & 10.000 &
+                2\,000\,000 & 2\,000\,000\\
+        \end{tabular}
+        \caption{Four pools at one taxon $t$, with the divisor each count produces. The last two
+        columns are what Equation \eqref{smoothyabundance} would divide by under the plain count and
+        under the effective one. Read the first two rows against the last two: where the members are
+        alike the effective count \emph{is} the count, to three decimals at ten members and to within
+        a third of a percent at two, and the two divisors agree; where a fragment is present the
+        count says two or four members and the effective count says one, because that is how many
+        genomes the pool amounts to.}\label{efftable}
+    \end{table}
+
+    The first row is the case that motivates the change. A draft assembly contributing a single
+    $k$-mer is counted by $\lvert G_t \rvert$ as a member equal to the finished genome beside it, so
+    the divisor halves and every abundance at $t$ doubles --- on evidence of one $k$-mer. Three such
+    drafts quarter it. Nothing about the clade has changed between the first two rows and the truth
+    has not moved: one organism of it holds two million $k$-mers at $t$ and above, which is what the
+    effective count returns in both.
+
+    The last two rows are the check in the other direction. Ten genuinely comparable genomes give
+    $\lvert G_t \rvert_{\mathrm{eff}} = 10$ exactly and the same divisor as the plain count, and two
+    comparable ones give $1.994$ against $2$ --- the small shortfall being real rather than error,
+    since the members are not quite equal. So the effective count is not a correction applied on top
+    of the count but the count generalised: it coincides with it wherever the count was telling the
+    truth.
+
+    The identity behind the last column is worth seeing once. Writing it out,
+    $R_t / \lvert G_t \rvert_{\mathrm{eff}} = \bigl( \sum_h \rho_h \bigr) \bigl( \sum_h \rho_h^{2}
+    \bigr) / \bigl( \sum_h \rho_h \bigr)^{2} = \sum_h \rho_h^{2} / \sum_h \rho_h$, every sum running
+    over the genomes at or below $t$ as in Equation \eqref{smoothyrho}, which is the form
+    Section \ref{abundances} argues from and the reason only two accumulators are stored: the
+    per-genome $\rho_h$ are needed while the row is pooled and never afterwards.
 
     \end{appendices}
 
