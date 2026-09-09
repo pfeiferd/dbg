@@ -325,7 +325,7 @@
             \hline
             document & a sample\\
             word & a node of the taxonomy\\
-            topic & one genome, or a placeholder for what the database cannot name\\
+            topic & a node: one genome at a leaf, a clade above\\
             count of a word in a document & count the classifier reports at a node\\
             topic--word distribution & where a topic's $k$-mers are stored in the database\\
             document--topic distribution & the share of the sample's sequence each topic contributed\\
@@ -377,8 +377,8 @@
     simplex --- so the ambiguous evidence sets the answer here rather than only being apportioned by
     it. And Bracken is explicit that it cannot report what its reference lacks: \enquote{if Kraken
     fails to identify a species (e.g., if the species was missing from the Kraken database), Bracken
-    too will not identify that species.} The \textsc{rest} topics of Section \ref{pgn} exist for
-    exactly that case.
+    too will not identify that species.} The topics Section \ref{pgn} admits above the data taxa
+    exist for exactly that case.
 
     The correction that turns a count into an abundance is older than the mixture models that use it.
     GAAS \citep{gaas} states the reason plainly: a metagenome is a set of fragments drawn from the
@@ -392,8 +392,9 @@
     abundance as a finite mixture and fitted it by expectation--maximisation. It reaches that mixture
     from statistics and not from text: the word \emph{topic} does not appear in it, and nothing is
     borrowed from the corpus literature Section \ref{relatedwork} opens with. Its components are the
-    reference genomes themselves, one per genome and none for a taxon, and the set of them is fixed
-    before the fit rather than searched over --- as it is here, and unlike metaMix below. The
+    reference genomes themselves, one per genome and none for a taxon --- where here a taxon can be a
+    topic in its own right, which is what lets a clade account for what its genomes cannot. The set
+    is fixed before the fit rather than searched over, as it is here, and unlike metaMix below. The
     taxonomy enters only afterwards, genome-level estimates being combined upward to give species and
     genus figures, which is the step Equation \eqref{smoothyagg} repeats here for the same reason.
 
@@ -436,9 +437,11 @@
     GRAMMy admits a $(K+1)$-th component for \enquote{the collective of unknown genomes}, and then:
     \enquote{Since the effective genome length for the unknown genomes is not available, we cannot
     estimate the relative abundance of the unknown component.} The unnamed material enters the model
-    and is left unquantified. $R_g$ is not a length looked up but a count the database yields for a
-    $\textsc{rest}$ row as readily as for a genome, so the quantity GRAMMy could not reach is the one
-    this paper reports as $u$. What metaMix puts in its place is taken up below.
+    and is left unquantified. Here it needs no component of its own: the $k$-mers of a genome the
+    database never entered are held at the lowest taxon it shares with something stored, so they are
+    that taxon's own counts and a topic there accounts for them. What that topic then needs is a
+    length, and $R_t$ is one --- not looked up but counted off the database, for a node as readily as
+    for a genome --- so the quantity GRAMMy could not reach is the one this paper reports as $u$. What metaMix puts in its place is taken up below.
 
     metaMix \citep{metamix} is nearer still in form, and its likelihood is similar in shape to
     Equation \eqref{smoothylikelihood}: $P(X \mid w) = \prod_i \sum_j p_{ij}\, w_j$ over reads $x_i$ and
@@ -475,11 +478,12 @@
     component and cannot quantify it for want of a length. metaMix quantifies it by supplying one:
     the $p_{ij}$ of its unknown category are approximated by the reciprocal of \enquote{median genome
     length in the reference database}, a single figure standing for whatever is missing. This paper
-    divides by $R_{\textsc{rest}_g}$ over the genomes it pools --- measured, not assumed, and measured
-    over the omitted members of \emph{that clade} rather than over the whole collection. And because
-    a $\textsc{rest}_t$ sits at every node that needs one where the \emph{unknown} is a single
-    category, metaMix can say how much of a sample it cannot name while this method can also say
-    where.
+    divides by $R_t$ over the genomes it pools --- measured, not assumed, and measured over the
+    members of \emph{that clade} rather than over the whole collection. And where the \emph{unknown}
+    is a single category, here it is one figure per node: unnamed material under
+    \emph{Streptococcus} raises the counts on the \emph{Streptococcus} lineage and unnamed material
+    under \emph{Nocardia} on the \emph{Nocardia} lineage, so metaMix can say how much of a sample it
+    cannot name while this method can also say where.
 
     PathoScope \citep{pathoscope} belongs to the same family and shows how far it can be taken.
     It is a Bayesian missing-data mixture over reads and genomes, fitted by EM, with an indicator
@@ -514,10 +518,15 @@
     profile HTTMM has to assume is available as a measurement.
 
     Two things follow. HTTMM forms a per-read quantity and runs \textsc{blast} over the sample, so it
-    needs the reads. And its internal nodes hold homology rather than novelty: weight at a genus says
-    the method could not resolve a read among that genus's \emph{reference} genomes, where
-    $\textsc{rest}_t$ says the database cannot name the material at all. Reads matching nothing never
-    enter the mapping matrix, and the model has no component for them. HTTMM also reports its mixture
+    needs the reads. And the internal nodes both methods fit mean different things, which is the
+    comparison to make carefully now that neither treats them as a special case. HTTMM's hold
+    homology: weight at a genus says the method could not resolve a read among that genus's
+    \emph{reference} genomes. Here the ambiguity is already spoken for --- a named genome's row has
+    mass at every node above it, so the shared $k$-mers of the genomes actually present are explained
+    by their own topics --- and what is left at the genus is what none of them accounts for, which is
+    material the database cannot name. The same node, fitted the same way, reports irresolution there
+    and novelty here. Reads matching nothing never enter HTTMM's mapping matrix, and its model has no
+    component for them. HTTMM also reports its mixture
     weights $\Pr(z)$ as relative abundances directly, with no length division anywhere in the model,
     which is the conflation Section \ref{abundances} separates.
 
@@ -573,8 +582,8 @@
                 Bayes' rule, one pass & cannot be reported\\
             \textbf{Smoothy} & $k$-mer counts at nodes & \emph{none}: no per-read quantity is
                 formed, and $p(n \mid g)$ is counted off the database &
-                mixture / topic model, EM & a $\textsc{rest}$ per node, quantified from the
-                database\\
+                mixture / topic model, EM & a topic at each node, taking what the taxa below cannot
+                explain; its share quantified from the database\\
         \end{tabular}
         \caption{All eight answer one question --- what the sample contained and in what proportion ---
         from sequence evidence that does not identify its source uniquely, and every one of them
@@ -709,8 +718,9 @@
     metabarcoding data as it stands --- Section \ref{amplicon} sets out what has to change for it to.
 
     Under it, the per-taxon counts a classifier reports are a mixture. Let $G$ be the topics --- the
-    genomes the database stores, together with a placeholder for the organisms it cannot name, both
-    fixed in Section \ref{pgn} --- $N$ the nodes of the taxonomy it uses, and $c_n$ the
+    nodes of the taxonomy the sample gives evidence at, a topic standing for the genomes beneath its
+    node and for one genome where that node is a leaf, all fixed in Section \ref{pgn} --- $N$ the
+    nodes of the taxonomy the database uses, and $c_n$ the
     $k$-mer count that the analysis of a sample $s$ reports at node $n$. Let $p(n \mid g)$ be the
     probability that a $k$-mer drawn from the genomes behind topic $g$ is stored at node $n$ of that
     database, and $p(g \mid s)$ the share of $g$ in the sample --- the abundance we are after. A
@@ -808,30 +818,37 @@
     which is every genome of the release in scope, and not only those the entry phase stored --- and
     for each of them looks up every $k$-mer in the database $d$.
 
-    The goal produces a counter for each genome $d$ stores and one at each taxon for the genomes
-    beneath it that nothing names. The topics the method fits are those two: a data taxon,
-    which by the transformation set out next is a single genome, and the unnamed material of a clade,
-    pooled over what lies below it. Rows are written at every taxon as well, because it costs nothing
-    and because Appendix \ref{fixedrank} wants them, but the method reads the genomes and the
-    $\textsc{rest}$ nodes.
+    The goal produces a counter for each genome $d$ stores, and one at each taxon for the genomes
+    beneath it that nothing names --- an unentered genome raises the counter of the lowest taxon it
+    shares with something stored. A row is then written at every taxon from those counters, because
+    it costs nothing and because the admission rule below may put a topic at any of them: at a data
+    taxon the row is one genome's, and higher up it is the clade's, the unnamed material among it.
+    Beside every row the
+    goal stores $\lvert G \rvert$, the number of genomes pooled into it --- one at a data taxon and
+    more above --- which Section \ref{abundances} needs and which costs one integer per row. Storing
+    it everywhere, including where it is one, is what keeps the abundance a single expression.
 
     \paragraph{The topics.} A \emph{data taxon} is a taxon with a complete genome directly
     associated, whose $k$-mers the database stores \citep{genestrip-ft}; in RefSeq such genomes
     usually attach at the rank of species or below. Every taxon carries a row, the ones above the
     data taxa included, but an inference does not use them all. $G$ in
-    Equation \eqref{smoothylikelihood} is the data taxa --- one per genome, once the transformation
-    below has been applied, which is the finest resolution the database supports --- together with
-    one $\textsc{rest}_t$ at each node that has unnamed genomes attached to it. $N$ is the whole
-    tree. A coarser answer is not a coarser fit but a sum over the fitted one, as
-    Section \ref{abundances} sets out.
+    Equation \eqref{smoothylikelihood} is a set of nodes drawn from them, which the admission rule of
+    Equation \eqref{smoothyadmit} settles; $N$ is the whole tree. A coarser answer is not a coarser
+    fit but a sum over the fitted one, as Section \ref{abundances} sets out.
 
-    Three things stand in the way of that topic set, and one device settles all three. A data taxon
-    may have descendants, a species with strains beneath it being both. A data taxon may carry
-    several genomes, which would enter one topic however unlike each other they are. And
-    $\textsc{rest}_t$ attaches at $t$, above $t$'s own topics. The first and the last break the
-    condition the set has to meet, that no topic may be an ancestor of another: if an ancestor and
-    its descendants were topics at once, the same counts could be explained by either and no data
-    could separate them. The middle one is not a matter of ancestry but of pooling.
+    The material the database cannot name needs no topic of its own. A genome that was never entered
+    still took part in the update, so its $k$-mers are held wherever its stored relatives put them:
+    at the lowest taxon it shares with them, which for an organism sitting directly under $n$ with
+    nothing named below is $n$ itself. Those are $n$'s own counts, they enter $n$'s row through
+    Equation \eqref{smoothyrows}, and a topic at $n$ carries the unnamed material of $n$ with
+    everything else that sits there. One row per node, and no second kind of topic.
+
+    Two things stand in the way of that topic set, and one device settles both. A data taxon may have
+    descendants, a species with strains beneath it being both. A data taxon may carry several
+    genomes, which would enter one topic however unlike each other they are. The first makes a topic
+    stand for two things at once: the $k$-mers of the taxon's own stored genomes sit at that taxon,
+    and so does whatever the sample gives there that nothing beneath explains, and one weight cannot
+    report both. The second is a matter of pooling, one row for genomes that may be very unlike.
 
     The companion paper answers the first with a tree transformation, which inserts a node beneath a
     data taxon and moves that taxon's sequence data to it, leaving the taxon internal and the new
@@ -869,11 +886,11 @@
         \begin{flushleft}(2) Every stored genome is given a leaf of its own.\end{flushleft}
         \end{minipage}
         \caption{Making every data taxon a leaf, after \citet{genestrip-ft}. In (1) the data taxon
-        $X$ is an ancestor of the data taxon $Y$, so the two would be topics at once and no data
-        could separate them, and $X$'s two genomes would enter one row however unlike each other they
-        are. The transformation of (2) settles both: it inserts a node per genome and moves that
-        genome's $k$-mers down to it, so no data taxon is an ancestor of another and no topic pools
-        two genomes. It adds no taxon above any genome that was not already above it, so the
+        $X$ holds its own genomes' $k$-mers at the node where the unexplained material of its clade
+        also gathers, so a topic there would stand for both at once; and $X$'s two genomes would
+        enter one row however unlike each other they are. The transformation of (2) settles both: it
+        inserts a node per genome and moves that genome's $k$-mers down to it, so no topic pools two
+        genomes and what is left at $X$ is what nothing beneath it accounts for. It adds no taxon above any genome that was not already above it, so the
         phylogeny is unchanged.\protect\footnotemark}\label{fttrans}
     \end{figure}
     \footnotetext{Genestrip builds this under \texttt{genomeNodes=true}, which inserts one node of
@@ -885,13 +902,9 @@
     Section \ref{abundances} makes the remainder harmless, since which of a set of
     near-identical assemblies is credited does not change their sum.
 
-    The third stands apart, $\textsc{rest}_t$ having no genome of its own to be given a leaf. The
-    same device answers it all the same: $\textsc{rest}_t$ is entered as a further leaf
-    child of $t$. It is a leaf with no $k$-mers of its own --- the update stored none at a node it
-    never saw --- so the node is a place in the topic set and not a place in the database, and the
-    row remains the one Equation \eqref{smoothyrows} builds.
-
-    After both, every topic is a leaf of the transformed tree and no topic is an ancestor of another.
+    After both, every data taxon is a leaf of the transformed tree. Each stored genome is a topic of
+    its own, and every internal node is free of stored genomes, so a topic there reports only what
+    the topics beneath it cannot account for.
 
     \paragraph{Admitting a topic.} A topic with no evidence behind it does not sit at zero: the
     iteration of Section \ref{inference} drives it towards zero and arrives only in the limit. Left
@@ -908,36 +921,94 @@
     up at the door. A $k$-mer threshold is the finer of the two as well: it can be set as low as one
     and admit a genome on partial evidence, where a read threshold cannot see below a read.
 
-    In practice the test is decisive rather than delicate. A database names far more genomes than any
-    one sample contains, and for most of them the sample reports nothing at their own node at all, so
-    even $T = 1$ cuts $G$ to the size of what was actually seen; raising $T$ is the remedy if a
-    sample proves noisier than that. The rule also removes exactly the topics that could not have been
-    estimated anyway, for the reason the next paragraphs give.
+    In practice the test is decisive rather than delicate, and at $T = 1$ it states itself: for a
+    sample $s$, drop every leaf that got no counts and leave the rest. A database names far more
+    genomes than any one sample contains, and for most of them the sample reports nothing at their
+    own node at all, so that one pass already cuts $G$ to the size of what was actually seen. Raising
+    $T$ is the remedy if a sample proves noisier than that, and it is the same rule read at a higher
+    bar. Either way what is dropped is what could not have been estimated, for the reason the next
+    paragraphs give.
 
-    $\textsc{rest}_t$ is admitted by the same test, read at $t$: it enters when $c_t \geq T$. Its own
-    leaf is empty by construction, the update having stored nothing at a node it never saw, but $t$ is
-    where its row is most specific and where evidence for it would appear. An unnamed genome
-    attaching at $t$ has no node beneath $t$ to be held at, so its $k$-mers sit at $t$ or above, and a
-    sample containing such an organism reports counts at $t$. Where $c_t = 0$ nothing evidences
-    unnamed material there, and what lies above $t$ is shared with every sibling lineage in any case.
-    One rule therefore serves both kinds of topic, and neither is admitted on ambiguous evidence
-    alone.
+    \paragraph{Where the counts stop short of the data taxa.} The rule as stated reads the count at a
+    data taxon's own node, and there are samples in which no data taxon passes it. A genome's own
+    node holds only the $k$-mers that distinguish it from every relative in the database; where a
+    clade is densely covered there are few of those, and a shallow sample may see none of them. The
+    counts then stop at some node above the leaves, and a test read at the leaves alone admits
+    nothing and leaves $G$ empty.
 
-    The saving is not incidental. A build attaches unnamed genomes at every node that has any, which
-    across a division is a great many nodes, and admitting $\textsc{rest}$ on that ground alone would
-    carry one topic per such node into every fit whatever the sample held. Reading the rule at $t$
-    cuts them to the lineages the sample actually touches. With the same test on the data taxa, that
-    is what keeps $\lvert G \rvert$ at the size of what was seen rather than the size of the
-    reference collection.
+    The remedy keeps the threshold and reads it at every node rather than at the data taxa alone.
+    Admit each node whose count reaches $T$,
+    %
+    \begin{equation}\label{smoothyadmit}
+        A \;=\; \bigl\{\, n \in N \;:\; c_n \geq T \,\bigr\} ,
+    \end{equation}
+    %
+    and let the members of $A$ be the topics. At a data taxon this is the rule above and nothing
+    changes. At an inner node the topic stands for the clade beneath it rather than for a genome, and
+    it is admitted on the same evidence as any other.
+
+    An inner node and a data taxon beneath it may both be topics, and that is no longer the objection
+    it would have been. A row is read on its own node's lineage, so the row of an inner node $t$ has
+    no mass below $t$ while the row of a leaf beneath it does: the count at the leaf is carried by the
+    leaf's row alone, and the two are told apart there. What $t$ takes is what the leaves under it
+    cannot explain, which is what an inner topic is for.
+
+    What this changes is the counting, on both sides of
+    Equation \eqref{smoothylikelihood} and in opposite directions.
+
+    On the database side the topic's row aggregates. Equation \eqref{smoothyrows} builds the row at
+    $t$ by pooling the own-counts $c^{\circ}(s,n)$ of every taxon $s \preceq t$, so an admitted node
+    stands for all the genomes beneath it at once and the topic is the clade's average member rather
+    than any one of them. At a data taxon that sum has a single term --- the transformation left it a
+    leaf with nothing beneath it --- which is why the ordinary case needed no separate statement. It
+    is the same equation doing the same thing at a different node, so no new one is wanted, and the
+    aggregation is what lets a node stand in for genomes the sample could not tell apart.
+
+    On the sample side the counts are cut back. Those strictly beneath an admitted node do not enter
+    it: they are by construction below $T$, which is the evidence the threshold judged too thin to
+    fit on. They are dropped rather than folded upwards into the admitted node, which would let
+    material the classifier has already resolved weigh on a fit that could not resolve it.
+
+    Dropping a topic is not dropping its genomes. A leaf $h$ beneath $n$ that fails the test stops
+    being a topic of its own and is thereafter represented by $n$, but only as far as $n$ can see it.
+    What passes to $n$ is what $h$ contributes \emph{at $n$ and above} --- the $k$-mers of $h$ the
+    database holds there, which are the ones shared with its relatives. What $h$ holds privately at
+    its own node does not pass: that node is not on $\mathrm{path}(n)$, so Equation \eqref{smoothyrows}
+    leaves it out of $c(n,\cdot)$ exactly as the sample counts there are left out of the likelihood.
+    It is a drop and not a fold, and the two sides drop the same thing.
+
+    The genome count is the exception, and deliberately so: $\lvert G_n \rvert$ counts $h$'s genomes
+    among those pooled at $n$, private $k$-mers or not, because they are organisms the estimate at
+    $n$ now stands for. The divisor of Equation \eqref{smoothyabundance} is therefore a mean over a
+    set that includes $h$, which is what makes an estimate at $n$ a share of one organism of the
+    clade rather than of the clade entire.
+
+    Equation \eqref{smoothylikelihood} is untouched. Equation \eqref{smoothyabundance} is not:
+    $R_t$ is the total of the pooled row and so sums the counts of every genome beneath $t$, which is
+    the database's hold on the clade and not on one member of it. The divisor is therefore
+    $R_t / \lvert G_t \rvert$, for the reason Section \ref{abundances} gives.
+
+    One thing follows for the report. An estimate at such a topic is a share of the clade and not of
+    a genome, and it has to be named as the clade: a figure reported against a species the sample
+    never distinguished would claim more than the counts support.
+
+    The saving is not incidental, and it is had without discarding anything. A tree carries a great
+    many nodes, and a topic at each of them would enter every fit whatever the sample held; the rule
+    admits only those the sample gives counts at, which are the lineages it actually touches, so
+    $\lvert G \rvert$ is the size of what was seen rather than the size of the reference collection.
+    Nothing is given up for that. A leaf dropped for want of counts does not take its genomes out of
+    the fit --- they are pooled into the node above, which is a topic wherever the sample gives
+    evidence there, and $\lvert G \rvert$ counts them. What the rule removes is a name the data
+    cannot support, not the evidence itself.
 
     Passing the test is a necessary condition and not a claim of presence: $c_t > 0$ may be the
     clade's own genomes pushing $k$-mers up, just as $c_g > 0$ may be a near-identical relative of
     $g$. The fit is there to decide between them. A topic admitted but truly absent is a smaller matter
     and not nothing --- the iteration takes it towards zero and arrives only in the limit, so
     Appendix \ref{sparsity} sets out what to do if exact zeros are wanted. And the counts of a
-    rejected topic do not vanish; they are explained by whatever remains, usually the
-    $\textsc{rest}$ above it, so the filter moves weak named evidence into the unnamed share and $u$
-    should be read knowing it.
+    rejected topic do not vanish; they are explained by whatever remains, usually the admitted node
+    above it, so the filter moves weak named evidence into that node's share and $u$ should be read
+    knowing it.
 
     \paragraph{What the database must be.} The method requires that $d$ was built with its LCA update
     ranging over the whole RefSeq category and not only over the entered genomes --- in Genestrip's
@@ -946,9 +1017,9 @@
     the requirement costs nothing in practice, but it is a requirement and not a convenience. It is
     what puts a genome's $k$-mers at or above its own taxon, and every locality claim below rests on
     that. Under a narrowed scope a genome absent from $d$ leaves them wherever its stored relatives
-    happen to carry them, so $c^{\circ}(\textsc{rest}_t,\cdot)$ spreads across the tree instead of
-    over $t$'s lineage and stops naming the clade whose unnamed material it holds. A database built the other way can still be read by the model, but
-    $u$ and the $\textsc{rest}$ abundances should not be believed from it.
+    happen to carry them, so an unnamed genome's counts spread across the tree instead of gathering
+    on the lineage of the clade it belongs to. A database built the other way can still be read by
+    the model, but $u$ and the abundances at the inner nodes should not be believed from it.
 
     Three cases arise. A genome the entry phase stored has a leaf of its own, and each of
     its $k$-mers raises $c^{\circ}(g,n)$ at the node $n$ where $d$ holds it. The
@@ -957,33 +1028,23 @@
 
     A genome whose taxon has no node in $d$'s tree --- a species the database has never heard of,
     which is what material genuinely outside it looks like --- has no leaf and no taxon it could
-    honestly be attributed to. It raises $c^{\circ}(\textsc{rest}_t,n)$ at the nearest ancestor $t$
-    the tree does have, and only where $d$ holds the $k$-mer at all, which for such a genome is only
-    where it overlaps something stored. So $p(n \mid \textsc{rest}_g)$ is the probability that a count
-    observed at $n$ came from material that belongs under $g$ and that the database names nowhere.
+    honestly be attributed to. It raises $c^{\circ}(t,n)$ at the nearest ancestor $t$ the tree does
+    have, and only where $d$ holds the $k$-mer at all, which for such a genome is only where it
+    overlaps something stored. Its counts are part of $t$'s own counts, and a topic at $t$ is what
+    accounts for them.
 
     A genome between the two raises nothing: one whose taxon $d$ names but which the entry phase did
     not store, of which there are many, Genestrip entering at most a fixed number of genomes per
-    taxon. It is not unnamed and does not belong in $\textsc{rest}$ --- counting it there would put
-    the bulk of RefSeq into the unnamed share and leave $u$ reporting the entry cap rather than the
-    state of the reference collection. It is not a topic either, having no row of its own. It is represented
+    taxon. It is not unnamed and must not be read as such --- doing so would put the bulk of RefSeq
+    into the unnamed share and leave $u$ reporting the entry cap rather than the state of the
+    reference collection. It is not a topic either, having no row of its own. It is represented
     by the conspecifics that were stored, and it has already done its work: it took part in the LCA
     update, so the node positions every row is read from account for it.
 
-    \textsc{rest} is not a node, and that is worth separating from a construct of the companion
-    paper which shares the intuition and nothing else. Genestrip-FT's \textsc{other} is a node: the
-    refinement inserts it into the tree as a further child of the node it refines, so the LCA update
-    has somewhere to leave a $k$-mer it must not push further down \citep{genestrip-ft}. It is a
-    piece of tree structure, it holds $k$-mers, and it exists only where the refinement was applied.
-    $\textsc{rest}_t$ is a pan-genome: a set of genomes pooled into a topic, holding no $k$-mers of
-    its own and occupying no position in the taxonomy. It is defined at every taxon, refined or not,
-    and a database carrying no refinement at all has the full complement of them. Neither implies the
-    other, and reading one for the other inverts what the rows mean.
-
-    $\textsc{rest}_t$ nests as $t$ does --- Equation \eqref{smoothyrows} below writes the two side by
-    side. Where $c(t,n)$ pools the genomes $d$ stores beneath $t$, $c(\textsc{rest}_t,n)$ pools the
-    ones nothing names, so both kinds of row are written once per taxon and an inference reads them
-    rather than recomputing anything. What matters is
+    That the unnamed material of different clades stays apart follows from this and needs no
+    machinery of its own. A missing \emph{Streptococcus} species raises counts on the
+    \emph{Streptococcus} lineage and a missing \emph{Nocardia} species on the \emph{Nocardia}
+    lineage. What matters is
     that there is not a single global one: a missing \emph{Streptococcus} species and a missing \emph{Nocardia} species
     raise different counters, so the model can say which clade the unnamed material sits in rather
     than only that it exists. Counting is by frequency rather than by distinct $k$-mer, since a $k$-mer shared
@@ -993,29 +1054,26 @@
     Two quantities have to be kept apart. The counters above are what a single genome contributes at
     its own leaf; a row is what a whole clade beneath a taxon does. At a data taxon they coincide,
     the transformation having left it a leaf with nothing beneath it, and that row is read as
-    it stands. Pooling is what $\textsc{rest}$ needs, its node sitting at an internal taxon and
-    standing for everything unnamed below. Writing $s \preceq t$ for a taxon at or below $t$, the two
-    rows of $t$ are
+    it stands. Writing $s \preceq t$ for a taxon at or below $t$, the row of $t$ is
     %
     \begin{equation}\label{smoothyrows}
         c(t,n) \;=\; \sum_{s \,\preceq\, t} c^{\circ}(s,n) ,
-        \qquad
-        c(\textsc{rest}_t,n) \;=\; \sum_{s \,\preceq\, t} c^{\circ}(\textsc{rest}_s,n) ,
         \qquad n \in \mathrm{path}(t) .
     \end{equation}
     %
-    One rule applied to both, and nothing in it knows which of the two it is summing:
-    $\textsc{rest}_t$ is pooled exactly as every other pan-genome row is. Summing the own counts
+    One rule, and it needs no second form for the unnamed material, which sits in the own counts of
+    the node it belongs under and is pooled with everything else there. Summing the own counts
     rather than the rows is what keeps this from being circular, $t$ being its own ancestor; in an
     implementation the same thing is had from the children, $c(t,n) = c^{\circ}(t,n) + \sum_{h} c(h,n)$
     over the children $h$ of $t$, which a single post-order traversal computes for every taxon at
-    once. At a data taxon with nothing below it the sum has one term and $c$ and $c^{\circ}$ coincide.
+    once. At a data taxon with nothing below it the sum has one term and $c$ and $c^{\circ}$
+    coincide.
 
     The range keeps the rows from overlapping. A row of $t$ is read on $t$'s own lineage:
     what the database stores \emph{beneath} $t$ belongs to the topics sitting there and not to $t$,
-    and without the restriction $\textsc{rest}_t$ would carry the mass of every $\textsc{rest}_s$
-    below it while those are topics in their own right. At a data taxon, being a leaf, the
-    restriction takes nothing away.
+    and without the restriction the row of $t$ would carry the mass of every topic below it while
+    those are topics in their own right. At a data taxon, being a leaf, the restriction takes nothing
+    away.
 
     That the own counts respect it already --- that a genome sitting at $t$ never has its $k$-mers
     stored below $t$ --- is a fact about the database rather than an assumption.
@@ -1024,20 +1082,19 @@
     absent from $d$ still pushes a $k$-mer up \citep{genestrip-pub}. A $k$-mer of a genome at $t$ is
     therefore held at the lowest common ancestor of a carrier set that contains $t$, entered or not,
     and that node is an ancestor of $t$ or $t$ itself. The own count of a taxon never leaves that
-    taxon's lineage, and $c^{\circ}(\textsc{rest}_t,\cdot)$ obeys this as $c^{\circ}(t,\cdot)$ does.
-    So the restriction discards a genome's $k$-mers only where the genome sits below $t$, and never
+    taxon's lineage. So the restriction discards a genome's $k$-mers only where the genome sits below $t$, and never
     where it sits at $t$.
 
     It holds exactly as far as the update scope reaches and no further. An organism outside it ---
     a taxon struck out of the build, or one absent from the reference collection altogether --- took
     no part in the update, so the $k$-mers a sample yields from it sit wherever its stored relatives
-    alone put them, which may be beneath the node it belongs under. No $\textsc{rest}$ row expects
-    them there, so they are read as the named relative's and $u$ is silent about them. This is a limit of the construction rather than a defect in it, and it cannot be repaired from the database side: it
+    alone put them, which may be beneath the node it belongs under. No row expects them there, so
+    they are read as the named relative's and $u$ is silent about them. This is a limit of the construction rather than a defect in it, and it cannot be repaired from the database side: it
     would take knowing the genome that was missing.
 
-    A row above the data taxa is not an organism's. The method reads such rows for $\textsc{rest}$,
-    whose node sits at an internal taxon, and the variant of Appendix \ref{fixedrank} reads them for
-    named topics as well; either way the row is the pooled contribution of every genome beneath the
+    A row above the data taxa is not an organism's. The method reads such rows wherever
+    Equation \eqref{smoothyadmit} puts a topic at an internal taxon, and there the row is the pooled
+    contribution of every genome beneath the
     taxon --- that clade's pan-genome as the
     reference collection happens to represent it --- and, counting being by frequency, a pan-genome
     weighted towards whatever its members were sequenced most often. A $k$-mer carried by many
@@ -1048,8 +1105,8 @@
     If a clade is dominated by one heavily sequenced member --- \emph{S.~pneumoniae} accounts for
     more than nine thousand of the twenty-two thousand \emph{Streptococcus} assemblies in RefSeq ---
     a genus row is largely that member's genome wearing the genus's name. The data taxa are free of
-    it, each being one genome and pooling nothing; it is $\textsc{rest}$ and the fixed-rank variant
-    that carry the weighting.
+    it, each being one genome and pooling nothing; it is the topics above them that carry the
+    weighting.
 
     The estimate is then
     %
@@ -1060,10 +1117,11 @@
     %
     the row total, so $p(\cdot \mid g)$ sums to one over $N$ by construction.
     It is the distribution of where a $k$-mer of $g$ is stored, \emph{given that the database holds
-    it at all} --- a condition that binds only for $\textsc{rest}$. A data taxon is a genome the
-    entry phase stored, so $d$ holds every $k$-mer of it and its row accounts for the whole genome.
-    The genomes behind a $\textsc{rest}$ row were never stored and are held only where they overlap
-    something that was, so there the row describes the shared part and not the material itself.
+    it at all} --- a condition that binds only above the data taxa. A data taxon is a genome the
+    entry phase stored, so $d$ holds every $k$-mer of it and its row accounts for the whole genome. A
+    row higher up pools genomes the entry phase never stored along with those it did, and the former
+    are held only where they overlap something that was, so for them the row describes the shared
+    part and not the material itself.
 
     The condition is not a concession where it binds. The counts $c_n$ are subject to the same one --- a $k$-mer absent from $d$ is never
     reported at a node either --- so both sides of
@@ -1078,20 +1136,19 @@
     interchangeable, with the gap between them widening exactly for the repeat-rich genomes where it
     matters most.
 
-    A $\textsc{rest}$ row plays the part of an organism the database does not contain. Without one,
-    every count would have to be explained by some named topic, and a sample holding an organism
+    A topic above the data taxa plays the part of an organism the database does not contain. Without
+    one, every count would have to be explained by some named topic, and a sample holding an organism
     absent from $d$ would have its abundance pushed onto whichever genomes happen to resemble it.
-    Equation \eqref{smoothypng} applies to it unchanged --- $\textsc{rest}_g$ is a topic and is read
-    like one, over its own row and its own total --- which is the whole of what has to be said about
-    it. That row averages locally: a genome-weighted average over the taxa \emph{of $g$'s
-    clade} that the database omits, and not over everything it omits.
+    Equation \eqref{smoothypng} applies to such a node unchanged --- it is a topic and is read like
+    one, over its own row and its own total --- which is the whole of what has to be said about it.
+    That row averages locally: a genome-weighted average over the taxa \emph{of that clade}, the
+    omitted ones among them, and not over everything the database omits.
 
     The row is skewed, though, in a way a data taxon's is not. A genome the entry phase stored has
-    all of its $k$-mers in $d$, so its row accounts for the whole of it. The genomes behind a
-    $\textsc{rest}$ row were never stored, and stand in $d$ only where they overlap something that
-    was: whatever is particular to them raises no counter anywhere. So
-    $c(\textsc{rest}_t,\cdot)$ records the shared part of the unnamed material rather than the
-    material itself, weighted towards whatever is conserved. Read as a description of the organisms
+    all of its $k$-mers in $d$, so its row accounts for the whole of it. The omitted genomes a higher
+    row pools stand in $d$ only where they overlap something that was stored: whatever is particular
+    to them raises no counter anywhere. So $c(t,\cdot)$ records the shared part of the unnamed
+    material rather than the material itself, weighted towards whatever is conserved. Read as a description of the organisms
     the database cannot name, or of the reference collection at large, it is simply wrong.
 
     It is still the right row for the model, because the sample is censored in the same way. A
@@ -1101,7 +1158,7 @@
     which is the conditioning that makes $p(\cdot \mid g)$ a distribution at all, applied to a topic
     with no genome behind it.
 
-    Accounting for the observable is all that $\textsc{rest}$ is asked to do. It is not
+    Accounting for the observable is all such a topic is asked to do. It is not
     there to portray an absent organism but to take up the counts the named topics cannot carry: a
     slack term, fitted like any other topic, whose value says how much of what was observed nothing
     in $d$ can name. Skewed with respect to the organism, faithful with respect to the observable ---
@@ -1118,17 +1175,31 @@
     \emph{S.~mitis} retains nothing at all and cannot be told from the pneumococcus by any amount of
     sequencing.
 
+    One drop needs no sample at all and can be made once, when the database is read. A leaf $n$ with
+    $c(n,n) = 0$ holds no $k$-mer of its own, and a count is only ever reported at a node because the
+    database holds the $k$-mer there, so nothing a sample yields can be reported at $n$ --- not for
+    this sample but for any. A count appearing there would mean the analysis had placed a $k$-mer at
+    a node $d$ does not hold it at, which is not a case to provide for but an inconsistent database.
+    Such a leaf can therefore be struck from $G$ in the modelling phase rather than failing the
+    admission rule again for every sample.
+
+    That settles where the fit can go wrong. After it, a leaf is either dropped, and then reports no
+    counts either, or kept, and then carries its own topic with $p(n \mid n) > 0$ to cover the counts
+    it does report. Only an \emph{inner} node can be left with counts that no topic reaches, and only
+    where the threshold rejects it: that is the whole of what
+    Equation \eqref{smoothysmooth} has to repair.
+
     The admission rule above meets it head on, which is the second reason for that rule. A taxon
     retaining none of its own $k$-mers has an empty node, so it never passes the threshold and never
     enters $G$: the filter and the degeneracy have the same test, and what it removes was not
     estimable to begin with. What is lost with it is a name and not a quantity --- the counts stay,
-    explained by the taxon's neighbours and by the $\textsc{rest}$ above it, and the aggregate over
+    explained by the taxon's neighbours and by the topic above it, and the aggregate over
     the clade is unchanged. The condition is a property of the database, so the affected taxa can be
     listed from the stored fractions before a sample is seen, which is the right place to report them
     rather than leaving a reader to wonder why a species is missing.
 
-    A named topic and the $\textsc{rest}$ above it are separated by the same fact. The topic is a
-    leaf and holds the $k$-mers private to it; $\textsc{rest}$ holds none, an unnamed genome's own
+    A named topic and the topic above it are separated by the same fact. The named one is a leaf and
+    holds the $k$-mers private to it; the unnamed genomes pooled higher up hold none, their own
     $k$-mers being absent from $d$ altogether. So the two rows differ where it matters and $u$ is
     determined by what the named topics cannot account for, which is what it is meant to be.
 
@@ -1140,7 +1211,7 @@
     \todo{Whether the pooling should be weighted by sequencing effort at all, or whether a clade's
     genomes should enter its row with equal weight regardless of how many times the clade was
     sequenced. Section \ref{pgn} avoids the question for the data taxa by giving each entered genome
-    a leaf of its own, but $\textsc{rest}$ still pools and is still weighted that way. How much that
+    a leaf of its own, but a topic above them still pools and is still weighted that way. How much that
     matters is measurable before any sample: see what each genome retains at its own node.
     Near-identical assemblies retain nothing, the update having pushed everything they share up to
     the species; strain-diverse ones retain enough to be topics in their own right. RefSeq's metadata
@@ -1149,11 +1220,70 @@
     assumption about which genomes represent it. Decide it, and say which, because the two give
     different abundances for exactly the clades a reader cares most about.}
 
-    \todo{How coarse a $\textsc{rest}_g$ row is, and why. The genomes it pools have no taxa of their
-    own in $d$, so nothing subdivides it: two missing species attaching at one genus are indistinguishable
-    attaching at the same genus are indistinguishable within its $\textsc{rest}$, and nothing in the
-    sample separates them. That bounds the resolution and not the correctness, but it should be stated where
+    \todo{How coarse a row above the data taxa is, and why. The omitted genomes it pools have no taxa
+    of their own in $d$, so nothing subdivides them: two missing species attaching at the same genus
+    are indistinguishable within it, and nothing in the sample separates them. That bounds the resolution and not the correctness, but it should be stated where
     a reader will look for it.}
+
+    One thing has to be repaired before the fit, and it is the price of the range. A row is zero off
+    its own lineage, so a node carrying counts that no admitted topic's path reaches has
+    $\sum_g p(n \mid g)\, \theta_g = 0$ there, and $0^{c_n}$ takes the whole of
+    Equation \eqref{smoothylikelihood} to zero with it. At $T = 1$ this cannot arise --- counts are
+    integers, so a node with any count at all is admitted and lies on its own path --- but at any
+    higher threshold a node with $0 < c_n < T$ and nothing admitted at or below it is left uncovered.
+    Such a node is always an inner one, for the reason given with the modelling-phase drop above.
+
+    Smoothing the rows settles it. After the topics are fixed, interpolate each row with a uniform
+    background,
+    %
+    \begin{equation}\label{smoothysmooth}
+        \tilde{p}(n \mid g) \;=\; (1 - \lambda)\, p(n \mid g) \;+\; \frac{\lambda}{\lvert N \rvert} ,
+        \qquad 0 < \lambda \ll 1 ,
+    \end{equation}
+    %
+    which still sums to one over $N$ and is positive everywhere, so no node can zero the product and
+    every topic can account a little for anything. This is Jelinek--Mercer smoothing
+    \citep{jelinekmercer}, linear interpolation of an estimated distribution with a background one.
+
+    What $\lambda$ is matters as much as what it does. It is a share of the \emph{whole}
+    distribution, handed to the background and spread evenly over the nodes, so every row gives up
+    the same $\lambda$ whatever its shape. It is not an amount added at each node: that would hand a
+    row as much mass as it has nodes to receive it, and since a row is supported on the path from its
+    node to the root, a topic deep in the taxonomy would be smoothed harder than a shallow one for no
+    reason but its depth. A long lineage is a fact about where a genome sits, not evidence about a
+    sample, and the smoothing must not turn one into the other.
+
+    The same objection rules out additive smoothing, which the form otherwise resembles: adding
+    $\alpha$ to every count is the same interpolation with
+    $\lambda = \alpha \lvert N \rvert / (R_g + \alpha \lvert N \rvert)$, so the background share
+    falls as the row's total rises and a thinly held topic is smoothed hardest. Here $\lambda$ is the
+    same for every row by choice, since what it repairs --- a node no topic reaches --- has nothing
+    to do with how much of any one genome the database holds, nor with how deep in the tree it sits.
+    \citet{zhailafferty} compare the two on retrieval models, where the distinction is the same one.
+
+    What that dependence would cost is worth being concrete about, because it falls on the topics
+    least able to bear it. Under $\tilde{p}(n \mid g) = (c(g,n) + \alpha) / (R_g + \alpha \lvert N
+    \rvert)$ a node the row does not reach receives $\alpha / (R_g + \alpha \lvert N \rvert)$, which
+    grows as $R_g$ falls: the smaller the genome, the more probability it is handed at nodes holding
+    none of its $k$-mers. A small genome would become a better explanation for counts anywhere in the
+    tree than a large one, for no reason but its size. And the error would not stay where it was
+    made --- Equation \eqref{smoothyabundance} divides $\theta_g$ by $R_g$, so a small genome that
+    absorbed counts it should not have is amplified by the same smallness a second time. A constant
+    $\lambda$ has no such gradient: every row gives up the same share and receives the same floor,
+    whatever its total.
+
+    A count nothing else explains is then spread evenly over the topics, which is the right reading
+    of it: it is evidence for none of them in particular. The cost is bounded by $\lambda$ and falls
+    only where a row was zero, since where it was not the correction is a rescaling common to the
+    whole row.
+
+    Nothing is paid for it in the fit. The sparsity Appendix \ref{prior} relies on is untouched,
+    because $\lambda$ enters as a rank-one term: $(\varphi\theta)_n$ becomes
+    $(1 - \lambda)(\varphi\theta)_n + \lambda / \lvert N \rvert$ with $\varphi$ the sparse matrix as
+    before, so the iteration of Equation \eqref{smoothyem} still walks the non-zeros and adds one
+    constant. And $R_g$ is untouched as well: the smoothing is applied to the emission the fit reads
+    and not to the counts the database yields, so Equation \eqref{smoothyabundance} divides by what it
+    always did.
 
     \paragraph{Cost and storage.} The goal runs once for a database and writes its result to a
     serialized file, which every later analysis against that database reads. Nothing here is paid per
@@ -1166,15 +1296,14 @@
     at any rank.
 
     A data taxon is a leaf of the transformed tree, so its row is its own count and can be written as
-    it stands; only the $\textsc{rest}$ rows pool, and at the few nodes carrying unnamed genomes
-    rather than at every taxon.
+    it stands; only the rows above them pool.
 
     The row total $R_g$ goes beside each array and cannot be recovered from it: it is divided out by
     Equation \eqref{smoothypng}, so a normalised row sums to one whatever $R_g$ was, and
     Equation \eqref{smoothyabundance} wants it back. It is known while the row is being built and so
     written with it rather than recomputed, at a cost of one long against an array of $n$ doubles.
-    A data taxon needs nothing further; a $\textsc{rest}$ row carries the number of genomes it pools
-    as well, since Equation \eqref{smoothyabundance} takes their mean.
+    A data taxon needs nothing further; a row above them carries the number of genomes it pools as
+    well, since Equation \eqref{smoothyabundance} takes their mean.
 
     That turns a matrix over taxa and nodes into one over taxa and tree depth, so a database entering
     a few thousand genomes stores a few hundred kilobytes rather than the tens of megabytes a dense
@@ -1258,23 +1387,23 @@
     A form that meets the requirements below, and the one we propose, is
     %
     \begin{equation}\label{smoothyw}
-        w(r) \;=\; \max\Bigl( 0, \; 1 + \lambda \ln \bigl( \min(r, 1) \bigr) \Bigr),
-        \qquad \lambda > 0 .
+        w(r) \;=\; \max\Bigl( 0, \; 1 + \beta \ln \bigl( \min(r, 1) \bigr) \Bigr),
+        \qquad \beta > 0 .
     \end{equation}
     %
     The inner $\min$ discards the uninformative direction, the logarithm makes the penalty gentle near
     one and steep as $r$ falls, and the outer $\max$ puts a floor at zero: a node below
-    $r = e^{-1/\lambda}$ contributes nothing. Filtering is therefore not rejected but recovered, as
+    $r = e^{-1/\beta}$ contributes nothing. Filtering is therefore not rejected but recovered, as
     the limiting case of a weight rather than as a separate rule with a threshold of its own.
 
-    One parameter remains, and $\lambda$ says how severely inconsistency is punished. It is worth
+    One parameter remains, and $\beta$ says how severely inconsistency is punished. It is worth
     noting that a calibration point already exists: the worked example of \citet{genestrip-pub} reports
     $r = 0.8631$ for Epstein--Barr virus in a saliva sample and reads it as \emph{supporting} the
     consistency of the counts. A node so described should keep most of its weight, which
-    $\lambda = 1$ does not do --- it leaves $0.85$ --- while $\lambda = 1/2$ leaves $0.93$. That
-    suggests $\lambda$ well below one, but it is one example and the value wants measuring.
+    $\beta = 1$ does not do --- it leaves $0.85$ --- while $\beta = 1/2$ leaves $0.93$. That
+    suggests $\beta$ well below one, but it is one example and the value wants measuring.
 
-    What $w$ must satisfy, however $\lambda$ is fixed:
+    What $w$ must satisfy, however $\beta$ is fixed:
     %
     \begin{itemize}
         \item $w(1) = 1$. A node whose counts match the expectation is not penalised.
@@ -1295,7 +1424,7 @@
               ratio rather than a test.
     \end{itemize}
 
-    \todo{Fix $\lambda$ and $k_0$ against data rather than by argument, and check
+    \todo{Fix $\beta$ and $k_0$ against data rather than by argument, and check
     Equation \eqref{smoothyw} against alternatives while doing so. The measurements that decide it:
     how $r$ is distributed across nodes in real samples, and whether the nodes with low $r$ are the
     ones an independent standard says are wrong.}
@@ -1329,17 +1458,17 @@
     \paragraph{Constrained ascent.} With the constraint in affine form the Lagrangian is
     %
     \begin{equation}\label{smoothylagrange}
-        \Lambda(\theta, \lambda) \;=\; \sum_{n \in N} \hat{c}_n \log (\varphi\theta)_n
-            \;-\; \lambda \Bigl( \sum_{g \in G} \theta_g - 1 \Bigr),
+        \Lambda(\theta, \nu) \;=\; \sum_{n \in N} \hat{c}_n \log (\varphi\theta)_n
+            \;-\; \nu \Bigl( \sum_{g \in G} \theta_g - 1 \Bigr),
     \end{equation}
     %
-    and stationarity gives $\sum_n \hat{c}_n \varphi_{ng} / (\varphi\theta)_n = \lambda$ at every topic carrying
+    and stationarity gives $\sum_n \hat{c}_n \varphi_{ng} / (\varphi\theta)_n = \nu$ at every topic carrying
     mass. The multiplier is not left to be solved for: multiplying that condition by $\theta_g$,
     summing over $g$ and using $\sum_g \varphi_{ng} \theta_g = (\varphi\theta)_n$ collapses the left side to
     $\sum_n \hat{c}_n$, so
     %
     \begin{equation}\label{smoothylambda}
-        \lambda \;=\; C .
+        \nu \;=\; C .
     \end{equation}
     %
     Equation \eqref{smoothylagrange} handles $\sum_g \theta_g = 1$ and not $\theta_g \geq 0$, which
@@ -1353,7 +1482,7 @@
     mirror step in the Kullback--Leibler geometry that keeps positivity by construction. All three
     work, and all three need a step size.
 
-    \paragraph{Expectation--maximisation.} Substituting $\lambda = C$ into the stationarity condition
+    \paragraph{Expectation--maximisation.} Substituting $\nu = C$ into the stationarity condition
     and reading it as a fixed point gives the iteration directly, with no step size and no projection.
     It is expectation--maximisation \citep{dempster1977em} in the form
     \citet{hofmann1999plsa} gives it for mixture proportions, with the topic--word distributions
@@ -1396,27 +1525,26 @@
     and understates the small ones by exactly their length ratio. The two quantities are both worth
     reporting and must not be confused, which in practice they often are.
 
-    Relative abundance follows by reweighting each topic. For a data taxon the unnormalised quantity
-    is
+    Relative abundance follows by reweighting each topic. The unnormalised quantity is
     %
     \begin{equation}\label{smoothyabundance}
-        \tilde{a}_g \;=\; \frac{\theta_g}{R_g} ,
+        \tilde{a}_g \;=\; \frac{\theta_g}{R_g / \lvert G_g \rvert} ,
     \end{equation}
     %
-    with $R_g$ the row total of Equation \eqref{smoothypng}; $\textsc{rest}$ divides by a mean
-    instead, for the reason given below. The abundance is that quantity normalised over all topics,
-    \textsc{rest} among them:
+    with $R_g$ the row total of Equation \eqref{smoothypng} and $\lvert G_g \rvert$ the number of
+    genomes pooled into the topic. At a data taxon $\lvert G_g \rvert = 1$ and the divisor is $R_g$
+    itself; above the data taxa it is more, for the reason given below. The abundance is that quantity
+    normalised over all topics, the ones above the data taxa among them:
     %
     \begin{equation}\label{smoothynorm}
         a_g \;=\; \frac{\tilde{a}_g}{\sum_{g' \in G} \tilde{a}_{g'}} .
     \end{equation}
     %
-    Including \textsc{rest} makes $a$ an account of the sample rather than of the part of it the
-    database happens to cover. The narrower reading is not lost by it: dividing among the named
-    taxa alone is $a_g / (1 - \sum a_{\textsc{rest}})$, summing over the \textsc{rest} topics, one
-    division away for a reader who wants
-    it,
-    whereas the whole-sample account cannot be recovered from the narrower one at all.
+    Including them makes $a$ an account of the sample rather than of the part of it the database
+    happens to cover. The narrower reading is not lost by it: dividing among the data taxa alone is
+    $a_g / (1 - \sum a_{t})$, summing over the admitted topics that are not data taxa, one division
+    away for a reader who wants it, whereas the whole-sample account cannot be recovered from the
+    narrower one at all.
 
     For a data taxon the divisor is the genome's own $k$-mer count and nothing more. That a length
     has to be divided out at all is not a nicety: \citet{beszteri2010} show genome size to be a
@@ -1430,30 +1558,47 @@
     goal of Section \ref{pgn} produces $R_g$ on the way to the fractions, so no length has to be
     computed or stored.
 
-    The two part company only for $\textsc{rest}$, whose genomes were never entered and are held only
-    where they overlap something that was. There $R_g$ falls short of $\lvert K(g) \rvert$ by the
+    The two part company above the data taxa, where the genomes pooled include ones never entered,
+    held only where they overlap something that was. There $R_g$ falls short of $\lvert K(g) \rvert$ by the
     share $d$ does not hold, and $R_g$ is the one wanted: $\theta_g$ counts observed $k$-mers, and an
     organism held thinly yields fewer of them per unit of sequence present, so the shortfall belongs
     in the divisor rather than being corrected away.
 
-    $\textsc{rest}$ is the one topic that reads differently, and it reads differently because it is
-    the one topic that is not a genome. $\textsc{rest}_g$ pools every genome the tree cannot name
-    beneath $g$, so $R_{\textsc{rest}_g}$ is the database's hold on all of them together and dividing
-    by it would count copies of the whole set rather than organisms of it. The hold on one member is
-    what is needed, so the divisor is the mean: $R_{\textsc{rest}_g}$ over the number of genomes
-    pooled, which the goal of Section \ref{pgn} stores beside the row. The pooled rows of
-    Appendix \ref{fixedrank} are read the same way and for the same reason.
+    A topic that is not a genome reads differently. A topic admitted by
+    Equation \eqref{smoothyadmit} above the data taxa pools every genome beneath its node, the ones
+    the tree cannot name among them. Its row counts by
+    frequency, so its total is the sum over the genomes pooled --- the database's hold on all of them
+    together --- and dividing by that would count copies of the whole set rather than organisms of
+    it. The hold on one member is what is needed, and it is the mean. That is the work
+    $\lvert G_g \rvert$ does in Equation \eqref{smoothyabundance}, and why the goal of
+    Section \ref{pgn} stores it beside every row.
 
-    \paragraph{Coarser answers.} The topics are the data taxa, so the fit is at the finest resolution
-    the database supports. An answer at any coarser taxon is a sum over it,
+    What the mean is a mean \emph{of} is settled by the range of the row, and settled in the way the
+    estimate needs. Read on $\mathrm{path}(t)$, the row of $t$ carries what each genome beneath
+    contributes at $t$ and above and nothing it holds privately lower down, so $R_t$ is the shared
+    hold of the clade and $R_t / \lvert G_t \rvert$ the shared hold of one member of it. That is the
+    right scale for what a topic at $t$ actually estimates. Where the counts at $t$ are owed to an
+    organism the database cannot name, that organism stands in $d$ only where it overlaps something
+    stored --- by its shared part and nothing else --- so it is measured against a divisor built the
+    same way. The pooling running over every genome of the clade rather than over the omitted ones
+    alone costs nothing here: what the named genomes contribute to $R_t$ is their shared part too,
+    since their private $k$-mers sit at their own nodes and those are not on $\mathrm{path}(t)$.
+
+    \paragraph{Coarser answers.} The fit is at the finest resolution the sample supports, a topic
+    sitting at each node it gives evidence at. An answer at any coarser taxon is a sum over it,
     %
     \begin{equation}\label{smoothyagg}
         a_t \;=\; \sum_{g \,\preceq\, t} a_g ,
     \end{equation}
     %
-    over the admitted topics beneath $t$, the $\textsc{rest}$ nodes among them. The sum is over $a$
-    and not over $\theta$: an abundance is a share of organisms and organisms add, whereas $\theta$ is
-    a share of $k$-mers weighted by how much of each genome the database holds, and those do not.
+    over the admitted topics at or below $t$. The relation $\preceq$ is what makes that
+    \emph{at or below}: where $t$ is itself a topic --- which it is whenever the sample gave evidence
+    at $t$ that the taxa beneath it could not explain --- its own $a_t$ is one of the terms, and the
+    aggregate is the named organisms of the clade together with what the database could not name in
+    it. Leaving it out would report the clade as though its unnamed part were absent. The sum is over
+    $a$ and not over $\theta$: an abundance is a share of organisms and organisms add, whereas
+    $\theta$ is a share of $k$-mers weighted by how much of each genome the database holds, and those
+    do not.
 
     Aggregating rather than refitting makes the degeneracy of Section \ref{pgn} harmless.
     Where two topics cannot be told apart their split is arbitrary, but their sum is determined, and
@@ -1475,13 +1620,15 @@
     is not an abundance at all,
     %
     \begin{equation}\label{smoothyunaccounted}
-        u_g \;=\; \theta_{\textsc{rest}_g} ,
+        u_t \;=\; \theta_t \quad\text{for an admitted topic } t \text{ above the data taxa,}
     \end{equation}
     %
     the share of the sample's \emph{sequence} that the database cannot name \emph{and that belongs
-    under $g$}. It is a statement about the database's coverage of this sample rather than about an
-    organism in it, which is why it is left out of the normalisation and stated as it is. Their sum
-    over the \textsc{rest} topics is the unaccounted share of the whole sample,
+    under $t$}. Nothing has to be set aside to obtain it: the data taxa beneath $t$ are topics of
+    their own, and their rows carry the mass they contribute at $t$, so what the fit leaves at $t$ is
+    what none of them explains. It is a statement about the database's coverage of this sample rather
+    than about an organism in it, which is why it is left out of the normalisation and stated as it
+    is. Their sum over those topics is the unaccounted share of the whole sample,
     but the terms are worth reporting apart:
     unnamed material under \emph{Streptococcus} and unnamed material under \emph{Nocardia} are
     different findings, and a single residue would say neither.
@@ -1491,20 +1638,21 @@
     of it the database happens to hold: a topic with thin coverage does not have to carry a larger
     $\theta$ to explain the same counts.
 
-    The entries $a_{\textsc{rest}_g}$ of Equation \eqref{smoothynorm} read as the share of organisms
+    The entries $a_t$ of Equation \eqref{smoothynorm} at such a topic read as the share of organisms
     the database could not name in that clade. They are the entries of the profile to be read with more
     caution than the rest, and the caution belongs on them rather than on the choice of denominator.
-    Leaving them out of the sum would not make the others safer: $\theta$ is fitted with the
-    \textsc{rest} topics competing under $\sum_g \theta_g = 1$, so every $\theta_g$ already carries
+    Leaving them out of the sum would not make the others safer: $\theta$ is fitted with those
+    topics competing under $\sum_g \theta_g = 1$, so every $\theta_g$ already carries
     their influence, and a different denominator would change what the numbers mean rather than how
     far they can be trusted.
 
     And they are crude, for a reason worth stating rather than hedging about --- one that is not
     peculiar to them but only at its worst there. Every pooled topic divides by a mean and thereby
     assumes the organism present is typical of the set pooled into it. A data taxon pools nothing,
-    being one genome; $\textsc{rest}_g$ pools the members of $g$'s clade the database cannot name,
-    which is where the assumption is at its weakest and the figure at its crudest. It is, however, far better than it would be with a single global
-    \textsc{rest}: the assumption is then only that an unnamed \emph{Streptococcus} resembles the
+    being one genome; a topic above them pools the members of its clade, the ones the database cannot
+    name among them, which is where the assumption is at its weakest and the figure at its crudest.
+    It is, however, far better than it would be with a single global residue: the assumption is then
+    only that an unnamed \emph{Streptococcus} resembles the
     average omitted \emph{Streptococcus}, rather than the average omitted organism of a whole
     bacterial division. The figure says whether the unnamed material of a clade is of the order of its
     named organisms or dwarfs them, and it should not be read for more than that.
@@ -1528,7 +1676,7 @@
     before the counter is raised, admitting the $k$-mer when its position lies inside $A(g)$ and
     discarding it otherwise. The database $d$ is untouched and the LCA positions are the ones it
     already holds, so only which $k$-mers are counted changes. The own counts, the pooling of
-    Equation \eqref{smoothyrows} and the $\textsc{rest}$ rule carry over verbatim, and
+    Equation \eqref{smoothyrows} carries over verbatim, and
     Equation \eqref{smoothypng} reads $p(n \mid g) = c^{A}(g,n) / R^{A}_g$ with both terms computed
     over $A(g)$.
 
@@ -1549,7 +1697,7 @@
     Equation \eqref{smoothyabundance} is otherwise unaltered:
     %
     \begin{equation}\label{smoothyamplicon}
-        \tilde{a}_g \;=\; \frac{\theta_g}{R^{A}_g} .
+        \tilde{a}_g \;=\; \frac{\theta_g}{R^{A}_g / \lvert G_g \rvert} .
     \end{equation}
     %
     Both corrections a marker survey needs are inside that divisor, and neither is to be applied
@@ -1577,7 +1725,7 @@
     rather than the exception, and an amplicon run should be read at genus or above. The consistency
     ratio of Section \ref{error} has to be recomputed over $A(g)$ as well --- $u_{t,d}$ being the
     distinct $k$-mers of the amplified region that $d$ stores for $t$ --- after which $r$ measures
-    what it was built to measure and $\lambda$ wants fixing again against amplicon data.
+    what it was built to measure and $\beta$ wants fixing again against amplicon data.
 
     \section{Evaluation}\label{evaluation}
     \todo{To be written once there is an implementation. The benchmark to start from is FAMeS
@@ -1585,7 +1733,7 @@
     methods and the ones GRAMMy measured itself against --- so using them puts this method on the
     same footing as the mixture models of Section \ref{relatedwork} rather than on a footing of its
     own. A known composition is what most of the open questions need: whether the abundances are
-    right, and against which of the three variants of Appendix \ref{fixedrank}; where to fix $T$;
+    right; where to fix $T$;
     and whether $u$ tracks material actually withheld from the build, which a simulated set can
     arrange deliberately and a clinical sample cannot. The companion paper's tick and
     \emph{Streptococcus} read sets give the real-data half, and they are not optional here.
@@ -1786,59 +1934,6 @@
     or replace the fixed point of Section \ref{inference} with an optimiser that reaches the boundary,
     projected gradient or an active set, which gives exact zeros in finitely many steps and leaves the
     objective alone.
-
-    \section{Fitting at a fixed rank instead}\label{fixedrank}
-    The method fits the data taxa and aggregates. The alternative is to make the taxa of one rank the
-    topics and fit those directly. It needs no tree transformation, since no topic is then an ancestor
-    of another, and it carries far fewer topics; but $\varphi$ and $c$ must be brought onto one
-    footing, because a row at rank $r$ has mass below $r$ and a count reported there has no rank-$r$
-    topic to claim it. Two ways, kept here in case the measurement favours one.
-
-    \paragraph{Dropping.} Restrict $N$ to the nodes at rank $r$ and above, so a count below the rank
-    does not enter Equation \eqref{smoothylikelihood} at all. The rows need nothing further, being
-    read on $\mathrm{path}(t)$ already. It is exact and it discards data --- at genus
-    rank most of a sample's counts sit at species nodes. The ambiguous evidence remains, and it
-    is the evidence the method exists to use, and the discarded remainder was already answered by the
-    classification. It costs nothing in accuracy: $\theta_g$ and $R_g$ are restricted alike, so the
-    restriction cancels in $\theta_g / R_g$ and only precision is lost.
-
-    \paragraph{Folding.} Keep the counts and sum both sides along the rank. Write $\pi(m)$ for the
-    rank-$r$ ancestor of $m$ if $m$ lies at or below rank $r$, and $m$ itself otherwise:
-    %
-    \begin{equation}\label{smoothyfold}
-        \tilde{c}_n \;=\; \sum_{m \,:\, \pi(m) = n} c_m ,
-        \qquad
-        \tilde{c}(t,n) \;=\; \sum_{m \,:\, \pi(m) = n} c(t,m) .
-    \end{equation}
-    %
-    Everything from Equation \eqref{smoothypng} on is unchanged with $\tilde{c}$ for $c$. No count is
-    discarded, and $g$ keeps its private mass in the cell at $g$ where $\textsc{rest}_g$ has none,
-    which separates the two better than dropping does. Against it: the fold asserts that where beneath
-    the rank a count fell carries nothing, and it lets material the classifier has already resolved
-    dominate the fit.
-
-    \begin{table}[!htbp]
-        \centering
-        \footnotesize
-        \begin{tabular}{@{}l|l|l|l|l@{}}
-            & \textbf{Topics} & \textbf{Counts used} & \textbf{$u$ determined} &
-                \textbf{Capacity bias}\\
-            \hline
-            Data taxa, Section \ref{pgn} & many & all & good & none, given the filter\\
-            Drop, above & few & rank and above & weak & none\\
-            Fold, above & few & all & good & none\\
-        \end{tabular}
-        \caption{The three ways of reaching an answer at a chosen taxon. \emph{Topics} is the size of
-        $G$. \emph{Counts used} is which of the reported $c_n$ enter
-        Equation \eqref{smoothylikelihood}. The fourth column asks whether the rows of $g$ and
-        $\textsc{rest}_g$ differ enough to fix $u$: under dropping both are built from the shared
-        material of one clade and may come out near-proportional, where folding returns $g$'s private
-        mass to the cell at $g$ and the method of Section \ref{pgn} leaves it at $g$'s own node.
-        \emph{Capacity bias} is the tendency of a clade with many topics beneath it to absorb counts
-        nothing explains, which the admission rule of Section \ref{pgn} is there to prevent. Which to
-        prefer is a question for measurement: fit all three against a known composition, and their $u$
-        against genomes deliberately withheld from the build.}\label{variants}
-    \end{table}
 
     \end{appendices}
 
