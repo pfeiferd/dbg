@@ -850,17 +850,17 @@
     view.
 
     Beside every row the goal stores what Section \ref{abundances} needs to divide by: that sum,
-    which is the row total, and the sum $\sum_h \rho_h^{2}$ of the squares, from which the effective
-    number of genomes follows. Both accumulate while the row is being pooled, at a cost of two
-    numbers per row. The squares have to be taken \emph{per genome} and not per taxon, which is the
-    one place the two granularities part: $c^{\circ}$ gathers the unentered genomes of a taxon into
-    one counter, and squaring that would call a hundred unnamed organisms a single large one. The
-    goal sees them singly on its walk, so it adds each $\rho_h$ into the taxon's counter and each
-    $\rho_h^{2}$ into the sum of squares as it goes. The plain count is worth keeping alongside them,
-    not because the abundance uses it but because the two together say how uneven a clade's pool is
-    --- a count of forty against an effective three is a fact about the reference collection worth
-    reporting. Storing all of it everywhere, including at the data taxa where the effective count is
-    one, is what keeps the abundance a single expression.
+    which is the row total, and the sum $\sum_{h \preceq t} \rho_h(t)^{2}$ of the squares, from which
+    the expected hold of one member follows. Both accumulate while the row is being pooled, at a cost
+    of two numbers per row. The squares have to be taken \emph{per genome} and not per taxon, which
+    is the one place the two granularities part: $c^{\circ}$ gathers the unentered genomes of a taxon
+    into one counter, and squaring that would call a hundred unnamed organisms a single large one.
+    The goal sees them singly on its walk, so it adds each $\rho_h(t)$ into the taxon's counter and
+    each $\rho_h(t)^{2}$ into the sum of squares as it goes. A plain count of the genomes is worth keeping
+    alongside them, not because the abundance uses it but because the two together say how uneven a
+    clade's pool is --- forty members amounting to three is a fact about the reference collection
+    worth reporting. Storing all of it everywhere, including at the data taxa where the row is one
+    genome's, is what keeps the abundance a single expression.
 
     \paragraph{The topics.} A \emph{data taxon} is a taxon with a complete genome directly
     associated, whose $k$-mers the database stores \citep{genestrip-ft}; in RefSeq such genomes
@@ -1016,19 +1016,19 @@
 
     The divisor is the exception, and deliberately so: $h$'s genomes join the pool at $n$, because
     they are organisms the estimate at $n$ now stands for. They join it weighted by what they
-    contribute there, which is the whole point of the effective count of
-    Equation \eqref{smoothyabundance}: a dropped leaf that holds a great deal at $n$ and above moves
-    the divisor, and one holding almost nothing barely moves it, as a member of a pool should. That
+    contribute there, which is the whole point of the expectation of
+    Equation \eqref{smoothyhold}: a dropped leaf that holds a great deal at $n$ and above moves the
+    divisor, and one holding almost nothing barely moves it, as a member of a pool should. That
     is what makes an estimate at $n$ a share of one organism of the clade rather than of the clade
     entire.
 
-    What $\rho_h$ measures, read against the drops, is the part of $h$ that $n$ has to account for,
+    What $\rho_h(n)$ measures, read against the drops, is the part of $h$ that $n$ has to account for,
     and the range of the row is what makes it so. A genome struck out by the modelling drop retains
     nothing at its own node, so every $k$-mer of it sits at an ancestor and its whole size falls
     inside $\mathrm{path}(n)$: it enters the pool at $n$ as a full member. That is right, because it
     is a real organism that has just lost the topic which would have spoken for it. A genome
     distinguished from all its relatives is the mirror of it --- everything it holds is at its own
-    node, which is not on $\mathrm{path}(n)$, so $\rho_h = 0$ and it leaves the divisor of $n$
+    node, which is not on $\mathrm{path}(n)$, so $\rho_h(n) = 0$ and it leaves the divisor of $n$
     without a rule being written for it. That is right too, since it keeps a topic of its own. The
     genomes the drop strips of a topic are the ones that weigh most at $n$, and the ones that keep a
     topic weigh least.
@@ -1044,7 +1044,8 @@
     Equation \eqref{smoothylikelihood} is untouched. Equation \eqref{smoothyabundance} is not:
     $R_t$ is the total of the pooled row and so sums the counts of every genome beneath $t$, which is
     the database's hold on the clade and not on one member of it. The divisor is therefore
-    $R_t / \lvert G_t \rvert_{\mathrm{eff}}$, for the reason Section \ref{abundances} gives.
+    $E_t$, the expected hold of one member of the clade, for the reason Section \ref{abundances}
+    gives.
 
     One thing follows for the report. An estimate at such a topic is a share of the clade and not of
     a genome, and it has to be named as the clade: a figure reported against a species the sample
@@ -1656,22 +1657,27 @@
     and understates the small ones by exactly their length ratio. The two quantities are both worth
     reporting and must not be confused, which in practice they often are.
 
-    Relative abundance follows by reweighting each topic. The unnormalised quantity is
+    Relative abundance follows by reweighting each topic, and what to divide by is the number of
+    $k$-mers \emph{one} organism of that topic contributes. Above a data taxon the topic pools
+    several genomes, so that number is an expectation. Draw one of the $k$-mers the pool holds,
+    uniformly among the $R_g$ of them: it is genome $h$'s with estimated probability
+    $\rho_h(g) / R_g$, and that genome contributes $\rho_h(g)$ in all, so the expected hold is
     %
-    \begin{equation}\label{smoothyabundance}
-        \tilde{a}_g \;=\; \frac{\theta_g}{R_g / \lvert G_g \rvert_{\mathrm{eff}}} ,
-        \qquad
-        \lvert G_g \rvert_{\mathrm{eff}} \;=\;
-            \frac{R_g^{2}}{\sum_{h \,\preceq\, g} \rho_h(g)^{2}} ,
+    \begin{equation}\label{smoothyhold}
+        E_g \;=\; \sum_{h \,\preceq\, g} \frac{\rho_h(g)}{R_g} \, \rho_h(g)
+              \;=\; \frac{\sum_{h \,\preceq\, g} \rho_h(g)^{2}}{R_g} ,
     \end{equation}
     %
-    with $R_g$ the row total of Equation \eqref{smoothypng} and $\rho_h(g)$ the contribution of a
-    single genome to it, both as Equation \eqref{smoothyrho} defines them. The sum runs over the
-    genomes that equation sums, those whose taxon lies at or below $g$'s node, and the numerator is
-    their total squared: $R_g^{2} = \bigl( \sum_{h \preceq g} \rho_h(g) \bigr)^{2}$ by the same
-    equation, which is why only the squares have to be stored beside the row. At a data taxon there is one of them,
-    $\lvert G_g \rvert_{\mathrm{eff}} = 1$ and the divisor is $R_g$ itself; above the data taxa it is
-    more, for the reason given below. The abundance is that quantity
+    the sums over the genomes at or below $g$'s node, with $\rho_h(g)$ and
+    $R_g = \sum_{h \preceq g} \rho_h(g)$ as Equation \eqref{smoothyrho} defines them. One factor of
+    $\rho$ is normalised and one is not, which is why $E_g$ comes out in $k$-mers as a divisor for
+    $\theta_g$ must. Beside the row only $\sum_h \rho_h(g)^{2}$ has to be stored; $R_g$ is the row
+    total already there. The abundance of a topic is its share of $k$-mers over that hold,
+    %
+    \begin{equation}\label{smoothyabundance}
+        \tilde{a}_g \;=\; \frac{\theta_g}{E_g} ,
+    \end{equation}
+    %
     normalised over all topics, the ones above the data taxa among them:
     %
     \begin{equation}\label{smoothynorm}
@@ -1684,92 +1690,49 @@
     away for a reader who wants it, whereas the whole-sample account cannot be recovered from the
     narrower one at all.
 
-    For a data taxon the divisor is the genome's own $k$-mer count and nothing more. That a length
-    has to be divided out at all is not a nicety: \citet{beszteri2010} show genome size to be a
-    source of bias in comparative metagenomics in its own right, one that moves conclusions drawn
-    between samples rather than only the figures within one. $\theta_g$ is a
-    share of $k$-mers, so dividing by the number a single organism of $g$ contributes ---
+    At a data taxon the pool is one genome, $E_g = R_g$, and the divisor is that genome's own
+    $k$-mer count. That a length has to be divided out at all is not a nicety:
+    \citet{beszteri2010} show genome size to be a source of bias in comparative metagenomics in its
+    own right, one that moves conclusions drawn between samples rather than only the figures within
+    one. Dividing by the $k$-mers a single organism contributes ---
     $\lvert K(g) \rvert = \sum_c (\lvert c \rvert - k + 1)$ over its contigs --- turns a share of
-    sequence into a count of organisms. That Equation \eqref{smoothyabundance} divides by $R_g$
-    instead is a convenience and not a second correction: the entry phase stores every $k$-mer of a
-    genome it enters, so all of them are somewhere in $d$ and $R_g = \lvert K(g) \rvert$ exactly. The
-    goal of Section \ref{pgn} produces $R_g$ on the way to the fractions, so no length has to be
-    computed or stored.
+    sequence into a count of organisms, and $R_g = \lvert K(g) \rvert$ exactly, the entry phase
+    storing every $k$-mer of a genome it enters. No length has to be looked up or stored.
 
-    The two part company above the data taxa, where the genomes pooled include ones never entered,
-    held only where they overlap something that was. There $R_g$ falls short of $\lvert K(g) \rvert$ by the
-    share $d$ does not hold, and $R_g$ is the one wanted: $\theta_g$ counts observed $k$-mers, and an
-    organism held thinly yields fewer of them per unit of sequence present, so the shortfall belongs
-    in the divisor rather than being corrected away.
+    Above the data taxa the two part company, since the pool includes genomes never entered, held
+    only where they overlap something that was. There $R_g$ falls short of $\lvert K(g) \rvert$ by
+    the share $d$ does not hold, and the short figure is the one wanted: $\theta_g$ counts observed
+    $k$-mers, and an organism held thinly yields fewer of them per unit of sequence present.
 
-    A topic that is not a genome reads differently. A topic admitted by
-    Equation \eqref{smoothyadmit} above the data taxa pools every genome beneath its node, the ones
-    the tree cannot name among them. Its row counts by
-    frequency, so its total is the sum over the genomes pooled --- the database's hold on all of them
-    together --- and dividing by that would count copies of the whole set rather than organisms of
-    it. The hold on one member is what is needed. That is the work
-    $\lvert G_g \rvert_{\mathrm{eff}}$ does in Equation \eqref{smoothyabundance}, and why the goal of
-    Section \ref{pgn} stores what it needs beside every row.
+    Weighting the average by $\rho$ rather than taking it flat is what keeps a fragment from counting
+    as a member. A reference collection is full of them, and a clade holding one finished genome
+    beside a draft contributing a single $k$-mer is a pool of two by any count of members: the flat
+    average would halve $E_g$ and double every abundance at that node, on evidence of one $k$-mer.
+    Equation \eqref{smoothyhold} gives it a weight of $\rho / R \approx 0$ instead, so $E_g$ stays at
+    the finished genome's own hold. Where the members are alike the weighting does nothing --- ten
+    comparable genomes give exactly the flat answer --- and it departs from it only where the flat
+    one was misreporting. Appendix \ref{effexample} works four pools through.
 
-    Why the count is effective and not plain is worth a paragraph, because the plain one fails badly
-    and fails often. A reference collection is full of fragments: a clade may hold one finished
-    genome and a draft contributing a single $k$-mer, and a count of members calls that a pool of
-    two. The total $R_t$ hardly moves --- one $k$-mer --- while the divisor halves, so the abundance
-    doubles. Three such fragments quadruple it. What is wanted is not how many genomes were pooled
-    but how many the pool amounts to, and
-    $\lvert G_t \rvert_{\mathrm{eff}} = \bigl( \sum_{h \preceq t} \rho_h(t) \bigr)^2 /
-    \sum_{h \preceq t} \rho_h(t)^{2}$ is that: one finished
-    genome beside a one-$k$-mer draft gives $1.000$, two comparable genomes $1.994$, ten comparable
-    ones exactly $10$. Where the members are alike it is the count, and it departs from it only
-    where the count was misreporting. Appendix \ref{effexample} sets those four pools out side by
-    side with the divisor each produces.
+    What the weighting assumes should be said, because it is not free. Write $a_h$ for the abundance
+    of each genome of the clade: the sample yields $\sum_h a_h \rho_h(g)$ from it and what is wanted is
+    $\sum_h a_h$, so the exactly right divisor is the mean of $\rho$ weighted by $a$ --- and $a$ is
+    what the estimate is for. Every divisor is therefore a guess at $a$. The flat mean guesses the
+    members equally likely to be present, which is what admits the fragment;
+    Equation \eqref{smoothyhold} guesses $a_h \propto \rho_h(g)$, which is what excludes it. Neither is
+    true, and the second is not defended by supposing a large genome likelier to be present, which it
+    is not. It is defended on narrower ground: a fragment's $\rho$ being tiny goes with its not being
+    a distinct organism at all, but a poorly assembled record of a relative already in the pool.
 
-    Where the square comes from is worth setting out, together with what it assumes, because the
-    exponent does real work and is not derived from nothing. Written out,
-    $R_t / \lvert G_t \rvert_{\mathrm{eff}} = \sum_{h \preceq t} \rho_h(t)^{2} / \sum_{h \preceq t}
-    \rho_h(t)$, which is the hold of the genome that a $k$-mer drawn at random from the pool belongs
-    to. The two factors of $\rho$ are not the same kind of quantity, and it is worth keeping them
-    apart since $\rho$ is a count of $k$-mers and one of them is being used as a probability. Draw a
-    $k$-mer uniformly from the $R_t$ the pool holds. It is $h$'s with probability
-    $\rho_h(t) / R_t$ --- a count over a count, and dimensionless --- and the genome it then turns
-    out to belong to holds $\rho_h(t)$ of them. So the expected hold is
-    %
-    \begin{equation}\label{smoothysizebias}
-        \sum_{h \,\preceq\, t} \frac{\rho_h(t)}{R_t} \, \rho_h(t)
-        \;=\; \frac{\sum_{h \preceq t} \rho_h(t)^{2}}{R_t} ,
-    \end{equation}
-    %
-    which is the divisor above, $R_t$ being $\sum_h \rho_h(t)$ by Equation \eqref{smoothyrho}. One
-    factor of $\rho$ is normalised and one is not; the normalisation is the $R_t$ in the denominator,
-    and what comes out is a count of $k$-mers, as a divisor for $\theta_t$ has to be.
+    What $E_g$ is a hold \emph{of} is settled by the range of the row. Read on $\mathrm{path}(t)$,
+    the row of $t$ carries what each genome beneath contributes at $t$ and above and nothing it holds
+    privately lower down, so $E_t$ is the shared hold of one member of the clade. That is the right
+    scale for what a topic at $t$ estimates: where the counts there are owed to an organism the
+    database cannot name, that organism stands in $d$ by its shared part and nothing else, and it is
+    measured against a divisor built the same way. That the pool runs over every genome of the clade
+    rather than the omitted ones alone costs nothing, since what the named genomes contribute to
+    $R_t$ is their shared part too --- their private $k$-mers sit at their own nodes, which are not
+    on $\mathrm{path}(t)$.
 
-    That is a proxy, and what it stands in for is not available. Write $a_h$ for the abundance of
-    each genome of the clade. What the sample yields from the clade goes as $\sum_h a_h \rho_h$ and
-    what is wanted is $\sum_h a_h$, so the divisor that would be exactly right is the mean of $\rho$
-    weighted by $a$ --- and $a$ is what the estimate is for. Every choice of divisor is therefore a
-    guess at $a$. The arithmetic mean guesses that the members are equally likely to be present,
-    which is what admits the fragment; the effective count guesses $a_h \propto \rho_h$, which is
-    what excludes it.
-
-    Neither guess is true, and the second is not defended by supposing a large genome likelier to be
-    present, which it is not. It is defended on narrower ground: a fragment's $\rho$ being tiny goes
-    with its not being a distinct organism at all, but a poorly assembled record of a relative
-    already in the pool. Weighting it down is right for that reason rather than the one the algebra
-    suggests. The exponent is a convention on top of it --- $(\sum \rho)^2 / \sum \rho^2$ is the
-    inverse Simpson index, the effective count of order two, and other orders reduce to the plain
-    count for equal members just as well. Two is the one with a closed form and long use behind it.
-
-    What the divisor is a hold \emph{of} is settled by the range of the row, and settled in the way
-    the estimate needs. Read on $\mathrm{path}(t)$, the row of $t$ carries what each genome beneath
-    contributes at $t$ and above and nothing it holds privately lower down, so $R_t$ is the shared
-    hold of the clade and $R_t / \lvert G_t \rvert_{\mathrm{eff}}$ the shared hold of one member of
-    it. That is the
-    right scale for what a topic at $t$ actually estimates. Where the counts at $t$ are owed to an
-    organism the database cannot name, that organism stands in $d$ only where it overlaps something
-    stored --- by its shared part and nothing else --- so it is measured against a divisor built the
-    same way. The pooling running over every genome of the clade rather than over the omitted ones
-    alone costs nothing here: what the named genomes contribute to $R_t$ is their shared part too,
-    since their private $k$-mers sit at their own nodes and those are not on $\mathrm{path}(t)$.
 
     \paragraph{Coarser answers.} The fit is at the finest resolution the sample supports, a topic
     sitting at each node it gives evidence at. An answer at any coarser taxon is a sum over it,
@@ -1801,7 +1764,7 @@
     lengths implicit in $R_g$ are those of the reference genomes and not of the sample's organisms, so
     a strain carrying a large accessory complement is measured against the wrong ruler. And above the
     data taxa the pooling runs over an unevenly sampled set --- the sequencing-effort bias that shapes
-    the row itself, entering the abundance a second time. The effective count meets the second
+    the row itself, entering the abundance a second time. Weighting by $\rho$ meets the second
     halfway and no further: it stops a fragment counting for a genome in the divisor, but a clade
     sequenced a thousand times over still enters its own row a thousand times, and that is a property
     of the collection rather than of the organisms. Say which half is fixed.}
@@ -1887,17 +1850,17 @@
     the estimate.
 
     \paragraph{The abundances.} The divisor changes in Section \ref{abundances} and nothing else
-    does. The contributions $\rho_h$ are the restricted ones, counted over $A(h)$ like everything
-    else here, so the row total is $R^{A}_g$ and the effective count is taken over the same
-    restricted contributions. Both parts of the divisor therefore carry the length of the amplified
-    region where they carried the length of the genome --- which is what the counts are now a sample
-    of. The effective count does not simply survive the restriction, since the marker is not a fixed
-    share of every genome: a member carrying more copies of it keeps proportionally more, and the
-    pool is measured as the survey sees it rather than as the assemblies stand.
+    does. The contributions $\rho_h(g)$ are the restricted ones, counted over $A(h)$ like everything
+    else here, so Equation \eqref{smoothyhold} is evaluated on them and $E^{A}_g$ is the expected
+    hold of one member \emph{of the marker}. It carries the length of the amplified region where
+    $E_g$ carried the length of the genome, which is what the counts are now a sample of, and the
+    weighting inside it shifts with the restriction rather than surviving it unchanged: a member
+    carrying more copies of the marker keeps proportionally more, so the pool is measured as the
+    survey sees it rather than as the assemblies stand.
     Equation \eqref{smoothyabundance} is otherwise unaltered:
     %
     \begin{equation}\label{smoothyamplicon}
-        \tilde{a}_g \;=\; \frac{\theta_g}{R^{A}_g / \lvert G_g \rvert_{\mathrm{eff}}} .
+        \tilde{a}_g \;=\; \frac{\theta_g}{E^{A}_g} .
     \end{equation}
     %
     Both corrections a marker survey needs are inside that divisor, and neither is to be applied
@@ -2216,11 +2179,11 @@
     deep row's. The floor should be measured against the row it protects, and dividing the share is
     what measures it that way.
 
-    \section{The effective genome count, worked through}\label{effexample}
-    Equation \eqref{smoothyabundance} divides by $R_t / \lvert G_t \rvert_{\mathrm{eff}}$ rather than
-    by $R_t / \lvert G_t \rvert$, and the difference is easiest to see on four pools. Recall that
-    $\rho_h$ is what one genome contributes to the row of $t$ --- its $k$-mers that $d$ holds at the
-    nodes $\mathrm{path}(t)$ --- so $\sum_h \rho_h = R_t$, and that the goal accumulates that sum and
+    \section{The expected hold, worked through}\label{effexample}
+    Equation \eqref{smoothyhold} weights each pooled genome by what it contributes rather than
+    counting members, and the difference is easiest to see on four pools. Recall that $\rho_h(t)$ is
+    what one genome contributes to the row of $t$ --- its $k$-mers that $d$ holds at the nodes
+    $\mathrm{path}(t)$ --- so $R_t = \sum_h \rho_h(t)$, and that the goal accumulates that sum and
     the sum of squares as it walks. Take a clade whose complete member contributes two million
     $k$-mers at $t$ and above.
 
@@ -2228,49 +2191,46 @@
         \centering
         \footnotesize
         \setlength{\tabcolsep}{4pt}
-        \begin{tabular}{@{}l|r|r|r|r|r|r@{}}
-            \textbf{the pool at $t$} & $R_t$ & $\sum_h \rho_h^{2}$ &
-                $\lvert G_t \rvert$ & $\lvert G_t \rvert_{\mathrm{eff}}$ &
-                $R_t / \lvert G_t \rvert$ & $R_t / \lvert G_t \rvert_{\mathrm{eff}}$\\
+        \begin{tabular}{@{}l|r|r|r|r|r@{}}
+            \textbf{the pool at $t$} & $R_t$ & $\sum_h \rho_h(t)^{2}$ &
+                $E_t$ & \textbf{flat mean} & $R_t / E_t$\\
             \hline
-            complete $+$ one-$k$-mer draft & 2\,000\,001 & $4.0 \times 10^{12}$ & 2 & 1.000 &
-                1\,000\,000 & 1\,999\,999\\
-            complete $+$ three such drafts & 2\,000\,009 & $4.0 \times 10^{12}$ & 4 & 1.000 &
-                500\,002 & 1\,999\,991\\
-            two comparable genomes & 3\,800\,000 & $7.2 \times 10^{12}$ & 2 & 1.994 &
-                1\,900\,000 & 1\,905\,263\\
-            ten comparable genomes & 20\,000\,000 & $4.0 \times 10^{13}$ & 10 & 10.000 &
-                2\,000\,000 & 2\,000\,000\\
+            complete $+$ one-$k$-mer draft & 2\,000\,001 & $4.0 \times 10^{12}$ &
+                1\,999\,999 & 1\,000\,000 & 1.000\\
+            complete $+$ three such drafts & 2\,000\,009 & $4.0 \times 10^{12}$ &
+                1\,999\,991 & 500\,002 & 1.000\\
+            two comparable genomes & 3\,800\,000 & $7.2 \times 10^{12}$ &
+                1\,905\,263 & 1\,900\,000 & 1.994\\
+            ten comparable genomes & 20\,000\,000 & $4.0 \times 10^{13}$ &
+                2\,000\,000 & 2\,000\,000 & 10.000\\
         \end{tabular}
-        \caption{Four pools at one taxon $t$, with the divisor each count produces. The last two
-        columns are what Equation \eqref{smoothyabundance} would divide by under the plain count and
-        under the effective one. Read the first two rows against the last two: where the members are
-        alike the effective count \emph{is} the count, to three decimals at ten members and to within
-        a third of a percent at two, and the two divisors agree; where a fragment is present the
-        count says two or four members and the effective count says one, because that is how many
-        genomes the pool amounts to.}\label{efftable}
+        \caption{Four pools at one taxon $t$. $E_t$ is what Equation \eqref{smoothyabundance}
+        divides by; the flat mean is $R_t$ over the number of members, which is what dividing by a
+        count of them would give instead. Where the members are alike the two agree --- exactly at ten, to within a
+        third of a percent at two --- and they part only where a fragment is in the pool. The last
+        column is $E_t$ read back as a number of genomes, which is what the pool amounts to: one
+        where a count of members would say two or four.}\label{efftable}
     \end{table}
 
-    The first row is the case that motivates the change. A draft assembly contributing a single
-    $k$-mer is counted by $\lvert G_t \rvert$ as a member equal to the finished genome beside it, so
-    the divisor halves and every abundance at $t$ doubles --- on evidence of one $k$-mer. Three such
-    drafts quarter it. Nothing about the clade has changed between the first two rows and the truth
-    has not moved: one organism of it holds two million $k$-mers at $t$ and above, which is what the
-    effective count returns in both.
+    The first two rows are the case that motivates the weighting. A draft assembly contributing a
+    single $k$-mer is a member like any other to a count of members, so the flat mean halves and
+    every abundance at $t$ doubles --- on evidence of one $k$-mer. Three such drafts quarter it.
+    Nothing about the clade has changed between the two rows and the truth has not moved: one
+    organism of it holds two million $k$-mers at $t$ and above, which is what $E_t$ returns in both,
+    because Equation \eqref{smoothyhold} gives the draft the weight $\rho / R_t \approx 0$ that its
+    contribution earns.
 
-    The last two rows are the check in the other direction. Ten genuinely comparable genomes give
-    $\lvert G_t \rvert_{\mathrm{eff}} = 10$ exactly and the same divisor as the plain count, and two
-    comparable ones give $1.994$ against $2$ --- the small shortfall being real rather than error,
-    since the members are not quite equal. So the effective count is not a correction applied on top
-    of the count but the count generalised: it coincides with it wherever the count was telling the
-    truth.
+    The last two rows are the check in the other direction. Ten comparable genomes give
+    $E_t = 2\,000\,000$, exactly the flat mean, and two comparable ones give $1\,905\,263$ against
+    $1\,900\,000$ --- the small excess being real rather than error, since the members are not quite
+    equal and the larger is the likelier source of a drawn $k$-mer. So the weighting is not a
+    correction applied on top of an average but the average taken properly: it agrees wherever the
+    flat one was telling the truth.
 
-    The identity behind the last column is worth seeing once. Writing it out,
-    $R_t / \lvert G_t \rvert_{\mathrm{eff}} = \bigl( \sum_h \rho_h \bigr) \bigl( \sum_h \rho_h^{2}
-    \bigr) / \bigl( \sum_h \rho_h \bigr)^{2} = \sum_h \rho_h^{2} / \sum_h \rho_h$, every sum running
-    over the genomes at or below $t$ as in Equation \eqref{smoothyrho}, which is the form
-    Section \ref{abundances} argues from and the reason only two accumulators are stored: the
-    per-genome $\rho_h$ are needed while the row is pooled and never afterwards.
+    The last column is worth keeping for its own sake even though the method never divides by it.
+    $R_t / E_t$ is how many genomes the pool amounts to, and set beside the plain count of members it
+    says how uneven the pool is: forty members amounting to three is a fact about the reference
+    collection at that clade, and one a reader of the profile should be told.
 
     \end{appendices}
 
