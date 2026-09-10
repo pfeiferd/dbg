@@ -189,10 +189,11 @@
     tree: $g_3$ is the only genome under $n_2$, so almost nothing of it is kept there and its band
     passes through in a waist.
 
-    Each $p(n \mid g)$ is measured once, by consulting the genome behind $g$ in the $k$-mer
-    database, and then stays fixed. The same distributions serve every later sample whose counts
-    that database produced, so measuring them belongs to building a database and not to analysing a
-    sample.
+    What the bands are made of is measured once, by consulting the genomes in the $k$-mer database,
+    and then stays fixed: the counting belongs to building a database and not to analysing a sample.
+    Which counters a given band gathers does depend on the sample, since it depends on which topics
+    the sample supports, but that is an addition over numbers already measured and not a second pass
+    over the database.
 
     Panel (2) is what a sample contributes: the $k$-mer counts $c_n$, as dots at the nodes where
     they were made. They carry no colour, and that is the whole of the difficulty --- a count says how many
@@ -281,7 +282,13 @@
         (1) $p(n \mid g)$, where the database keeps each genome's $k$-mers: one band per genome, its
         width at a node the share kept there. (2) $c_n$, the $k$-mer counts of one sample, as dots at
         the nodes where they were made. (3) $p(g \mid s)$, the share of the sample owed to each
-        genome, shown by colouring the same dots.}\label{pngfig}
+        genome, shown by colouring the same dots. The colouring draws that share and is not a claim
+        that the method assigns individual $k$-mers, which it never does: what it estimates is one
+        distribution over the genomes. It is a fair way of drawing it all the same. Each node's dots
+        are split between the topics in proportion to how much of that node's count each explains,
+        and those shares sum over the nodes to $p(g \mid s)$ exactly --- which is what the fixed
+        point of Equation \eqref{smoothyem} says. The share of the dots carrying one colour is that
+        genome's estimate, though no single dot was ever awarded to it.}\label{pngfig}
     \end{figure}
 
     \todo{Put numbers on the third paragraph, from the companion paper: in its clinical runs a tenth
@@ -799,8 +806,9 @@
 
     The two inputs come from different places, and the difference matters. The $c_n$ describe one
     sample and are what a tool such as Genestrip already reports. The $p(n \mid g)$ describe the
-    \emph{database} and not the sample: they are fixed once the database is built, so they are
-    computed once and reused for every sample analysed against it.
+    \emph{database} and not the sample: the counting behind them is done once when the database is
+    built and reused for every sample analysed against it, the sample settling only how those counts
+    are gathered into topics.
 
     In the terms of Table \ref{correspondence}, $s$ is the document, $n$ the word, $g$ the topic,
     $c_n$ the count of a word in a document and $p(n \mid g)$ the topic--word distribution. Only
@@ -815,10 +823,12 @@
 
     \subsection{Estimating \texorpdfstring{$p(n \mid g)$}{p(n|g)}}\label{pgn}
     The topic--word distribution is a property of the database, so it is measured on the database and
-    not fitted to a sample. One number in it is chosen rather than counted --- the $\lambda$ of
-    Equation \eqref{smoothysmooth}, which regularises the measurement before the fit reads it --- and
-    that changes nothing about when the work is done: the rows are still fixed before any sample is
-    seen and reused for every one of them. A new Genestrip goal walks the genomes the update phase
+    not fitted to a sample. Two qualifications, neither of which moves the work into the sample. One
+    number is chosen rather than counted --- the $\lambda$ of Equation \eqref{smoothysmooth}, which
+    regularises the measurement before the fit reads it. And a row is assembled from the measured
+    counters according to which topics the sample admits, by Equation \eqref{smoothyrows}, so the
+    assembly is per sample although everything it adds up was counted once, against the database, and
+    is reused for every sample analysed on it. A new Genestrip goal walks the genomes the update phase
     considers ---
     which is every genome of the release in scope, and not only those the entry phase stored --- and
     for each of them looks up every $k$-mer in the database $d$.
@@ -839,24 +849,89 @@
     \begin{equation}\label{smoothyrho}
         \rho_h(t) \;=\; \sum_{m \,\in\, \mathrm{path}(t)} \kappa(h,m) ,
         \qquad
-        R_t \;=\; \sum_{h \,\preceq\, t} \rho_h(t) ,
+        R_t \;=\; \sum_{h \,\in\, G(t)} \rho_h(t) ,
     \end{equation}
     %
-    with $h \preceq t$ meaning that $h$'s taxon lies at or below $t$: every genome of the release in
-    scope there, entered or not. The second equality groups those $k$-mers by genome where
+    written for the genomes of $G(t)$, which lie at or below $t$ and may be entered or not. The second equality groups those $k$-mers by genome where
     Equation \eqref{smoothyrows} below groups the same ones by taxon, so the row total is what the
-    genomes beneath $t$ contribute between them either way. The argument $t$ is carried because
-    $\rho$ depends on the range the row is read on, and it is dropped below wherever one topic is in
-    view.
+    genomes beneath $t$ contribute between them either way.
 
-    Beside every row the goal stores what Section \ref{abundances} needs to divide by: that sum,
-    which is the row total, and the sum $\sum_{h \preceq t} \rho_h(t)^{2}$ of the squares, from which
-    the expected hold of one member follows. Both accumulate while the row is being pooled, at a cost
-    of two numbers per row. The squares have to be taken \emph{per genome} and not per taxon, which
-    is the one place the two granularities part: $c^{\circ}$ gathers the unentered genomes of a taxon
-    into one counter, and squaring that would call a hundred unnamed organisms a single large one.
-    The goal sees them singly on its walk, so it adds each $\rho_h(t)$ into the taxon's counter and
-    each $\rho_h(t)^{2}$ into the sum of squares as it goes. A plain count of the genomes is worth keeping
+    At a genome's own node it is the whole genome. What $\rho$ counts is always $k$-mers \emph{the
+    database holds}, and for an entered genome $h$ read at the data taxon the transformation gives
+    it, that is all of them: the entry phase stores every $k$-mer of a genome it enters, and each is
+    held somewhere on $\mathrm{path}(h)$, the update putting it at the lowest taxon its carriers
+    share and that being $h$'s taxon or an ancestor. Nothing of $h$ is held off that path and nothing
+    is missing from $d$, so the sum is the genome entire:
+    %
+    \begin{equation}\label{smoothyrhog}
+        \rho_h(h) \;=\; R_h \;=\; \sum_{c \,\in\, C(h)} \bigl( \lvert c \rvert - k + 1 \bigr) ,
+    \end{equation}
+    %
+    with $C(h)$ the contigs of $h$ and $\lvert c \rvert$ the length of one --- so the sum is the
+    number of $k$-mer positions the genome has, and for a single-contig genome its length less
+    $k - 1$. Positions and not distinct $k$-mers, since $\kappa$ counts
+    occurrences: the goal looks up every position of the genome, and a $k$-mer occurring twice is
+    counted twice.
+
+    The middle equality is the one to read carefully, since $\rho$ and $R$ agree here and nowhere
+    else. A data taxon is a leaf carrying one genome and speaking for it alone, so
+    $G(h) = \{h\}$, the sum $R_h$ of Equation \eqref{smoothyrho} has a single term, and the row of
+    that node is that genome's row. Above the data taxa the two part: $R_t$ sums the contributions of every genome
+    beneath $t$ while $\rho_h(t)$ is one of them, and it is exactly that gap --- a total against the
+    members that make it up --- that Section \ref{abundances} has to divide out. Writing the node of
+    a data taxon with the same letter as its genome is what makes the two look alike; they are not
+    the same kind of quantity, one carrying a genome index and a node index and the other a node
+    index alone.
+
+    The argument $t$ is carried for the same reason: $\rho_h(t)$ is the genome cut back to the nodes
+    at or above $t$, so reading the same genome at an ancestor strips off whatever it holds below,
+    and Equation \eqref{smoothyrhog} is the case where nothing is stripped. It is dropped below
+    wherever one topic is in view. An unentered genome falls short of that equation for a different
+    reason, standing in $d$ only where it overlaps something stored; Section \ref{abundances} takes
+    that up, since it is what the divisor has to be built from.
+
+    What the goal stores is not a row, since a row is not settled until a sample says which topics
+    there are. It stores what the rows are assembled from: for each taxon $s$ its own counts
+    $c^{\circ}(s,\cdot)$ over $\mathrm{path}(s)$, and beside them a second array of the same length,
+    %
+    \begin{equation}\label{smoothysq}
+        P(s,t) \;=\; \sum_{h \,\in\, H(s)} \rho_h(t)^{2} ,
+        \qquad t \in \mathrm{path}(s) ,
+    \end{equation}
+    %
+    the sum over the genomes attaching at $s$ of what each contributes to a topic at $t$, squared.
+    Assembling a topic at $t$ is then addition: its row is $\sum_{s \in D(t)} c^{\circ}(s,\cdot)$, its
+    total $R_t$ the sum of that, and the $\sum_{h \in G(t)} \rho_h(t)^{2}$ of
+    Equation \eqref{smoothyhold} is $\sum_{s \in D(t)} P(s,t)$. No genome is revisited and the
+    database is not read again.
+
+    Why the squares have to be stored per ancestor and not as one number per taxon is worth setting
+    out, since it decides what the walk has to carry. A genome's contribution is not one number but
+    one per node it could be asked about: $\rho_h(t)$ is a sum over $\mathrm{path}(t)$, so the same
+    genome contributes more to a deep topic than to a shallow one, and which node will be the topic
+    is a property of the sample and unknown while the database is being read. Nor can the squares be
+    pooled upwards afterwards: $\rho_h(t) \neq \rho_h(s)$ for a child $s$ of $t$, so a parent's sum
+    of squares is not its children's plus its own, and treating it as though it were overstates it by
+    orders of magnitude at the nodes where topics actually sit.
+
+    What the walk does instead is accumulate down each genome's lineage. Having looked up every
+    $k$-mer of $h$, the goal holds $\kappa(h,m)$ for the nodes $m$ of $\mathrm{path}(h)$ --- one
+    number per node, a dozen or so. It runs down that path from the root, keeping the running sum,
+    which at each node $t$ is $\rho_h(t)$ by Equation \eqref{smoothyrho}, and adds $\rho_h(t)$ and
+    $\rho_h(t)^{2}$ into that node's two accumulators. Each genome therefore deposits a
+    \emph{different} square at each of its ancestors. The per-node $\kappa$ are wanted only while
+    that one genome is in hand and are not kept, so the store stays two numbers per node whatever the
+    walk carries. The cost is one pass over a path per genome --- genomes times depth, against the
+    genomes times genome length the goal already pays to look the $k$-mers up.
+
+    The squares have to be taken \emph{per genome} and not per taxon, which is the one place the two
+    granularities part: $c^{\circ}$ gathers the unentered genomes of a taxon into one counter, and
+    squaring that would call a hundred unnamed organisms a single large one. That is also why the
+    walk has to cover the genomes the entry phase never stored. Those are the ones a topic above the
+    data taxa exists to account for, and their $\rho$ is available for the same reason the update
+    could use them: Genestrip reads every genome of the RefSeq categories the database is built over
+    --- usually one --- so an unentered genome is looked up exactly as an entered one is, and
+    deposits its squares alongside them. A plain count of the genomes is worth keeping
     alongside them, not because the abundance uses it but because the two together say how uneven a
     clade's pool is --- forty members amounting to three is a fact about the reference collection
     worth reporting. Storing all of it everywhere, including at the data taxa where the row is one
@@ -895,7 +970,8 @@
     the first. A topic is then one genome, so nothing is pooled and no average stands in for the
     organism present; nothing is weighted by sequencing effort, a clade with nine thousand assemblies
     contributing nine thousand topics rather than one topic nine thousand times over; and
-    $\lvert K(g) \rvert$ in Section \ref{abundances} is a genome's length rather than a clade's mean.
+    the divisor of Section \ref{abundances} is a genome's own $k$-mer count rather than a clade's
+    average.
     The transformation adds nodes but moves no genome between clades, so the phylogenetic structure
     of the taxonomy is left as it was.
 
@@ -994,9 +1070,9 @@
     Equation \eqref{smoothylikelihood} and in opposite directions.
 
     On the database side the topic's row aggregates. Equation \eqref{smoothyrows} builds the row at
-    $t$ by pooling the own-counts $c^{\circ}(s,n)$ of every taxon $s \preceq t$, so an admitted node
-    stands for all the genomes beneath it at once and the topic is the clade's average member rather
-    than any one of them. At a data taxon that sum has a single term --- the transformation left it a
+    $t$ by pooling the own-counts $c^{\circ}(s,n)$ of the taxa in $D(t)$, so an admitted node stands
+    for the genomes beneath it that no more specific topic speaks for, and the topic is their average
+    member rather than any one of them. At a data taxon that sum has a single term --- the transformation left it a
     leaf with nothing beneath it --- which is why the ordinary case needed no separate statement. It
     is the same equation doing the same thing at a different node, so no new one is wanted, and the
     aggregation is what lets a node stand in for genomes the sample could not tell apart.
@@ -1008,8 +1084,11 @@
 
     Dropping a topic is not dropping its genomes. A leaf $h$ beneath $n$ that fails the test stops
     being a topic of its own and is thereafter represented by $n$, but only as far as $n$ can see it.
-    What passes to $n$ is what $h$ contributes \emph{at $n$ and above} --- the $k$-mers of $h$ the
-    database holds there, which are the ones shared with its relatives. What $h$ holds privately at
+    What $n$ can see of $h$ is what $h$ contributes \emph{at $n$ and above} --- the $k$-mers of $h$
+    the database holds there, which are the ones shared with its relatives --- and $n$'s row carried
+    that only once $h$ has no topic of its own: $D(n)$ gains $h$ when $h$ leaves $A$, and the row of
+    $n$ gains the own counts $h$ carries at $n$ and above. The numerators add, and $\theta_n$ rises
+    with them because the mass they represent is now $n$'s to explain. What $h$ holds privately at
     its own node does not pass: that node is not on $\mathrm{path}(n)$, so Equation \eqref{smoothyrows}
     leaves it out of $c(n,\cdot)$ exactly as the sample counts there are left out of the likelihood.
     It is a drop and not a fold, and the two sides drop the same thing.
@@ -1023,27 +1102,23 @@
     entire.
 
     What $\rho_h(n)$ measures, read against the drops, is the part of $h$ that $n$ has to account for,
-    and the range of the row is what makes it so. A genome struck out by the modelling drop retains
-    nothing at its own node, so every $k$-mer of it sits at an ancestor and its whole size falls
-    inside $\mathrm{path}(n)$: it enters the pool at $n$ as a full member. That is right, because it
-    is a real organism that has just lost the topic which would have spoken for it. A genome
-    distinguished from all its relatives is the mirror of it --- everything it holds is at its own
-    node, which is not on $\mathrm{path}(n)$, so $\rho_h(n) = 0$ and it leaves the divisor of $n$
-    without a rule being written for it. That is right too, since it keeps a topic of its own. The
-    genomes the drop strips of a topic are the ones that weigh most at $n$, and the ones that keep a
-    topic weigh least.
+    and $G(n)$ settles whether $n$ accounts for $h$ at all. A genome that keeps a topic of its own is
+    not in $G(n)$, so it does not enter $n$'s divisor however much of itself it holds higher up. A
+    genome struck out by the modelling drop falls to $n$, and it falls whole: retaining nothing at
+    its own node, every $k$-mer of it sits at an ancestor, so all of it lies inside
+    $\mathrm{path}(n)$ and it enters the pool as a full member. That is right, because it is a real
+    organism that has just lost the topic which would have spoken for it.
 
-    A leaf that keeps its topic and still shares $k$-mers higher up falls between the two, and there
-    the pooling is an approximation rather than an identity: its shared part counts towards $n$'s
-    divisor although its abundance is being estimated separately. Removing it would mean knowing
-    which topics the admission rule kept, which is a property of the sample, and the divisor would
-    stop being something the database can be asked for once. The error runs one way and is bounded by
-    how much of a resolved genome is shared, which is the same quantity Section \ref{pgn} reports
-    when it lists what each genome retains at its own node.
+    This closes a gap the older reading left open. While a row pooled everything beneath it, a leaf
+    that kept its own topic still counted towards the divisor above, so an abundance at $n$ was
+    measured against a pool holding organisms that were being estimated separately --- an
+    approximation, bounded but real. With $D(n)$ settling the pool, each genome enters exactly one
+    topic's divisor, the one that estimates it, and the approximation is gone rather than
+    bounded.
 
     Equation \eqref{smoothylikelihood} is untouched. Equation \eqref{smoothyabundance} is not:
-    $R_t$ is the total of the pooled row and so sums the counts of every genome beneath $t$, which is
-    the database's hold on the clade and not on one member of it. The divisor is therefore
+    $R_t$ is the total of the pooled row and so sums the counts of every genome $t$ speaks for, which
+    is the database's hold on them together and not on one member. The divisor is therefore
     $E_t$, the expected hold of one member of the clade, for the reason Section \ref{abundances}
     gives.
 
@@ -1116,28 +1191,44 @@
 
     Two quantities have to be kept apart. A counter $c^{\circ}(s,\cdot)$ is what a taxon holds of its
     own --- at a data taxon the $k$-mers of the one genome the transformation left there, at an
-    internal taxon those of the unnamed genomes attaching to it --- while a row is what a whole clade
-    beneath a taxon does. At a data taxon the two coincide, the transformation having left it a leaf
-    with nothing beneath it, and that row is read as it stands. Writing $s \preceq t$ for a taxon at or below $t$, the row of $t$ is
+    internal taxon those of the genomes attaching to it that the tree cannot name. A row is what a
+    topic has to account for, and that is its own counts together with the own counts of everything
+    beneath it that no more specific topic speaks for. Writing $A$ for the topics admitted by
+    Equation \eqref{smoothyadmit},
     %
     \begin{equation}\label{smoothyrows}
-        c(t,n) \;=\; \sum_{s \,\preceq\, t} c^{\circ}(s,n) ,
-        \qquad n \in \mathrm{path}(t) .
+        c(t,n) \;=\; \sum_{s \,\in\, D(t)} c^{\circ}(s,n) ,
+        \qquad
+        D(t) \;=\; \bigl\{\, s \preceq t \;:\; \text{no } t' \in A \text{ with }
+        s \preceq t' \prec t \,\bigr\} ,
     \end{equation}
     %
-    One rule, and it needs no second form for the unnamed material, which sits in the own counts of
-    the node it belongs under and is pooled with everything else there. Summing the own counts
-    rather than the rows is what keeps this from being circular, $t$ being its own ancestor; in an
-    implementation the same thing is had from the children, $c(t,n) = c^{\circ}(t,n) + \sum_{h} c(h,n)$
-    over the children $h$ of $t$, which a single post-order traversal computes for every taxon at
-    once. At a data taxon with nothing below it the sum has one term and $c$ and $c^{\circ}$
-    coincide.
+    for $n \in \mathrm{path}(t)$, with $D(t)$ the taxa $t$ is the most specific topic of. Every taxon
+    falls to exactly one topic, so the rows \emph{partition} the own counts instead of overlapping. A
+    genome with a topic of its own is spoken for there and nowhere else; one without is spoken for by
+    the nearest topic above it, and the $G(t)$ of Equation \eqref{smoothyrho} is the genomes
+    attaching at the taxa of $D(t)$. That is what makes $\theta_t$ at an inner node a share of what
+    nothing more specific accounts for, which is how Section \ref{abundances} reads it.
 
-    The range keeps the rows from overlapping. A row of $t$ is read on $t$'s own lineage:
-    what the database stores \emph{beneath} $t$ belongs to the topics sitting there and not to $t$,
-    and without the restriction the row of $t$ would carry the mass of every topic below it while
-    those are topics in their own right. At a data taxon, being a leaf, the restriction takes nothing
-    away.
+    At a data taxon $D(t)$ is the taxon alone and $c$ and $c^{\circ}$ coincide, the transformation
+    having left it a leaf. Summing the own counts rather than the rows keeps this from being
+    circular, $t$ being its own ancestor; an implementation has the same thing from the children,
+    $c(t,n) = c^{\circ}(t,n) + \sum_{h \notin A} c(h,n)$ over the children $h$ of $t$ that are not
+    themselves topics, which one post-order traversal computes for every taxon at once.
+
+    Dropping a topic is then an addition and nothing more. When $t'$ leaves $A$, the taxa it spoke
+    for fall to the next topic above it, so that topic's $D$ grows by them and its row grows by the
+    own counts they carry on the shared part of the path. The numerators add; the row is renormalised
+    by Equation \eqref{smoothypng} afterwards. Nothing is recomputed from the database, the
+    $c^{\circ}$ being what the goal stores, and assembling the rows for a sample is one pass over the
+    tree.
+
+    The range confines a row a second time, and differently. $D(t)$ settles which taxa a row draws
+    on; $\mathrm{path}(t)$ settles which nodes it has entries at. A row of $t$ is read on $t$'s own
+    lineage, so it says nothing at any node below $t$ --- what the database holds there is reported
+    at that node, and a topic sitting higher has no business claiming it. The two restrictions are
+    independent: a taxon of $D(t)$ still contributes only what it holds at $t$ and above. At a data
+    taxon, being a leaf, neither takes anything away.
 
     That the own counts respect it already --- that a genome sitting at $t$ never has its $k$-mers
     stored below $t$ --- is a fact about the database rather than an assumption.
@@ -1158,35 +1249,39 @@
 
     A row above the data taxa is not an organism's. The method reads such rows wherever
     Equation \eqref{smoothyadmit} puts a topic at an internal taxon, and there the row is the pooled
-    contribution of every genome beneath the
-    taxon --- that clade's pan-genome as the
-    reference collection happens to represent it --- and, counting being by frequency, a pan-genome
-    weighted towards whatever its members were sequenced most often. A $k$-mer carried by many
-    genomes of the clade weighs more than one carried by a single draft.
+    contribution of the genomes that taxon speaks for --- the ones the tree cannot name, together
+    with whatever the drops have left it --- as the reference collection happens to represent them.
+    Counting being by frequency, it is a pool weighted towards whatever its members were sequenced
+    most often: a $k$-mer carried by many of them weighs more than one carried by a single draft.
 
     The weighting is defensible, since a $k$-mer common to a clade is likelier to be observed from
     it, but it makes the topic a property of the reference collection as much as of the organisms.
-    If a clade is dominated by one heavily sequenced member --- \emph{S.~pneumoniae} accounts for
-    more than nine thousand of the twenty-two thousand \emph{Streptococcus} assemblies in RefSeq ---
-    a genus row is largely that member's genome wearing the genus's name. The data taxa are free of
-    it, each being one genome and pooling nothing; it is the topics above them that carry the
-    weighting.
+    What holds the damage down is that the pool is not the whole clade. A member with a topic of its
+    own is estimated there and weighs nothing here, so where \emph{S.~pneumoniae} is admitted --- and
+    it accounts for more than nine thousand of the twenty-two thousand \emph{Streptococcus}
+    assemblies in RefSeq --- it does not colour the genus row at all. What is left to weight is the
+    unnamed material together with whatever the sample gave too little of to admit, a smaller and
+    more homogeneous set than the clade. The data taxa are free of the weighting entirely, each being
+    one genome and pooling nothing.
 
     The estimate is then
     %
     \begin{equation}\label{smoothypng}
         p(n \mid g) \;=\; \frac{c(g,n)}{R_g} ,
-        \qquad R_g \;=\; \sum_{m \,\in\, \mathrm{path}(g)} c(g,m) ,
     \end{equation}
     %
-    the row total over the nodes the row occupies, so $p(\cdot \mid g)$ sums to one over
-    $\mathrm{path}(g)$ by construction, and over any node set containing it.
+    with $R_g = \sum_{h \in G(g)} \rho_h(g)$ the row total of Equation \eqref{smoothyrho}, which
+    needs no second definition here: it is equally the row's own sum
+    $\sum_{m \in \mathrm{path}(g)} c(g,m)$, the same $k$-mers added by genome in the one and by node
+    in the other. So $p(\cdot \mid g)$ sums to one over $\mathrm{path}(g)$ by construction, and over
+    any node set containing it. The per-genome form is the one Section \ref{abundances} needs, a
+    divisor built for one organism having to know what the members contribute separately.
     It is the distribution of where a $k$-mer of $g$ is stored, \emph{given that the database holds
     it at all} --- a condition that binds only above the data taxa. A data taxon is a genome the
     entry phase stored, so $d$ holds every $k$-mer of it and its row accounts for the whole genome. A
-    row higher up pools genomes the entry phase never stored along with those it did, and the former
-    are held only where they overlap something that was, so for them the row describes the shared
-    part and not the material itself.
+    row higher up pools the genomes it speaks for --- those the entry phase never stored, and any it
+    did store that the drops have left it --- and the former are held only where they overlap
+    something that was, so for them the row describes the shared part and not the material itself.
 
     The condition is not a concession where it binds. The counts $c_n$ are subject to the same one --- a $k$-mer absent from $d$ is never
     reported at a node either --- so both sides of
@@ -1206,13 +1301,13 @@
     absent from $d$ would have its abundance pushed onto whichever genomes happen to resemble it.
     Equation \eqref{smoothypng} applies to such a node unchanged --- it is a topic and is read like
     one, over its own row and its own total --- which is the whole of what has to be said about it.
-    That row averages locally: a genome-weighted average over the taxa \emph{of that clade}, the
-    omitted ones among them, and not over everything the database omits.
+    That row averages locally: a genome-weighted average over the members \emph{of that clade} it
+    speaks for, and not over everything the database omits.
 
     The row is skewed, though, in a way a data taxon's is not. A genome the entry phase stored has
     all of its $k$-mers in $d$, so its row accounts for the whole of it. The omitted genomes a higher
-    row pools stand in $d$ only where they overlap something that was stored: whatever is particular
-    to them raises no counter anywhere. So $c(t,\cdot)$ records the shared part of the unnamed
+    row speaks for stand in $d$ only where they overlap something that was stored: whatever is
+    particular to them raises no counter anywhere. So $c(t,\cdot)$ records the shared part of the unnamed
     material rather than the material itself, weighted towards whatever is conserved. Read as a description of the organisms
     the database cannot name, or of the reference collection at large, it is simply wrong.
 
@@ -1248,7 +1343,120 @@
     this sample but for any. A count appearing there would mean the analysis had placed a $k$-mer at
     a node $d$ does not hold it at, which is not a case to provide for but an inconsistent database.
     Such a leaf can therefore be struck from $G$ in the modelling phase rather than failing the
-    admission rule again for every sample.
+    admission rule again for every sample. Figure \ref{dropfig} carries the two drops through on the
+    genomes of Figure \ref{pngfig}.
+
+    \begin{figure}[!htbp]
+        \centering
+        \def\yL{0}\def\yM{2.1}\def\yR{4.2}\def\dd{0.20}
+        \newcommand{\pl}[3]{\fill[black!14,rounded corners=1.5pt]
+           ({#1-#3},{#2-\dd-0.05}) rectangle ({#1+#3},{#2+\dd+0.05});}
+        % a topic sitting at a leaf: its row runs from that leaf to the root
+        \newcommand{\band}[7]{\fill[#1,opacity=.85]
+            ({#2-#3/2},\yL) -- ({#2-#3/2},\yL+\dd)
+              to[out=90,in=-90] ({#4-#5/2},\yM-\dd) -- ({#4-#5/2},\yM+\dd)
+              to[out=90,in=-90] ({#6-#7/2},\yR-\dd) -- ({#6-#7/2},\yR+\dd)
+            -- ({#6+#7/2},\yR+\dd) -- ({#6+#7/2},\yR-\dd)
+              to[out=-90,in=90] ({#4+#5/2},\yM+\dd) -- ({#4+#5/2},\yM-\dd)
+              to[out=-90,in=90] ({#2+#3/2},\yL+\dd) -- ({#2+#3/2},\yL) -- cycle;}
+        % a topic sitting at an inner node: its row starts there
+        \newcommand{\bandm}[5]{\fill[#1,opacity=.85]
+            ({#2-#3/2},\yM-\dd) -- ({#2-#3/2},\yM+\dd)
+              to[out=90,in=-90] ({#4-#5/2},\yR-\dd) -- ({#4-#5/2},\yR+\dd)
+            -- ({#4+#5/2},\yR+\dd) -- ({#4+#5/2},\yR-\dd)
+              to[out=-90,in=90] ({#2+#3/2},\yM+\dd) -- ({#2+#3/2},\yM-\dd) -- cycle;}
+        % the topic at the root: its path is the root alone
+        \newcommand{\bandr}[3]{\fill[#1,opacity=.85]
+            ({#2-#3/2},\yR-\dd) rectangle ({#2+#3/2},\yR+\dd);}
+        \newcommand{\dts}[3]{\foreach \i in {1,...,#1}{%
+           \pgfmathsetmacro{\kk}{\i-1}\pgfmathsetmacro{\cc}{mod(\kk,3)}%
+           \pgfmathsetmacro{\rr}{floor(\kk/3)}%
+           \fill[black!55] ({#2+\cc*0.17},{#3+\rr*0.17}) circle (0.065);}}
+        \newcommand{\upper}{\draw[black!30,thin] (1.25,\yM) -- (2.6,\yR) -- (4.6,\yM);}
+        \newcommand{\inner}{\pl{1.25}{\yM}{0.52}\pl{4.6}{\yM}{0.32}\pl{2.6}{\yR}{0.62}}
+        \newcommand{\nlab}{%
+           \node[font=\scriptsize,anchor=east] at (1.93,\yR) {$n_{\text{root}}$};
+           \node[font=\scriptsize,anchor=east] at (0.65,\yM) {$n_1$};
+           \node[font=\scriptsize,anchor=east] at (4.20,\yM) {$n_2$};}
+        \def\CA{red!55}\def\CB{green!60!black!55}\def\CC{blue!55}
+        \def\DA{orange!75}\def\DB{violet!60}\def\DR{brown!65}
+        %
+        \begin{tikzpicture}[x=0.62cm,y=0.62cm]
+            % (a) every node is a topic
+            \begin{scope}
+                \draw[black!30,thin] (0.5,\yL)--(1.25,\yM) (2.0,\yL)--(1.25,\yM) (4.6,\yL)--(4.6,\yM);
+                \upper\inner \pl{0.5}{\yL}{0.40}\pl{2.0}{\yL}{0.37}\pl{4.6}{\yL}{0.47}
+                \band{\CA}{0.5}{0.00}{1.04}{0.34}{2.11}{0.14}
+                \band{\CB}{2.0}{0.30}{1.27}{0.12}{2.21}{0.06}
+                \bandm{\DA}{1.48}{0.30}{2.33}{0.18}
+                \band{\CC}{4.6}{0.32}{4.46}{0.10}{2.45}{0.06}
+                \bandm{\DB}{4.65}{0.28}{2.58}{0.20}
+                \bandr{\DR}{2.92}{0.48}
+                \nlab
+                \node[font=\scriptsize] at (0.5,\yL-0.5){$g_1$};
+                \node[font=\scriptsize] at (2.0,\yL-0.5){$g_2$};
+                \node[font=\scriptsize] at (4.6,\yL-0.5){$g_3$};
+                \node[font=\footnotesize] at (2.6,\yR+0.72){(a)};
+            \end{scope}
+            % (b) after the modelling drop
+            \begin{scope}[shift={(7.0,0)}]
+                \draw[black!30,thin] (2.0,\yL)--(1.25,\yM) (4.6,\yL)--(4.6,\yM);
+                \upper\inner \pl{2.0}{\yL}{0.37}\pl{4.6}{\yL}{0.47}
+                \band{\CB}{2.0}{0.30}{0.93}{0.12}{2.07}{0.06}
+                \bandm{\DA}{1.31}{0.64}{2.26}{0.32}
+                \band{\CC}{4.6}{0.32}{4.46}{0.10}{2.45}{0.06}
+                \bandm{\DB}{4.65}{0.28}{2.58}{0.20}
+                \bandr{\DR}{2.92}{0.48}
+                \nlab
+                \node[font=\scriptsize] at (2.0,\yL-0.5){$g_2$};
+                \node[font=\scriptsize] at (4.6,\yL-0.5){$g_3$};
+                \node[font=\footnotesize] at (2.6,\yR+0.72){(b)};
+            \end{scope}
+            % (c) one sample's counts
+            \begin{scope}[shift={(0,-6.8)}]
+                \draw[black!30,thin] (2.0,\yL)--(1.25,\yM) (4.6,\yL)--(4.6,\yM);
+                \upper\inner \pl{2.0}{\yL}{0.37}\pl{4.6}{\yL}{0.47}
+                \dts{8}{3.20}{4.03}\dts{12}{1.87}{1.845}\dts{2}{5.02}{2.10}\dts{9}{2.50}{-0.17}
+                \nlab
+                \node[font=\scriptsize] at (2.0,\yL-0.5){$g_2$};
+                \node[font=\scriptsize] at (4.6,\yL-0.5){$g_3$};
+                \node[font=\footnotesize] at (2.6,\yR+0.72){(c)};
+            \end{scope}
+            % (d) the topics the fit sees
+            \begin{scope}[shift={(7.0,-6.8)}]
+                \draw[black!30,thin] (2.0,\yL)--(1.25,\yM);
+                \upper\inner \pl{2.0}{\yL}{0.37}
+                \band{\CB}{2.0}{0.30}{0.93}{0.12}{2.07}{0.06}
+                \bandm{\DA}{1.31}{0.64}{2.26}{0.32}
+                \bandm{\DB}{4.60}{0.38}{2.55}{0.26}
+                \bandr{\DR}{2.92}{0.48}
+                \nlab
+                \node[font=\scriptsize] at (2.0,\yL-0.5){$g_2$};
+                \node[font=\footnotesize] at (2.6,\yR+0.72){(d)};
+            \end{scope}
+        \end{tikzpicture}
+        \caption{The two drops, on the three genomes of Figure \ref{pngfig}. Every node carries a
+        row, so $n_1$, $n_2$ and $n_{\text{root}}$ have bands of their own in orange, violet and
+        brown beside the genomes' red, green and blue, each running from its node up to the root and
+        the root's occupying that one node alone. The bands are drawn as counts and not normalised,
+        unlike Figure \ref{pngfig}'s. A row is divided by its total before it is used, by
+        Equation \eqref{smoothypng}, but drawing the numerators is what lets a drop be read off the
+        picture: the mass at each node is then the same in every panel, and what a drop does to it is
+        visible. (a) is the starting point, with one change from Figure \ref{pngfig}: the band of
+        $g_1$ has no width at $g_1$'s own node, the database holding nothing of that genome
+        exclusively. Each band is what its topic has to account for --- by
+        Equation \eqref{smoothyrows}, its own counts together with those of anything beneath it that
+        no more specific topic speaks for --- and in (a) every node is a topic, so each band is that
+        node's own counts alone. (b) is the modelling drop. Nothing a sample can yield would be
+        reported at a node the database holds nothing at, so $g_1$ can never be admitted and stops
+        being a topic --- once, for the database, and not once per sample. Its counts do not leave
+        with it. $n_1$ becomes the most specific topic above them, so they join $n_1$'s row, and the
+        orange band widens by exactly the red one at $n_1$ and at the root alike. (c) is one sample's
+        counts on that tree, and $g_3$ gets none. (d) is the topic set the fit sees: $g_3$ goes the
+        way $g_1$ did, for this sample only, and violet widens by blue as orange widened by red.
+        Neither drop deletes a node from the taxonomy. A node ceases to be a topic, and what it was
+        accounting for passes to the nearest topic above it.}\label{dropfig}
+    \end{figure}
 
     It also settles where a row can be zero. A leaf that survives the drop holds $k$-mers of its own,
     so its row is positive at its own node; a row's zeros therefore lie at \emph{inner} nodes of its
@@ -1412,25 +1620,23 @@
     Equation \eqref{smoothyabundance} divides by what it always did.
 
     \paragraph{Cost and storage.} The goal runs once for a database and writes its result to a
-    serialized file, which every later analysis against that database reads. Nothing here is paid per
-    sample.
+    serialized file, which every later analysis against that database reads. What a sample pays is
+    one pass over the tree to assemble its rows, and no more.
 
     The result is small, and for a reason that belongs to the method rather than to the encoding.
-    Equation \eqref{smoothyrows} leaves a row with exactly $\lvert \mathrm{path}(t) \rvert$ entries,
-    one double per ancestor and one for the taxon, so what is stored per taxon is an array of the
-    tree's depth and never of its size: a dozen or so where a bacterial data taxon sits, and no more
-    at any rank.
+    A taxon's own counts occupy exactly $\lvert \mathrm{path}(s) \rvert$ entries, one per ancestor and
+    one for the taxon itself, and the $P(s,\cdot)$ of Equation \eqref{smoothysq} occupies as many
+    again, so what is stored per taxon is two arrays of the tree's depth and never of its size: a
+    dozen entries each where a bacterial data taxon sits, and no more at any rank.
 
-    A data taxon is a leaf of the transformed tree, so its row is its own count and can be written as
-    it stands; only the rows above them pool.
+    Rows are not stored, since a row is not settled until a sample fixes the topics. They are
+    assembled by the additions of Equation \eqref{smoothyrows}, one pass over the tree per sample,
+    which reads the stored arrays and touches the database not at all. The row total and the sum of
+    squares fall out of the same pass, so nothing has to be kept that could be recomputed from them.
 
-    The row total $R_g$ goes beside each array and cannot be recovered from it: it is divided out by
-    Equation \eqref{smoothypng}, so a normalised row sums to one whatever $R_g$ was, and
-    Equation \eqref{smoothyabundance} wants it back. It is known while the row is being built and so
-    written with it rather than recomputed, at a cost of one long against an array of $n$ doubles.
-    A data taxon needs nothing further; a row above them carries the sum of squares of its members'
-    contributions as well, since Equation \eqref{smoothyabundance} divides by the effective number of
-    genomes rather than by a count of them.
+    At a data taxon the second array is redundant --- one genome contributes the whole row, so the
+    sum of squares is $R_g^{2}$ and $E_g = R_g$ --- and it is written there all the same, so that
+    nothing downstream has to ask which kind of node it is looking at.
 
     That turns a matrix over taxa and nodes into one over taxa and tree depth, so a database entering
     a few thousand genomes stores a few hundred kilobytes rather than the tens of megabytes a dense
@@ -1658,18 +1864,18 @@
     reporting and must not be confused, which in practice they often are.
 
     Relative abundance follows by reweighting each topic, and what to divide by is the number of
-    $k$-mers \emph{one} organism of that topic contributes. Above a data taxon the topic pools
+    $k$-mers \emph{one} organism of that topic contributes. Above a data taxon the topic speaks for
     several genomes, so that number is an expectation. Draw one of the $k$-mers the pool holds,
     uniformly among the $R_g$ of them: it is genome $h$'s with estimated probability
     $\rho_h(g) / R_g$, and that genome contributes $\rho_h(g)$ in all, so the expected hold is
     %
     \begin{equation}\label{smoothyhold}
-        E_g \;=\; \sum_{h \,\preceq\, g} \frac{\rho_h(g)}{R_g} \, \rho_h(g)
-              \;=\; \frac{\sum_{h \,\preceq\, g} \rho_h(g)^{2}}{R_g} ,
+        E_g \;=\; \sum_{h \,\in\, G(g)} \frac{\rho_h(g)}{R_g} \, \rho_h(g)
+              \;=\; \frac{\sum_{h \,\in\, G(g)} \rho_h(g)^{2}}{R_g} ,
     \end{equation}
     %
-    the sums over the genomes at or below $g$'s node, with $\rho_h(g)$ and
-    $R_g = \sum_{h \preceq g} \rho_h(g)$ as Equation \eqref{smoothyrho} defines them. One factor of
+    the sums over $G(g)$, the genomes that topic speaks for, with $\rho_h(g)$ and $R_g$ as
+    Equation \eqref{smoothyrho} defines them. One factor of
     $\rho$ is normalised and one is not, which is why $E_g$ comes out in $k$-mers as a divisor for
     $\theta_g$ must. Beside the row only $\sum_h \rho_h(g)^{2}$ has to be stored; $R_g$ is the row
     total already there. The abundance of a topic is its share of $k$-mers over that hold,
@@ -1690,19 +1896,20 @@
     away for a reader who wants it, whereas the whole-sample account cannot be recovered from the
     narrower one at all.
 
-    At a data taxon the pool is one genome, $E_g = R_g$, and the divisor is that genome's own
-    $k$-mer count. That a length has to be divided out at all is not a nicety:
-    \citet{beszteri2010} show genome size to be a source of bias in comparative metagenomics in its
-    own right, one that moves conclusions drawn between samples rather than only the figures within
-    one. Dividing by the $k$-mers a single organism contributes ---
-    $\lvert K(g) \rvert = \sum_c (\lvert c \rvert - k + 1)$ over its contigs --- turns a share of
-    sequence into a count of organisms, and $R_g = \lvert K(g) \rvert$ exactly, the entry phase
-    storing every $k$-mer of a genome it enters. No length has to be looked up or stored.
+    At a data taxon the pool is one genome, so $E_g = R_g$ by Equation \eqref{smoothyrhog} and the
+    divisor is that genome's own $k$-mer count. That a length
+    has to be divided out at all is not a nicety: \citet{beszteri2010} show genome size to be a
+    source of bias in comparative metagenomics in its own right, one that moves conclusions drawn
+    between samples rather than only the figures within one. Dividing $\theta_g$ by the $k$-mers a
+    single organism contributes is what turns a share of sequence into a count of organisms, and the
+    figure is one the goal has already produced --- no length is looked up, and none is stored.
 
-    Above the data taxa the two part company, since the pool includes genomes never entered, held
-    only where they overlap something that was. There $R_g$ falls short of $\lvert K(g) \rvert$ by
-    the share $d$ does not hold, and the short figure is the one wanted: $\theta_g$ counts observed
-    $k$-mers, and an organism held thinly yields fewer of them per unit of sequence present.
+    Above the data taxa Equation \eqref{smoothyrhog} no longer holds of every member, since $G(t)$
+    includes genomes never entered, standing in $d$ only where they overlap something that was: for
+    such a genome $\rho_h(t)$ falls short of its $k$-mer positions by the share $d$ does not hold, and
+    $E_t$ inherits the shortfall. The short figure is the one wanted, though: $\theta_t$ counts
+    observed $k$-mers, and an organism held thinly yields fewer of them per unit of sequence
+    present.
 
     Weighting the average by $\rho$ rather than taking it flat is what keeps a fragment from counting
     as a member. A reference collection is full of them, and a clade holding one finished genome
@@ -1728,10 +1935,9 @@
     privately lower down, so $E_t$ is the shared hold of one member of the clade. That is the right
     scale for what a topic at $t$ estimates: where the counts there are owed to an organism the
     database cannot name, that organism stands in $d$ by its shared part and nothing else, and it is
-    measured against a divisor built the same way. That the pool runs over every genome of the clade
-    rather than the omitted ones alone costs nothing, since what the named genomes contribute to
-    $R_t$ is their shared part too --- their private $k$-mers sit at their own nodes, which are not
-    on $\mathrm{path}(t)$.
+    measured against a divisor built the same way. And the pool is the right set: it runs over the
+    members $t$ speaks for and not over the whole clade, so a genome estimated at its own topic
+    neither weighs in this divisor nor is measured by it.
 
 
     \paragraph{Coarser answers.} The fit is at the finest resolution the sample supports, a topic
@@ -2183,16 +2389,18 @@
     Equation \eqref{smoothyhold} weights each pooled genome by what it contributes rather than
     counting members, and the difference is easiest to see on four pools. Recall that $\rho_h(t)$ is
     what one genome contributes to the row of $t$ --- its $k$-mers that $d$ holds at the nodes
-    $\mathrm{path}(t)$ --- so $R_t = \sum_h \rho_h(t)$, and that the goal accumulates that sum and
-    the sum of squares as it walks. Take a clade whose complete member contributes two million
-    $k$-mers at $t$ and above.
+    $\mathrm{path}(t)$ --- and that the pool is $G(t)$, the genomes $t$ speaks for: the ones the tree
+    cannot name, together with any the drops have left it. A finished genome turns up in such a pool
+    when the sample gave too little of it to admit, which is the case the first two rows below are
+    about. Take a clade whose complete member contributes two million $k$-mers at $t$ and
+    above.
 
     \begin{table}[!htbp]
         \centering
         \footnotesize
         \setlength{\tabcolsep}{4pt}
         \begin{tabular}{@{}l|r|r|r|r|r@{}}
-            \textbf{the pool at $t$} & $R_t$ & $\sum_h \rho_h(t)^{2}$ &
+            \textbf{the pool $G(t)$} & $R_t$ & $\sum_{h \in G(t)} \rho_h(t)^{2}$ &
                 $E_t$ & \textbf{flat mean} & $R_t / E_t$\\
             \hline
             complete $+$ one-$k$-mer draft & 2\,000\,001 & $4.0 \times 10^{12}$ &
@@ -2230,7 +2438,9 @@
     The last column is worth keeping for its own sake even though the method never divides by it.
     $R_t / E_t$ is how many genomes the pool amounts to, and set beside the plain count of members it
     says how uneven the pool is: forty members amounting to three is a fact about the reference
-    collection at that clade, and one a reader of the profile should be told.
+    collection at that clade, and one a reader of the profile should be told. Both are assembled once
+    the topics are fixed, from the $c^{\circ}$ and the $P$ of Equations \eqref{smoothyrows} and
+    \eqref{smoothysq}, and neither is stored.
 
     \end{appendices}
 
