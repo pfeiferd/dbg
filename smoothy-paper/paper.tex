@@ -124,7 +124,8 @@
         \centering
         \footnotesize
         \begin{tabular}{@{}l|r|r|r@{}}
-            \textbf{Taxon} ($n$) & \textbf{Reads} & \textbf{$k$-mers} ($c_n$) & \textbf{Unique $k$-mers}\\
+            \textbf{Taxon} ($n$) & \textbf{Reads} & \textbf{$k$-mers} ($c_n$) &
+                \textbf{Unique $k$-mers} ($u_{n,s}$)\\
             \hline
             \motivatingrows{motivating.csv}
         \end{tabular}
@@ -132,8 +133,10 @@
         column a count made at that taxon's own node: the reads assigned there, the $k$-mer
         occurrences held there, and the distinct $k$-mers among them. Nothing in it is wrong. What it
         does not say is which organisms were in the sample, and in what
-        proportion. The two bracketed symbols are the notation used from here on: $n$ for a node of
-        the taxonomy and $c_n$ for the $k$-mer count reported there.}\label{motivating}
+        proportion. The bracketed symbols are the notation used from here on: $n$ for a node of
+        the taxonomy, $c_n$ for the $k$-mer count reported there, and $u_{n,s}$ for the distinct
+        $k$-mers behind that count, which Section \ref{error} weighs the counts
+        with.}\label{motivating}
     \end{table}
 
     \todo{Fill Table \ref{motivating} from a real match result rather than an invented one: a few
@@ -269,8 +272,17 @@
             % ---- (3) what the model makes of it
             \begin{scope}[shift={(12.8,0)}]
                 \pnedges\pnnodes
-                \pncounts{2}{5}{0}{9}{red!60}{blue!60}
+                % the same red and blue as the bands of (1), drawn the same way
+                \begin{scope}[opacity=.85]
+                    \pncounts{2}{5}{0}{9}{red!55}{blue!55}
+                \end{scope}
                 \pnlabels
+                % the estimate itself: each topic's share of the whole, drawn as one bar
+                \fill[red!55,opacity=.85]  (0.30,-1.34) rectangle (2.55,-1.06);
+                \fill[blue!55,opacity=.85] (2.55,-1.34) rectangle (4.80,-1.06);
+                \draw[black!40,thin] (0.30,-1.34) rectangle (4.80,-1.06);
+                \node[font=\scriptsize] at (1.425,-1.70) {$g_1$};
+                \node[font=\scriptsize] at (3.675,-1.70) {$g_3$};
             \end{scope}
             \draw[-{Stealth[length=2.6mm,width=2.2mm]},black!55,line width=1.1pt]
                 (11.65,\yM) -- (12.55,\yM);
@@ -288,7 +300,10 @@
         are split between the topics in proportion to how much of that node's count each explains,
         and those shares sum over the nodes to $p(m \mid s)$ exactly --- which is what the fixed
         point of Equation \eqref{smoothyem} says. The share of the dots carrying one colour is that
-        genome's estimate, though no single dot was ever awarded to it.}\label{pngfig}
+        genome's estimate, though no single dot was ever awarded to it. The bar beneath (3) is that
+        estimate on its own: the two shares of $p(m \mid s)$ side by side, in the colours of the
+        genomes they belong to, which is the whole of what the method returns. Here the sample
+        divides evenly between $g_1$ and $g_3$, so the bar does too.}\label{pngfig}
     \end{figure}
 
     \todo{Put numbers on the third paragraph, from the companion paper: in its clinical runs a tenth
@@ -708,6 +723,50 @@
     specification: complete enough to build from, and precise enough that a measurement can
     contradict it.}
 
+    What follows carries five numbers and one rank that are chosen rather than counted, and
+    Table \ref{constants} gathers them, since each is introduced where it is argued for rather than
+    with the others. None is a nuisance parameter of the fit: $\theta$ is what the fit estimates and
+    it has no others.
+
+    \begin{table}[!htbp]
+        \centering
+        \footnotesize
+        \setlength{\tabcolsep}{4pt}
+        \begin{tabular}{@{}l|l|l|l|l@{}}
+            & \textbf{What it governs} & \textbf{Default} & \textbf{Fixed} & \textbf{Introduced}\\
+            \hline
+            $T$ & the count a node needs to be a topic at all &
+                $1$ & per analysis & \S\ref{pgn}, Eq.~\eqref{smoothyadmit}\\
+            $\lambda$ & the share of a row handed to its background &
+                $0.05$ & per database & \S\ref{pgn}, Eq.~\eqref{smoothysmooth}\\
+            $\tau$ & the reach below which the consistency test is declined &
+                $0.9$ & per database & \S\ref{error}, Eq.~\eqref{smoothyweight}\\
+            $\epsilon$ & the share below which a genome is not a pool member &
+                measure & per database & \S\ref{error}, Eq.~\eqref{smoothyreach}\\
+            $\beta$ & how hard an inconsistent node is attenuated &
+                $1/2$ & per database & \S\ref{error}, Eq.~\eqref{smoothyw}\\
+            $\varrho$ & the rank below which the reach is computed at all &
+                \texttt{SPECIES} & per database & \S\ref{error}, Eq.~\eqref{smoothyweight}\\
+        \end{tabular}
+        \caption{The constants the method carries, in the order a build meets them. $T$ is the
+        admission threshold of Equation \eqref{smoothyadmit} and the only one a reader is likely to
+        vary between samples; the rest belong to a database and are set once against it.
+        Every default is argued rather than measured and all of them want confirming against data,
+        which Section \ref{evaluation} is where; \emph{measure} marks the one the paper does not even
+        argue a value for. The last three concern the consistency weight
+        alone and do nothing where it is declined --- $\tau$ and $\epsilon$ decide whether the node
+        is weighted and $\beta$ how hard, while $\varrho$ only bounds where the question is asked, so
+        a build that leaves the weight out needs only the first two rows. Nothing here is fitted to a sample: every one is settled before the counts
+        are read, which is what keeps Equation \eqref{smoothylikelihood} concave in the only quantity
+        it estimates. Three quantities that appear beside these are deliberately not among them. The
+        error rate $e_b$ of Equation \eqref{smoothyerror} is read off the run or assumed rather than
+        chosen, and under maximum likelihood it does not move the estimate at all. The register count
+        of the sketches of Section \ref{error} buys precision with memory and carries no modelling
+        content, any value above a floor doing the same job better or worse. The $\alpha$ of
+        Appendix \ref{prior} belongs to a prior on $\theta$ that the method does not take, and a
+        build following this section never meets it.}\label{constants}
+    \end{table}
+
     \subsection{The generative model}\label{model}
     Shotgun sequencing draws reads from the whole of a genome rather than from one locus, so to a
     first approximation every $k$-mer of an organism's genome is equally likely to turn up in the
@@ -827,12 +886,16 @@
 
     \subsection{Estimating \texorpdfstring{$p(n \mid m)$}{p(n|m)}}\label{pgn}
     The topic--word distribution is a property of the database, so it is measured on the database and
-    not fitted to a sample. Two qualifications, neither of which moves the work into the sample. One
-    number is chosen rather than counted --- the $\lambda$ of Equation \eqref{smoothysmooth}, which
-    regularises the measurement before the fit reads it. And a row is assembled from the measured
+    not fitted to a sample. Two qualifications, neither of which moves the work into the sample. Two
+    of the numbers of Table \ref{constants} are settled here rather than counted: the $\lambda$ of
+    Equation \eqref{smoothysmooth}, which regularises the measurement before the fit reads it, and
+    the $T$ of Equation \eqref{smoothyadmit}, which settles how much evidence a node needs to be a
+    topic. And a row is assembled from the measured
     counters according to which topics the sample admits, by Equation \eqref{smoothyrows}, so the
     assembly is per sample although everything it adds up was counted once, against the database, and
-    is reused for every sample analysed on it. A new Genestrip goal walks the genomes the update phase
+    is reused for every sample analysed on it. That is where $T$ enters the distribution: it changes
+    which topics exist and so which genomes a row speaks for, never the counters the row is summed
+    from. A new Genestrip goal walks the genomes the update phase
     considers ---
     which is every genome of the release in scope, and not only those the entry phase stored --- and
     for each of them looks up every $k$-mer in the database $d$.
@@ -842,8 +905,10 @@
     it shares with something stored. A row is then written at every taxon from those counters, because
     it costs nothing and because the admission rule below may put a topic at any of them: at a genome
     node the row is that genome's, and higher up it is the clade's, the unnamed material among it.
-    One quantity carries all of it, and it is measured per genome. Write $\kappa_h(n)$ for the number
-    of $k$-mers of a single genome $h$ that $d$ holds at node $n$; everything below is a sum of those.
+    One quantity carries the rows, and it is measured per genome. Write $\kappa_h(n)$ for the number
+    of $k$-mers of a single genome $h$ that $d$ holds at node $n$; every row and everything summed
+    from one is a sum of those. Only the guard of Section \ref{error} needs a second counter, and
+    that section says why.
     The $\mathrm{path}(m)$ of Section \ref{model} --- the nodes from $m$ up to the root, $m$ among
     them --- is where the update can have left a $k$-mer of anything sitting at or below $m$, which
     is why a row lives there and nowhere else.
@@ -858,15 +923,17 @@
 
     What the goal stores is not a row, since a row is not settled until a sample says which topics
     there are. It stores what every row is made of and nothing besides: for each genome $h$ the array
-    $\kappa_h$ over the nodes of $\mathrm{path}(h)$, a dozen or so numbers. Every quantity the method
-    uses follows from those by addition. A row is $\sum_{h \in G(m)} \kappa_h(n)$ by
+    $\kappa_h$ over the nodes of $\mathrm{path}(h)$, a dozen or so numbers, with a shorter second
+    array for the guard of Section \ref{error} --- its own node and its species --- and nothing
+    else. Every quantity the rows
+    need follows from the first of them by addition. A row is $\sum_{h \in G(m)} \kappa_h(n)$ by
     Equation \eqref{smoothypng}, its total is that summed over $\mathrm{path}(m)$, and the sum of
     squares Equation \eqref{smoothyhold} needs is had by running each genome's array down its path,
-    keeping the suffix sum, and squaring --- the sum of cubes Equation \eqref{smoothyholdvar} needs
-    coming off the same suffix sum for one more accumulator. One pass over the stored arrays gives
-    all of it.
+    keeping the suffix sum, and squaring. One pass over the stored arrays gives all of it, and the
+    sum of cubes that Appendix \ref{holdspread} reports comes off the same suffix sum for one more
+    accumulator if it is wanted.
 
-    Nothing is precomputed beyond $\kappa$ on purpose. Sums over genomes cannot be prepared in
+    Nothing beyond those per-genome counters is precomputed, and on purpose. Sums over genomes cannot be prepared in
     advance, since which genomes a topic speaks for is $G(m)$ and the sample fixes it; and sums of
     squares cannot be pooled up the tree even if they were, because a genome's suffix sum at $m$ is
     not its suffix sum at a child $m'$ of $m$ --- a genome contributes more to a deep topic than to a shallow one, so a
@@ -877,7 +944,9 @@
 
     The walk that produces it is simple. Having looked up every $k$-mer of $h$, the goal holds
     $\kappa_h$ for the nodes of $\mathrm{path}(h)$ --- one number per node, a dozen or so --- and
-    writes that array out under $h$. The cost is one pass over a path per genome, genomes times
+    writes that array out under $h$. A shorter second array goes with it, the $\kappa^{\circ}_h$
+    that Section \ref{error} needs at the nodes its rank gate admits, formed in the same pass from
+    the sketches described there and stored the same way. The cost is one pass over a path per genome, genomes times
     depth, against the genomes times genome length the goal already pays to look the $k$-mers up. The
     running sums and the squares are not formed here at all; they are formed when a sample fixes the
     topics, from the arrays.
@@ -891,10 +960,9 @@
     the taxa exists to account for, and their $\kappa$ is available for the same reason the update
     could use them: Genestrip reads every genome of the RefSeq categories the database is built over
     --- usually one --- so an unentered genome is looked up exactly as an entered one is, and
-    deposits its counts alongside them. A plain count of the genomes is worth reporting
-    beside them, not because the abundance uses it but because the two together say how uneven a
-    clade's pool is --- forty members amounting to three is a fact about the reference collection
-    that a reader of the profile should be given. Storing all of it everywhere, including at the genome nodes where the row is one
+    deposits its counts alongside them. A plain count of the genomes is worth keeping
+    beside them, not because the abundance uses it but because of what Section \ref{abundances} can
+    then set it against. Storing all of it everywhere, including at the genome nodes where the row is one
     genome's, is what keeps the abundance a single expression.
 
     \paragraph{The topics.} The tree the method reads has two kinds of node and no third. Every
@@ -1274,7 +1342,7 @@
     it is a question about abundance rather than about attribution.
 
     $\kappa$ counts occurrences and not distinct $k$-mers, and so does everything summed from it. It is worth keeping apart
-    from the $u_n$ of Section \ref{error}, which counts the \emph{distinct} $k$-mers stored at a
+    from the $u_{n,d}$ of Section \ref{error}, which counts the \emph{distinct} $k$-mers stored at a
     node and belongs to a different measure; the two are easily conflated and are not
     interchangeable, with the gap between them widening exactly for the repeat-rich genomes where it
     matters most.
@@ -1369,53 +1437,53 @@
             % (a) every node is a topic
             \begin{scope}
                 \draw[black!30,thin] (0.5,\yL)--(1.25,\yM) (2.0,\yL)--(1.25,\yM) (4.6,\yL)--(4.6,\yM);
-                \upper\inner \pl{0.5}{\yL}{0.40}\pl{2.0}{\yL}{0.37}\pl{4.6}{\yL}{0.47}
-                \band{\CA}{0.5}{0.00}{1.04}{0.34}{2.11}{0.14}
-                \band{\CB}{2.0}{0.30}{1.27}{0.12}{2.21}{0.06}
+                \upper\inner \pl{0.5}{\yL}{0.37}\pl{2.0}{\yL}{0.40}\pl{4.6}{\yL}{0.47}
+                \band{\CB}{0.5}{0.30}{0.93}{0.12}{2.07}{0.06}
+                \band{\CA}{2.0}{0.00}{1.16}{0.34}{2.17}{0.14}
                 \bandm{\DA}{1.48}{0.30}{2.33}{0.18}
                 \band{\CC}{4.6}{0.32}{4.46}{0.10}{2.45}{0.06}
                 \bandm{\DB}{4.65}{0.28}{2.58}{0.20}
                 \bandr{\DR}{2.92}{0.48}
                 \nlab
-                \node[font=\scriptsize] at (0.5,\yL-0.5){$g_1$};
-                \node[font=\scriptsize] at (2.0,\yL-0.5){$g_2$};
+                \node[font=\scriptsize] at (0.5,\yL-0.5){$g_2$};
+                \node[font=\scriptsize] at (2.0,\yL-0.5){$g_1$};
                 \node[font=\scriptsize] at (4.6,\yL-0.5){$g_3$};
                 \node[font=\footnotesize] at (2.6,\yR+0.72){(a)};
             \end{scope}
             % (b) after the modelling drop
             \begin{scope}[shift={(7.0,0)}]
-                \draw[black!30,thin] (2.0,\yL)--(1.25,\yM) (4.6,\yL)--(4.6,\yM);
-                \upper\inner \pl{2.0}{\yL}{0.37}\pl{4.6}{\yL}{0.47}
-                \band{\CB}{2.0}{0.30}{0.93}{0.12}{2.07}{0.06}
+                \draw[black!30,thin] (0.5,\yL)--(1.25,\yM) (4.6,\yL)--(4.6,\yM);
+                \upper\inner \pl{0.5}{\yL}{0.37}\pl{4.6}{\yL}{0.47}
+                \band{\CB}{0.5}{0.30}{0.93}{0.12}{2.07}{0.06}
                 \bandm{\DA}{1.31}{0.64}{2.26}{0.32}
                 \band{\CC}{4.6}{0.32}{4.46}{0.10}{2.45}{0.06}
                 \bandm{\DB}{4.65}{0.28}{2.58}{0.20}
                 \bandr{\DR}{2.92}{0.48}
                 \nlab
-                \node[font=\scriptsize] at (2.0,\yL-0.5){$g_2$};
+                \node[font=\scriptsize] at (0.5,\yL-0.5){$g_2$};
                 \node[font=\scriptsize] at (4.6,\yL-0.5){$g_3$};
                 \node[font=\footnotesize] at (2.6,\yR+0.72){(b)};
             \end{scope}
             % (c) one sample's counts
             \begin{scope}[shift={(0,-6.8)}]
-                \draw[black!30,thin] (2.0,\yL)--(1.25,\yM) (4.6,\yL)--(4.6,\yM);
-                \upper\inner \pl{2.0}{\yL}{0.37}\pl{4.6}{\yL}{0.47}
-                \dts{8}{3.20}{4.03}\dts{12}{1.87}{1.845}\dts{2}{5.02}{2.10}\dts{9}{2.50}{-0.17}
+                \draw[black!30,thin] (0.5,\yL)--(1.25,\yM) (4.6,\yL)--(4.6,\yM);
+                \upper\inner \pl{0.5}{\yL}{0.37}\pl{4.6}{\yL}{0.47}
+                \dts{8}{3.20}{4.03}\dts{12}{1.87}{1.845}\dts{2}{5.02}{2.10}\dts{9}{1.00}{-0.17}
                 \nlab
-                \node[font=\scriptsize] at (2.0,\yL-0.5){$g_2$};
+                \node[font=\scriptsize] at (0.5,\yL-0.5){$g_2$};
                 \node[font=\scriptsize] at (4.6,\yL-0.5){$g_3$};
                 \node[font=\footnotesize] at (2.6,\yR+0.72){(c)};
             \end{scope}
             % (d) the topics the fit sees
             \begin{scope}[shift={(7.0,-6.8)}]
-                \draw[black!30,thin] (2.0,\yL)--(1.25,\yM);
-                \upper\inner \pl{2.0}{\yL}{0.37}
-                \band{\CB}{2.0}{0.30}{0.93}{0.12}{2.07}{0.06}
+                \draw[black!30,thin] (0.5,\yL)--(1.25,\yM);
+                \upper\inner \pl{0.5}{\yL}{0.37}
+                \band{\CB}{0.5}{0.30}{0.93}{0.12}{2.07}{0.06}
                 \bandm{\DA}{1.31}{0.64}{2.26}{0.32}
                 \bandm{\DB}{4.60}{0.38}{2.55}{0.26}
                 \bandr{\DR}{2.92}{0.48}
                 \nlab
-                \node[font=\scriptsize] at (2.0,\yL-0.5){$g_2$};
+                \node[font=\scriptsize] at (0.5,\yL-0.5){$g_2$};
                 \node[font=\footnotesize] at (2.6,\yR+0.72){(d)};
             \end{scope}
         \end{tikzpicture}
@@ -1426,7 +1494,9 @@
         unlike Figure \ref{pngfig}'s. A row is divided by its total before it is used, by
         Equation \eqref{smoothypng}, but drawing the numerators is what lets a drop be read off the
         picture: the mass at each node is then the same in every panel, and what a drop does to it is
-        visible. (a) is the starting point, with one change from Figure \ref{pngfig}: the band of
+        visible. (a) is the starting point, and departs from Figure \ref{pngfig} in two ways. $g_1$
+        and $g_2$ are drawn in the other order, so that the band about to be absorbed sits beside the
+        one that absorbs it and the widening can be read off directly. And the band of
         $g_1$ has no width at $g_1$'s own node, the database holding nothing of that genome
         exclusively. Each band is what its topic has to account for --- by
         Equation \eqref{smoothyrows}, its own counts together with those of anything beneath it that
@@ -1638,7 +1708,8 @@
     The result is small, and for a reason that belongs to the method rather than to the encoding. One
     genome's array occupies exactly $\lvert \mathrm{path}(h) \rvert$ entries, one per ancestor and one
     for its own node, so what is stored per genome is an array of the tree's \emph{depth} and never of
-    its size: a dozen entries where a bacterial genome sits, and no more at any rank. That turns a
+    its size: a dozen entries where a bacterial genome sits, and no more at any rank, with the
+    guard's two beside them. That turns a
     matrix over genomes and nodes into one over genomes and tree depth, so a database entering a few
     thousand genomes stores a few hundred kilobytes rather than the tens of megabytes a dense matrix
     over all its nodes would need.
@@ -1646,18 +1717,20 @@
     Rows are not stored, since a row is not settled until a sample fixes the topics. They are
     assembled by the additions of Equation \eqref{smoothyrows}, one pass over the stored arrays per
     sample, which touches the database not at all. The row total and the sum of squares fall out of
-    the same pass, so nothing is kept that could be recomputed from what is.
+    the same pass, as does the sum of cubes where Appendix \ref{holdspread} is wanted, so nothing is
+    kept that could be recomputed from what is.
 
-    That count --- the plain number of genomes kept beside the arrays --- is the number of genomes
-    beneath $m$ whose taxon the tree does not have. Neither counter is written where nothing was
-    counted.
+    Two plain counts are kept beside the arrays, neither of them used by the abundance and both worth
+    reporting: how many genomes a node speaks for, which set against the row total over $E_m$ ---
+    how many the pool effectively amounts to --- says how uneven it is, and how many of those the
+    tree cannot name, which is what $u_m$ is a share of. Neither is written where nothing was counted.
 
     \todo{What the pass itself costs. One traversal per genome of the update scope against a built
     database. For a bacterial project that scope is the whole division, so this is the same order of
     work as the LCA update rather than a small addition to it. State it honestly and measure it
     against the update, since it is the one part of the method that is not cheap.}
 
-    \subsection{Correcting the counts for sequencing error}\label{error}
+    \subsection{Correcting and weighting the counts}\label{error}
     A $k$-mer is observed only if all $k$ of its bases were read correctly. With a per-base error rate
     $e_b$ and errors taken as independent, an instance survives with probability $(1 - e_b)^k$, so the
     reported counts are a systematic undercount and the corrected count is
@@ -1697,12 +1770,12 @@
     Equation \eqref{smoothylikelihood} holds at any particular one. There is a measure that does, and
     it comes from the classifier itself. The $k$-mer consistency ratio of \citet{genestrip-pub}
     compares the distinct $k$-mers actually seen at a node against the number expected if its
-    $k$-mers were drawn uniformly: with $u_n$ the distinct $k$-mers the database stores at $n$,
+    $k$-mers were drawn uniformly: with $u_{n,d}$ the distinct $k$-mers the database stores at $n$,
     $c_n$ the count the sample $s$ reports there, as before, and $u_{n,s}$ the distinct ones among
     them,
     %
     \begin{equation}\label{smoothyconsistency}
-        E_{n,s} \;=\; u_n \Bigl( 1 - (1 - 1/u_n)^{c_n} \Bigr),
+        E_{n,s} \;=\; u_{n,d} \Bigl( 1 - (1 - 1/u_{n,d})^{c_n} \Bigr),
         \qquad r_{n,s} \;=\; u_{n,s} \,/\, E_{n,s} .
     \end{equation}
 
@@ -1713,17 +1786,145 @@
     region, as Section \ref{amplicon} sets out. So $r$ is not an external criterion bolted on. It is
     the method's own premise, tested against the data, per node and per sample.
 
-    That makes it a weight rather than a filter. A threshold on $r$ would discard a node's counts
-    whole and turn a continuous doubt into a binary one; the same information is better spent
-    attenuating a node's contribution in proportion to how far its counts depart from what the
-    assumption predicts. It enters where the error correction does,
+    It is not testable everywhere, though, and where it fails it fails in one direction. The null
+    behind Equation \eqref{smoothyconsistency} is that the $c_n$ observations are drawn uniformly
+    from all $u_{n,d}$ of the $k$-mers the database stores at $n$, which is the right null only where
+    those $k$-mers are effectively one organism's. Higher up they are not. What sits at a genus is
+    what its species share, and a sample holding one species of that genus reaches only the part of
+    it that species carries: the draws are uniform over a smaller pool than $u_{n,d}$, fewer distinct
+    $k$-mers turn up than the equation expects, and $r_{n,s}$ falls although the assumption it tests
+    is holding perfectly.
+
+    The bias runs one way and grows with coverage. Write $f$ for the share of $u_{n,d}$ that the
+    organisms actually present can reach. A node covered to twice its stored depth returns
+    $r_{n,s} = 0.76$ at $f = 0.7$ and $0.35$ at $f = 0.3$ --- weights of $0.87$ and $0.47$ under
+    $\beta = 1/2$, so an ambiguous node gives up half its contribution for being ambiguous rather
+    than for being wrong. At a fifth of that coverage the same two $f$ give $0.98$ and $0.89$. The
+    penalty is therefore heaviest exactly where a node is best covered, which is where its counts
+    say most, and it would fall on the ambiguous nodes this method exists to read.
+
+    Where it can be read, $r$ is spent as a weight and not as a filter. A threshold on it would
+    discard a node's counts whole and turn a continuous doubt into a binary one; the same information
+    goes further attenuating a node's contribution in proportion to how far its counts depart from
+    what the assumption predicts. Where it cannot be read the question does not arise, and bounding
+    where that is --- rather than repairing the statistic --- is the remedy. What to bound on is $f$
+    itself. It is not observable --- which organisms are present is the question --- but what each
+    member of the pool would reach is, and it is a distinct-$k$-mer count against a distinct-$k$-mer
+    count. Write $\kappa^{\circ}_h(n)$ for the number of \emph{distinct} $k$-mers of genome $h$ that
+    $d$ holds at node $n$, against the $\kappa_h(n)$ of Section \ref{pgn} which counts occurrences.
+    Then $\kappa^{\circ}_h(n) / u_{n,d}$ is the share of the node one genome reaches --- computed per
+    genome, for every member, without knowing which of them the sample holds. The denominator is
+    $u_{n,d}$ because that is the pool Equation \eqref{smoothyconsistency} assumes the draws came
+    from: what goes wrong is that they came from a fraction of it instead, and $E_{n,s}$ is wrong by
+    that fraction, so the fraction must be measured against the same total.
+
+    What a guard wants of those shares is the worst case and not the average: the penalty falls on
+    whichever member happens to be present, so a node is safe only if \emph{every} member it could be
+    reaches enough. Taking the plain minimum overstates the case in the other direction, since a
+    draft assembly contributing a handful of $k$-mers reaches almost nothing and would condemn every
+    pool that holds one. Which members a node could plausibly be is what $q_n$ says --- each genome's
+    share of the $k$-mers the pool holds, defined at Equation \eqref{smoothyhold} below and summed
+    there from the same counters --- so the minimum is taken over the members it does not dismiss:
     %
-    \begin{equation}\label{smoothyweight}
-        \hat{c}_n \;=\; \frac{w(r_{n,s})\, c_n}{(1 - e_b)^k} ,
+    \begin{equation}\label{smoothyreach}
+        f_n \;=\; \min \Bigl\{\, \frac{\kappa^{\circ}_h(n)}{u_{n,d}} \;:\;
+            h \in G(n), \; q_n(h) \geq \epsilon \,\Bigr\} ,
     \end{equation}
     %
-    and unlike that correction it is not a common factor: $w$ varies from node to node, so this one
-    does move the estimate rather than only its scale. That is the point of it.
+    and the weight is applied where $f_n \geq \tau$ and withheld where it is not, which
+    Equation \eqref{smoothyweight} states together with the rank gate that bounds where $f_n$ is
+    formed at all. Neither denominator can vanish where the quantity is wanted: $f_n$ is read only at an admitted node, a count is
+    reported at a node only because $d$ holds a $k$-mer there, so $c_n \geq T$ gives
+    $u_{n,d} \geq 1$ and with it a non-empty pool.
+
+    Both halves of that earn their place, and a pool can be built to defeat either alone. One
+    finished genome beside thirty-nine fragments reaches $0.73$, the finished genome carrying nearly
+    all of the node, where a plain minimum returns $0.02$ and condemns it --- which is the failure
+    $q_n$ was introduced for in Section \ref{abundances}, met a second time and repaired the same
+    way. Ten members of which nine reach $0.95$ and one reaches $0.50$ average to $0.905$ and would
+    pass a threshold of $0.9$, although a sample holding the tenth is penalised to $0.72$ for
+    holding it. The minimum catches the second and the floor $\epsilon$ the first; either on its own
+    admits a pool it should not.
+
+    $\epsilon$ is a floor on membership and not a second threshold on reach. It asks whether a
+    genome is a distinct organism the sample could hold or the fragmentary record of one already in
+    the pool --- the same question Section \ref{abundances} settles with the same weights, and
+    answered here by the same numbers. It wants fixing once for a database rather than per node.
+
+    \paragraph{Counting the distinct $k$-mers.} $\kappa^{\circ}$ is the one quantity in the method
+    that is estimated rather than counted, and it is estimated because counting it exactly is the
+    only expensive thing about it. The walk of Section \ref{pgn} already looks up every $k$-mer of a
+    genome in turn; deduplicating them would mean holding the genome's $k$-mers, or a bitmap over the
+    store, for as long as the genome is being read. A HyperLogLog sketch \citep{flajolet2007hyperloglog}
+    does it in constant space instead: one sketch per node of $\mathrm{path}(h)$ the rank gate
+    admits, each $k$-mer added to the sketch of the node $d$ holds it at, and the cardinalities read
+    off and written out when the genome is done. None is kept --- what is stored is the estimate, one
+    number per genome and admitted node beside $\kappa_h(n)$ itself. At $\varrho =
+    \texttt{SPECIES}$ that is two sketches where a bacterial lineage has a dozen nodes, so the array
+    is two numbers long and not twelve.
+
+    Its cost is a rounding error and its accuracy is ample. A sketch of $2^{14}$ registers occupies
+    twelve kilobytes and estimates a cardinality to within $0.8\,\%$, so two of them come to
+    twenty-four kilobytes for as long as a genome is being walked. What that buys is
+    the removal of a bias several times larger and pointing the wrong way: $\kappa$ counts
+    occurrences, so a ratio built from it is inflated by the mean copy number ---
+    eighteen per cent where three per cent of a genome's $k$-mers sit at sevenfold multiplicity,
+    forty where a tenth sit at fivefold --- and inflated means a node is admitted to a test that will
+    penalise it. Appendix \ref{occreach} sets out what reading Equation \eqref{smoothyreach} off
+    $\kappa$ alone would cost, since it is the cheaper thing to build first and worth knowing the
+    price of.
+
+    One property of the estimate does interact with the rule. The minimum of several noisy estimates
+    is biased low, so a node whose members all truly reach $0.95$ reads below that, and the more
+    members enter the minimum the further below: at $2^{14}$ registers, $0.933$ over fifty members
+    against $0.946$ over two. The direction is the safe one --- a safe node is declined rather than a
+    penalised one admitted --- but it eats into whatever margin $\tau$ was given, which is a reason
+    to spend registers rather than save them, and a second thing $\epsilon$ does, since the floor
+    bounds how many members the minimum is taken over at all.
+
+    So the rule is
+    %
+    \begin{equation}\label{smoothyweight}
+        \hat{c}_n \;=\; \frac{w_n\, c_n}{(1 - e_b)^k} ,
+        \qquad
+        w_n \;=\;
+        \begin{cases}
+            w(r_{n,s}) , & \text{$n$ at rank $\varrho$ or below, and } f_n \geq \tau , \\
+            1 , & \text{otherwise} ,
+        \end{cases}
+    \end{equation}
+    %
+    and unlike the error correction it is not a common factor: $w_n$ varies from node to node, so
+    this one does move the estimate rather than only its scale. That is the point of it. A node the
+    guard withholds the weight from is not discarded --- its counts enter the fit as they stand,
+    corrected for error like every other node, and only the consistency test is declined.
+
+    At $\tau = 0.9$ the residual bias is negligible: a node at the threshold returns
+    $r_{n,s} = 0.93$ even when covered to twice its stored depth, which is a weight of $0.96$. A
+    genome node passes with $f_n = 1$, its pool being the one genome and that genome holding
+    everything private to it. So does a node with exactly two children where both are genome nodes:
+    a $k$-mer sits at $n$ only if its carriers span two children, so with two single genomes beneath
+    it every stored $k$-mer is carried by both and $f_n = 1$ exactly. That is the shape a sparsely
+    covered species has, and it is as far as the structural argument reaches --- two children with
+    several genomes apiece restores the freedom for a $k$-mer to skip most of them, and a pool of
+    five and five measures about a half.
+
+    The rank gate $\varrho$ is there to save work and not to decide anything, and the two tests
+    divide the labour cleanly. Above the species $f_n$ is never near $\tau$, so nothing is lost by
+    not computing it: a genus of eight species at five genomes apiece measures about a half, and the
+    unentered genomes that attach at such a node --- which stand in $d$ only where they overlap
+    something stored, and are most numerous exactly there --- take it to about a fifth. A test that
+    can only come out one way is not worth a sketch per node to run, and the gate turns twelve
+    sketches into two.
+
+    What the gate must not do is decide the cases inside it, and this is where a rank cut used alone
+    would fail. Rank \texttt{SPECIES} looks safe and is not always: a species with fifty stored
+    strains holds at its node what any two of them share, so a diverse one gives $f_n = 0.6$, a ratio
+    of $0.67$ and a weight of $0.80$. Those are the densely sequenced species --- the pneumococcus
+    with its nine thousand assemblies among them --- which is to say the ones a clinical reader cares
+    about. The gate admits them and $f_n$ declines them, which is the division of labour intended:
+    a cheap rank test to bound where the question is asked, and a measured one to answer it.
+    $\varrho$ is a setting with \texttt{SPECIES} as its default, and raising it costs only sketches.
 
     A form that meets the requirements below, and the one we propose, is
     %
@@ -1737,14 +1938,15 @@
     $r = e^{-1/\beta}$ contributes nothing. Filtering is therefore not rejected but recovered, as
     the limiting case of a weight rather than as a separate rule with a threshold of its own.
 
-    One parameter remains, and $\beta$ says how severely inconsistency is punished. It is worth
+    Of the three the weight carries, $\beta$ is the last and says how severely inconsistency is
+    punished, where $\tau$ and $\epsilon$ decide only whether it is punished at all. It is worth
     noting that a calibration point already exists: the worked example of \citet{genestrip-pub} reports
     $r = 0.8631$ for Epstein--Barr virus in a saliva sample and reads it as \emph{supporting} the
     consistency of the counts. A node so described should keep most of its weight, which
     $\beta = 1$ does not do --- it leaves $0.85$ --- while $\beta = 1/2$ leaves $0.93$. That
     suggests $\beta$ well below one, but it is one example and the value wants measuring.
 
-    What $w$ must satisfy, however $\beta$ is fixed:
+    What $w$ must satisfy, however $\beta$ is fixed, and two things it need not:
     %
     \begin{itemize}
         \item $w(1) = 1$. A node whose counts match the expectation is not penalised.
@@ -1753,22 +1955,37 @@
         \item $w \approx 1$ for $r$ above one. Seeing appreciably more distinct $k$-mers than expected
               is not a thing that happens, so that direction carries no information and should not be
               read as one.
-        \item $w$ depends on the count as well as the ratio. At small $c_n$ the ratio is noise,
-              and a node holding three $k$-mers must not be discounted because its $r$ came out at
-              $0.6$. Equation \eqref{smoothyw} does not yet do this, and the natural repair is to
-              shrink $r$ towards one as the count falls --- replacing $r$ by
-              $1 + (r - 1)\,c_n/(c_n + k_0)$ for some scale $k_0$ --- rather than to
-              complicate $w$ itself.
+        \item $w$ need not depend on the count, although the ratio behaves worse at small ones.
+              $u_{n,s}$ is a whole number, so a node holding three $k$-mers can only return
+              $r \in \{1/3, 2/3, 1\}$ and one duplicate costs it a fifth of its weight; where the
+              node itself is small the ratio is noisy besides, its standard deviation reaching a
+              sixth of $E_{n,s}$ at $u_{n,d} = 10$ against a five-hundredth at $u_{n,d} = 10^5$.
+              Neither matters, and for the reason that creates them. A node with few counts enters
+              $\sum_n \hat{c}_n \log (\varphi\theta)_n$ with few counts: three $k$-mers out of a
+              million are three parts in a million of the objective, and attenuating them to $0.8$
+              removes a fifteen-thousandth of a per cent of it. Shrinking $r$ towards one as the
+              count falls would repair this at the price of one more constant to fix, which is not
+              a trade worth making.
         \item $w$ is a heuristic in $r$ and not a tail probability. The exact distribution of
               $u_{n,s}$ is known and approximately normal about $E_{n,s}$, but it is so sharply peaked
               that small deviations drive it to zero, which is why \citet{genestrip-pub} report the
               ratio rather than a test.
     \end{itemize}
 
-    \todo{Fix $\beta$ and $k_0$ against data rather than by argument, and check
+    \todo{Fix $\beta$ against data rather than by argument, and check
     Equation \eqref{smoothyw} against alternatives while doing so. The measurements that decide it:
     how $r$ is distributed across nodes in real samples, and whether the nodes with low $r$ are the
-    ones an independent standard says are wrong.}
+    ones an independent standard says are wrong --- gathered at the nodes
+    Equation \eqref{smoothyweight} admits, since those are the ones it reads. $\tau$ wants fixing on
+    the same data: the distribution of $f_n$ over a real database says where the mass sits and
+    whether $0.9$ leaves anything useful admitted. $\epsilon$ goes with it and is the likelier of the
+    two to matter, since it decides how many members the minimum is taken over: sweep it and watch
+    how many nodes change verdict, because a pool of near-identical assemblies will have most of its
+    mass just above or just below whatever floor is chosen. Worth plotting $f_n$ against rank while
+    doing both, since that says whether $\varrho$ is set where it should be: if $f_n$ at the species
+    is already below $\tau$ for most of a database, the gate is too generous and the weight is
+    costing sketches it never uses; if it passes at the genus on some clades, too strict.}
+
 
     \todo{The effect that would change the estimate is the one not modelled here, and the section
     should say so rather than leave it implied. A corrupted $k$-mer does not only disappear: it can
@@ -1933,57 +2150,11 @@
     $\sum_h \rho_h(m)^{2}$ over the pool's total, and both of those are formed from the stored
     $\kappa$ the way Section \ref{pgn} describes.
 
-    The same draw carries a second moment, and it says how far $E_m$ can be trusted as a stand-in for
-    \emph{one} organism:
-    %
-    \begin{equation}\label{smoothyholdvar}
-        \mathrm{Var}\bigl[ \rho_H(m) \bigr] \;=\;
-            \frac{\sum_{h \,\in\, G(m)} \rho_h(m)^{3}}{\sum_{h \,\in\, G(m)} \rho_h(m)} \;-\; E_m^{2} .
-    \end{equation}
-    %
-    It is zero exactly when the pool's members are alike, which is when a mean over them means
-    anything, and it grows with their disagreement. Reported as a coefficient of variation beside
-    the abundance it is a per-topic reliability figure that costs one more accumulator in the pass
-    that forms $E_m$: a clade of ten comparable genomes gives $0$, a finished genome beside a
-    single-$k$-mer draft gives $0.001$ --- the weighting having already disposed of the draft --- two
-    unequal but comparable genomes give $0.052$, and a genome beside thirty-nine fragments gives
-    $0.099$. A large value does not make the abundance wrong; it says the topic is a pool the members
-    of which do not agree on what one organism is, and that the figure should be read at a coarser
-    node where they do.
+    The same draw has a second moment, and it says how far $E_m$ can be trusted as a stand-in for
+    one organism. Appendix \ref{holdspread} sets it out and carries it through to the abundance,
+    since what it bears on is how a profile should be read rather than how it is computed.
 
-    The abundance inherits the spread, but damped. Write $D$ for the divisor that would be exactly
-    right --- the mean of $\rho$ weighted by the abundances of the pool's members, which for a topic
-    standing for one present organism is that organism's $\rho_H(m)$ --- and $r = E_m / D$ for the
-    factor by which Equation \eqref{smoothyabundance} is then wrong. The error is multiplicative, and
-    the normalisation of Equation \eqref{smoothynorm} takes part of it back:
-    %
-    \[
-        \frac{a^{*}_m}{a_m} \;=\; \frac{r}{1 + a_m (r - 1)}
-        \;\approx\; 1 + (r - 1)(1 - a_m) ,
-    \]
-    %
-    writing $a^{*}_m$ for the entry the right divisor would have given. The relative error in an
-    abundance is thus the relative error in its divisor times $1 - a_m$, so to first order
-    $\mathrm{CV}(a_m) = (1 - a_m)\, \mathrm{CV}\bigl[ \rho_H(m) \bigr]$. A topic carrying most of the
-    sample hardly moves --- at $a_m = 0.9$ a divisor wrong by a factor of two shifts the abundance by
-    five per cent --- while a trace topic takes the whole of it, the same factor moving $a_m = 0.02$
-    by $1.96$. The entries with the least trustworthy divisors are therefore the small ones, which
-    are also the ones a reader is likeliest to over-read.
-
-    The coefficient of variation is a scale and not a bound, and the difference is not academic. As
-    the pool's true composition varies, $r$ ranges from $E_m / \max_h \rho_h(m)$ to
-    $E_m / \min_h \rho_h(m)$, and the standard deviation does not reach the ends of that: the genome
-    beside thirty-nine fragments has $\mathrm{CV} = 0.099$ and an $r$ of up to four thousand, because
-    $q_m$ has already discounted the fragments and the variance is computed under that discounting.
-    Equation \eqref{smoothyholdvar} says whether the members of a pool disagree about what one
-    organism is. It cannot say that the weighting itself points the wrong way, that being the
-    assumption it is computed under.
-
-    It is worth saying what this variance is not. It is the spread of the divisor over the pool, a
-    property of the reference collection, and it is fixed before a sample is seen. The sampling error
-    in $\theta_m$ is a different quantity with a different multinomial behind it --- the counts
-    $c$ over the nodes, of $C$ trials with cell probabilities $(\varphi\theta)_n$ --- and the two
-    compose rather than substitute for one another. The abundance of a topic is its share of $k$-mers over that hold,
+    The abundance of a topic is its share of $k$-mers over that hold,
     %
     \begin{equation}\label{smoothyabundance}
         \tilde{a}_m \;=\; \frac{\theta_m}{E_m} ,
@@ -2194,9 +2365,13 @@
     \paragraph{What the change costs.} Resolution. A conserved marker separates taxa far less than a
     genome does, so the proportional columns of Section \ref{pgn} become the rule at species rank
     rather than the exception, and an amplicon run should be read at genus or above. The consistency
-    ratio of Section \ref{error} has to be recomputed over $\mathcal{M}(m)$ as well --- $u_n$ being the
-    distinct $k$-mers of the amplified region that $d$ stores at $n$ --- after which $r$ measures
-    what it was built to measure and $\beta$ wants fixing again against amplicon data.
+    ratio of Section \ref{error} has to be recomputed over $\mathcal{M}(m)$ as well --- $u_{n,d}$ being the
+    distinct $k$-mers of the amplified region that $d$ stores at $n$, and the reach $f_n$ of
+    Equation \eqref{smoothyreach} the restricted $\kappa^{\circ}$ over that restricted $u_{n,d}$,
+    which costs only that the sketches admit a $k$-mer on the same test the counters do --- after
+    which $r$ measures what it was built to measure and $\beta$ wants fixing again against amplicon
+    data. The guard is the more likely to bind for it: a marker is shared more widely than a genome,
+    so the reach at a given node is smaller than the shotgun case and fewer nodes admit the test.
 
     \section{Evaluation}\label{evaluation}
     \todo{To be written once there is an implementation. The benchmark to start from is FAMeS
@@ -2370,11 +2545,11 @@
     integral.
 
     That holds only while the correction is a single factor, and Section \ref{error} has since given
-    it a second one that is not. The consistency weight $w(r_{n,s})$ differs from node to node, so no
+    it a second one that is not. The consistency weight $w_n$ differs from node to node, so no
     rescaling of $\alpha$ can reproduce it: the weights change the counts relative to \emph{each
     other} and not merely their common size. A sampler would have to carry them as per-occurrence
     weights, which is no longer collapsed Gibbs sampling but a weighted variant of it, or fall back on
-    rounding $w(r_{n,s}) c_n$ with the loss that was the objection in the first place. The iteration of
+    rounding $w_n c_n$ with the loss that was the objection in the first place. The iteration of
     Section \ref{inference} has no such difficulty --- a weighted likelihood is what it already
     maximises --- which is one more reason the prior sits in this appendix and not in the method.
 
@@ -2475,9 +2650,12 @@
     where it costs half a percent and only where a topic is nearly evicted, to the signal, where it
     costs a quarter and applies everywhere.
 
-    A constraint comes with it. The scheme needs $\lambda \lvert \mathrm{path}(m) \rvert < 1$ for
-    every topic, so $\lambda$ is capped by the deepest lineage the database carries and one
-    finely-resolved clade lowers it for everything else. Setting $\lambda$ to match
+    A constraint comes with it, and the value Table \ref{constants} settles on already breaches it.
+    The scheme needs $\lambda \lvert \mathrm{path}(m) \rvert < 1$ for every topic, which at
+    $\lambda = 0.05$ caps the tree at nineteen levels --- a lineage of forty would be asked to give
+    away twice its own mass. So $\lambda$ is capped by the deepest lineage the database carries and
+    one finely-resolved clade lowers it for everything else, where
+    Equation \eqref{smoothysmooth} takes any $\lambda$ below one at any depth. Setting $\lambda$ to match
     Equation \eqref{smoothysmooth}'s floor at one depth then leaves it several times weaker at
     shallower ones.
 
@@ -2544,6 +2722,107 @@
     collection at that clade, and one a reader of the profile should be told. Both are assembled once
     the topics are fixed, by summing the stored $\kappa_h$ of the genomes the topic speaks for;
     neither is stored.
+
+    \section{The spread of the hold}\label{holdspread}
+    \setcounter{equation}{0}
+    The draw of Equation \eqref{smoothyhold} has a second moment as well as a first, and it is what
+    says how far $E_m$ can be trusted as a stand-in for \emph{one} organism:
+    %
+    \begin{equation}\label{smoothyholdvar}
+        \mathrm{Var}\bigl[ \rho_H(m) \bigr] \;=\;
+            \frac{\sum_{h \,\in\, G(m)} \rho_h(m)^{3}}{\sum_{h \,\in\, G(m)} \rho_h(m)} \;-\; E_m^{2} .
+    \end{equation}
+    %
+    It is zero when the members carrying weight are alike, which is when a mean over them means
+    anything, and grows as those members differ. Weight is the operative word: a member too small to
+    matter counts for as little here as it does in $E_m$, so a pool can hold wildly unalike genomes
+    and still score near zero if only one of them is of any size. Reported as a coefficient of
+    variation beside
+    the abundance it is a per-topic reliability figure that costs one more accumulator in the pass
+    that forms $E_m$. On the four pools of Table \ref{efftable}, in the order they are listed there,
+    it reads $0.001$, $0.002$, $0.052$ and $0$: near nothing wherever a finished genome has fragments
+    beside it, the weighting having already disposed of them, and exactly zero for ten comparable
+    genomes, which are alike. A fifth pool of one genome
+    beside thirty-nine fragments gives $0.099$. A large value does not make the abundance wrong; it says the topic is a pool the members
+    of which do not agree on what one organism is, and that the figure should be read at a coarser
+    node where they do.
+
+    The abundance inherits the spread, but damped. Write $D$ for the divisor that would be exactly
+    right --- the mean of $\rho$ weighted by the abundances of the pool's members, which for a topic
+    standing for one present organism is that organism's $\rho_H(m)$ --- and $r = E_m / D$ for the
+    factor by which Equation \eqref{smoothyabundance} is then wrong. The error is multiplicative, and
+    the normalisation of Equation \eqref{smoothynorm} takes part of it back:
+    %
+    \[
+        \frac{a^{*}_m}{a_m} \;=\; \frac{r}{1 + a_m (r - 1)}
+        \;\approx\; 1 + (r - 1)(1 - a_m) ,
+    \]
+    %
+    writing $a^{*}_m$ for the entry the right divisor would have given. The relative error in an
+    abundance is thus the relative error in its divisor times $1 - a_m$, so to first order
+    $\mathrm{CV}(a_m) = (1 - a_m)\, \mathrm{CV}\bigl[ \rho_H(m) \bigr]$. A topic carrying most of the
+    sample hardly moves --- at $a_m = 0.9$ a divisor wrong by a factor of two shifts the abundance by
+    five per cent --- while a trace topic takes the whole of it, the same factor moving $a_m = 0.02$
+    by $1.96$. The entries with the least trustworthy divisors are therefore the small ones, which
+    are also the ones a reader is likeliest to over-read.
+
+    The coefficient of variation is a scale and not a bound, and the difference is not academic. As
+    the pool's true composition varies, $r$ ranges from $E_m / \max_h \rho_h(m)$ to
+    $E_m / \min_h \rho_h(m)$, and the standard deviation does not reach the ends of that: the genome
+    beside thirty-nine fragments has $\mathrm{CV} = 0.099$ and an $r$ of up to four thousand, because
+    $q_m$ has already discounted the fragments and the variance is computed under that discounting.
+    Equation \eqref{smoothyholdvar} says whether the members of a pool disagree about what one
+    organism is. It cannot say that the weighting itself points the wrong way, that being the
+    assumption it is computed under.
+
+    It is worth saying what this variance is not. It is the spread of the divisor over the pool, a
+    property of the reference collection, and it is fixed before a sample is seen. The sampling error
+    in $\theta_m$ is a different quantity with a different multinomial behind it --- the counts
+    $c$ over the nodes, of $C$ trials with cell probabilities $(\varphi\theta)_n$ --- and the two
+    compose rather than substitute for one another.
+
+    \section{Reading the reach off occurrence counts}\label{occreach}
+    Equation \eqref{smoothyreach} needs $\kappa^{\circ}$, the distinct $k$-mers a genome has at a
+    node, and Section \ref{error} estimates it with a sketch. The cheaper thing is to read the reach
+    off the $\kappa$ that Section \ref{pgn} already stores and add nothing to the build at all. It
+    very nearly works, and the way it fails is worth setting down, both because it is the first
+    implementation anyone will write and because the failure points the wrong way.
+
+    The construction is the one arithmetic identity the counters supply. A $k$-mer stored at $n$
+    raises $\kappa_h(n)$ once for every genome $h$ that carries it, so
+    $\kappa_h(n) / u_{n,d}$ estimates the share of the node that genome reaches, and the minimum over
+    the members $q_n$ does not dismiss is $f_n$ as before. Nothing new is stored, nothing new is
+    computed, and on a reference collection of unique $k$-mers the answer is exact. Tested against
+    explicit $k$-mer sets it returns the truth to three decimals on two genomes sharing everything,
+    on fifty genomes each carrying half the node, on fifty each carrying nine tenths, and on one
+    finished genome beside thirty-nine fragments.
+
+    What it cannot do is tell a $k$-mer from its copies. $\kappa$ counts occurrences and the reach is
+    about distinct $k$-mers, so the ratio is inflated by the mean copy number of whatever the genome
+    holds at that node: a pool whose true reach is $0.50$ reads $0.59$ where three per cent of its
+    $k$-mers sit at sevenfold multiplicity. Inflation is the wrong direction. It says a node reaches
+    more than it does, which admits it to a test that then penalises it --- and conserved repeats are
+    held high in the tree, so the error gathers exactly where the guard is needed.
+
+    A correction is available from the same counters and does not go far enough. At a genome's own
+    node, $\mu_h = \kappa_h(h) / u_{h,d}$ is that genome's occurrences over its distinct $k$-mers,
+    both quantities already per node, and dividing $\kappa_h(n)$ by it removes the copy-number
+    inflation as far as private $k$-mers predict it. That is not all the way, since what repeats is
+    conserved and what is conserved is held higher than the private part. Worse, it is undefined for
+    exactly the genomes that need it. A genome holding nothing at its own node has $u_{h,d} = 0$ and
+    no $\mu_h$, and those genomes are not the exception in a pool but most of it, since holding
+    nothing of one's own is what puts a genome there; an unentered genome has no node at all and the
+    same gap. Taking $\mu_h = 1$ for them is the one choice to avoid, being the assumption of no
+    repeats, and wrong on its own terms besides: such a genome's $k$-mers are all shared, and
+    conserved repeats are shared before anything else is, so its multiplicity is if anything above a
+    typical genome's. The defensible fallback is the mean $\mu$ over the pool members where it can be
+    measured, and a database-wide mean where none of them can.
+
+    So the occurrence-only route is a build with a known one-directional bias and a correction that
+    is partial and undefined on most of its subjects, against a sketch that removes the bias for a
+    dozen kilobytes held transiently. It is recorded here as the thing not to settle for, and as the
+    measurement that would say how much the sketch is worth on a given database: compute
+    Equation \eqref{smoothyreach} both ways and count the nodes that change verdict.
 
     \end{appendices}
 
