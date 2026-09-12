@@ -44,7 +44,28 @@
 %\usepgfplotslibrary{external}
 %\tikzexternalize
 \usepackage{xr}
-\usepackage{todonotes}
+% Working notes. todonotes set these in the margin, where the longer ones ran off
+% the page and were silently clipped. They now sit in the text flow, break across
+% pages, and keep out of the way. \showtodosfalse hides every one for a clean read.
+\newif\ifshowtodos \showtodostrue
+\newcommand{\todo}[1]{%
+  \ifshowtodos
+    \par\addvspace{0.7\baselineskip}%
+    \begin{list}{}{%
+      \setlength{\leftmargin}{1.5em}%
+      \setlength{\rightmargin}{1.5em}%
+      \setlength{\topsep}{0pt}%
+      \setlength{\partopsep}{0pt}%
+      \setlength{\parsep}{0.5\baselineskip}%
+      \setlength{\itemsep}{0pt}%
+    }%
+    \item[]\footnotesize\color{black!70}%
+      \textcolor{orange!65!black}{\rule[-0.2ex]{2pt}{1.15ex}}\hspace{0.55em}%
+      \textcolor{orange!65!black}{\textsc{todo}}\hspace{0.6em}\ignorespaces#1%
+    \end{list}%
+    \addvspace{0.7\baselineskip}%
+  \fi%
+}
 \externaldocument{supplements}
 
 \usepackage{array}
@@ -195,6 +216,8 @@
 \newcommand{\miseq}[1]{MiSeq}
 \newcommand{\fastqone}[1]{Extr. from \cite{Wu:2024aa}}
 
+\DeclareMathOperator*{\argmin}{arg\,min}
+
 \begin{document}
 
     \title{Phylogenetic mapping of $k$-mer databases}
@@ -205,42 +228,75 @@
 
     \date{August 2026}
 
-    \abstract{\textbf{Background:}
+    \abstract{\textbf{Background:} A $k$-mer database built for read classification records, for
+    every $k$-mer, the lowest taxon shared by the genomes that carry it. That is most of what an
+    evolutionary distance needs, and it is computed already. We ask what such a database can say
+    about the relatedness of the organisms it holds, without alignment and without sketching.
 
-    \textbf{Results:}
+    \textbf{Results:} We estimate the distance between any two genomes of a Genestrip database from
+    counters the build produces, adding only a cardinality sketch per genome and node. The lowest
+    common ancestor update confines everything two genomes share to a single lineage of the
+    taxonomy, so the comparison runs over a path rather than a tree and is made over the whole of
+    both genomes rather than over a sample of each. Pairwise distances over a database give an
+    overdetermined linear system for the branch lengths of any given topology, which we solve by
+    non-negative least squares. Taking the topology from the refined taxonomy itself turns the fit
+    into a test: the residual at a node measures how far the established taxonomy departs from the
+    sequence data beneath it.
 
-    \textbf{Conclusions:}     }
+    \textbf{Conclusions:} Distances and a drawn phylogeny come out of a classification database as a
+    by-product, at the price of one sketch per genome and node. The method compares genomes the
+    database holds, and both must be present: it reads a reference collection against itself rather
+    than placing an unknown organism from a sample.}
 
     \keywords{Metagenomics, $k$-mer counting, phylogeny, evolutionary distance, taxonomy}
 
     \maketitle
 
-%
-% ---------------------------------------------------------------------------------------------
-% This material was moved out of the appendix of the Genestrip-FT paper on 2026-08-06, to be
-% developed into a paper of its own. It is verbatim apart from one thing: the section levels were
-% promoted by one, since it is no longer an appendix of something else.
-%
-% It still refers to five things that were defined in the Genestrip-FT paper and are not reproduced
-% here. The section below defines those labels so that this document keeps compiling; each of them
-% marks a place where this paper will need its own text before it can stand alone.
-% ---------------------------------------------------------------------------------------------
-%
-\section{To be carried over from the Genestrip-FT paper}\label{carriedover}
+\section{Introduction}\label{introduction}
 
-This section is a placeholder. The text below refers to the following, which the Genestrip-FT paper
-defines and this one does not yet:
+A $k$-mer database built for read classification already holds, without being asked, a great deal of
+what a phylogeny needs. Genestrip \cite{genestrip-pub} stores each $k$-mer at the lowest taxon shared
+by every genome that carries it, so the database records not only which organisms it knows but where
+their sequence agrees and where it parts. Genestrip-FT \cite{genestrip-ft} refines that tree,
+inserting nodes where the reference taxonomy is coarser than the sequence data warrants. What this
+paper sets out is that the two together are enough to estimate evolutionary distances between the
+genomes a database holds, to draw those distances on the taxonomy it already carries, and --- because
+the fit is overdetermined --- to say how well the taxonomy agrees with the sequence.
 
-\begin{itemize}
-  \item the intrinsic quality measures of a $k$-mer database\label{intrinsicqms}
-  \item \emph{node precision} and \emph{subtree precision}\label{nodeprecision}
-  \item the subtree precision reported per database and genus\label{dbsp}
-  \item the sketch of what a refinement does to a taxonomy\label{ftsketch}
-  \item the worked example of a refined database\label{simplerefdb}
-\end{itemize}
+The estimates cost little because the database has done the work. Sections \ref{pairwise}
+and \ref{treefit} add one sketch per genome and per node to what a build already produces, and take
+the rest from counters that exist. Nothing is aligned and nothing is sampled: the distances are
+computed over the whole of each genome's $k$-mers rather than over a sketch of them, which is where
+the approach differs from the sketching tools of Section \ref{relatedwork} and where it should
+differ most in accuracy, namely between genomes that are close.
 
-Each has to be restated here, or replaced by a reference to the published Genestrip-FT paper, before
-this document can be read on its own.
+One boundary is worth drawing at the outset. The method compares two genomes \emph{that the database
+holds}, and both must be there: it is a way of reading a reference collection against itself, not a
+way of placing an unknown organism from a sample onto a tree. Read classification is what Genestrip
+does with a sample, and that question is not this one.
+
+\section{Related work}\label{relatedwork}
+
+Estimating evolutionary distance from $k$-mer content rather than from alignment is established.
+Mash \cite{Ondov:2016aa} sketches each genome with MinHash, estimates the Jaccard index between
+sketches and converts it to a distance; sourmash \cite{pierce2019sourmash} builds the same idea into
+a toolkit, and Skmer \cite{skmer} extends it to unassembled low-coverage reads by modelling the
+sketch's incompleteness. All three sample: a sketch of a few thousand hashes stands for a genome of
+millions of $k$-mers, and the sampling error sets a floor under how finely two close genomes can be
+told apart. FastANI \cite{jain2018fastani} takes the alignment-based route instead, and is accurate
+where it applies but does not scale to all pairs of a large collection.
+
+What this paper adds is neither a new sketch nor a new alignment, but the observation that a
+classification database has already computed the expensive part. The lowest common ancestor update
+that Genestrip performs to make classification precise also localises, for every $k$-mer, the set of
+genomes carrying it; Section \ref{pairwise} shows that this confines everything two genomes share to
+a single lineage of the tree, which is what makes an exact whole-genome comparison affordable.
+
+On the tree side, fitting branch lengths to a fixed topology by least squares goes back to
+\cite{cavalli1967phylogenetic} and \cite{fitch1967construction}, and neighbour joining
+\cite{saitou1987nj} remains the standard way to obtain a topology from a distance matrix when none is
+given. Here one is given --- the refined taxonomy --- and Section \ref{treefit} treats that as the
+hypothesis to be fitted rather than as something to be replaced.
 
 \section{Phylogenetic Mapping}
 
@@ -280,27 +336,41 @@ Figure \ref{nfunc} shows a plot of the function $d(E/|s|)$: It starts with a slo
 \caption{A plot of the function $d(E/|s|)$ with $k = 31$ in black. The red curves simulate the effect of an error of $\pm 10\%$ when measuring $E$.}\label{nfunc}
 \end{figure}
 
-\subsection{Embedding of $d$ in taxonomy trees}
+\subsection{Embedding of $d$ in taxonomy trees}\label{embedding}
 
-We want to apply $d$ to a node $n$ in the context of a taxonomy tree such as in Figure \ref{simplerefdb}. More precisely, we estimate $d_n$ to be the maximum evolutionary distance \emph{from $n$'s parent to the data taxa\footnote{See Section~\ref{intrinsicqms} for the definition of the term \enquote{data taxon}.} under $n$}:
+We want to apply $d$ to a node $n$ in the context of a refined taxonomy tree. More precisely, we estimate $d_n$ to be the maximum evolutionary distance \emph{from $n$'s parent to the data taxa\footnote{A \emph{data taxon} is a node that carries sequence data of its own; \cite{genestrip-ft} defines the term and the intrinsic quality measures that go with it.} under $n$}:
+Both counts are taken per genome, in the terms of Section \ref{pairwise}, and not as the totals a node
+holds. A node high in the tree holds the $k$-mers of everything beneath it, most of which belong to
+genomes other than the one whose distance is being estimated; summing those totals would measure the
+clade where the intent is to measure a lineage. What is summed instead is $\kappa_g(n)$, the share of
+a node that belongs to the genome $g$ at the end of the path in question, which
+Section \ref{pairwise} estimates with a sketch.
 \begin{itemize}
 \item
-For that, $above(n)$ shall sum over the $k$-mers assigned to nodes above $n$ towards the tree's root excluding $n$. 
-\item 
-Regarding $below(n)$, we consider each path starting from $n$ to any leaf node under $n$ including $n$ itself. We sum over the $k$-mers assigned to all nodes along each path and set $below(n)$ to be the maximum sum from such paths. $p_n$ denotes some path leading to the maximum sum of $below(n)$. 
+For that, $above_g(n)$ shall sum $\kappa_g(n')$ over the nodes $n'$ above $n$ towards the tree's root excluding $n$.
+\item
+Regarding $below_g(n)$, we consider each path starting from $n$ to any leaf node under $n$ including $n$ itself, let $g$ be the genome at that leaf, and sum $\kappa_g(n')$ over the nodes $n'$ along the path. $below(n)$ is the maximum such sum and $p_n$ denotes some path attaining it, with $g_n$ the genome at its leaf.
 \end{itemize}
-We set $d_n := d(E_n/|s_n|)$ by letting $E_n := below(n)$ and $|s_n| := above(n) + below(n)$.
+We set $d_n := d(E_n/|s_n|)$ by letting $E_n := below(n)$ and $|s_n| := \kappa_{g_n}$, the whole of
+that genome as Equation \eqref{genomesize} counts it --- which is $above_{g_n}(n) + below(n)$, the
+two parts of its lineage, so the shape of the estimate is unchanged and only what is counted at each
+node has altered. This agrees with the reading Section \ref{pairwise} takes, and not by coincidence.
+The comparison here is between the sequence at $n$'s parent and the genome $g_n$ at the leaf: what
+the two have in common is what $g_n$ holds above $n$, what separates them is what it holds at $n$ and
+below, and the union of the two is those parts together --- which is $\kappa_{g_n}$. So $E_n$ is
+again the union less the intersection and $|s_n|$ again the union, the same two quantities
+Equation \eqref{differing} and Equation \eqref{pairdist} use for a pair of genomes.
 This way, $d_n$ measures the evolutionary distance from $n$'s parent to the leaf of $p_n$. 
 Since we use the maximum sum in $below(n)$, this estimate is conservative for $n$.
 However, to depict evolutionary distances in a given taxonomy tree we must represent the portion $dp_n$ of $d_n$ relating to the branch from a node $n$'s parent to $n$ itself.
-Let $c$ be the child of $n$ on the path $p_n$. It can be shown that $d_n \geq d_c$,\footnote{$E_n = below(n) = k_n + below(c) = k_n + E_c \geq E_c$ (where $k_n \geq 0$ is the number of $k$-mers stored at $n$ itself), while $|s_n| = above(n) + below(n) = above(n) + k_n + E_c = above(c) + below(c) = |s_c|$, so $E_n/|s_n| \geq E_c/|s_c|$, and therefore $d_n \geq d_c$ by monotonicity of $d$.} so we simply set $dp_n := d_n - d_{c}\geq 0$.
+Let $c$ be the child of $n$ on the path $p_n$. It can be shown that $d_n \geq d_c$,\footnote{$E_n = below(n) = \kappa_{g_n}(n) + below(c) = \kappa_{g_n}(n) + E_c \geq E_c$ (where $\kappa_{g_n}(n) \geq 0$ is $g_n$'s share of the $k$-mers stored at $n$ itself), while $|s_n| = above_{g_n}(n) + below(n) = above_{g_n}(n) + \kappa_{g_n}(n) + E_c = above_{g_n}(c) + below(c) = |s_c|$, so $E_n/|s_n| \geq E_c/|s_c|$, and therefore $d_n \geq d_c$ by monotonicity of $d$.} so we simply set $dp_n := d_n - d_{c}\geq 0$.
 
-Figure \ref{simplerefdbdist} depicts a resulting taxonomy tree for the same database as in Figure \ref{simplerefdb} but with horizontal line lengths encoding distance portions.\footnote{We configuratively set the horizontal line lengths of the highest ranked nodes to a minimum although their $dp_n$ might be large. This is because the resulting distance portion is too unreliable and tends to cause a large but non-informative indentation in the tree. In Figure \ref{simplerefdbdist}, this exception affects the node \enquote{Viruses (10239) acellular root} only.}
+Figure \ref{simplerefdbdist} depicts a resulting taxonomy tree, with horizontal line lengths encoding distance portions, for a refined database of the kind \cite{genestrip-ft} produces.\footnote{We configuratively set the horizontal line lengths of the highest ranked nodes to a minimum although their $dp_n$ might be large. This is because the resulting distance portion is too unreliable and tends to cause a large but non-informative indentation in the tree. In Figure \ref{simplerefdbdist}, this exception affects the node \enquote{Viruses (10239) acellular root} only.}
 
   \begin{figure}[h]%
         \centering
 \dbfig[width=12.95cm]{results/orthopox3_ftsvgtaxtree}
-         \caption{Tree representation of a Genestrip $k$-mer database including three Orthopoxvirus species. The database is in the state \emph{right after the refinement} as in Figure \ref{ftsketch} (4). The tree depicts the same database as in Figure \ref{simplerefdb} but here, the length of a horizontal line to a node $n$ encodes the evolutionary distance portion $dp_n$. Both $d_n$ and $dp_n$ are also printed in brackets. The reddened lines indicate the branch for the $p_n$ starting from node $n$.
+         \caption{Tree representation of a Genestrip $k$-mer database including three Orthopoxvirus species. The database is in the state right after the refinement of \cite{genestrip-ft}. Here the length of a horizontal line to a node $n$ encodes the evolutionary distance portion $dp_n$. Both $d_n$ and $dp_n$ are also printed in brackets. The reddened lines indicate the branch for the $p_n$ starting from node $n$.
 % Dashed lines signal less reliable evolutionary distances $d_n > t_n := 0.8$.
  }\label{simplerefdbdist}
     \end{figure}
@@ -312,6 +382,383 @@ The relatively compact depiction of taxonomy trees such as in Figure \ref{simple
 \dbfig[width=13cm]{results/borrelia_ftsvgtaxtree}
          \caption{Example of a phylogenetic mapping for the genus Borrelia (138) via a refined taxonomic tree with evolutionary distances included. The presentation approach is the same as in Figure \ref{simplerefdbdist}}\label{borr_map}
     \end{figure}
+
+\section{Relatedness between two genomes}\label{pairwise}
+
+The $d$ of Equation \eqref{distanceapprox} has so far been read at a node of a tree. The same database also answers the
+question one genome at a time: given two genomes $g$ and $h$ that the database holds, how far apart
+are they? What the estimate needs is the number of $k$-mers the two have in common, and a Genestrip
+database very nearly reports it already.
+
+\subsection{Where two genomes can share a $k$-mer}
+
+Write $\mathrm{path}(g)$ for the nodes from the node carrying $g$ up to the root, $g$'s own node
+among them, and $g \wedge h$ for the lowest node the two genomes have in common --- the node at which
+they meet. Let $K_g$ be the set of distinct $k$-mers of $g$ that the database holds and $K_g(n)$
+those of them it holds at the node $n$, so that $K_g$ is the disjoint union of the $K_g(n)$ over
+$\mathrm{path}(g)$.
+
+The lowest common ancestor update confines the sharing to one lineage, and this is what makes the
+count tractable. A $k$-mer carried by both $g$ and $h$ has a carrier set containing both, so its
+lowest common ancestor lies at or above $g \wedge h$: the database holds it on
+$\mathrm{path}(g \wedge h)$ and nowhere else. Below the meeting node the two genomes cannot share
+anything, however much sequence they each keep there. So
+%
+\begin{equation}
+  \lvert K_g \cap K_h \rvert \;=\; \sum_{n \,\in\, \mathrm{path}(g \wedge h)}
+    \lvert K_g(n) \cap K_h(n) \rvert ,
+  \label{sharedsplit}
+\end{equation}
+%
+and the sum runs over a dozen nodes rather than over the tree.
+
+\subsection{The meeting node is counted, the rest estimated}
+
+The first term of Equation \eqref{sharedsplit} needs no estimate. Genestrip's $k$-mer index goal
+already builds a Bloom filter per node and is run at every level, and at $n = g \wedge h$ it yields
+$\lvert K_g(n) \cap K_h(n) \rvert$ directly: the two genomes meet there, so the $k$-mers they hold in
+common at that node are exactly what the index reports for the pair. Write $I(g,h)$ for that count.
+
+Above the meeting node the index does not answer the question --- the pair does not meet there, and
+what the node holds is the property of a larger set of genomes --- so the overlap is estimated
+instead, from two counts the database supplies. Let $u_n$ be the number of distinct $k$-mers the
+database holds at $n$, which is counted exactly when the database is built, and let $\kappa_g(n) =
+\lvert K_g(n) \rvert$ be how many of them belong to $g$. Deduplicating a genome's $k$-mers per node
+is the one thing not already counted; a HyperLogLog sketch \cite{flajolet2007hyperloglog} estimates
+it in constant space, one sketch per node of $\mathrm{path}(g)$ while that genome is walked and
+nothing kept but the estimate.
+
+Read as probabilities, $\kappa_g(n)/u_n$ is the chance that a $k$-mer drawn from what the database
+holds at $n$ belongs to $g$, and $\kappa_h(n)/u_n$ the same for $h$. Taking the two as independent,
+the expected number of the $u_n$ that belong to both is
+%
+\begin{equation}
+  \widehat{\lvert K_g(n) \cap K_h(n) \rvert} \;=\;
+    u_n \cdot \frac{\kappa_g(n)}{u_n} \cdot \frac{\kappa_h(n)}{u_n}
+  \;=\; \frac{\kappa_g(n)\,\kappa_h(n)}{u_n} ,
+  \label{jointest}
+\end{equation}
+%
+which is the whole of the estimate and costs two lookups per node. Putting the counted and the
+estimated parts together,
+%
+\begin{equation}
+  \widehat{J}(g,h) \;=\; I(g,h) \;+\!\!
+    \sum_{\substack{n \,\in\, \mathrm{path}(g \wedge h) \\ n \,\neq\, g \wedge h}}
+    \frac{\kappa_g(n)\,\kappa_h(n)}{u_n} .
+  \label{jointtotal}
+\end{equation}
+
+What the independence in Equation \eqref{jointest} assumes, and how it fails, is worth stating.
+It treats $g$ and $h$ as two genomes drawn at random from those beneath $n$, whereas they are not:
+they meet below $n$ and are therefore closer to each other than a random pair from that clade is.
+Relatives share more than chance allows, so Equation \eqref{jointest} understates the overlap and
+Equation \eqref{jointtotal} is a lower estimate of what the two genomes share. The bias is smallest
+where the term matters least. A node far above the meeting point holds $k$-mers conserved across a
+wide clade, where carriage has little to do with which pair is asked about; a node just above it
+holds the $k$-mers most sensitive to the pair's own relatedness, and there the term is one of the
+largest. That the two coincide is what makes the count extensible, as
+Section \ref{extendcount} sets out: the term worth paying to count is the term worth not estimating.
+
+\subsection{Counting further up where it pays}\label{extendcount}
+
+Nothing confines the counted term to the meeting node. The $k$-mer index is built at every level, so
+the intersection $\lvert K_g(n) \cap K_h(n) \rvert$ can be had exactly at any node of
+$\mathrm{path}(g \wedge h)$ that is worth the query, and each node so treated drops a term from the
+estimated part of Equation \eqref{jointtotal} --- removing both its sampling error and the
+independence bias it carries. Writing $C \subseteq \mathrm{path}(g \wedge h)$ for the nodes counted
+rather than estimated, with $g \wedge h \in C$ always,
+%
+\begin{equation}
+  \widehat{J}_C(g,h) \;=\; \sum_{n \,\in\, C} \lvert K_g(n) \cap K_h(n) \rvert
+    \;+\!\! \sum_{n \,\in\, \mathrm{path}(g \wedge h) \setminus C} \!\!
+    \frac{\kappa_g(n)\,\kappa_h(n)}{u_n} ,
+  \label{jointadaptive}
+\end{equation}
+%
+of which Equation \eqref{jointtotal} is the case $C = \{g \wedge h\}$ and an exhaustive count the
+case $C = \mathrm{path}(g \wedge h)$. What follows is written $\widehat{J}(g,h)$ throughout and
+means $\widehat{J}_C$ for whichever $C$ a build settles on; nothing below depends on the choice
+except the accuracy of the result.
+
+How far up to go is decided rather than guessed, because the estimate says where it is weak before
+any of it is paid for. The estimated terms cost two lookups each, so the whole of
+Equation \eqref{jointtotal} can be formed first and the counted share
+%
+\begin{equation}
+  \pi_C(g,h) \;=\; \frac{1}{\widehat{J}_C(g,h)} \sum_{n \,\in\, C}
+    \lvert K_g(n) \cap K_h(n) \rvert
+  \label{countedshare}
+\end{equation}
+%
+read off it. A pair whose sharing is almost all at the meeting node is finished at $C = \{g \wedge
+h\}$; a pair whose $\pi$ falls short of a target has its largest remaining term identified by the
+same arithmetic, and $C$ grows by that node. Taking the terms in decreasing size is greedy and, for
+the purpose of reducing the estimated mass, optimal: each query removes exactly the term it is aimed
+at.
+
+Two things make the order agree with the tree. The largest estimated terms sit just above the
+meeting node, since that is where two related genomes share most of what they do not share at the
+node itself --- and it is also where the independence assumption is at its worst, for the reason
+given above. So counting upward from the meeting node spends the queries where both the variance and
+the bias are largest, and stops when what is left is the conserved sharing high in the tree, which is
+small, nearly independent of the pair, and cheap to be wrong about. The scheme is therefore an
+accuracy dial with a known price, not an approximation whose quality is discovered afterwards.
+
+The same dial governs the cost of a whole matrix, which is where it is likely to bind. An
+estimated term is two lookups and a division; a counted one is a query against the $k$-mer index,
+and over $\binom{\lvert L \rvert}{2}$ pairs the difference between the two decides whether a
+distance matrix over a database is minutes of work or days of it. The extremes bracket it. With
+$C = \mathrm{path}(g \wedge h)$ every term is counted and the matrix costs as many index queries as
+there are pairs times the depth of the tree. With $C = \emptyset$ --- dropping even the meeting
+node, which Equation \eqref{jointadaptive} permits although Equation \eqref{jointtotal} does not ---
+nothing is queried at all and the whole matrix is $O(\lvert L \rvert^2 \cdot \text{depth})$
+arithmetic over arrays already in memory, at the accuracy the independence assumption allows.
+Between them lies a policy, and it need not be uniform: a pair reported to a reader deserves more
+counting than a pair that only contributes a row to the least-squares fit of
+Section \ref{treefit}, where hundreds of other rows constrain the same branches.
+
+\todo{Establish the cost of one counted term before choosing a policy, since it sets the scale of
+everything else. If obtaining $\lvert K_g(n) \cap K_h(n) \rvert$ costs anything proportional to a
+genome's $k$-mers rather than to what the pair holds at that one node, the counted route does not
+survive past a few hundred genomes and the estimated route is the only one that scales --- which
+would make the independence bias the thing to measure and correct rather than to count around.}
+
+\todo{Measure the profile of $\pi_C$ before fixing a policy. Two things decide it and both are
+database properties: how the estimated terms decay going up the path, and how far up the pairs of
+interest meet. If $\pi_{\{g \wedge h\}}$ is already above nine tenths for pairs meeting at a species,
+the adaptive part is never invoked for the pairs that matter and can be left out; if it is not, the
+number of extra nodes needed to reach a target is what sets the cost of the whole matrix.}
+
+\subsection{The union, and a Jaccard index over whole genomes}
+
+The same reading gives what the two genomes hold between them. At a node of the shared lineage the
+union of the two sets is $\kappa_g(n) + \kappa_h(n)$ less their overlap --- counted where that node
+is in $C$ and estimated by Equation \eqref{jointest} where it is not, the union caring only that the
+overlap is subtracted and not how it was arrived at. Below the meeting point the two are separate and no overlap
+arises to be estimated: such a node lies under one of the genomes and not the other, so what it
+contributes to the union is that genome's share of it alone, $\kappa_g(n)$ or $\kappa_h(n)$ as the
+case may be. Summing the three kinds of node
+along $\mathrm{path}(g) \cup \mathrm{path}(h)$ and writing
+%
+\begin{equation}
+  \kappa_g \;=\; \sum_{n \,\in\, \mathrm{path}(g)} \kappa_g(n)
+  \label{genomesize}
+\end{equation}
+%
+for the size of one genome in the database, the estimated union telescopes to
+%
+\begin{equation}
+  \widehat{U}(g,h) \;=\; \kappa_g + \kappa_h - \widehat{J}(g,h) ,
+  \label{unionest}
+\end{equation}
+%
+which is inclusion and exclusion recovered rather than assumed: estimating the union node by node
+and estimating the intersection node by node give the same answer, because each node's two estimates
+are built from the same two counters. Nothing further has to be sketched for it.
+
+The Jaccard index over the two genomes follows,
+%
+\begin{equation}
+  \widehat{\jmath}(g,h) \;=\; \frac{\widehat{J}(g,h)}{\widehat{U}(g,h)}
+  \;=\; \frac{\widehat{J}(g,h)}{\kappa_g + \kappa_h - \widehat{J}(g,h)} ,
+  \label{jaccard}
+\end{equation}
+%
+and it is an index over the \emph{whole} of both genomes and not over a sample of either. That holds
+on one condition, which is the condition of the section: both genomes are in the database. The entry
+phase stores every $k$-mer of a genome it enters, and the update leaves each of them somewhere on
+that genome's own lineage, so Equation \eqref{genomesize} counts the genome entire and
+Equation \eqref{jaccard} compares two complete $k$-mer sets. For a genome the database never entered
+the same arithmetic returns something narrower --- its shared part against another genome's whole ---
+and should not be read as a Jaccard index between organisms.
+
+\subsection{From shared $k$-mers to a distance}
+
+Nothing further is needed: Equation \eqref{distanceapprox} takes a count of differing unique
+$k$-mers over a sequence length, and both are now to hand. The $k$-mers that differ are those the
+union holds and the intersection does not,
+%
+\begin{equation}
+  \widehat{E}(g,h) \;=\; \widehat{U}(g,h) - \widehat{J}(g,h)
+  \;=\; \kappa_g + \kappa_h - 2\,\widehat{J}(g,h) ,
+  \label{differing}
+\end{equation}
+%
+which counts a substitution through the $k$-mers it destroys on either side and counts an extension
+of one genome over the other through the $k$-mers that have no counterpart at all. The sequence the
+two span between them is the union, $\widehat{U}(g,h)$ of Equation \eqref{unionest}, and taking that
+for $|s|$ gives
+%
+\begin{equation}
+  \widehat{d}(g,h) \;=\; 1 - \sqrt[k]{1 - \frac{\widehat{E}(g,h)}{\widehat{U}(g,h)}}
+  \;=\; 1 - \sqrt[k]{\widehat{\jmath}(g,h)} ,
+  \label{pairdist}
+\end{equation}
+%
+since $1 - \widehat{E}/\widehat{U}$ is the Jaccard index of Equation \eqref{jaccard}. The estimate is
+therefore a $k$-th root of the Jaccard index and nothing more, and it behaves at the ends as it
+should: identical genomes give $\widehat{\jmath} = 1$ and $\widehat{d} = 0$, genomes sharing nothing
+give $\widehat{d} = 1$.
+
+Taking the union rather than a genome for $|s|$ is a decision about what is being measured, and it
+should be read as one. The derivation behind Equation \eqref{distanceapprox} has two sequences of
+equal length differing only by substitution, and there $|s|$ is one sequence's length: a
+substitution destroys $k$ $k$-mers on each side, so Equation \eqref{differing} counts it twice,
+and dividing by $\kappa_g + \kappa_h$ rather than by the union would halve it back. Doing so returns
+the per-base substitution rate exactly, and Equation \eqref{pairdist} returns about twice it --- at
+$k = 31$ a pair whose true rate is $0.01$ reads $0.018$, and one at $0.001$ reads $0.002$.
+
+The reason for preferring the union is that real genomes do not differ only by substitution. One
+carries genes the other has not, and that material is divergence as surely as a changed base is:
+under the equal-length reading it has no place to go, since the genomes are not of equal length and
+neither is the sequence the pair descends from. The union is that sequence --- everything either
+genome holds --- and measuring the difference against it counts gain and loss alongside
+substitution. What is bought with the factor of two is a distance that does not depend on which of
+the two genomes is called $s$.
+
+One limit of the transformation survives the choice and is worth stating, since neither denominator
+repairs it. The $k$-th root in Equation \eqref{distanceapprox} assumes that a difference costs $k$
+$k$-mers, which a substitution in the middle of a sequence does. An insertion of length $L$ does
+not: it yields about $L + k - 1$ new $k$-mers rather than $kL$, so the transformation reads it as
+though it were some $L/k$ substitutions and understates it accordingly. Equation \eqref{pairdist} is
+therefore reliable for pairs that differ mostly by substitution, and conservative for pairs that
+differ in gene content --- which is the direction to prefer for an estimate that is read as a lower
+bound on relatedness rather than as an upper bound on distance.
+
+Written in the Jaccard index, Equation \eqref{pairdist} sits beside the estimator of
+\cite{Ondov:2016aa}, which reports $-\frac{1}{k}\ln\bigl(2\jmath/(1+\jmath)\bigr)$ and so takes the
+equal-length reading. The difference is in what produces $\jmath$: a sketching tool computes it from
+a sample of each genome taken independently of any tree, where here it comes from counters a
+database already keeps, over the whole of both genomes, and the lineage structure of the update is
+what reduces the sum to one path.
+
+\section{From a distance matrix to a tree}\label{treefit}
+
+Section \ref{pairwise} applies to any two genomes the database holds, so running it over all pairs
+gives a full distance matrix $\widehat{d}(g,h)$ on the genome set $L$. Turning that matrix into a
+tree divides into two questions that are better kept apart: which tree, and how long are its
+branches. The first is a combinatorial question and is answered by clustering; the second is a
+linear one and is answered by least squares, which is the part this section sets out, since it is
+also what replaces the heuristic branch portions $dp_n$ of Section \ref{embedding}.
+
+\subsection{The topology, and why the taxonomy is the interesting one}
+
+A distance matrix can be clustered into a topology --- average linkage after \cite{Sokal1958ASM}
+gives an ultrametric tree, neighbour joining \cite{saitou1987nj} an unrooted one that assumes no
+molecular clock and is the better default of the two, since nothing in Section \ref{pairwise} makes
+rates equal across lineages. Either is available here and the next subsection treats them like any
+other topology.
+
+Neither is the reason to do this. A refined Genestrip database already carries a tree over exactly
+these genomes, and it is not a tree derived from the distances: it is the NCBI taxonomy
+\cite{taxonomy} with the refinements of \cite{genestrip-ft} in it, built from nomenclature and
+curation rather than from the measurements of Section \ref{pairwise}. Fitting branch lengths to
+\emph{that} topology asks a different question from clustering. Clustering asks what tree the
+distances imply; fitting the taxonomy asks how well the taxonomy accounts for them, and because the
+system is overdetermined the answer is quantitative and local. A node whose incident pairs are fitted
+closely is a node the sequence data supports; one whose residual is large is a node where the
+established grouping and the $k$-mer evidence disagree, and the fit says by how much and where.
+
+This is the qualitative claim of Section \ref{nodeprec} made measurable. Node precision reports
+where a database's tree is coarser than its data; the residuals of Equation \eqref{lsq} report where
+its tree is \emph{wrong} for the data, which is a different defect and one that refinement does not
+repair. A build that is clustered instead cannot ask this at all, having thrown the hypothesis away
+before testing it.
+
+\subsection{Branch lengths as an overdetermined linear system}
+
+Fix a topology with edge set $\mathcal{E}$ and write $b_e \geq 0$ for the length of edge $e$. On a
+tree there is exactly one path between two leaves; let $P(g,h) \subseteq \mathcal{E}$ be its edges.
+The additive model --- the one Equation \eqref{distanceapprox} already assumes when it treats
+distance as a ratio of accumulated mutations --- says that the distance between two genomes is the
+mutation accumulated along the path that separates them:
+%
+\begin{equation}
+  d(g,h) \;=\; \sum_{e \,\in\, P(g,h)} b_e .
+  \label{additive}
+\end{equation}
+%
+This is linear in the unknowns. Collecting the $M = \binom{\lvert L \rvert}{2}$ pairs into a vector
+$\widehat{\mathbf{d}}$ and writing $A \in \{0,1\}^{M \times \lvert \mathcal{E} \rvert}$ for the
+path-incidence matrix,
+%
+\begin{equation}
+  A_{(g,h),\,e} \;=\;
+  \begin{cases}
+    1, & e \in P(g,h) , \\
+    0, & \text{otherwise} ,
+  \end{cases}
+  \qquad
+  A\mathbf{b} \;=\; \widehat{\mathbf{d}} ,
+  \label{designmatrix}
+\end{equation}
+%
+and the system is overdetermined as soon as there are four genomes: an unrooted binary tree on $n$
+leaves has at most $2n-3$ edges against $n(n-1)/2$ pairs, so ten genomes give $45$ equations in $17$
+unknowns and a hundred give $4950$ in $197$. The branch lengths are not read off the distances but
+fitted to all of them at once, and it is this redundancy that makes the residuals worth reading.
+
+The solution is the weighted least-squares one, constrained to be non-negative since a branch of
+negative length has no meaning:
+%
+\begin{equation}
+  \widehat{\mathbf{b}} \;=\; \argmin_{\mathbf{b} \,\geq\, \mathbf{0}}
+    \bigl( A\mathbf{b} - \widehat{\mathbf{d}} \bigr)^{\!\top} W
+    \bigl( A\mathbf{b} - \widehat{\mathbf{d}} \bigr) ,
+  \label{lsq}
+\end{equation}
+%
+whose unconstrained form solves the normal equations $A^{\!\top} W A \, \mathbf{b} = A^{\!\top} W
+\widehat{\mathbf{d}}$. Fitting branch lengths to a fixed topology by least squares is the criterion
+of \cite{cavalli1967phylogenetic} and \cite{fitch1967construction}; what this paper adds is where the
+distances and the weights come from. The non-negativity turns Equation \eqref{lsq} into a
+non-negative least-squares problem, for which the active-set algorithm of \cite{lawson1995solving} is
+standard and terminates finitely.
+
+\subsection{Weights}
+
+$W$ is diagonal and its entries are the reciprocal variances of the individual distance estimates,
+$W_{(g,h)} = 1 / \sigma^2(g,h)$. This is where Section \ref{pairwise} pays off a second time. The
+classical criteria have to guess at these --- \cite{cavalli1967phylogenetic} weights every pair
+equally and \cite{fitch1967construction} takes $1/d^2$ as a stand-in for proportional error --- but
+here the error is not a guess. Each $\widehat{d}(g,h)$ is assembled from a counted intersection at
+the meeting node, sketched shares above it, and exact genome sizes, and the variance of the result
+follows from those: pairs whose shared $k$-mers are mostly counted rather than estimated carry more
+weight than pairs meeting high in the tree, which is the right ordering, since a pair meeting high
+is both estimated more and further apart.
+
+\subsection{What cannot be identified, and what the residuals say}
+
+Equation \eqref{lsq} has a unique solution only where $A$ has full column rank, and it does not
+always. An internal node of degree two lies on every path through it or on none, so its two edges
+enter every equation together and only their sum $b_{e_1} + b_{e_2}$ is determined. The taxonomy is
+full of such nodes --- a rank with a single child beneath it is the ordinary case, not the exception
+--- so where the topology is taken from the taxonomy the chains must be contracted before the fit and
+the fitted length divided among them afterwards by a convention, or else reported as the one length
+the data supports. The same applies at a root: no pair-path separates the two edges below it, which
+is why the fit is done unrooted and the root placed afterwards.
+
+Nothing in Equation \eqref{lsq} imposes a clock. The fitted lengths are accumulated substitution,
+not elapsed time, and two branches of equal length need not represent equal intervals; a tree drawn
+from them is additive but not ultrametric, and the horizontal indentations of
+Section \ref{embedding} should be read as distance and never as age.
+
+The residual $A\widehat{\mathbf{b}} - \widehat{\mathbf{d}}$ is not waste. Equation \eqref{additive}
+asserts that the distances are tree-like, and with tens or hundreds of equations per unknown the fit
+has ample opportunity to fail. A residual large in one region of the tree and small elsewhere says
+that region is not well described by a tree at all --- recombination and horizontal transfer being
+the biological reasons, and a failure of the independence assumption of Section \ref{pairwise} the
+methodological one --- and distinguishing the two is what Section \ref{validation} has to do.
+Reported per node as the root-mean-square residual over the pairs whose path crosses it, it gives
+each branch of the drawn tree a measure of how much the data supported it, which the heuristic
+portions of Section \ref{embedding} could not offer.
+
+\todo{The fit is cubic in the number of edges if the normal equations are formed naively, which is
+tolerable to a few thousand genomes and not beyond. $A$ is sparse --- a row has twice the tree's
+depth of non-zeros, a dozen or two --- and \cite{bryant1998structure} give an $O(n^2)$ evaluation of
+the least-squares criterion on a fixed topology that should be used instead if the genome sets grow.
+Measure where the naive solver stops being adequate before implementing the fast one.}
 
 \section{Evolutionary distance distribution}
 
@@ -405,7 +852,7 @@ An approximate $\pm 1\sigma$ credible interval for $d$ is therefore $\hat{d}\,\p
 
    \section{Application to phylogeny}
 
-    \subsection{Node precision for taxonomy improvements}
+    \subsection{Node precision for taxonomy improvements}\label{nodeprec}
 
 \todo{Internal note in the source below: what the refreshed subtree precisions do and do not say about this section, and the validation it would take to settle it.}
 
@@ -517,14 +964,47 @@ An approximate $\pm 1\sigma$ credible interval for $d$ is therefore $\hat{d}\,\p
         \caption{Using node precision to spot a structural flaw in a taxonomy. In (2), $np(W) = 2/3$ lies below one, which indicates that the intermediate node $V$ groups the wrong data taxa. The corrected taxonomy in (3) yields $np(n) = 1$ for all $k$-mer-storing nodes in (4).}\label{npflaw}
     \end{figure}
 
-  \section{Validation against other tools}
+  \section{Validation against other tools}\label{validation}
     
  
 % like so: $d(E_n / k_n)$. But unfortunately, the following does not hold: $d_n(E_n/l_n) \neq \sum_i d_{n_i}(E_i/k_i)$.
 
-    \subsection{Comparison with established phylogeny trees}
-    
-    Example candidates: Borrelia, Babesia, Malaria, Orthopoxvirus
+Three questions are separable and want separating, because they can fail independently and a single
+comparison would confound them. The candidate clades for all three are Borrelia, Babesia, the
+malaria parasites and Orthopoxvirus: small enough to compute exhaustively, curated enough to have
+something to be measured against, and spanning viruses through apicomplexan parasites.
+
+    \subsection{Are the distances right?}
+
+Equation \eqref{pairdist} is checked against an alignment-based standard, for which
+FastANI \cite{jain2018fastani} is the natural choice: accurate where it applies, and applicable at
+the scale of one clade even though it does not scale to a whole collection. The comparison is a
+regression of $\widehat{d}$ on $1 - \mathrm{ANI}$ over all pairs of a clade, and what is read from
+it is not only the correlation but the residual structure --- whether the departures fall where
+Section \ref{pairwise} predicts, at pairs meeting high in the tree and at pairs whose shared $k$-mers
+are mostly estimated rather than counted.
+
+    \subsection{What does whole-genome counting buy over sketching?}
+
+This is the comparison that decides whether the method earns its place, and it is a falsifiable
+prediction rather than an expectation. Mash \cite{Ondov:2016aa} and sourmash
+\cite{pierce2019sourmash} estimate the same Jaccard index from a sketch of a few thousand hashes
+where Section \ref{pairwise} counts over millions of $k$-mers, so their sampling error should set a
+floor that ours does not have. Section \ref{pairwise}'s error analysis says where to look: the
+advantage should be at small $d$, where a sketch runs out of resolution, and should vanish at large
+$d$, where our own estimated terms dominate. A plot of the disagreement between the two against
+$\widehat{d}$ should therefore fall, and if it does not the whole argument for counting rather than
+sketching is wrong.
+
+    \subsection{Does the taxonomy fit?}
+
+The topology question is asked of the fit of Section \ref{treefit} rather than of the distances.
+Trees clustered from $\widehat{d}$ are compared to published phylogenies for the same clades and to
+GTDB \cite{parks2022gtdb} by the Robinson--Foulds metric \cite{robinson1981comparison}, which counts
+the splits two trees do not share. The more interesting figure is the other one: the per-node
+residuals of the taxonomy fit, set beside the places where GTDB and the NCBI taxonomy already
+disagree. Agreement there would say the residual detects real disagreement rather than estimation
+error, which is the one thing Section \ref{treefit} cannot establish from its own output.
 
 
 
