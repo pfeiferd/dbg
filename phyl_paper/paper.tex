@@ -26,6 +26,7 @@
 \usepackage{algpseudocode}%
 \usepackage{listings}%
 %\usepackage{qtree}
+\usepackage{float}   % [H] for small in-place figures, see Figure~\ref{pendantfig}
 \usepackage{tikz-qtree}
 %\usepackage{paper}
 %
@@ -218,6 +219,13 @@
 
 \DeclareMathOperator*{\argmin}{arg\,min}
 
+%
+% Figures float more freely than the class allows by default.
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.8}
+\renewcommand{\textfraction}{0.07}
+\renewcommand{\floatpagefraction}{0.75}
+
 \begin{document}
 
     \title{Phylogenetic mapping of $k$-mer databases}
@@ -241,12 +249,20 @@
     overdetermined linear system for the branch lengths of any given topology, which we solve by
     non-negative least squares. Taking the topology from the refined taxonomy itself turns the fit
     into a test: the residual at a node measures how far the established taxonomy departs from the
-    sequence data beneath it.
+    sequence data beneath it. That test is sound because the distances do not depend on the taxonomy
+    they are used to judge --- they are fixed by the genomes' $k$-mer sets, and a genome filed in the
+    wrong clade yields the same distance to its true relative as a correctly filed one. The same
+    independence makes the method a way of placing a newly sequenced organism: enter it at a guess,
+    and the measurements rather than the guess decide where it belongs, at a cost of one row of the
+    matrix. Draft assemblies are admissible: fragmentation costs almost nothing, and incompleteness,
+    which costs a great deal, is detectable from the counters already kept, correctable, and costs
+    resolution rather than correctness --- a collection of drafts still yields the right tree at
+    species level and above.
 
     \textbf{Conclusions:} Distances and a drawn phylogeny come out of a classification database as a
-    by-product, at the price of one sketch per genome and node. The method compares genomes the
-    database holds, and both must be present: it reads a reference collection against itself rather
-    than placing an unknown organism from a sample.}
+    by-product, at the price of one sketch per genome and node. What the method compares are genomes
+    the build has entered, which a newly sequenced assembly can join at any time; reads from a sample
+    are a different question and belong to read classification.}
 
     \keywords{Metagenomics, $k$-mer counting, phylogeny, evolutionary distance, taxonomy}
 
@@ -263,6 +279,15 @@ paper sets out is that the two together are enough to estimate evolutionary dist
 genomes a database holds, to draw those distances on the taxonomy it already carries, and --- because
 the fit is overdetermined --- to say how well the taxonomy agrees with the sequence.
 
+The distances turn out not to depend on the taxonomy at all, which is more useful than it sounds.
+The quantities behind them are properties of two $k$-mer sets, so a genome filed under the wrong name
+yields the same distance to its true relative as a correctly filed one; the tree affects how exactly
+the estimate is reached and not what it converges on. Section \ref{taxindep} makes that precise. Two
+things follow. The residual test above is not circular, since the measurements it judges the taxonomy
+by owe the taxonomy nothing; and a genome whose position is unknown can be entered at a guess and
+placed afterwards on the measurements, which Section \ref{placing} sets out and which costs one row
+of the distance matrix per organism.
+
 The estimates cost little because the database has done the work. Sections \ref{pairwise}
 and \ref{treefit} add one sketch per genome and per node to what a build already produces, and take
 the rest from counters that exist. Nothing is aligned and nothing is sampled: the distances are
@@ -270,10 +295,31 @@ computed over the whole of each genome's $k$-mers rather than over a sketch of t
 the approach differs from the sketching tools of Section \ref{relatedwork} and where it should
 differ most in accuracy, namely between genomes that are close.
 
-One boundary is worth drawing at the outset. The method compares two genomes \emph{that the database
-holds}, and both must be there: it is a way of reading a reference collection against itself, not a
-way of placing an unknown organism from a sample onto a tree. Read classification is what Genestrip
-does with a sample, and that question is not this one.
+Whether the genomes need to be finished is the first question a reference collection raises, and the
+answer divides. Contiguity turns out not to matter: the estimate reads $k$-mer sets and knows nothing
+of contigs, so cutting a genome into five hundred pieces costs only the $k$-mers spanning the cuts and
+shifts the distance by $0.0001$. Completeness matters a great deal in principle, since sequence missing from one
+genome is indistinguishable from sequence that diverged, and a genome five per cent short reads as far
+from an identical copy of itself as two genuinely different strains are from each other. In a curated
+collection it matters less than that in practice: measured across RefSeq, a typical draft is short by
+about a hundredth of its genome, which is worth $0.0005$ in distance and belongs below the resolution
+anything should be read at. Section \ref{incomplete} sets out both figures, shows that the effect of a
+genuinely deficient assembly on the fitted tree is visible in what the method already computes, that
+correcting for it is arithmetic where it is worth doing, and that what it costs when uncorrected is
+resolution rather than correctness: across a collection of drafts the
+topology is recovered whole at species level and above, and it is fine structure within a species that
+a collection of half-complete assemblies cannot support. Where a best tree is wanted rather than a
+verdict on the taxonomy, Section \ref{besttree} finds that correcting the short assemblies beats
+discarding them and by a wide margin --- discarding returns a confident tree of whatever fraction of
+the clade happens to have been closed, and that fraction is not a random sample of it. Draft
+assemblies are therefore usable, which they had better be, since most of a reference collection is
+drafts.
+
+One boundary is worth drawing at the outset, and it is about genomes rather than about names. What
+the method compares are two genomes \emph{that the database holds}, so both must have been entered ---
+a newly sequenced organism qualifies as soon as its assembly is in the build, whatever it is called
+and wherever it is filed, but reads from a sample do not. Assigning reads is read classification,
+which is what Genestrip already does and is not this question.
 
 \section{Related work}\label{relatedwork}
 
@@ -297,6 +343,15 @@ On the tree side, fitting branch lengths to a fixed topology by least squares go
 \cite{saitou1987nj} remains the standard way to obtain a topology from a distance matrix when none is
 given. Here one is given --- the refined taxonomy --- and Section \ref{treefit} treats that as the
 hypothesis to be fitted rather than as something to be replaced.
+
+\todo{This section needs a paragraph on phylogenetic placement, since Section \ref{placing} claims to
+do it. The established tools place a query sequence on a fixed reference phylogeny by maximum
+likelihood or a Bayesian posterior over edges, and they need an alignment of the query against the
+reference and a substitution model to do it; pplacer and EPA-ng are the ones to cite and I have not
+verified the references, so they are not cited here yet. The distinction to draw is that
+Section \ref{placing} places a whole genome, needs neither an alignment nor a model, and returns a
+least-squares residual per candidate edge rather than a likelihood --- which is weaker evidence per
+placement and available for every genome of a collection at once.}
 
 \section{Phylogenetic Mapping}
 
@@ -538,7 +593,9 @@ is in $C$ and estimated by Equation \eqref{jointest} where it is not, the union 
 overlap is subtracted and not how it was arrived at. Below the meeting point the two are separate and no overlap
 arises to be estimated: such a node lies under one of the genomes and not the other, so what it
 contributes to the union is that genome's share of it alone, $\kappa_g(n)$ or $\kappa_h(n)$ as the
-case may be. Summing the three kinds of node
+case may be. There are thus two kinds of node to sum over --- those on the shared lineage, where an
+overlap is subtracted however it was obtained, and those below the meeting point, where one genome
+contributes alone. Summing both kinds
 along $\mathrm{path}(g) \cup \mathrm{path}(h)$ and writing
 %
 \begin{equation}
@@ -633,6 +690,384 @@ a sample of each genome taken independently of any tree, where here it comes fro
 database already keeps, over the whole of both genomes, and the lineage structure of the update is
 what reduces the sum to one path.
 
+\subsection{The estimate does not depend on the taxonomy}\label{taxindep}
+
+Everything so far has been read off a tree, which invites the objection that the answer must inherit
+the tree's mistakes. A reference taxonomy does contain mistakes: a genome deposited under the wrong
+species, a species under the wrong genus, a name that predates the sequence that contradicts it. It
+is worth showing that the estimate is not at their mercy, and the argument is short.
+
+What Equation \eqref{pairdist} is built from are $\lvert K_g \cap K_h \rvert$, $\lvert K_g \cup K_h
+\rvert$ and the two $\kappa$. None of the first three mentions a node: they are properties of two
+sets of $k$-mers, hence of two sequences, and a taxonomy has no vote on them. The tree enters only in
+\emph{how they are arrived at}. So the target of the estimate is invariant under any reshaping of the
+taxonomy whatever, and what remains to be checked is the arithmetic that reaches it.
+
+That arithmetic survives too, in three steps. The size $\kappa_g$ of Equation \eqref{genomesize} is
+placement-independent: the entry phase stores every $k$-mer of a genome it enters and the update
+leaves each of them somewhere on that genome's own lineage, so wherever $g$ is attached,
+$\mathrm{path}(g)$ collects all of it and $\kappa_g = \lvert K_g \rvert$. Equation
+\eqref{sharedsplit} is placement-independent for the same reason applied to a pair: a $k$-mer carried
+by both has its lowest common ancestor at or above $g \wedge h$ wherever that node happens to be, so
+the sum still finds every shared $k$-mer and still misses none. And the counted term is exact at
+whatever node it lands on, an intersection being an intersection.
+
+Only the \emph{split} between the counted and the estimated terms moves, and for the case that
+matters it moves the right way. Take a genome $g$ filed far from its true closest relative $h$. Their
+meeting node $g \wedge h$ is then high in the tree --- and the $k$-mers the two share, having no other
+carriers, have their lowest common ancestor at exactly that node. The misplacement therefore gathers
+the pair's shared sequence \emph{into} the one term that is counted rather than estimated, and it
+leaves a shorter path above that node to be estimated at all. What stays below $g \wedge h$ is what
+$g$ and $h$ do not share, which is what the union needs and which no step of the estimate has to
+guess at. A worked case: on a tree of six genomes in two clades, moving one genome into the wrong
+clade changed the counted share of its nearest relative from $0.714$ to $1.000$ and left
+$\widehat{d}$ unaltered in the fifth decimal.
+
+The converse misplacement is the one to state honestly. Two genomes wrongly made neighbours meet
+low, so the whole of what they share --- conserved sequence, since they are in truth distant --- falls
+into estimated terms above them, and the independence assumption of Equation \eqref{jointest} bears
+the full weight. In the same worked case the counted share of such a pair fell from $1.000$ to $0.000$
+while $\widehat{d}$ again did not move, because what is being estimated there is carriage of $k$-mers
+conserved across a wide clade, where the assumption is at its most nearly true. The rule of thumb is
+that misplacement costs accuracy where the pair is distant and buys it where the pair is close, which
+is the opposite of the trade one would fear. Section \ref{placing} turns this from a defence into a
+method: a genome whose position is not known at all can be entered at a guess and placed afterwards on
+what the $k$-mers say.
+
+\subsection{Incomplete genomes}\label{incomplete}
+
+Everything above assumed that a genome in the database is a whole genome. Most of RefSeq is not:
+assemblies come in contigs, with sequence missing in the gaps between them, and a method that
+required closed genomes would be left with a small and unrepresentative collection. Two questions
+have to be separated here, and only one of them is a problem.
+
+\paragraph{Fragmentation costs almost nothing.} Nothing in Section \ref{pairwise} refers to a contig,
+a coordinate or an order. What the estimate consumes are the sets $K_g$ and $K_h$, and cutting a
+sequence into pieces removes only the $k$-mers that spanned the cuts: $k-1$ per break. A 5\,Mbp
+genome in five hundred contigs retains $4{,}985{,}000$ of its $4{,}999{,}970$ $k$-mers, so read
+against a closed copy of itself it returns $\widehat{d} = 0.0001$, and even two thousand contigs
+return $0.0004$. Both are below the distances that separate strains of one species, so a draft
+assembly is as good as a closed genome for this purpose as long as the sequence is there. Contiguity
+is not what matters.
+
+\paragraph{Missing sequence costs a great deal.} Completeness is what matters, and the union
+denominator is what makes it expensive. Let $c$ be the fraction of $g$'s $k$-mers the assembly
+actually contains. Then the observed shared count is $c$ times the true one while $h$'s side of the
+union is untouched, so $\widehat{\jmath}$ falls and $\widehat{d}$ rises although nothing has diverged.
+At $k = 31$ a genome $5\,\%$ short of complete reads $\widehat{d} = 0.0017$ against an identical
+complete copy of itself, one $20\,\%$ short reads $0.0072$, and one half complete reads $0.0221$.
+Since strain-level divergence within a species is itself of the order of $0.001$ to $0.01$, even
+modest incompleteness manufactures a difference as large as the differences being measured. It cannot
+be left undetected.
+
+\paragraph{What can be known about $c$.} It is worth being exact about this, because the obvious
+answer does not survive contact with the data a build actually has, and the answer that does work is
+not the obvious one.
+
+NCBI states assembly level per assembly, in
+\texttt{assembly\_summary\_refseq.txt}, and there the question is settled in one column: $73{,}778$ of
+$501{,}300$ RefSeq assemblies are marked \enquote{Complete Genome}. A Genestrip database is not built
+from that file. It is built from the bulk division FASTA and the release catalog
+\texttt{RefSeq-release\emph{NNN}.catalog.gz}, which is keyed by \emph{sequence} accession and carries
+no assembly accession. Accession prefixes suggest themselves as the way across and do not survive: the
+two-letter \texttt{NZ\_} prefixes mix finished replicons (\texttt{CP}, \texttt{AP},
+\texttt{CM}) with whole-genome shotgun scaffolds (\texttt{JH}, \texttt{KB}, \texttt{KE}) at the same
+accession shape, and separating them means a hand-kept list of prefixes that INSDC extends over time.
+
+The join that works uses neither accession. What the two files share is a taxon and a number of bases:
+an assembly's recorded length is the sum of the lengths of the sequences it consists of, and the
+catalog carries the taxon and the length of every sequence. The catalog is ordered by taxon and, within
+a taxon, by accession, so the sequences of one assembly arrive as a run of consecutive accessions.
+Summing such a run and looking the total up in the summary by taxon and length locates the assembly,
+and with it the column that settles the question. The sum need not be exact --- a submitted total and
+the sum of the released sequences differ by a few bases often enough that an exact match loses
+assemblies --- so a tolerance is allowed, $100$ bases by default, and the nearest assembly within it is
+taken. An assembly already accounted for is not taken again, which matters because a genome's
+chromosome alone can match a different assembly of the same species more closely than the whole genome
+matches its own; without that guard one genome is counted several times. Over a whole release this
+identifies $92.5\,\%$ of the assemblies whose taxon the database reads, in one streaming pass of the
+catalog holding eight records at a time.
+
+For an identified assembly $c$ is then read rather than inferred, and in the absolute sense. A
+complete assembly has $c = 1$: complete means every replicon closed, and the summary bears it out, in
+that not one of the release's $73{,}778$ complete assemblies has a \texttt{genome\_size} differing from
+its \texttt{genome\_size\_ungapped}. A chromosome-level assembly does not have $c = 1$, but its
+shortfall is recorded rather than guessed, as the ratio of those same two columns; nine in ten carry
+gaps, averaging about one per cent of the genome. Scaffold and contig assemblies yield nothing this
+way, and the reason is worth stating because it looks like the opposite: their two lengths agree
+exactly as a complete assembly's do, since what they are missing is not represented at all.
+
+Two residuals bound what this costs. The tolerance admits a sum up to $100$ bases from the recorded
+length, which on a five-megabase genome is $2 \times 10^{-5}$ --- two orders below the one per cent
+that chromosome-level gaps contribute, and far below the distances being measured. And $c$ as read
+counts bases where Equation \eqref{completecorr} needs $k$-mers: a gap of length $L$ destroys $L + k -
+1$ $k$-mer positions rather than $L$, so with $G$ gaps the $k$-mer completeness falls short of the base
+completeness by $G(k-1)/s$. At $k = 31$ and a few dozen gaps that is a few thousand bases against a gap
+total in the tens of thousands, which moves $c$ in the third decimal.
+
+What this does not reach still has to be had relatively. An assembly the join fails to identify, a
+genome from a division the database does not read, and any FASTA a project supplies itself all arrive
+without a row to look up. For those, and as an independent check on the metadata where both are
+available, what is wanted is $c$ \emph{relative to a genome's
+neighbours}. Two estimators give it and they share no inputs.
+
+The first is size. $\kappa_g$ against the median $\kappa$ of $g$'s closest relatives says how much
+smaller this genome is than the company it keeps. Its floor is that relatives are not of a size:
+among closed genomes of one species, where incompleteness cannot be the explanation, the middle
+ninety per cent of \texttt{genome\_size} spans $11.5\,\%$ of the median for a typical species and
+$20\,\%$ for \emph{E.~coli}. Deficits of tens of per cent clear that; the $1.5\,\%$ by which a typical
+RefSeq draft falls short of its species' closed genomes does not, and does not need to.
+
+The second is the fit of Section \ref{treefit}, and it needs no sizes and no metadata whatever. A
+genome's pendant edge carries its own inflation, so the excess of that edge over the median pendant of
+its neighbours measures the same deficiency independently. Inverting the excess through the relation
+above recovers the completeness of a short genome to within about one point in ten across the range
+$c \in [0.5, 0.95]$ --- $0.953$ recovered for a true $0.95$, $0.711$ for $0.70$, $0.512$ for $0.50$ ---
+which is well inside the ten per cent the correction of Equation \eqref{completecorr} requires, and it
+is immune to the size variation that limits the first estimator.
+
+Both are relative, and they fail in the same way for the same reason. Each measures a genome against
+its neighbours, so where a whole clade is equally short there is nothing to see: with an eighth of a
+clade at $c = 0.7$ the pendant estimator returns $0.710$, with a quarter $0.728$, with a half $0.766$,
+and where every genome is equally short it returns $0.99$ and reports a collection of complete
+assemblies.
+
+That last failure is the one to be least worried about, for a reason the rest of this section works
+out: a deficit shared by a whole clade adds nearly the same constant to every distance, which the fit
+absorbs into the pendant edges and which leaves the internal branches, the topology, and every
+relative statement the tree makes intact. A uniformly deficient collection yields a correct tree drawn
+with long tips. What genuinely damages an estimate is \emph{differential} incompleteness, one genome
+much shorter than its neighbours --- and that is precisely what both estimators are built to see. The
+quantity that cannot be measured is the one that does least harm.
+
+Why the fitted tree carries that information is worth setting out in full, because it is not obvious
+and because everything below rests on it. Call the \emph{pendant edge} of a leaf the single edge
+joining it to the rest of the tree --- $g$'s own branch, the last step on any journey to it. Two facts about it follow from
+Equation \eqref{additive}. Every path from $g$ to another leaf begins by walking down that edge, so it
+appears in every equation of the system that involves $g$. And no path between two \emph{other} leaves
+passes through it, so it appears in no other equation at all.
+
+Four genomes are enough to see it. On the tree of Figure \ref{pendantfig}, with $b_g$, $b_h$, $b_i$,
+$b_j$ the four pendant edges and $m$ the internal one, Equation \eqref{additive} gives the six
+distances as
+%
+\[
+  \begin{array}{r@{\;=\;}l@{\qquad}l}
+    d(g,h) & \textcolor{red!70!black}{b_g} + b_h            & \\
+    d(g,i) & \textcolor{red!70!black}{b_g} + m + b_i        & \\
+    d(g,j) & \textcolor{red!70!black}{b_g} + m + b_j        & \\
+    d(h,i) & b_h + m + b_i                                  & \\
+    d(h,j) & b_h + m + b_j                                  & \\
+    d(i,j) & b_i + b_j                                      &
+  \end{array}
+\]
+%
+so the column of $A$ in Equation \eqref{designmatrix} belonging to $b_g$ is $(1,1,1,0,0,0)$: a one for
+each of the three pairs that contain $g$, a zero for each of the three that do not.
+
+Now compare that with what incompleteness does. It inflates the distance from $g$ to every partner by
+nearly the same amount $\delta$, and it inflates nothing else, so the error it introduces is
+$(\delta,\delta,\delta,0,0,0)$ --- the same shape as that column. The two being proportional is the
+whole of the matter: least squares assigns the part of an error lying along a column of $A$ to that
+column's coefficient, and here the entire error lies along one column. The fit therefore lengthens
+$b_g$ by $\delta$, leaves $b_h$, $b_i$, $b_j$ and $m$ where they were, and is left with no residual.
+The three distances that were wrong are explained, and they are explained by the one parameter that
+touches them and nothing else.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \draw[red!70!black, line width=1.7pt] (0,0.95) -- (1.6,0);
+  \draw[black!50, line width=1pt] (0,-0.95) -- (1.6,0);
+  \draw[black!50, line width=1pt] (1.6,0) -- (4.2,0);
+  \draw[black!50, line width=1pt] (4.2,0) -- (5.8,0.95);
+  \draw[black!50, line width=1pt] (4.2,0) -- (5.8,-0.95);
+  \fill[black!50] (1.6,0) circle (1.7pt);
+  \fill[black!50] (4.2,0) circle (1.7pt);
+  \node[font=\small] at (-0.32,1.05)  {$g$};
+  \node[font=\small] at (-0.32,-1.05) {$h$};
+  \node[font=\small] at (6.12,1.05)   {$i$};
+  \node[font=\small] at (6.12,-1.05)  {$j$};
+  \node[font=\scriptsize, red!70!black] at (0.52,0.72)  {$b_g$};
+  \node[font=\scriptsize, black!60]     at (0.52,-0.72) {$b_h$};
+  \node[font=\scriptsize, black!60]     at (2.9,0.26)   {$m$};
+  \node[font=\scriptsize, black!60]     at (5.28,0.72)  {$b_i$};
+  \node[font=\scriptsize, black!60]     at (5.28,-0.72) {$b_j$};
+\end{tikzpicture}
+\caption{Four genomes and the five branches that separate them. The pendant edge of $g$ is drawn in
+red. Every path from $g$ to another leaf starts along it and no path between $h$, $i$ and $j$ touches
+it, so $b_g$ enters exactly the three distances $d(g,h)$, $d(g,i)$ and $d(g,j)$. An incomplete
+assembly of $g$ inflates exactly those three and by nearly the same amount, which is why the fit of
+Equation \eqref{lsq} accounts for the whole of it by lengthening the red branch and leaves the other
+four alone.}\label{pendantfig}
+\end{figure}
+
+This is exact when the inflation is exactly constant and close to it otherwise. Solving the six
+equations above with $b_g = 0.004$, $b_h = 0.005$, $m = 0.008$, $b_i = 0.010$ and $b_j = 0.007$, and
+then adding a constant $0.0072$ to the three distances from $g$, returns $b_g = 0.0112$ --- the true
+value plus the whole of the inflation --- and returns the other four branches unchanged to seventeen
+decimal places. Letting the inflation vary by a fifth across the three partners, as the figures above
+say it does, puts $0.0062$ of it into $b_g$ and disturbs no other branch by more than
+$10^{-4}$, against branch lengths of $0.004$ to $0.010$. So the fit does two things at once: it \emph{shows} incompleteness, as a terminal
+branch far longer than its neighbours', and it \emph{contains} it, keeping the distortion off the
+internal branches where the topology's evidence lies.
+
+Which tree the pendant edge belongs to is worth answering, since the question decides how much the
+signal can be trusted. The argument above used nothing about the topology except that $g$ is a leaf of
+it, so it holds for the taxonomy and for a clustered tree alike: in either, $g$'s own branch is the
+one edge that every path from $g$ uses and no path between other leaves touches. The two differ in
+what could go wrong rather than in whether the mechanism works.
+
+On the taxonomy the answer is immediate. The topology is given, and given by something that never
+saw the distances, so an inflated row cannot move $g$ within it. There is nothing for the
+incompleteness to corrupt except the length of the branch it is then found on, which is the whole
+point.
+
+On a clustered tree the topology is inferred from the very distances the incompleteness has inflated,
+and the worry is that $g$ might be clustered somewhere it does not belong --- pushed outward, say,
+because everything looks far from it. It is not, and the reason is worth having. Adding a constant
+$\delta$ to every distance from $g$ leaves the matrix \emph{exactly additive on the same topology},
+with $b_g$ replaced by $b_g + \delta$ and every other branch unchanged; that is the same observation
+as before, read as a statement about the data rather than about the fit. A method that recovers the
+correct tree from additive distances therefore recovers this one. On the five-leaf tree used above,
+neighbour joining returned the true topology under a constant inflation of $0.0072$, of $0.05$, and of
+an absurd $0.5$, and under inflations varying by a fifth and by a half across partners. What can
+distort a clustered topology is the part of the inflation that is not constant, and it is small.
+
+\paragraph{Many incomplete genomes.} A real collection does not have one short assembly but
+hundreds, and the argument above has to be made again for that case, because it changes shape. The
+perturbation splits in two and only the first part is absorbed.
+
+The first part is. If every distance from leaf $x$ is inflated by its own constant $\delta_x$, so
+that $d'(g,h) = d(g,h) + \delta_g + \delta_h$, the matrix is \emph{still exactly additive on the same
+topology}: every pendant edge $b_x$ becomes $b_x + \delta_x$ and no internal branch moves. That holds
+for all leaves at once, however many of them are short. So incompleteness spread across a whole
+collection does not accumulate into a distortion of the tree; it accumulates into the tips.
+
+The second part is not, and this is what the first-order argument hides. The inflation is not quite
+$\delta_g + \delta_h$. Where both genomes are short the shared count falls by $c_g c_h$ while each
+size falls by its own factor, and the observed inflation comes out a little \emph{below} the sum: at
+$c = 0.9$ for both it is $0.0065$ against a sum of $0.0068$, at $c = 0.8$ it is $0.0130$ against
+$0.0143$, and at $c = 0.5$ it is $0.0348$ against $0.0442$. Write $\varepsilon(g,h)$ for that
+shortfall. With one short genome $\varepsilon$ appears in a single row and is swept up with the rest
+of that row. With many, it appears in \emph{every cell whose two genomes are both short}, which in a
+real collection is most of the matrix --- and a perturbation spread over the whole matrix is not
+something any set of pendant edges can absorb. It is what limits the resolution.
+
+How much it limits is a question of scale, since what $\varepsilon$ has to compete with is the length
+of the internal branch a split is being decided by. On random twelve-leaf trees, comparing the
+topology recovered from the inflated matrix against the true one:
+
+\begin{center}\footnotesize
+\begin{tabular}{@{}l|c|c|c@{}}
+ \textbf{internal branches} & \textbf{$c \in [0.9,1]$} & \textbf{$c \in [0.8,1]$} & \textbf{$c \in [0.5,1]$}\\
+ \hline
+ $0.001$ to $0.02$ \quad (species level and above) & $100\,\%$ & $100\,\%$ & $97\,\%$\\
+ $0.0002$ to $0.002$ \quad (strain level)          & $100\,\%$ & $98\,\%$  & $28\,\%$\\
+ $0.00005$ to $0.0005$ \quad (below strain level)  & $99\,\%$  & $66\,\%$  & $1\,\%$\\
+\end{tabular}
+\end{center}
+
+\noindent
+Those figures are for a topology \emph{inferred} from the inflated matrix, which is the hardest case
+and not the one this paper recommends. Fitting a given topology changes the picture, and
+Section \ref{topologychoice} is the reason it is available: the taxonomy supplies a tree that the
+distances did not, so where it is taken as given there is no topology left for $\varepsilon$ to
+scramble. Every part of the perturbation must then appear in the branch lengths, and the part due to
+incompleteness has only one place to go.
+
+That is worth having for two reasons rather than one. The first is that the failure above simply does
+not arise: a fixed topology cannot be rearranged by a perturbed matrix, so the resolution limit
+becomes a limit on how far branch \emph{lengths} can be trusted rather than on which splits exist.
+Fitting the same twelve-leaf trees to their own topology, with branches between $0.0002$ and $0.002$,
+the internal branches came out with a mean error of $0.00027$ where genomes ran from $80$ to
+$100\,\%$ complete and $0.00044$ where they ran from $50$ to $100\,\%$, against $0.00019$ for a
+collection of complete genomes --- so incompleteness roughly doubles an error that the
+Jaccard-to-distance transformation contributes anyway, and leaves it below the branch lengths being
+measured.
+
+The second is that forcing the inflation into the pendant edges makes it conspicuous. With nowhere
+else to go it goes there, and it goes there at a size that cannot be mistaken for a branch: on the
+same trees the pendant edges were inflated by $0.0032$ on average at $80$ to $100\,\%$ completeness,
+by $0.0086$ at $50$ to $100\,\%$, and by $0.017$ where every genome was half missing --- three to
+seventeen times the length of a typical branch in those trees. More than that, the inflation
+\emph{ranks} correctly: ordering the leaves by how much their pendant edge exceeded expectation
+reproduced the ordering by incompleteness in $92$ to $100\,\%$ of adjacent pairs. So the fit does not
+merely raise an alarm, it says which assemblies are worst and roughly by how much, which is what
+$\kappa_g$ is then checked against.
+
+The obvious objection is that this reads the taxonomy as correct in order to judge the genomes, while
+Section \ref{topologychoice} reads the same fit to judge the taxonomy. The two are not in conflict
+because they are different parameters. A large \emph{residual} concentrated at an internal node says
+the taxonomy groups those genomes wrongly; a long \emph{pendant edge} at a leaf says that one genome's
+distances are all inflated, which grouping cannot cause. Where both appear at once the diagnosis is
+genuinely ambiguous from the fit alone, and that is the case $\kappa_g$ settles: a short genome
+explains the pendant edge, and a genome of normal size does not.
+
+At the resolution this method is meant for --- species and the ranks above them --- the topology is
+recovered whole even when half the collection is half missing, and that is with the topology inferred
+rather than given. It is fine structure that suffers:
+telling two strains apart across a branch of $0.0002$ asks for a precision that assemblies at
+$c = 0.5$ cannot support, and the tree returned there is not to be believed. The rule of thumb is to
+compare the shortest internal branch one intends to read against the $\varepsilon$ of the genomes
+beneath it, and to decline to resolve below it. That is a limit on how finely the answer may be read
+and not a reason to distrust the rest of it, which is the same trade every distance method makes and
+is stated here in units that can be checked.
+
+The two estimators do more together than either alone, because they disagree in the informative case.
+A long pendant edge on its own is ambiguous, since a genuinely divergent organism has one too. Set
+beside $\kappa_g$ it is not: a long pendant edge with a $\kappa_g$ in line with its neighbours is real
+divergence, and a long pendant edge with a $\kappa_g$ well below theirs is an assembly gap. That they
+share no inputs is what makes the pairing worth having.
+
+\paragraph{Correcting it.} If $c$ is estimated the repair is arithmetic, and it is worth writing out
+because the two quantities are scaled by different factors. Assume the $k$-mers an assembly lacks are
+a random sample of the genome's. Then a $k$-mer of $g$ survives into the assembly with probability
+$c_g$, so the observed size is $c_g$ times the true one; and a $k$-mer shared by $g$ and $h$ is
+observed as shared only if it survived in both assemblies, which happens with probability
+$c_g c_h$. Dividing each observation by the factor that shrank it gives
+%
+\begin{equation}
+  \kappa^{\ast}_g \;=\; \frac{\kappa_g}{c_g} ,
+  \qquad
+  \widehat{J}^{\ast}(g,h) \;=\; \frac{\widehat{J}(g,h)}{c_g\,c_h} ,
+  \qquad
+  \widehat{U}^{\ast} \;=\; \kappa^{\ast}_g + \kappa^{\ast}_h - \widehat{J}^{\ast}(g,h) ,
+  \label{completecorr}
+\end{equation}
+%
+after which Equation \eqref{pairdist} is read on the starred quantities and nothing else changes.
+Note that the shared count carries \emph{both} factors where the sizes carry one each, which is the
+whole of why incompleteness does not cancel out of the ratio on its own.
+
+A worked case makes it concrete. Two assemblies of the same organism, whose genome holds five million
+distinct $k$-mers, so that the truth is $\widehat{d} = 0$. Let $g$'s assembly be $80\,\%$ complete and
+$h$'s complete: the observed counts are $\kappa_g = 4{,}000{,}000$, $\kappa_h = 5{,}000{,}000$ and
+$\widehat{J} = 4{,}000{,}000$, giving $\widehat{U} = 5{,}000{,}000$ and $\widehat{d} = 0.0072$ ---
+a difference between two copies of one organism. Dividing by $c_g = 0.8$ returns
+$\kappa^{\ast}_g = \widehat{J}^{\ast} = 5{,}000{,}000$, hence $\widehat{U}^{\ast} = 5{,}000{,}000$ and
+$\widehat{d} = 0$. With $h$ at $60\,\%$ as well, the raw figures are $\kappa_h = 3{,}000{,}000$ and
+$\widehat{J} = 2{,}400{,}000$ for $\widehat{d} = 0.0208$, and dividing $\widehat{J}$ by
+$c_g c_h = 0.48$ while dividing each size by its own factor again returns $0$.
+
+Where $c$ comes from is Section \ref{incomplete}'s first signal: $\kappa_g$ against the median
+$\kappa$ of $g$'s closest relatives, which is the same ratio measured on genomes whose sizes should
+agree. In the example above $4{,}000{,}000$ against a relative's $5{,}000{,}000$ is what says
+$c_g = 0.8$ in the first place, so the correction consumes nothing that was not already collected.
+
+The assumption is the weak point and it fails in a known direction. Assembly does not lose sequence
+at random: repetitive regions and regions of low coverage are what fail to assemble, and repeats are
+disproportionately the conserved, widely shared part of a genome. The $k$-mers lost are therefore
+enriched for exactly the ones that would have been shared, so $\widehat{J}$ is reduced by more than
+the factor $c$ and the correction repairs less than all of the bias. It errs towards reporting
+genomes as more distant than they are, which is the safer direction for a measure read as evidence of
+relatedness. \cite{skmer} face the same problem from the other end, modelling the incompleteness of a
+sketch taken from low-coverage reads, and their treatment is the one to compare against.
+
+\todo{The random-loss assumption is the thing to measure rather than argue, and
+Section \ref{validation} sets out the deletion experiment that measures it. Until it has been run,
+$1/c$ should be treated as an upper bound on the correction rather than as the correction.}
+
 \section{From a distance matrix to a tree}\label{treefit}
 
 Section \ref{pairwise} applies to any two genomes the database holds, so running it over all pairs
@@ -642,7 +1077,7 @@ branches. The first is a combinatorial question and is answered by clustering; t
 linear one and is answered by least squares, which is the part this section sets out, since it is
 also what replaces the heuristic branch portions $dp_n$ of Section \ref{embedding}.
 
-\subsection{The topology, and why the taxonomy is the interesting one}
+\subsection{The topology, and why the taxonomy is the interesting one}\label{topologychoice}
 
 A distance matrix can be clustered into a topology --- average linkage after \cite{Sokal1958ASM}
 gives an ultrametric tree, neighbour joining \cite{saitou1987nj} an unrooted one that assumes no
@@ -665,6 +1100,22 @@ where a database's tree is coarser than its data; the residuals of Equation \eqr
 its tree is \emph{wrong} for the data, which is a different defect and one that refinement does not
 repair. A build that is clustered instead cannot ask this at all, having thrown the hypothesis away
 before testing it.
+
+A third reason has nothing to do with judging the taxonomy and is set out in
+Section \ref{incomplete}: a given topology cannot be rearranged by a perturbed distance matrix, so
+the distortion that incomplete assemblies introduce is forced into the branch lengths, and the part
+of it belonging to any one genome is forced into that genome's own pendant edge, where it is
+conspicuous. A clustered tree offers the perturbation somewhere else to go.
+
+The test is only worth anything because the distances are independent of the tree being tested, and
+that is what Section \ref{taxindep} establishes. Were $\widehat{d}$ a function of where the taxonomy
+puts a genome, fitting the taxonomy to it would be circular --- the measurements would already agree
+with the hypothesis by construction, and a small residual would say nothing. They are not: the
+distance between two genomes is fixed by their $k$-mer sets, the taxonomy affects only which part of
+the shared count is exact and which is estimated, and a genome filed in the wrong clade yields the
+same $\widehat{d}$ to its true relative as a correctly filed one. So the residual at a node is
+evidence about the taxonomy and not an echo of it, which is the property the whole of this section
+rests on.
 
 \subsection{Branch lengths as an overdetermined linear system}
 
@@ -728,6 +1179,14 @@ follows from those: pairs whose shared $k$-mers are mostly counted rather than e
 weight than pairs meeting high in the tree, which is the right ordering, since a pair meeting high
 is both estimated more and further apart.
 
+A second source enters once the collection contains drafts. Where the distance has been corrected for
+incompleteness by Equation \eqref{completecorr}, the uncertainty in $c_g$ and $c_h$ propagates into
+$\widehat{d}(g,h)$ and belongs in $\sigma^2$ alongside the sketching error: a pair of genomes whose
+completeness is known to a per cent carries nearly full weight, and a pair whose completeness is a
+guess carries little. That is what makes $W$ the instrument Section \ref{besttree} reaches for
+instead of a threshold, since discarding a genome is the same as giving every pair it belongs to a
+weight of zero, and the reasons for doing so are rarely that absolute.
+
 \subsection{What cannot be identified, and what the residuals say}
 
 Equation \eqref{lsq} has a unique solution only where $A$ has full column rank, and it does not
@@ -749,7 +1208,14 @@ asserts that the distances are tree-like, and with tens or hundreds of equations
 has ample opportunity to fail. A residual large in one region of the tree and small elsewhere says
 that region is not well described by a tree at all --- recombination and horizontal transfer being
 the biological reasons, and a failure of the independence assumption of Section \ref{pairwise} the
-methodological one --- and distinguishing the two is what Section \ref{validation} has to do.
+methodological one --- and distinguishing the two is what Section \ref{validation} has to do. A third
+reading belongs to a single leaf rather than to a region: an incomplete assembly inflates all of one
+genome's distances by about the same amount, which the fit absorbs into that genome's own pendant
+edge, so an unaccountably long terminal branch is a question about the assembly before it is a
+question about the organism. What that absorption does not take up is the part of the inflation that
+depends on both genomes rather than on one, and where many assemblies are short that part is spread
+over the whole matrix and lands here, in the residuals, as a floor below which no split should be
+resolved. Section \ref{incomplete} gives its size.
 Reported per node as the root-mean-square residual over the pairs whose path crosses it, it gives
 each branch of the drawn tree a measure of how much the data supported it, which the heuristic
 portions of Section \ref{embedding} could not offer.
@@ -759,6 +1225,155 @@ tolerable to a few thousand genomes and not beyond. $A$ is sparse --- a row has 
 depth of non-zeros, a dozen or two --- and \cite{bryant1998structure} give an $O(n^2)$ evaluation of
 the least-squares criterion on a fixed topology that should be used instead if the genome sets grow.
 Measure where the naive solver stops being adequate before implementing the fast one.}
+
+\subsection{The best tree a flawed collection allows}\label{besttree}
+
+Judging the taxonomy is one use of the fit and getting the best tree the data supports is another, and
+the second has to be reached through the first. Section \ref{incomplete} leaves a collection in which
+some assemblies are known to be short and their distances known to be inflated; the question is what
+to do with them before a topology is inferred.
+
+The obvious answer is to drop them, and it works. On twelve-leaf trees at strain-level resolution with
+completeness spread over $[0.5, 1]$, discarding every genome below $c = 0.8$ and clustering the rest
+returned the correct topology \emph{of the survivors} in $99\,\%$ of trials. The price is in what
+\enquote{of the survivors} conceals: on average $5.6$ genomes of twelve remained, and at a threshold
+of $c = 0.9$ only $4.5$ did, with four in five collections left too small to resolve at all. A correct
+tree of a third of a clade is not obviously better than an uncertain tree of the whole of it.
+
+The price is worse than it looks, because what is discarded is not a random sample. Assemblies are
+closed where a clade has been studied and left in fragments where it has not, so completeness tracks
+attention, and attention tracks the organisms that were already well described. Dropping drafts
+therefore prunes hardest exactly where a phylogeny is most wanted --- the under-studied corners of a
+genus --- and returns a confident tree of the part nobody needed a tree of.
+
+Correcting is the better instrument, and Section \ref{incomplete} has already built it in
+Equation \eqref{completecorr}: each size is divided by its own completeness and each shared count by
+the product of the two. Run on the same trees, with
+every genome kept, the corrected matrix returned the full twelve-leaf topology in $100\,\%$ of trials
+where $c$ was estimated to within $5\,\%$, against $30\,\%$ for the same matrix uncorrected. So the
+information that dropping throws away is enough, when used, to recover the whole tree rather than a
+fragment of it.
+
+It has a condition and the condition is sharp. At $10\,\%$ error in the estimate of $c$ the recovery
+fell to $87\,\%$, and at $20\,\%$ to $34\,\%$ --- no better than not correcting at all, since a
+correction of the wrong size is itself a perturbation. What decides the matter is therefore how well
+$c$ can be measured, and Section \ref{incomplete} is exact about the shape of that. Where the assembly
+behind a genome is identified, $c$ is read from the release's own record and the condition is met
+outright: exactly $1$ for a complete assembly, a recorded ratio for a chromosome-level one. Where it is
+not, what the two estimators return is deficiency relative to a genome's neighbours. That is then the
+quantity the correction can use, and only while short genomes are the minority --- inside which the pendant estimator is accurate to about a
+point in ten, comfortably within what Equation \eqref{completecorr} needs.
+
+The policy follows from where each estimator is blind. A draft short by the typical $1.5\,\%$ is
+invisible against relatives that vary among themselves by more, and needs no correcting, since the
+distance it distorts is distorted by $0.0005$. A genome a third or a half shorter than its neighbours
+stands clear and is worth correcting, because what it distorts is worth repairing. A clade in which
+most assemblies are equally short is invisible in a third way --- nothing stands out because nothing
+differs --- and is also the case that needs no correction, since a uniform deficit leaves the
+topology and every relative statement intact and only draws the tips too long. So: correct what
+stands out from its neighbours, leave the rest, and use the weights below rather than a threshold in
+the band where the estimators are uncertain enough that a correction might do as much harm as good.
+
+That gives the order of operations, and each step is one the paper already has. Fit the taxonomy as
+Section \ref{topologychoice} recommends, and read the pendant edges: their excess over a genome's
+neighbours both ranks the genomes by how inflated their distances are and, inverted, estimates the
+deficiency. Check it against $\kappa_g$, which measures the same thing from sizes and shares no
+inputs with it, and accept the estimate only
+where the two signals agree --- a long pendant edge with a normal $\kappa_g$ is a divergent organism
+and correcting it would erase the very signal being sought. Correct the matrix. Cluster the corrected
+matrix for the topology the sequence supports. Drop, finally, only the genomes for which $c$ could not
+be estimated well enough to correct: those with no close relative to be measured against, and those so
+fragmentary that a few per cent of their size is no longer a few per cent of the answer.
+
+Dropping and correcting are not in fact two strategies but one, which Section \ref{treefit} already
+expresses. A dropped genome is a genome given zero weight in Equation \eqref{lsq}, and the weight
+matrix $W$ is continuous: a genome whose $c$ is known to $2\,\%$ belongs in the fit at nearly full
+weight, one known to $20\,\%$ at very little, and one that cannot be measured at none. Choosing a
+threshold is choosing a step function where a smooth one is available and better motivated, since the
+variance that sets $W$ is exactly the quantity the corrected estimate carries.
+
+One further use follows once the collection has been corrected, and it repairs something
+Section \ref{topologychoice} would otherwise have to concede. Comparing a clustered tree against the
+taxonomy is only informative if the disagreements are real, and on an uncorrected collection some of
+them would not be: incompleteness alone moves genomes about, as the figures above show. After the
+correction the surviving disagreements are attributable to the sequence rather than to the assemblies,
+which is what makes the comparison of Section \ref{validation} worth running.
+
+\subsection{Placing a new organism}\label{placing}
+
+The independence of Section \ref{taxindep} has a use beyond reassurance. If the estimate does not
+depend on where a genome sits, then a genome need not be sitting anywhere in particular for the
+estimate to be made --- and that turns the method into a way of placing new organisms on measured
+data rather than on nomenclature.
+
+The procedure is three steps and the middle one is the whole of it. A newly sequenced genome $g$ is
+entered into the database at a best guess: the genus it is presumed to belong to, or whatever the
+depositor's own annotation says. The distances $\widehat{d}(g,h)$ to the genomes already there are
+then computed by Section \ref{pairwise}. Finally $g$ is placed where those distances put it --- for
+which Section \ref{treefit} already has the machinery, since inserting a leaf on a candidate edge and
+refitting by Equation \eqref{lsq} gives a residual per candidate, and the edge with the least residual
+is the placement the sequence supports. That is one fit per candidate edge, so a search over all of
+them costs $\lvert \mathcal{E} \rvert$ fits --- affordable because each is warm-started from the fit
+without $g$ and differs from it in one column, and because the nearest neighbour by $\widehat{d}$
+narrows the candidates to one clade before any fitting is done. The guess is what gets $g$ into the database; it is not what
+decides the answer.
+
+That the guess cannot decide the answer is the point, and it is what distinguishes this from
+placing a genome by its annotation and leaving it there. A guess that is wrong by a whole clade
+yields the same $\widehat{d}(g,h)$ to every $h$ as a guess that is right, so the data corrects the
+guess rather than inheriting it. Nothing in the placement is circular for the same reason nothing in
+Section \ref{treefit} is.
+
+\paragraph{One row, not a matrix.} The cost is what makes this practical. Placing $g$ needs
+$\widehat{d}(g,h)$ for each $h$ already in the database and nothing else: one row of the matrix,
+$\lvert L \rvert$ comparisons, against the $\binom{\lvert L \rvert}{2}$ a matrix costs. The distances
+among the existing genomes are unaffected in the quantity they estimate --- they are properties of
+those genomes' $k$-mer sets, which $g$'s arrival does not touch --- so the matrix computed before $g$
+arrived stays valid and is simply extended by a row and a column. A database of a thousand genomes
+costs half a million pairs once and a thousand per newcomer thereafter.
+
+\paragraph{An incomplete newcomer is the easy case.} Section \ref{incomplete} found that
+incompleteness spread over a whole collection is only partly absorbable, because the part of the
+inflation belonging to a \emph{pair} of short genomes appears in every cell where two of them meet.
+Placing a single organism escapes that entirely, and it is worth saying why, since it is the one
+setting in which the additive argument holds without qualification.
+
+Only one genome is new. Its distances to the collection are inflated by its own $\delta_g$ and the
+collection's distances among themselves are not touched at all, so the perturbation is exactly a
+constant added to one row --- which is to say, exactly a lengthening of the one pendant edge the
+newcomer is about to be given. Every candidate edge offers that same pendant edge and absorbs the
+same constant, so the residual each candidate earns is unchanged and the edge that wins is the edge
+that would have won had the assembly been complete. Tried on six-leaf collections with a seventh
+genome attached at a known point, inflating every one of its distances by $0.006$ --- more than the
+branch lengths in those trees --- left the winning placement unaltered in every trial.
+
+So an incomplete assembly is placed where it belongs and drawn further out along its own branch than
+it deserves. The position is right and the length is wrong, which is the harmless half of the trade:
+the pendant edge is the one quantity Section \ref{incomplete} is already reading for exactly this, and
+$\kappa_g$ says how much of its length to believe. The pairwise term that spoils the collection-wide
+case needs two short genomes to appear, and one newcomer against a collection already corrected by
+Section \ref{besttree} never supplies the second.
+
+\paragraph{Why to make a real guess anyway.} One thing the guess does affect is the split between
+counted and estimated terms, and it affects it in two directions at once. A badly placed $g$ meets its
+true relatives high, which as Section \ref{taxindep} sets out gathers the $k$-mers it shares with
+them into the counted term: its own distances come out \emph{more} exact, not less. But those same
+$k$-mers are thereby held higher in the tree than they would otherwise be, and pairs among the
+existing genomes that also carry them lose them from their own counted terms. Adding a seventh
+genome to the six of Section \ref{taxindep}, as a close relative of two of them, makes the size of it
+plain: entered in the wrong clade its own counted share went from $0.667$ to $1.000$ while a
+pre-existing pair's fell from $0.778$ to $0.333$, and every distance involved stayed the same to five
+decimals. So a sensible guess is worth making --- not for the
+newcomer's sake, but for the precision of the rest of the matrix.
+
+This also makes the procedure worth iterating where precision matters, and the two costs should be
+kept apart: one row places $g$, and a rebuild improves the split for everything. Place $g$ at a guess,
+read the row, move it to where the row points, and rebuild if the matrix is to be reported rather than
+only searched: the second round is measured against a database in which $g$'s $k$-mers sit where they
+belong, so the split is better for every pair, and the placement it returns either confirms the first
+or says the first was not yet settled. Since the
+distances themselves do not move between rounds, the iteration converges on the split rather than on
+the answer, which is why one round is usually enough and two are decisive.
 
 \section{Evolutionary distance distribution}
 
@@ -995,6 +1610,52 @@ advantage should be at small $d$, where a sketch runs out of resolution, and sho
 $d$, where our own estimated terms dominate. A plot of the disagreement between the two against
 $\widehat{d}$ should therefore fall, and if it does not the whole argument for counting rather than
 sketching is wrong.
+
+    \subsection{Do drafts behave as Section \ref{incomplete} says?}
+
+The claims of Section \ref{incomplete} are testable on the same clades and without any outside
+standard, by deletion. The claim to test hardest is the one about many short assemblies at once,
+since that is the case a real collection presents and since the first-order argument does not cover
+it: deleting sequence from a growing fraction of a clade's genomes and watching which splits of the
+recovered tree survive gives the resolution limit directly, in the units of Section \ref{incomplete}'s
+table, on real branch lengths rather than simulated ones. The single-genome case is the controlled
+version of the same experiment. Take the closed genomes of a clade, compute the matrix, then delete
+sequence from one of them and recompute: the distance from the truncated genome to every other should rise by
+about the predicted amount, $\kappa_g$ should fall by the deleted fraction, and the fit should put the
+rise into that genome's pendant edge and leave the rest of the tree where it was. Deleting at random
+and deleting whole repetitive regions gives the two loss models, and the gap between them is what
+says whether the $1/c$ correction is worth applying or whether incompleteness should simply be
+reported beside the distance. The experiment also calibrates the detection: what deficit is visible
+above within-species size variation, on real clades rather than in principle.
+
+    \subsection{Is $c$ estimated well enough?}\label{cvalid}
+
+Section \ref{incomplete} claims two things a measurement can contradict: that the relative estimators
+recover a short genome's deficiency to within about a point in ten while short genomes are a
+minority, and that they stop seeing anything as that minority becomes a majority. Both are testable
+without an outside standard, by deletion --- take a clade of assemblies, delete sequence from a
+growing fraction of them, and watch what each estimator returns against what was removed. That
+experiment is the one to run first, because it needs nothing but the clade.
+
+An outside standard is worth having for the part deletion cannot reach: whether the assemblies that
+arrive from RefSeq are short in the way deletion simulates. \texttt{assembly\_summary\_refseq.txt}
+supplies the assembly level and CheckM or BUSCO the completeness, both for the evaluation clades only
+and neither inside the tool, for the reasons Section \ref{incomplete} gives. Regressing the estimators
+on marker-based completeness over a few hundred assemblies says how far the relative measurements
+track the absolute one, which is the question the method's own data cannot ask of itself.
+
+Two things should be reported that an accuracy figure alone would hide. The first is how often the
+estimators agree with each other, since they share no inputs --- one reads sizes, the other reads the
+fitted tree --- so their agreement is evidence where an external standard is unavailable, and their
+disagreement localises a genome that is divergent rather than deficient. The second is the fraction of
+a real clade in which short assemblies are the majority, because that is where both estimators go
+quiet: the evaluation should say how often a clade of interest is in that regime rather than only how
+accurate the estimators are when it is not.
+
+One failure mode deserves separating from the rest. A complete but contaminated assembly carries
+\emph{extra} sequence and so reads as $c > 1$, which the correction of
+Equation \eqref{completecorr} would take for a genome larger than it is. Whether to clamp at one or to
+report it is a decision the measurements should inform rather than the text assert.
 
     \subsection{Does the taxonomy fit?}
 
