@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>de.borreliose-gesellschaft</groupId>
+    <artifactId>dbg-website</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>Deutsche Borreliose-Gesellschaft – Website</name>
+    <description>
+        Inhalte der Website der Deutschen Borreliose-Gesellschaft e.V.
+        Gebaut wird mit der Engine „lecture-gen“: dieses Projekt liefert nur
+        content/, die Engine bringt Templates, Assets und Build-Werkzeuge mit.
+    </description>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- Lage der Engine. Vorgabe: Schwesterordner neben diesem Projekt.
+             Ueberschreibbar per -Dengine.dir=/pfad/zu/lecture-gen . -->
+        <engine.dir>${project.basedir}/../lecture-gen</engine.dir>
+        <!-- Inhaltsordner dieses Projekts, wird der Engine durchgereicht. -->
+        <content.dir>${project.basedir}/content</content.dir>
+        <!-- Maven-Startskript der laufenden Installation (mvn.cmd unter Windows). -->
+        <maven.executable>${maven.home}/bin/mvn</maven.executable>
+    </properties>
+
+    <build>
+        <!--
+          Bauablauf (mvn package):
+            1. clean – raeumt NUR target/website dieses Projekts
+            2. exec  – startet die Engine als eigenen Maven-Lauf mit
+                         -Dcontent.dir=<dieses Projekt>/content
+                         -Dsite.dir=<dieses Projekt>/target/website
+                       Die fertige Site landet damit hier; das target/ der Engine
+                       behaelt ihre eigene (Tutorial-)Site.
+
+          Die Engine laeuft ohne "clean", sonst loeschte sie ihr eigenes target/
+          mitsamt Tutorial-Site. Weil JBake sein Ausgabeverzeichnis nicht
+          aufraeumt, wird es hier vorher geleert - sonst blieben geloeschte
+          Seiten stehen.
+        -->
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>clear-site</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                        <configuration>
+                            <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                            <filesets>
+                                <fileset>
+                                    <directory>${project.build.directory}/website</directory>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <id>build-with-lecture-gen</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${maven.executable}</executable>
+                            <arguments>
+                                <argument>-f</argument>
+                                <argument>${engine.dir}/pom.xml</argument>
+                                <argument>-Dcontent.dir=${content.dir}</argument>
+                                <argument>-Dsite.dir=${project.build.directory}/website</argument>
+                                <argument>package</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+</project>

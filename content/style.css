@@ -1,0 +1,178 @@
+/* Stilschicht der DBG-Site: wird nach dem Stylesheet von lecture-gen geladen
+   und ueberschreibt einzelne Regeln.
+   Farben aus dem Vorentwurf "dbg": Teal-Gruen als Primaerfarbe, Magenta aus
+   dem Logo als Akzent. Ueberschrieben werden nur die Variablen - dadurch
+   ziehen Nachtmodus, Druck und alle Bedienelemente automatisch mit. */
+
+:root {
+    --color-primary: #0e7c66;      /* Teal-Gruen */
+    --color-primary-dark: #0a5a4a;
+    --color-primary-light: #3fb79a;
+    --color-accent: #e3f2ec;       /* Tonflaeche: heller Teal-Schimmer */
+    --color-warm: #c10ac1;         /* Magenta aus dem DBG-Logo */
+}
+
+/* Im Nachtmodus muessen die Toene heller als der Grund sein (sonst unsichtbar) -
+   dieselbe Regel wie im Basis-Stylesheet, nur in Teal statt Blau. */
+html[data-theme="dark"] {
+    --color-primary: #5cc9ae;
+    --color-primary-dark: #8fe0c9;
+    --color-primary-light: #3fb79a;
+    --color-accent: #21463c;
+    --color-warm: #e86ae8;
+}
+
+/* Der Schriftzug neben der Bildmarke traegt hier den Namen der Gesellschaft -
+   er darf deutlich groesser sein als der Fakultaetszusatz, fuer den die
+   Vorgabe (0.72rem) gedacht ist. */
+.logo-sub {
+    font-size: 0.95rem;
+    line-height: 1.2;
+}
+
+/* ---------------------------------------------------------------
+   Kopfzeile als Bildbanner: Zecke auf dem Blatt, darueber ein Teal-
+   Verlauf. Er ist links kraeftig (dort steht der Schriftzug) und wird
+   nach rechts durchsichtiger, wo die Zecke sitzt.
+   --------------------------------------------------------------- */
+
+:root {
+    /* Etwas hoeher als die Vorgabe (56px), damit vom Bild etwas zu sehen ist,
+       aber knapp genug, dass um den Inhalt (42px hoch) kein breiter Leerraum
+       steht. --sticky-top rechnet das Skript aus der gemessenen Hoehe nach. */
+    --header-height: 62px;
+}
+
+/* Weniger Luft ueber und unter dem Inhalt der Kopfzeile als in der Vorgabe. */
+.site-header .header-inner {
+    padding-top: 0.35rem;
+    padding-bottom: 0.35rem;
+}
+
+.site-header {
+    /* zecke-banner.jpg ist aus dem Panorama gebaut (siehe README): auf die Zecke
+       zugeschnitten und beidseitig mit weichgezeichnetem Blattgrund verlaengert,
+       bis die Zecke mittig liegt. Ergebnis 4200x184, also 23:1 - flacher als der
+       Balken bei jeder ueblichen Fensterbreite. Formatfuellend (cover) wird
+       deshalb nur seitlich beschnitten, nie oben/unten: die Zecke bleibt
+       vollstaendig sichtbar und schrumpft einfach mit der Balkenhoehe. */
+    background:
+        linear-gradient(100deg, rgba(8, 66, 54, 0.92) 0%, rgba(14, 124, 102, 0.78) 42%, rgba(14, 124, 102, 0.34) 100%),
+        url("../images/zecke-banner.jpg") center center / cover no-repeat;
+}
+
+/* Alles in der Kopfzeile sitzt jetzt auf dunklem Grund. */
+.site-header .logo-sub,
+.site-header .main-nav a,
+.site-header .nav-print {
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.site-header .logo-sub {
+    border-left-color: rgba(255, 255, 255, 0.45);
+}
+
+/* Die Oberflaechen-Icons sind eigenstaendige SVG-Dateien und zeichnen in
+   Schwarz - auf dunklem Grund werden sie nach Weiss gefiltert (dieselbe
+   Technik wie im Nachtmodus des Basis-Stylesheets). */
+.site-header .main-nav-icon,
+.site-header .nav-icon,
+.site-header .search-icon {
+    filter: brightness(0) invert(1);
+    opacity: 0.85;
+}
+
+.site-header .main-nav a:hover,
+.site-header .nav-print:hover {
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
+}
+
+/* Suchfeld: leicht durchscheinend, damit das Bild nicht zerschnitten wird,
+   der eingegebene Text aber lesbar bleibt. Die Farben sind BEWUSST fest und
+   nicht aus den Variablen: die Kopfzeile liegt in beiden Anzeigen auf demselben
+   Bild, waehrend --color-text im Nachtmodus hell wird - der Text im weissen
+   Suchfeld waere dann unlesbar. */
+.site-header .header-search input {
+    background: rgba(255, 255, 255, 0.94);
+    border-color: rgba(255, 255, 255, 0.55);
+    color: #1b2a25;
+}
+
+/* Derselbe Grauton fuer beide Suchfelder der Site (Kopfzeile und Kartenfilter).
+   Fest, weil das Feld in der Kopfzeile in beiden Anzeigen hell bleibt. */
+.site-header .header-search input::placeholder,
+.map-filter-text::placeholder {
+    color: #5c6b65;
+    opacity: 1;
+}
+
+/* Im Nachtmodus steht der Kartenfilter auf dunklem Grund - dort der helle Ton
+   des Farbschemas statt des dunklen Graus. */
+html[data-theme="dark"] .map-filter-text::placeholder {
+    color: var(--color-text-light);
+}
+
+.site-header .header-search button {
+    background: rgba(255, 255, 255, 0.94);
+    border-color: rgba(255, 255, 255, 0.55);
+}
+
+.site-header .header-search .search-icon {
+    filter: none;              /* sitzt auf hellem Grund */
+    opacity: 0.7;
+}
+
+/* Sprachumschalter: Umriss statt Flaeche; aktiv = weiss auf Teal. */
+.site-header .lang-switch-btn {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+}
+
+.site-header .lang-switch-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    color: #fff;
+}
+
+/* Aktive Sprache: weisse Flaeche mit festem Dunkelgruen - im Nachtmodus waere
+   --color-primary-dark ein helles Mintgruen und auf Weiss kaum zu lesen. */
+html[data-lang="de"] .site-header .lang-switch-btn[data-lang="de"],
+html[data-lang="en"] .site-header .lang-switch-btn[data-lang="en"] {
+    background: #fff;
+    color: #0a5a4a;
+}
+
+/* Nachtmodus-Schalter zeichnet mit currentColor. */
+.site-header .theme-toggle {
+    color: #fff;
+}
+
+.site-header .theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
+}
+
+/* Menue-Symbol (Feather "menu") in der Farbe der Beschriftung. Ein <img> laesst
+   sich nicht einfaerben - die eigenstaendigen Oberflaechen-SVGs zeichnen mit
+   stroke="currentColor", was in einer eigenen Datei zu Schwarz aufloest.
+   Deshalb dient die Form hier als MASKE und wird mit currentColor gefuellt;
+   damit stimmt die Farbe in beiden Anzeigen automatisch mit dem Text ueberein.
+   Die Form steht als data:-URI direkt in dieser Datei, weil eine Maske aus einer
+   eigenen Datei beim Oeffnen per file:// blockiert wird (dort ist jede Datei
+   eine eigene Herkunft). */
+.nav-header .product-label::before {
+    content: "";
+    flex: 0 0 auto;
+    width: 20px;
+    height: 20px;
+    background-color: currentColor;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Cline x1='3' y1='6' x2='21' y2='6'/%3E%3Cline x1='3' y1='12' x2='21' y2='12'/%3E%3Cline x1='3' y1='18' x2='21' y2='18'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Cline x1='3' y1='6' x2='21' y2='6'/%3E%3Cline x1='3' y1='12' x2='21' y2='12'/%3E%3Cline x1='3' y1='18' x2='21' y2='18'/%3E%3C/svg%3E") center / contain no-repeat;
+    opacity: 0.8;   /* wie die uebrigen Icons der Oberflaeche */
+}
+
+/* Eingeklappt steht die Beschriftung senkrecht - das Symbol gehoert darueber. */
+.nav-collapsed .nav-header .product-label::before {
+    order: 1;
+}
