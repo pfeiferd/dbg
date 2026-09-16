@@ -1,8 +1,8 @@
 # Deutsche Borreliose-Gesellschaft e.V. – Website
 
-Inhalte der Website der DBG, gebaut mit der Engine **lecture-gen**. Dieses Projekt
+Inhalte der Website der DBG, gebaut mit der Engine **site-gen**. Dieses Projekt
 enthält nur `content/` – Templates, CSS/JS und die Build-Werkzeuge kommen aus der
-Engine im Schwesterordner `../lecture-gen`.
+Engine im Schwesterordner `../site-gen`.
 
 ## Bauen
 
@@ -21,7 +21,7 @@ dieses Projekts durch (`-Dcontent.dir=<hier>/content`); anschließend wird das
 fertige Site-Verzeichnis nach `target/website` geholt. Liegt die Engine woanders:
 
 ```bash
-mvn package -Dengine.dir=/pfad/zu/lecture-gen
+mvn package -Dengine.dir=/pfad/zu/site-gen
 ```
 
 ## Aufbau des Inhalts
@@ -43,7 +43,7 @@ content/
     images/            Bilder der Seiten
 ```
 
-Die Site verwendet das **flache Layout** von lecture-gen: der Inhalt liegt direkt
+Die Site verwendet das **flache Layout** von site-gen: der Inhalt liegt direkt
 unter `content/`, die Seiten werden unter `/de/…` ausgeliefert. Jeder Eintrag im
 Seitenmenü links ist eine `.md`-Datei; die Reihenfolge steuert `navorder`.
 
@@ -133,27 +133,27 @@ senkrechten Innenabstand der Kopfzeile. Geprüft bei 1000, 1280 und
 Die Beschriftung des Seitenmenüs steht in `content/site_de.properties` bzw.
 `site_en.properties` auf „Menü"/„Menu" (Schlüssel `sidebar.lecture`, für die
 Vorlesefunktion zusätzlich `sidebar.topics`). Nicht genannte Schlüssel behalten
-die Formulierung aus lecture-gen.
+die Formulierung aus site-gen.
 
 Das Logo `content/images/dbg-logo.svg` trägt deshalb nur noch den Schriftzug
 ohne „e.V."; `<title>`/`aria-label` nennen weiterhin den vollständigen Namen.
 
 ## Ärzte- und Therapeutenliste
 
-Die Karte auf `de/aerzteliste.md` ist ein `map`-Block von lecture-gen mit
+Die Karte auf `de/aerzteliste.md` ist ein `map`-Block von site-gen mit
 `data: aerzte`; die Einträge stehen in `content/data/aerzte.json` (30 Stück,
 alle mit Koordinaten).
 
 Die Originalseite lädt dieselben Daten über ein CMSimple-Plugin von
 `/?&aerztekarte_ajax=1` nach. Von dort stammen sie – einmalig geholt und in das
-Format von lecture-gen überführt (`title`, `subtitle`, `lines[]`, `href`). Zwei
+Format von site-gen überführt (`title`, `subtitle`, `lines[]`, `href`). Zwei
 Einträge hatten dort keine Koordinaten („Adresse konnte nicht geokodiert
 werden"); die wurden über Nominatim nachgetragen.
 
 **Kachelserver:** `mapTiles`/`mapAttribution` in `content/meta.properties` stellen
 alle Karten der Site auf den Server des deutschen OSM-Vereins
 (`tile.openstreetmap.de`) – deutsche Beschriftungen, Betrieb in Deutschland.
-Ohne diese Angabe nähme lecture-gen `tile.openstreetmap.org` wie die
+Ohne diese Angabe nähme site-gen `tile.openstreetmap.org` wie die
 Originalseite. Beides sind Gemeinschaftsserver mit Nutzungsrichtlinie; bei
 dauerhaft starkem Verkehr wäre ein Anbieter mit Vertrag oder ein eigener Cache
 der saubere Weg. Umgestellt ist es mit einer Zeile.

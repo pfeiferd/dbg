@@ -13,15 +13,15 @@
     <name>Deutsche Borreliose-Gesellschaft – Website</name>
     <description>
         Inhalte der Website der Deutschen Borreliose-Gesellschaft e.V.
-        Gebaut wird mit der Engine „lecture-gen“: dieses Projekt liefert nur
+        Gebaut wird mit der Engine „site-gen“: dieses Projekt liefert nur
         content/, die Engine bringt Templates, Assets und Build-Werkzeuge mit.
     </description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Lage der Engine. Vorgabe: Schwesterordner neben diesem Projekt.
-             Ueberschreibbar per -Dengine.dir=/pfad/zu/lecture-gen . -->
-        <engine.dir>${project.basedir}/../lecture-gen</engine.dir>
+             Ueberschreibbar per -Dengine.dir=/pfad/zu/site-gen . -->
+        <engine.dir>${project.basedir}/../site-gen</engine.dir>
         <!-- Inhaltsordner dieses Projekts, wird der Engine durchgereicht. -->
         <content.dir>${project.basedir}/content</content.dir>
         <!-- Maven-Startskript der laufenden Installation (mvn.cmd unter Windows). -->
@@ -73,7 +73,7 @@
                 <version>3.5.0</version>
                 <executions>
                     <execution>
-                        <id>build-with-lecture-gen</id>
+                        <id>build-with-site-gen</id>
                         <phase>package</phase>
                         <goals>
                             <goal>exec</goal>
