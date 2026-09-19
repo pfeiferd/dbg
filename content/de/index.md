@@ -19,7 +19,7 @@ Die DBG verfolgt die folgenden Ziele:
 - die Förderung von Wissenschaft und Forschung, um das Verständnis, die Diagnostik und Therapie dieser weitverbreiteten Krankheit voranzubringen.
 
 ![Dr. Dr. med. h. c. mult. Willy Burgdorfer](willyburgdorfer-344x457.png "Dr. Dr. med. h. c. mult. Willy Burgdorfer")
-
+ 
 Die Deutsche Borreliose-Gesellschaft hat heute ca. 200 ordentliche Mitglieder (Wissenschaftler und Ärzte).
 
 So auch das ehemalige Ehrenmitglied [Dr. Dr. med. h. c. mult. Willy Burgdorfer](https://de.wikipedia.org/wiki/Willy_Burgdorfer), der 1981 die nach ihm benannte Spirochäte *[Borrelia burgdorferi](https://de.wikipedia.org/wiki/Borrelia_burgdorferi)*, den Erreger der [Lyme-Borreliose,](https://de.wikipedia.org/wiki/Lyme-Borreliose) entdeckte.
