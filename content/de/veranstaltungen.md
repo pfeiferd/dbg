@@ -4,11 +4,11 @@ navorder=03
 
 # Veranstaltungen
 
-Die Deutsche Borreliose-Gesellschaft (DBG) veranstaltet einmal jährlich eine wissenschaftliche Fachkonferenz für Ärztinnen und Ärzte, die gewöhnlich von den Ärztekammern als ärztliche Fortbildung anerkannt und mit Fortbildungspunkten (FP) bewertet wird.
+Die Deutsche Borreliose-Gesellschaft (DBG) veranstaltet einmal jährlich eine wissenschaftliche Fachkonferenz für Ärztinnen und Ärzte, die gewöhnlich von den Ärztekammern als ärztliche Fortbildung anerkannt und mit Fortbildungspunkten (FP) bewertet wird. **Die nächste Fachkonferenz der DBG ist für April 2027 geplant und in Vorbereitung.**
 
-Darüber hinaus werden hier weitere Veranstaltungen zu den Themenkomplexen (Lyme-)Borreliose, Koinfektionen und chronische Infektionen aufgeführt.
+## Kommende Veranstaltungen
 
-## Kommende Fachkonferenzen
+Hier werden kommende, auch internationale Veranstaltungen zu den Themenkomplexen (Lyme-)Borreliose, Koinfektionen und chronischen Infektionen aufgeführt.
 
 | Zeitraum | Veranstaltung | Ort | Link |
 |----------|---------------|-----|------|

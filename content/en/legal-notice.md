@@ -27,7 +27,7 @@ Email: geschaeftsstelle(at)borreliose-gesellschaft.de
 
 ## Register entry
 
-Entered on 07.05.2021 in the register of associations of the Jena local court (Amtsgericht Jena)
+Entered on 7 May 2021 in the register of associations of the Jena local court (Amtsgericht Jena)
 Register no.: VR 230995
 
 The association is recognised as serving charitable purposes.
