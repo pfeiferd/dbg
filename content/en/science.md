@@ -35,12 +35,12 @@ The German version is the authoritative one in each case.
 
 | Year | Society | Guideline |
 |------|---------|-----------|
-| 2024 | [DGN](https://dgn.org/) – German Society of Neurology | [S3 guideline on neuroborreliosis](https://www.awmf.org/leitlinien/detail/ll/030-071.html) · [guideline report and information on the 2018 revision](files/030-071m-s3-neuroborreliose-2018-4.pdf) |
+| 2024 | [DGN](https://dgn.org/) – German Society of Neurology | [S3 guideline on neuroborreliosis](https://register.awmf.org/de/leitlinien/detail/030-071) · [guideline report and information on the 2018 revision](files/030-071m-s3-neuroborreliose-2018-4.pdf) |
 | 2023 | [DDG](https://derma.de/) – German Dermatological Society | [S2k guideline on cutaneous Lyme borreliosis](https://register.awmf.org/de/leitlinien/detail/013-044) |
 | 2022 | [CDC](https://www.cdc.gov/lyme/index.html) – Centers for Disease Control and Prevention | [Tickborne Diseases of the United States](https://www.cdc.gov/ticks/hcp/data-research/tickborne-disease-reference-guide/) |
 | 2020 | [IDSA](https://www.idsociety.org/) – Infectious Diseases Society of America | [Guidelines for the Prevention, Diagnosis and Treatment of Lyme Disease](https://www.idsociety.org/practice-guideline/lyme-disease) |
 | 2014 | [ILADS](https://www.ilads.org/) – International Lyme and Associated Diseases Society | [Evidence Assessments and Guideline Recommendations in Lyme Disease: The Clinical Management of Known Tick Bites, Erythema Migrans Rashes and Persistent Disease](https://www.ilads.org/patient-care/ilads-treatment-guidelines/) · also [at Taylor & Francis](https://www.tandfonline.com/doi/full/10.1586/14787210.2014.940900) and [in the National Guideline Clearinghouse of the U.S.A.](https://www.ahrq.gov/gam/index.html) |
-| 2013 | [DGKJ](https://www.dgkj.de/) – German Society of Paediatrics and Adolescent Medicine, and [GKJR](https://www.gkjr.de/) – Society for Paediatric and Adolescent Rheumatology | [S1 guideline on Lyme arthritis](http://www.awmf.org/leitlinien/detail/ll/027-056.html) – currently unavailable |
+| 2013 | [DGKJ](https://www.dgkj.de/) – German Society of Paediatrics and Adolescent Medicine, and [GKJR](https://www.gkjr.de/) – Society for Paediatric and Adolescent Rheumatology | [S1 guideline on Lyme arthritis](https://register.awmf.org/de/leitlinien/detail/027-056) – currently unavailable |
 | 2006 | [IDSA](https://www.idsociety.org/) – Infectious Diseases Society of America | Lyme borreliosis in full – [in the archive of withdrawn guidelines of the National Guideline Clearinghouse of the U.S.A.](https://www.ahrq.gov/gam/index.html) |
 
 ## Honours

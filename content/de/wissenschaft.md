@@ -29,12 +29,12 @@ Die aktuelle Leitlinie der DBG: **[Diagnostik und Therapie der Lyme-Borreliose (
 
 | Jahr | Gesellschaft | Leitlinie |
 |------|--------------|-----------|
-| 2024 | [DGN](https://dgn.org/) – Deutsche Gesellschaft für Neurologie e.V. | [S3-Leitlinie Neuroborreliose](https://www.awmf.org/leitlinien/detail/ll/030-071.html) · [Leitlinienreport und Informationen zur Überarbeitung 2018](files/030-071m-s3-neuroborreliose-2018-4.pdf) |
+| 2024 | [DGN](https://dgn.org/) – Deutsche Gesellschaft für Neurologie e.V. | [S3-Leitlinie Neuroborreliose](https://register.awmf.org/de/leitlinien/detail/030-071) · [Leitlinienreport und Informationen zur Überarbeitung 2018](files/030-071m-s3-neuroborreliose-2018-4.pdf) |
 | 2023 | [DDG](https://derma.de/) – Deutsche Dermatologische Gesellschaft e.V. | [S2k-Leitlinie Kutane Lyme Borreliose](https://register.awmf.org/de/leitlinien/detail/013-044) |
 | 2022 | [CDC](https://www.cdc.gov/lyme/index.html) – Centers for Disease Control and Prevention | [Tickborne Diseases of the United States](https://www.cdc.gov/ticks/hcp/data-research/tickborne-disease-reference-guide/) |
 | 2020 | [IDSA](https://www.idsociety.org/) – Infectious Diseases Society of America | [Guidelines for the Prevention, Diagnosis and Treatment of Lyme Disease](https://www.idsociety.org/practice-guideline/lyme-disease) |
 | 2014 | [ILADS](https://www.ilads.org/) – International Lyme and Associated Diseases Society | [Evidence Assessments and Guideline Recommendations in Lyme Disease: The Clinical Management of Known Tick Bites, Erythema Migrans Rashes and Persistent Disease](https://www.ilads.org/patient-care/ilads-treatment-guidelines/) · auch [bei Taylor & Francis](https://www.tandfonline.com/doi/full/10.1586/14787210.2014.940900) und [im National Guideline Clearinghouse der U.S.A.](https://www.ahrq.gov/gam/index.html) |
-| 2013 | [DGKJ](https://www.dgkj.de/) – Deutsche Gesellschaft für Kinder- und Jugendmedizin e.V. und [GKJR](https://www.gkjr.de/) – Gesellschaft für Kinder- und Jugendrheumatologie e.V. | [S1-Leitlinie Lyme-Arthritis](http://www.awmf.org/leitlinien/detail/ll/027-056.html) – zurzeit leider nicht verfügbar |
+| 2013 | [DGKJ](https://www.dgkj.de/) – Deutsche Gesellschaft für Kinder- und Jugendmedizin e.V. und [GKJR](https://www.gkjr.de/) – Gesellschaft für Kinder- und Jugendrheumatologie e.V. | [S1-Leitlinie Lyme-Arthritis](https://register.awmf.org/de/leitlinien/detail/027-056) – zurzeit leider nicht verfügbar |
 | 2006 | [IDSA](https://www.idsociety.org/) – Infectious Diseases Society of America | Gesamte Lyme-Borreliose – [im Archiv der veralteten Leitlinien des National Guideline Clearinghouse der U.S.A.](https://www.ahrq.gov/gam/index.html) |
 
 ## Ehrungen
