@@ -19,97 +19,22 @@ Im Einzelnen verfolgt die Gesellschaft folgende Ziele:
 - konsiliarische Beratung anderer Ärzte bei schwierigen Borreliose-Fällen sowie die
 - Erarbeitung von Leitlinien zur Diagnostik und Therapie der Lyme-Borreliose.
 
-#### [Satzung](files/satzung-2026.pdf)
-
-Klicken zum Herunterladen
+Hier die **[Satzung](files/satzung-2026.pdf)** zum Herunterladen.
 
 ## Vorstand
 
-![](vorstand-herbert-rixecker.jpg)
-
-### Dr. med. Dr. med. dent. Herbert Rixecker
-
-FA für Mund-Kiefer-Gesichtschirurgie
-
-Saarlouis
-
-1. Vorsitzender
-
-rixecker(at)deubo.de
-
-![](vorstand-harald-bennefeld.jpg)
-
-### Dr. med. Harald Bennefeld
-
-FA für Neurochirurgie
-
-Kirchberg
-
-2. Vorsitzender
-
-bennefeld(at)deubo,de
-
-![](vorstand-karsten-ostermann.jpg)
-
-### Dr. med. Karsten Ostermann M.A.
-
-FA für Allgemeinmedizin und Spezielle Schmerztherapie
-Berlin/Teltow
-
-3. Vorsitzender
-
-ostermann(at)deubo.de
-
-![](vorstand-armin-schwarzbach.jpg)
-
-### Dr. med. Armin Schwarzbach
-
-FA für Labormedizin
-Augsburg
-
-Beisitzer
-
-schwarzbach(at)deubo.de
-
-![](vorstand-sigrid-blehle.jpg)
-
-### Dr. med. Sigrid Blehle
-
-Ärztin
-
-Augsburg
-
-Beisitzerin
-
-blehle(at)deubo.de
-
-![](vorstand-marion-schneider.jpg)
-
-### Prof. Dr. Marion Schneider
-
-Professorin
-
-Klinik für Anästhesiologie 
-
-Sektion Experimentelle Anästhesie
-
-Uniklinik Ulm
-
-schneider(at)deubo.de
-
-### .
-
-tba.
-
-![](vorstand-hartmut-prautzsch.jpg)
-
-### Prof. Dr. rer. nat. Hartmut Prautzsch
-
-Karlsruhe
-
-Ehrenvorsitzender
-
-prautzsch(at)deubo.de
+```gallery
+width: 210
+ratio: 4/5
+vorstand-herbert-rixecker.jpg   | Dr. med. Dr. med. dent. Herbert Rixecker; 1. Vorsitzender; FA für Mund-Kiefer-Gesichtschirurgie; Saarlouis; rixecker(at)deubo.de
+vorstand-harald-bennefeld.jpg   | Dr. med. Harald Bennefeld; 2. Vorsitzender; FA für Neurochirurgie; Kirchberg; bennefeld(at)deubo.de
+vorstand-karsten-ostermann.jpg  | Dr. med. Karsten Ostermann M.A.; 3. Vorsitzender; FA für Allgemeinmedizin und Spezielle Schmerztherapie; Berlin/Teltow; ostermann(at)deubo.de
+vorstand-armin-schwarzbach.jpg  | Dr. med. Armin Schwarzbach; Beisitzer; FA für Labormedizin; Augsburg; schwarzbach(at)deubo.de
+vorstand-sigrid-blehle.jpg      | Dr. med. Sigrid Blehle; Beisitzerin; Ärztin; Augsburg; blehle(at)deubo.de
+vorstand-marion-schneider.jpg   | Prof. Dr. Marion Schneider; Professorin; Klinik für Anästhesiologie, Sektion Experimentelle Anästhesie; Uniklinik Ulm; schneider(at)deubo.de
+| N. N.; Sitz derzeit unbesetzt (tba.)
+vorstand-hartmut-prautzsch.jpg  | Prof. Dr. rer. nat. Hartmut Prautzsch; Ehrenvorsitzender; Karlsruhe; prautzsch(at)deubo.de
+```
 
 ## Beirat
 
@@ -121,7 +46,7 @@ Es werden noch Bewerber für die Mitarbeit im Beirat gesucht. Bei Interesse meld
 
 Die Deutsche Borreliose-Gesellschaft e.V. freut sich über neue Mitglieder, die sich für die Arbeit der DBG interessieren und an einem Austausch zum Thema Lyme-Borreliose interessiert sind. Sie helfen damit, die Forschung zu dieser Erkrankung anzuregen und unterstützen die Arbeit der Gesellschaft bei Aufklärung und Fortbildung rund um diese Erkrankung. Die Mitglieder tauschen sich dazu untereinander aus und einmal im Jahr findet auch eine Tagung statt. Dort finden dann interessante Vorträge aus Forschung und Praxis statt und anschließend gibt es auch die Möglichkeit zum persönlichen Austausch.
 
-Die Mitglieder der DBG sind ÄrztInnen oder auf dem Gebiet zeckenübertragener und assoziierter Krankheiten arbeitende WissenschaftlerInnen und LabordiagnostikerInnen. Des Weiteren kann jede/r die DBG als Fördermitglied unterstützen.
+Die Mitglieder der DBG sind ÄrztInnen oder auf dem Gebiet zeckenübertragener und assoziierter Krankheiten arbeitende WissenschaftlerInnen und LabordiagnostikerInnen. Des Weiteren kann jede/r die DBG als Fördermitglied unterstützen.
 
 **Vorteile einer Mitgliedschaft**
 
@@ -132,19 +57,13 @@ Die Mitglieder der DBG sind ÄrztInnen oder auf dem Gebiet zeckenübertragener u
 
 Spenden und Beiträge sind steuerlich abzugsfähig.
 
-Um Mitglied der Deutschen Borreliose-Gesellschaft e.V. zu werden, laden Sie bitte den Mitgliedsantrag bzw. die Förder- oder die Unterstützungserklärung als PDF Datei herunter, füllen diese/n aus und schicken diese/n unterschrieben per Post/Fax/Email (als Scan!) an die darin angegebene Anschrift.  Vielen herzlichen Dank!
+Um Mitglied der Deutschen Borreliose-Gesellschaft e.V. zu werden, laden Sie bitte den Mitgliedsantrag bzw. die Förder- oder die Unterstützungserklärung als PDF Datei herunter, füllen diese/n aus und schicken diese/n unterschrieben per Post/Fax/Email (als Scan!) an die darin angegebene Anschrift.  Vielen herzlichen Dank!
 
-### [Mitgliedsantrag](files/dbg-mitgliedsantrag-2026.pdf)
-
-Klicken zum Herunterladen
-
-### [Fördererklärung](files/dbg-foerdererklaerung-2026.pdf)
-
-Klicken zum Herunterladen
+Hier der **[Mitgliedsantrag](files/dbg-mitgliedsantrag-2026.pdf)** und die **[Fördererklärung](files/dbg-foerdererklaerung-2026.pdf)** zum Herunterladen.
 
 ## Geschichte
 
-![Gasthof Schwänlein](gasthof-schwaenlein.jpg "Gasthof Schwänlein")
+<img src="gasthof-schwaenlein.jpg" alt="Gasthof Schwänlein" title="Gasthof Schwänlein" style="max-width:420px">
 
 Im November 2003 beschlossen die Mitglieder eines Vereins zur Förderung eines Therapiezentrums, diesen zu beenden. Im Gasthof "Zum Schwänlein" in Nürnberg kam die Idee auf, stattdessen allgemeiner eine medizinische Gesellschaft zu gründen, die der Lyme-Borreliose gewidmet ist. So kam es 2004 zur Gründung der Deutschen Borreliose-Gesellschaft e.V., zu deren Anfangszeit nachfolgend Auszüge aus einer Rede zum 10 jährigen Jubiläum zitiert sind:
 

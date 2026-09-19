@@ -7,12 +7,12 @@ navorder=90
 Geschäftstelle Deutsche Borreliose-Gesellschaft e.V.
 Kavalleriestraße 18
 66740 Saarlouis
- 
+
 E-Mail: geschaeftsstelle(at)borreliose-gesellschaft.de
 
 Tel.: +49 (0) 6831 5168828
 
-Vertretungsberechtigter Vorstand: 
+Vertretungsberechtigter Vorstand:
 Dr. Dr. Herbert Rixecker, 1. Vorsitzender
 rixecker(at)deubo.de
 
@@ -22,7 +22,7 @@ bennefeld(at)deubo,de
 Dr. med. Karsten Ostermann M.A., 3. Vorsitzender
 ostermann(at)deubo.de
 
-Eingetragen am 07.05.2021 im Vereinsregister des Amtsgerichts Jena
+Eingetragen am 07.05.2021 im Vereinsregister des Amtsgerichts Jena
 Vereinsregister Nr.: VR 230995
 
 Der Verein ist als gemeinnützig anerkannt.

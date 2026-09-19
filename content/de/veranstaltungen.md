@@ -18,10 +18,10 @@ Termine für den Zeitraum August 2026 bis August 2027
 | --- | --- | --- | --- | --- |
 | September 2026 | | | | |
 | Datum | Veranstaltung | Ort | Link etc. |
-| 04. bis 06.09.2026 | CIP 2026 - FROM DATA TO DIAGNOSIS | Helsinki, Finland | [2nd Annual Conference on Chronic Infection Pathologies](http://www.chronicinfectionpathologies.com/ "CIP 2026 - FROM DATA TO DIAGNOSIS ") |
+| 04. bis 06.09.2026 | CIP 2026 - FROM DATA TO DIAGNOSIS | Helsinki, Finland | [2nd Annual Conference on Chronic Infection Pathologies](http://www.chronicinfectionpathologies.com/ "CIP 2026 - FROM DATA TO DIAGNOSIS ") |
 | Oktober 2026 | | | | |
 | Datum | Veranstaltung | Ort | Link etc. |
-| 22. bis 25.10.2026 | ILADS Annual Scientific Conference 2026 | Herndon, VA, USA | [2026 ILADS Annual Scientific Conference](http://membercompass.ilads.org/events/2026-ilads-annual-scientific-conference "ILADS Annual Scientific Conference 2026") |
+| 22. bis 25.10.2026 | ILADS Annual Scientific Conference 2026 | Herndon, VA, USA | [2026 ILADS Annual Scientific Conference](http://membercompass.ilads.org/events/2026-ilads-annual-scientific-conference "ILADS Annual Scientific Conference 2026") |
 
 ## Jahrestagung 2025 der Deutschen Borreliose-Gesellschaft e.V.
 
@@ -30,7 +30,7 @@ Termine für den Zeitraum August 2026 bis August 2027
 [**![](dbgjt2025-flyerdbgjt2025-202509051-klein.jpg)**](files/jahrestagung2025-flyerdbgjt2025-20251111.pdf "Flyer DBG JT 2025")
 
 **Freitag, 14.11.2025
-10.00 Uhr** bis **ca. 15.45 Uhr** und 
+10.00 Uhr** bis **ca. 15.45 Uhr** und
 
 **Abendveranstaltung (Zoo Führung plus Abendessen) ab 18 Uhr**
 
@@ -50,26 +50,26 @@ Direkt vor dem Haus der KHG sind zwar Parkplätze vorhanden, jedoch sehr teuer (
 In der Nähe sind mehrere Parkplätze/-häuser, bspw.
 
 - [Zoo Leipzig,Parthenstraße 8, 04105 Leipzig (fußläufig 5min)](https://www.zoo-leipzig.de/zoobesuch-planen/anreise/)
-- Parkplatz Ranstädter Steinweg 18, 04109 Leipzig4
+- Parkplatz Ranstädter Steinweg 18, 04109 Leipzig4
 - Hotel Parkhäuser je nach Verfügbarkeit.
 
 u.a.m.
 
- ![Übersichtskarte](dbgjt2025-kartedbgjt2025leipzig.png)
+ ![Übersichtskarte](dbgjt2025-kartedbgjt2025leipzig.png)
 
 Hoteltipps:
 
-- **Seaside Park Hotel**, Richard-Wagner-Straße 7, 04109 Leipzig, [https://www.parkhotelleipzig.de/](https://www.parkhotelleipzig.de)  -[**>> Abrufkontingent verlängert bis 09.11.25! (klick!) <<**](https://onepagebooking.com/seasideleipzig/allotments/17065?allotmentcode=DBG&lang=de)
-- **Travel24 Hotel Leipzig-City,**Tröndlinring 9, 04105 Leipzig, <https://www.hotel-travel24.com/>
-- **Innside by Melia**, Gottschedstraße 1, Leipzig, <https://www.melia.com/de/hotels/deutschland/leipzig/innside-leipzig>
-- **The Westin Leipzig**, Gerberstraße 15, 04105 Leipzig, <https://www.marriott.com/de/hotels/lejwi-the-westin-leipzig/overview/>
-- **The Art Hotel Leipzig**, Eutritzscher Strasse 15, 04105 Leipzig, <https://www.arthotelcityleipzig.com/>
-- **Leipzig Marriott Hotel**, Am Hallischen Tor 1, 04109 Leipzig, <https://www.marriott.com/de/hotels/lejdt-leipzig-marriott-hotel/overview/>
-- **Motel One Leipzig-Nikolaikirche**, Nikolaistraße 23, 04109 Leipzig, <https://www.motel-one.com/de/hotels/leipzig/hotel-leipzig-nikolaikirche/>
+- **Seaside Park Hotel**, Richard-Wagner-Straße 7, 04109 Leipzig, [https://www.parkhotelleipzig.de/](https://www.parkhotelleipzig.de)  -[**>> Abrufkontingent verlängert bis 09.11.25! (klick!) <<**](https://onepagebooking.com/seasideleipzig/allotments/17065?allotmentcode=DBG&lang=de)
+- **Travel24 Hotel Leipzig-City,**Tröndlinring 9, 04105 Leipzig, <https://www.hotel-travel24.com/>
+- **Innside by Melia**, Gottschedstraße 1, Leipzig, <https://www.melia.com/de/hotels/deutschland/leipzig/innside-leipzig>
+- **The Westin Leipzig**, Gerberstraße 15, 04105 Leipzig, <https://www.marriott.com/de/hotels/lejwi-the-westin-leipzig/overview/>
+- **The Art Hotel Leipzig**, Eutritzscher Strasse 15, 04105 Leipzig, <https://www.arthotelcityleipzig.com/>
+- **Leipzig Marriott Hotel**, Am Hallischen Tor 1, 04109 Leipzig, <https://www.marriott.com/de/hotels/lejdt-leipzig-marriott-hotel/overview/>
+- **Motel One Leipzig-Nikolaikirche**, Nikolaistraße 23, 04109 Leipzig, <https://www.motel-one.com/de/hotels/leipzig/hotel-leipzig-nikolaikirche/>
 
-Wir haben mit dem [Seaside Park Hotel](https://www.parkhotelleipzig.de/) Sonderkonditionen vereinbart und ein **Kontingent an Zimmern zum Vorzugspreis von 115€ ÜF im EZ / 125€ ÜF im DZ für die Zeit vom 13. bis 16.11.** reserviert, buchbar bis zum **09.11****.25**. Bitte nutzen Sie dafür den o.g. Link "Abrufkontingent bis 09.11.25".
+Wir haben mit dem [Seaside Park Hotel](https://www.parkhotelleipzig.de/) Sonderkonditionen vereinbart und ein **Kontingent an Zimmern zum Vorzugspreis von 115€ ÜF im EZ / 125€ ÜF im DZ für die Zeit vom 13. bis 16.11.** reserviert, buchbar bis zum **09.11****.25**. Bitte nutzen Sie dafür den o.g. Link "Abrufkontingent bis 09.11.25".
 
-Teilnahmebeitrag: 
+Teilnahmebeitrag:
 
 |  |  |  |  |
 | --- | --- | --- | --- |
@@ -79,7 +79,7 @@ Teilnahmebeitrag: 
 
 Bei Buchung beider Tage ist die Abendveranstaltung (Zooführung plus Abendessen) inklusive. Ansonsten kostet die Teilnahme 100€. Bitte bei der Buchung mit angeben.
 
-Wissenschaftliche Leitung: 
+Wissenschaftliche Leitung:
 
 **Dr. med. Harald Bennefeld, Kirchberg**
 
@@ -88,7 +88,7 @@ Wissenschaftliche Leitung: 
 
 Datenschutzerklärung:
 
-Anmeldungen zur Jahrestagung werden ausschliesslich online mittels eines Anmeldeformulars durchgeführt. Anmeldungen per Email oder Telefon werden nicht angenommen.
+Anmeldungen zur Jahrestagung werden ausschliesslich online mittels eines Anmeldeformulars durchgeführt. Anmeldungen per Email oder Telefon werden nicht angenommen.
 
 Das Formular wird von der DBG in ihrer eigenes dafür eingerichteten Cloudplattform namens "Nextcloud", einer freien Open Source Software, in Deutschland gehostet. Wenn Sie Hilfe beim Ausfüllen brauchen oder weitere Fragen haben, wenden Sie sich aber gerne an die Geschäftsstelle. Mit der Angabe Ihrer Daten erklären sich mit der Verarbeitung der Daten zum Zwecke der Durchführung der Veranstaltung einverstanden. Wenn Sie Fortbildungspunkte als Mediziner gutgeschrieben haben möchten, werden Ihre Daten an die Ärztekammer Sachsen weitergeleitet.
 
@@ -162,7 +162,7 @@ IMD Berlin
 
 **Prof. Dr. Narges Bahi**Head of the research divisionEBMA - European Bio Immune(G)ene Medicine Association
 Colmar/Frankreich
-<https://www.ebma-europe.com/> 
+<https://www.ebma-europe.com/>
 
 **Prof. Dr. rer. medic. Antje Büttner-Teleaga**
 Universität Witten/Herdecke & Woosuk University, Samnye-up, (ROK)
@@ -176,7 +176,7 @@ Chefarzt Neurologie und Neurologisch-neurochirurgische Frührehabilitation, Kirc
 Institut und Lehrstuhl für Geschichte, Theorie und Ethik der Medizin
 Geschäftsführender Direktor, Prodekan
 Medizinische Fakultät
-RWTH Aachen<https://www.rwth-aachen.de/go/id/bdfr/gguid/PER-RK5KBGX> 
+RWTH Aachen<https://www.rwth-aachen.de/go/id/bdfr/gguid/PER-RK5KBGX>
 
 **RA Oliver Heinekamp**Bayreuth
 Mitentwickler und Patentinhaber "Zeckendreher"
@@ -188,12 +188,12 @@ Mitentwickler und Patentinhaber "Zeckendreher"
 Geschäftsführer der Krankenhausgesellschaft Sachsen e.V. (KGS)
 <https://khg-sachsen.de/geschaeftsfuehrung/>
 Lehrbeauftragter Universität Leipzig & Westsächsische Hochschule Zwickau(FH)
-Dozent Verwaltungs- & Wirtschafts-Akademie Leipzig GmbH und DIU Dresden International University GmbH 
+Dozent Verwaltungs- & Wirtschafts-Akademie Leipzig GmbH und DIU Dresden International University GmbH
 
 **Prof. Dr. rer.nat. Lutz Neumann**Dekan, DHSN – Duale Hochschule Sachsen, Staatliche Studienakademie Plauen
 
 **Prof. Dr. Christian Perronne**
-Professor of Infectious and Tropical Diseases at the University of Versailles-St Quentin (UVSQ), Paris-Saclay, France. 
+Professor of Infectious and Tropical Diseases at the University of Versailles-St Quentin (UVSQ), Paris-Saclay, France.
 Chief of a Department of Medicine at the Raymond Poincaré University Hospital in Garches, Greater Paris University Hospitals group (Assistance publique - Hôpitaux de Paris).
 
 **Prof. Dr. Ing. Daniel Pfeifer**Professor für angewandte und medizinische Informatik
@@ -202,7 +202,7 @@ Hochschule Heilbronn
 
 **Dr. med. Dr. med. dent. Herbert Rixecker**Facharzt für Mund-, Kiefer- und Gesichts-Chirurgie
 Arzt und Zahnarzt
-Saarlouis 
+Saarlouis
 <https://eic-online.de/wirueberuns.htm>1. Vorsitzender Deutsche Borreliose-Gesellschaft e.V.
 
 **Manuela Steinbach**
@@ -213,7 +213,7 @@ Plauen
 <https://www.helios-gesundheit.de/standorte-angebote/kliniken/plauen/>
 
 ### Erklärung
-Die Inhalte dieser Veranstaltung werden produkt- und dienstleistungsneutral gestaltet. Wir bestätigen, dass die wissenschaftliche Leitung und die Referenten potentielle Interessenkonflikte gegenüber den Teilnehmern offenlegen. Die Gesamtaufwendungen der Veranstaltung belaufen sich auf ca. 15000€. Die folgenden Unternehmen stellen aus und entrichten dafür eine Gebühr i.H.v. 350€ (Stand 16.09.2025):
+Die Inhalte dieser Veranstaltung werden produkt- und dienstleistungsneutral gestaltet. Wir bestätigen, dass die wissenschaftliche Leitung und die Referenten potentielle Interessenkonflikte gegenüber den Teilnehmern offenlegen. Die Gesamtaufwendungen der Veranstaltung belaufen sich auf ca. 15000€. Die folgenden Unternehmen stellen aus und entrichten dafür eine Gebühr i.H.v. 350€ (Stand 16.09.2025):
 
 - [arminlabs GmbH](https://arminlabs.com)
 - [AlSanaS GmbH](https://alsanas.de/)
@@ -226,7 +226,7 @@ Letzte Bearbeitung: December 4, 2025
 
 ## Borreliose und Co-Infektionen in der Post-Covid Ära
 
-Datum: 
+Datum:
 
 **Freitag, 22.11.2024 10.00 Uhr - ca. 17.30 Uhr**
 
@@ -244,15 +244,15 @@ Telefon: +49 69 33002 00
 
 E-Mail: [info.frankfurt.hochst@lindnerhotels.com](mailto:info.frankfurt.hochst@lindnerhotels.com)
 
-Website: <https://lindnerhotels.com/hotels/lindner-hotel-frankfurt-hoechst>
+Website: <https://lindnerhotels.com/hotels/lindner-hotel-frankfurt-hoechst>
 
-Navigationslink (Google Maps): 
+Navigationslink (Google Maps):
 
 - <https://www.google.com/maps/dir//Lindner+Hotel+Frankfurt+Hochst+-+JDV+by+Hyatt,+Bolongarostra%C3%9Fe+100,+65929+Frankfurt+am+Main/@50.1017378,8.471073,23140m>
 
 Parken:
 
-Das Hotel verfügt über eine hauseigene Tiefgarage mit insgesamt 155 Stellplätzen. Die Parkgebühren belaufen sich auf 2,50€/Stunde oder 25,00€/Tag.
+Das Hotel verfügt über eine hauseigene Tiefgarage mit insgesamt 155 Stellplätzen. Die Parkgebühren belaufen sich auf 2,50€/Stunde oder 25,00€/Tag.
 
 [Flyer Download](files/flyerdbgjt2024-4.pdf)
 
@@ -262,13 +262,13 @@ Das Hotel verfügt über eine hauseigene Tiefgarage mit insgesamt 155 Stellplä
 
 Die **Teilnehmer** werden gebeten, **selbst das Zimmer** im **Lindner Hotel Höchst**zu **buchen**.
 
-Wir haben ein **Kontingent an Zimmern zum Vorzugspreis von 104€ ÜF für die Nacht vom 22. auf den 23.11.** reserviert bis zum **28.10.24****06.11.24**. 
+Wir haben ein **Kontingent an Zimmern zum Vorzugspreis von 104€ ÜF für die Nacht vom 22. auf den 23.11.** reserviert bis zum **28.10.24****06.11.24**.
 
-Das **Stichwort** für die Buchung lautet: **G-DBG1**. Bitte geben Sie das Stichwort bei der Buchung an! Ansonsten kann der Rabatt seitens des Hotels leider nicht gewährt werden! **Die normalen Zimmerpreise betragen EZ 175€ /** **DZ 195€, jeweils ÜF.**
+Das **Stichwort** für die Buchung lautet: **G-DBG1**. Bitte geben Sie das Stichwort bei der Buchung an! Ansonsten kann der Rabatt seitens des Hotels leider nicht gewährt werden! **Die normalen Zimmerpreise betragen EZ 175€ /** **DZ 195€, jeweils ÜF.**
 
- 
 
-Teilnahmebeitrag: 
+
+Teilnahmebeitrag:
 
 |  |  |  |  |
 | --- | --- | --- | --- |
@@ -276,9 +276,9 @@ Teilnahmebeitrag: 
 | **DBG Mitglieder** | 130€ | 130€ | 210€ |
 | **Nichtmitglieder** | 190€ | 190€ | 320€ |
 
- 
 
-Wissenschaftliche Leitung: 
+
+Wissenschaftliche Leitung:
 
 **Dr. med. Dr. med. dent. Herbert Rixecker, M.D., Saarlouis**
 
@@ -289,12 +289,12 @@ Wissenschaftliche Leitung: 
 
 Datenschutzerklärung:
 
-Anmeldungen zur Jahrestagung werden ausschliesslich online mittels eines Anmeldeformulars durchgeführt. Anmeldungen per Email oder Telefon werden nicht angenommen.
+Anmeldungen zur Jahrestagung werden ausschliesslich online mittels eines Anmeldeformulars durchgeführt. Anmeldungen per Email oder Telefon werden nicht angenommen.
 
-Das Formular wird von der DBG in ihrer eigens gehosteten Cloudplattform namens "Nextcloud", einer freien Open Source Software, gehostet. Ihre Anmeldedaten gelangen dadurch nicht an andere Anbieter. Wenn Sie Hilfe beim Ausfüllen brauchen oder weitere Fragen haben, wenden Sie sich aber gerne an die Geschäftsstelle. Mit der Angabe Ihrer Daten erklären sich mit der Verarbeitung der Daten zum Zwecke der Durchführung der Veranstaltung einverstanden. Wenn Sie Fortbildungspunkte als Mediziner gutgeschrieben haben möchten, so werden Ihre Daten an die Ärztekammer Hessen weitergeleitet.
+Das Formular wird von der DBG in ihrer eigens gehosteten Cloudplattform namens "Nextcloud", einer freien Open Source Software, gehostet. Ihre Anmeldedaten gelangen dadurch nicht an andere Anbieter. Wenn Sie Hilfe beim Ausfüllen brauchen oder weitere Fragen haben, wenden Sie sich aber gerne an die Geschäftsstelle. Mit der Angabe Ihrer Daten erklären sich mit der Verarbeitung der Daten zum Zwecke der Durchführung der Veranstaltung einverstanden. Wenn Sie Fortbildungspunkte als Mediziner gutgeschrieben haben möchten, so werden Ihre Daten an die Ärztekammer Hessen weitergeleitet.
 
 ### Ärztliche Fortbildungsmaßnahme
-**Das Programm ist von der Ärztekammer Hessen als ärztliche Fortbildung anerkannt und zertifiziert: Tag 1 mit 7 FP und Tag 2 mit 5 FP (Kat. A)**
+**Das Programm ist von der Ärztekammer Hessen als ärztliche Fortbildung anerkannt und zertifiziert: Tag 1 mit 7 FP und Tag 2 mit 5 FP (Kat. A)**
 
 ### Programm
 ### Freitag, 22.11.24 (7FP Kat. A)
@@ -341,7 +341,7 @@ Chefarzt Neurologie und Neurologisch-neurochirurgische Frührehabilitation, Kirc
 
 Allgemeinärztin
 Medizinische Direktorin und Geschäftsführerin Alviasana, Augsburg
-<https://www.alviasana.com/>Mitglied des Vorstands der Deutschen Borreliose-Gesellschaft e.V. 
+<https://www.alviasana.com/>Mitglied des Vorstands der Deutschen Borreliose-Gesellschaft e.V.
 
 **Dr. med. Joé Diederich**Arzt
 Centre médical Colmar-Berg
@@ -367,15 +367,15 @@ Mitentwickler und Patentinhaber "Zeckendreher"
 
 **em. Prof. Dr. Heinz Mehlhorn**Zoologe & Biologe, Lehrstuhl für Biologie
 Universität Düsseldorf
-<https://www.biologie.hhu.de/institute-und-abteilungen/weitere-dozenten/mehlhorn-heinz-prof-i-r-dr/prof-dr-heinz-mehlhorn-1> 
+<https://www.biologie.hhu.de/institute-und-abteilungen/weitere-dozenten/mehlhorn-heinz-prof-i-r-dr/prof-dr-heinz-mehlhorn-1>
 
-Prof. Dr. Heinz Mehlhorn beschäftigt sich seit 40 Jahren mit den Übertragungswegen und der Bekämpfung von Parasiten. Er verfasste zu diesen Themen über 20 Bücher, 250 Originalpublikationen und erhielt 22 Patente zu Antiparasitika, zu deren Umsetzung in Produkte er im Jahre 2000 die Firma Alpha-Biocare gründete. Als Hochschullehrer bildete er in vielen Veranstaltungen zahlreiche Biologen, Human- und Tiermediziner aus. Ebenso versucht er in Fernseh- und Rundfunksendungen die öffentlichen Diskussionen um Parasitengefahren zu versachlichen, denn Angst war schon immer ein schlechter Lehrmeister.
+Prof. Dr. Heinz Mehlhorn beschäftigt sich seit 40 Jahren mit den Übertragungswegen und der Bekämpfung von Parasiten. Er verfasste zu diesen Themen über 20 Bücher, 250 Originalpublikationen und erhielt 22 Patente zu Antiparasitika, zu deren Umsetzung in Produkte er im Jahre 2000 die Firma Alpha-Biocare gründete. Als Hochschullehrer bildete er in vielen Veranstaltungen zahlreiche Biologen, Human- und Tiermediziner aus. Ebenso versucht er in Fernseh- und Rundfunksendungen die öffentlichen Diskussionen um Parasitengefahren zu versachlichen, denn Angst war schon immer ein schlechter Lehrmeister.
 
 **Prof. Dr. Ing. Daniel Pfeifer**Professor für angewandte und medizinische Informatik
 Hochschule Heilbronn
 <https://www.hs-heilbronn.de/de/daniel.pfeifer>
 
-**Dr. med. Markus Pfisterer** 
+**Dr. med. Markus Pfisterer**
 Arzt
 Naturheilverfahren, Akupunktur
 Heilbronn
@@ -388,11 +388,11 @@ Augsburg
 
 **Dr. med. Dr. med. dent. Herbert Rixecker**Facharzt für Mund-, Kiefer- und Gesichts-Chirurgie
 Arzt und Zahnarzt
-Saarlouis 
+Saarlouis
 <https://eic-online.de/wirueberuns.htm>1. Vorsitzender Deutsche Borreliose-Gesellschaft e.V.
 
 ### Erklärung
-Die Inhalte dieser Veranstaltung werden produkt- und dienstleistungsneutral gestaltet. Wir bestätigen, dass die wissenschaftliche Leitung und die Referenten potentielle Interessenkonflikte gegenüber den Teilnehmern offenlegen. Die Gesamtaufwendungen der Veranstaltung belaufen sich auf ca. 15000€. Die folgenden Unternehmen stellen aus und entrichten dafür eine Gebühr i.H.v. 600€ (Stand 05.11.2024):
+Die Inhalte dieser Veranstaltung werden produkt- und dienstleistungsneutral gestaltet. Wir bestätigen, dass die wissenschaftliche Leitung und die Referenten potentielle Interessenkonflikte gegenüber den Teilnehmern offenlegen. Die Gesamtaufwendungen der Veranstaltung belaufen sich auf ca. 15000€. Die folgenden Unternehmen stellen aus und entrichten dafür eine Gebühr i.H.v. 600€ (Stand 05.11.2024):
 
 - [arminlabs GmbH](https://arminlabs.com)
 - [Zeckendreher / empasa GmbH](https://zeckendreher.de)
@@ -408,7 +408,7 @@ Letzte Bearbeitung: January 19, 2026
 [![](dbg-jahrestagung2023saarlouis-lymeborrelioseundanderepersistierendeinfektionen.png)](files/dbg-jahrestagung2023saarlouis-lymeborrelioseundanderepersistierendeinfektionen.pdf)
 
 ## Lyme-Borreliose und andere persistierende Infektionen
-Datum: 
+Datum:
 
 **Freitag, 10.11.2022 10.00 Uhr - ca. 17.30 Uhr (Mitgliederversammlung im Anschluß)**
 
@@ -420,37 +420,37 @@ Ort:
 **Bahnhofsallee 4**
 **66740 Saarlouis**
 
-Telefon: [+49 6831 980-0](tel:+4968319800)
+Telefon: [+49 6831 980-0](tel:+4968319800)
 
 E-Mail:[info.saarlouis@victors.de](mailto:info.saarlouis@victors.de)
 
 Website: <https://www.victors.de/hotels/victor-s-residenz-hotel-saarlouis>
 
- 
 
-Navigationslink (Google Maps): 
+
+Navigationslink (Google Maps):
 
 - [Victor's Residenz Hotel Saarlouis](https://goo.gl/maps/m6EaEKFg4ZiciRKUA "Victor's Residenz Hotel Saarlouis")
 
-Sollten zum Zeitpunkt der Veranstaltung Covid-19 bedingte Einschränkungen gelten, so werden diese auch beachtet und eingehalten. 
+Sollten zum Zeitpunkt der Veranstaltung Covid-19 bedingte Einschränkungen gelten, so werden diese auch beachtet und eingehalten.
 
 Übernachtung:
 
 Die **Teilnehmer** werden gebeten, **selbst das Zimmer** im **[Victor's Residenz Hotel](https://www.victors.de/hotels/victor-s-residenz-hotel-saarlouis)** zu **buchen**.
 
-Wir haben ein **Kontingent an Zimmern zum Vorzugspreis** verlängert bis  zum **15.10.23**. Das **Stichwort** für die Buchung lautet: **Deutsche Borreliose-Gesellschaft e. V 10112023**. Bitte geben Sie das Stichwort bei der Buchung über die E-Mail-Adresse [info.saarlouis@victors.de](mailto:info.saarlouis@victors.de) oder telefonisch unter 06831 980 0 an. Ansonsten kann der Rabatt seitens des Hotels leider nicht gewährt werden!
+Wir haben ein **Kontingent an Zimmern zum Vorzugspreis** verlängert bis  zum **15.10.23**. Das **Stichwort** für die Buchung lautet: **Deutsche Borreliose-Gesellschaft e. V 10112023**. Bitte geben Sie das Stichwort bei der Buchung über die E-Mail-Adresse [info.saarlouis@victors.de](mailto:info.saarlouis@victors.de) oder telefonisch unter 06831 980 0 an. Ansonsten kann der Rabatt seitens des Hotels leider nicht gewährt werden!
 
 Parkmöglichkeiten:
 
 **Das Hotel verfügt über eine Tiefgarage, deren Nutzung wir empfehlen!****Tagesgebühr 5€, Übernachtungsgäste zahlen für 24h pauschal 10€.**
 
-Der via Schranke zugängliche **Parkplatz** gehört dem Discounter **"Aldi" und wird nicht empfohlen.** 
+Der via Schranke zugängliche **Parkplatz** gehört dem Discounter **"Aldi" und wird nicht empfohlen.**
 
-Weitere öffentliche Parkplätze befinden sich in der näheren Umgebung des Hotels und des Bahnhofes. Bitte beachten Sie die ggfs. aushängenden Gebührensätze bzw. Parkregeln. 
+Weitere öffentliche Parkplätze befinden sich in der näheren Umgebung des Hotels und des Bahnhofes. Bitte beachten Sie die ggfs. aushängenden Gebührensätze bzw. Parkregeln.
 
- 
 
-Teilnahmebeitrag: 
+
+Teilnahmebeitrag:
 
 |  |  |  |  |
 | --- | --- | --- | --- |
@@ -458,9 +458,9 @@ Teilnahmebeitrag: 
 | **DBG Mitglieder** | 70€ | 70€ | 100€ |
 | **Nichtmitglieder** | 130€ | 130€ | 210€ |
 
- 
 
-Wissenschaftliche Leitung: 
+
+Wissenschaftliche Leitung:
 
 **Dr. med. Dr. med. dent. Herbert Rixecker, M.D.**
 
@@ -471,7 +471,7 @@ Anmeldungen zur Jahrestagung werden online mittels eines Anmeldeformulars durchg
 
 Anmeldungen per Email oder Telefon werden nicht angenommen.
 
-Das Formular wird von der DBG in ihrer eigens gehosteten Cloudplattform namens "Nextcloud", einer freien Open Source Software, gehostet. Ihre Anmeldedaten gelangen dadurch nicht an andere Anbieter. Wenn Sie Hilfe beim Ausfüllen brauchen oder weitere Fragen haben, wenden Sie sich aber gerne an die Geschäftsstelle.
+Das Formular wird von der DBG in ihrer eigens gehosteten Cloudplattform namens "Nextcloud", einer freien Open Source Software, gehostet. Ihre Anmeldedaten gelangen dadurch nicht an andere Anbieter. Wenn Sie Hilfe beim Ausfüllen brauchen oder weitere Fragen haben, wenden Sie sich aber gerne an die Geschäftsstelle.
 
 ### Ärztliche Fortbildungsmaßnahme
 Das Programm ist durch die [**Ärztekammer des Saarlandes**](https://www.aerztekammer-saarland.de/) als ärztliche Fortbildung anerkannt und wird für beide Tage mit **16 Punkten bewertet**!
@@ -516,7 +516,7 @@ Das Programm ist durch die [**Ärztekammer des Saarlandes**](https://www.aerztek
 | 18.00-18.15 | **Ende der Veranstaltung / Abschlusswort** | Rixecker | dt. |
 
 ### Referenten
-Die Deutsche Borreliose-Gesellschaft e.V. freut sich sehr, diese hochkarätigen und anerkannte Experten\*Innen als Referenten für die Vorträge gewonnen zu haben. 
+Die Deutsche Borreliose-Gesellschaft e.V. freut sich sehr, diese hochkarätigen und anerkannte Experten\*Innen als Referenten für die Vorträge gewonnen zu haben.
 
 **Sigrid Blehle, M.D., MBA**
 
@@ -524,9 +524,9 @@ Medizinische Direktorin und Geschäftsführerin Alviasana, Augsburg
 
 <https://www.alviasana.com/>
 
-Mitglied des Vorstands der Deutschen Borreliose-Gesellschaft e.V. 
+Mitglied des Vorstands der Deutschen Borreliose-Gesellschaft e.V.
 
- 
+
 
 **Prof. Dr. Florian Fricke**
 
@@ -540,33 +540,33 @@ Institut für Ernährungswissenschaften, Uni Hohenheim
 
 Dozentin für Zell- und Molekularbiologie, Doktorin der Biotechnologie
 
-CEO & Mitgründerin Tezted.com, Jyväskylä/Finnland
+CEO & Mitgründerin Tezted.com, Jyväskylä/Finnland
 
 <https://www.tezted.com/>
 
- 
+
 
 **Majda Kralj**
 
 Vizepräsidentin der Slowenischen Gesellschaft für Lyme-Disease
 
-Maribor/Slowenien 
+Maribor/Slowenien
 
 **Kenny de Meirleir, M.D., PhD**
 
-Internist, Belgien 
+Internist, Belgien
 
-Spezialisiert in Chronischer Lyme-Borreliose, Long-Covid & chronischer Yersiniose. Medizinischer Direktor des Whittemore Peterson Institute, Nevada, USA. 
+Spezialisiert in Chronischer Lyme-Borreliose, Long-Covid & chronischer Yersiniose. Medizinischer Direktor des Whittemore Peterson Institute, Nevada, USA.
 
 [https://www.ctmassociates.co](https://www.ctmassociates.co/)
 
 **Dr. Rainer Mutschler, M.D., MA**
 
-Facharzt für Allgemeinmedizin und Naturheilverfahren, Master of Arts Komplementäre Medizin u.a., Speyer
+Facharzt für Allgemeinmedizin und Naturheilverfahren, Master of Arts Komplementäre Medizin u.a., Speyer
 
 <https://biomedical-center.de>
 
- 
+
 
 **Dr. Albin Obiltschnig, M.D.**
 
@@ -574,11 +574,11 @@ Unfallchirurg, Klagenfurt/Österreich
 
 **Prof. Christian Perronne, M.D., PhD**
 
-Internist, Assistance Publique Hopitaux De Paris, Paris, France
+Internist, Assistance Publique Hopitaux De Paris, Paris, France
 
 Professor für Infektions- und Tropenkreankheiten der Université de Versailles-St Quentin (UVSQ), Paris-Saclay, France
 
- 
+
 
 **Mihail Pruteanu, M.D.**
 
@@ -588,21 +588,21 @@ Labormediziner, Augsburg, ArminLabs | Medicum Bad Aibling MVZ GmbH
 
 **Dr. med. Dr. med. dent. Herbert Rixecker, M.D.**
 
-Arzt, Zahnarzt, Mund-, Kiefer-, Gesichts-Chirurg, Saarlouis 
+Arzt, Zahnarzt, Mund-, Kiefer-, Gesichts-Chirurg, Saarlouis
 
 <https://eic-online.de/wirueberuns.htm>
 
 1. Vorsitzender Deutsche Borreliose-Gesellschaft e.V.
 
- 
 
-**Pol de Saedeleer, RPharmD**
 
-Medical Director, Nutrined BV, DS Goirle/Nederland
+**Pol de Saedeleer, RPharmD**
+
+Medical Director, Nutrined BV, DS Goirle/Nederland
 
 [nutrined.com](https://www.nutrined.com/de)
 
- 
+
 
 ### Moderatoren
 **Sigrid Blehle, M.D., MBA**
@@ -611,7 +611,7 @@ Medizinische Direktorin und Geschäftsführerin Alviasana, Augsburg
 
 <https://www.alviasana.com/>
 
-Mitglied des Vorstands der Deutschen Borreliose-Gesellschaft e.V. 
+Mitglied des Vorstands der Deutschen Borreliose-Gesellschaft e.V.
 
 **Dr. med. Harald Bennefeld, M.D.**
 
@@ -625,22 +625,22 @@ Chefarzt Neurologie und Neurologisch-neurochirurgische Frührehabilitation
 
 <https://www.klinik-am-brunnenberg.de/>
 
-2. Vorsitzender der Deutschen Borreliose-Gesellschaft e.V. 
+2. Vorsitzender der Deutschen Borreliose-Gesellschaft e.V.
 
 **Dr. med. Dr. med. dent. Herbert Rixecker, M.D.**
 
-Arzt, Zahnarzt, Mund-, Kiefer-, Gesichts-Chirurg, Saarlouis 
+Arzt, Zahnarzt, Mund-, Kiefer-, Gesichts-Chirurg, Saarlouis
 
 <https://eic-online.de/wirueberuns.htm>
 
 1. Vorsitzender Deutsche Borreliose-Gesellschaft e.V.
 
 ### Workshop
-Begleitend zur Jahrestagung bietet Dr. Rixecker zusätztlich einen **Workshop am Sonntag, 12.11.23** in den Räumlichkeiten seiner kieferchirurgischen Praxis in Saarlouis an. 
+Begleitend zur Jahrestagung bietet Dr. Rixecker zusätztlich einen **Workshop am Sonntag, 12.11.23** in den Räumlichkeiten seiner kieferchirurgischen Praxis in Saarlouis an.
 
-Thema: **Zahnmed. & Fachärztlicher Workshop "Borreliose und Zahnheilkunde"**
+Thema: **Zahnmed. & Fachärztlicher Workshop "Borreliose und Zahnheilkunde"**
 
-Bei Interesse sprechen Sie bitte die Praxis Dr. Rixecker selbst an: 
+Bei Interesse sprechen Sie bitte die Praxis Dr. Rixecker selbst an:
 
 Kavalleriestraße 18
 66740 Saarlouis
@@ -652,10 +652,10 @@ Email: [info@eic-online.de](mailto:info@eic-online.de)
 
 <https://www.eic-online.de/anfahrt.htm>
 
- 
+
 
 ### Erklärung
-Die Inhalte dieser Veranstaltung werden produkt- und dienstleistungsneutral gestaltet. Wir bestätigen, dass die wissenschaftliche Leitung und die Referenten potentielle Interessenkonflikte gegenüber den Teilnehmern offenlegen. 
+Die Inhalte dieser Veranstaltung werden produkt- und dienstleistungsneutral gestaltet. Wir bestätigen, dass die wissenschaftliche Leitung und die Referenten potentielle Interessenkonflikte gegenüber den Teilnehmern offenlegen.
 
 Letzte Bearbeitung: January 19, 2026
 
@@ -667,15 +667,15 @@ Letzte Bearbeitung: January 19, 2026
 #### der
 #### Deutschen Borreliose Gesellschaft e.V.
 ## Quo vadis, Borreliose & Co.?
-Wir haben ein sehr interessantes und aktuelles Programm auf die Beine gestellt und freuen uns sehr auf den Austausch mit hochkarätigen und anerkannten Experten\*Innen zum Thema "Quo vadis, Borreliose und Co.?" . Der Samstag wird ganz im Zeichen der neuesten Entwicklungen rund um die Borreliose und Koinfektionen stehen, ganz getreu dem Motto der diesjährigen Veranstaltung: „Quo vadis, Borreliose und Co. ?“.
+Wir haben ein sehr interessantes und aktuelles Programm auf die Beine gestellt und freuen uns sehr auf den Austausch mit hochkarätigen und anerkannten Experten\*Innen zum Thema "Quo vadis, Borreliose und Co.?" . Der Samstag wird ganz im Zeichen der neuesten Entwicklungen rund um die Borreliose und Koinfektionen stehen, ganz getreu dem Motto der diesjährigen Veranstaltung: „Quo vadis, Borreliose und Co. ?“.
 
-Aufgrund des hochwertigen Programms wurde der Samstag zudem von der Landesärztekammer Hessen komplett als ärztliche Fortbildung mit 8 Punkten der Kategorie A/BASIS anerkannt! 
+Aufgrund des hochwertigen Programms wurde der Samstag zudem von der Landesärztekammer Hessen komplett als ärztliche Fortbildung mit 8 Punkten der Kategorie A/BASIS anerkannt!
 
-Ganz besonders freuen wir uns, dass wir für die Keynote einer der weltweit anerkannten Experten für Infektionskrankheiten, Professor John (Jack) Lambert aus Dublin, gewinnen konnten. Er wird in seiner Keynote auf den Zusammenhang von „Lyme und Koinfektionen“ und aktuellste Forschungsergebnisse eingehen. Aber auch das weitere Programm kann sich sehen lassen. So werden die DBG Vorstandsmitglieder Frau Blehle, M.D. und Herr Dr. Bennefeld in einem Vortrag neueste Erkenntnisse zur Therapie der Borreliose präsentieren und unser Vorstandsmitglied Dr. Schwarzbach wird dazu neueste labortechnische und diagnostische Aspekte zu Borreliose und Koinfektionen präsentieren.
+Ganz besonders freuen wir uns, dass wir für die Keynote einer der weltweit anerkannten Experten für Infektionskrankheiten, Professor John (Jack) Lambert aus Dublin, gewinnen konnten. Er wird in seiner Keynote auf den Zusammenhang von „Lyme und Koinfektionen“ und aktuellste Forschungsergebnisse eingehen. Aber auch das weitere Programm kann sich sehen lassen. So werden die DBG Vorstandsmitglieder Frau Blehle, M.D. und Herr Dr. Bennefeld in einem Vortrag neueste Erkenntnisse zur Therapie der Borreliose präsentieren und unser Vorstandsmitglied Dr. Schwarzbach wird dazu neueste labortechnische und diagnostische Aspekte zu Borreliose und Koinfektionen präsentieren.
 
 Dr. Öhme vom Landesgesundheitsamt Baden-Württemberg wird als Labormediziner zur „Hyalomma“ sprechen und eine Einordnung geben, inwieweit diese neu einwandernde Zeckenart eine neue Herausforderung für die hiesige Medizin darstellt. Ferner spricht er in einem zweiten Vortrag zu „Rickettsien“, die als Begleitinfektion der Borreliose immer wieder zu beobachten sind.
 
-Prof. Dr. Auer vom Institut für Spezifische Prophylaxe und Tropenmedizin der Medizinischen Universität Wien wird zudem über „Zoonotische Helminthen“ sprechen. Außerdem werden wir einen Vortrag von Dr. Preyer von der AID Autoimmun Diagnostika GmbH zum Thema „Corona-Modell / Zytokine / Virologie“ hören. 
+Prof. Dr. Auer vom Institut für Spezifische Prophylaxe und Tropenmedizin der Medizinischen Universität Wien wird zudem über „Zoonotische Helminthen“ sprechen. Außerdem werden wir einen Vortrag von Dr. Preyer von der AID Autoimmun Diagnostika GmbH zum Thema „Corona-Modell / Zytokine / Virologie“ hören.
 
 Der zweite Tag der Veranstaltung steht dagegen ganz im Zeichen der juristischen Einordnung von Borreliosefällen, auch mit aktuellem Bezug. Unser Vorstandsmitglied Dr. Obiltschnig aus Klagenfurt wird zusammen mit Rechtsanwalt Dr. Toriser, ebenfalls Klagenfurt, zu diesem Themenkomplex sprechen. Aufgrund des Umfangs und der Komplexität des Themas steht zu erwarten, dass dieses Thema auch in Zukunft weiter beleuchtet werden muss. Lassen Sie es uns bitte wissen, wenn Sie dieses Thema ebenfalls interessiert und Sie auch zukünftig mehr dazu erfahren möchten.
 
@@ -683,15 +683,15 @@ Außerdem werden wir noch sehr interessante Beiträge zu den Themen „Intermitt
 
 Alles in allem ist das ein sehr interessantes und auch sehr aktuelles Programm, von dem wir hoffen, dass es nicht nur das Interesse der DBG Mitglieder findet, sondern auch Mediziner\*Innen außerhalb der DBG anspricht. Empfehlen Sie daher die Veranstaltung und die DBG gerne weiteren medizinischen Kollegen\*Innen weiter. Sollten diese noch kein DBG Mitglied sein, so diese können bei Buchung beider Veranstaltungstage und gleichzeitigem Eintritt in die DBG ein Jahr Mitgliedschaft gratis dazu erwerben.
 
-Datum: 
+Datum:
 
 **Samstag 12.11.2022 9.00 Uhr - ca. 17.30 Uhr (Mitgliederversammlung im Anschluß)**
 
-**Sonntag  13.11.2022 8.00 Uhr - ca.12 Uhr**
+**Sonntag  13.11.2022 8.00 Uhr - ca.12 Uhr**
 
 Ort:
 
-[Intercity Hotel Frankfurt/Main](https://www.intercityhotel.com/hotels/alle-hotels/deutschland/frankfurt/intercityhotel-frankfurt-airport) 
+[Intercity Hotel Frankfurt/Main](https://www.intercityhotel.com/hotels/alle-hotels/deutschland/frankfurt/intercityhotel-frankfurt-airport)
 
 Am Luftbrückendenkmal 1
 
@@ -701,11 +701,11 @@ Am Luftbrückendenkmal 1
 
 Telefon +49 69 69709-9
 
-eMail: [frankfurt-airport@intercityhotel.de](mailto:frankfurt-airport@intercityhotel.de)
+eMail: [frankfurt-airport@intercityhotel.de](mailto:frankfurt-airport@intercityhotel.de)
 
-Hotelwebsite: <https://www.intercityhotel.com/hotels/alle-hotels/deutschland/frankfurt/intercityhotel-frankfurt-airport> 
+Hotelwebsite: <https://www.intercityhotel.com/hotels/alle-hotels/deutschland/frankfurt/intercityhotel-frankfurt-airport>
 
-Navigationslinks: 
+Navigationslinks:
 
 - [Intercity Hotel - Google Maps](https://g.page/intercityhotel-frankfurt-airport?share "Intercity Hotel - Google Maps")
 - [Routenplaner zum Intercity Hotel - Google Maps](https://www.google.com/maps/dir/?api=1&destination=50.032759,8.592166 "Routenplaner zum Intercity Hotel - Google Maps")
@@ -716,23 +716,23 @@ Navigationslinks: 
 
 Die Teilnehmer werden gebeten, selbst das Zimmer im [intercity Hotel](https://www.intercityhotel.com/hotels/alle-hotels/deutschland/frankfurt/intercityhotel-frankfurt-airport) zu buchen.
 
-**Update 02.11.22:** Das intercity Hotel ist mittlerweile so gut wie ausgebucht. Einzelne Zimmer gibt es noch auf telefonische Nachfrage. In der Nähe gibt es aber noch weitere Hotels, sowohl direkt am Flughafen wie auch [südlich vom Intercity Hotel gelegen in Walldorf](https://www.google.com/maps/search/hotel+walldorf+frankfurt/@50.0288566,8.5498187,13z/data=!3m1!4b1!4m5!2m4!5m3!5m2!1s2022-11-11!2i2). 
+**Update 02.11.22:** Das intercity Hotel ist mittlerweile so gut wie ausgebucht. Einzelne Zimmer gibt es noch auf telefonische Nachfrage. In der Nähe gibt es aber noch weitere Hotels, sowohl direkt am Flughafen wie auch [südlich vom Intercity Hotel gelegen in Walldorf](https://www.google.com/maps/search/hotel+walldorf+frankfurt/@50.0288566,8.5498187,13z/data=!3m1!4b1!4m5!2m4!5m3!5m2!1s2022-11-11!2i2).
 
 Parkmöglichkeiten:
 
-Öffentlicher Parkplatz der Fraport AG - je nach Verfügbarkeit, Kapazität 200 Stellplätze, direkt neben dem Hotel. 
+Öffentlicher Parkplatz der Fraport AG - je nach Verfügbarkeit, Kapazität 200 Stellplätze, direkt neben dem Hotel.
 
 Gebühren:
 
-4€ / Stunde 
+4€ / Stunde
 
 22€ / 24 Stunden / 1. Tag
 
-24€ / 24 Stunden / jeder weitere Tag 
+24€ / 24 Stunden / jeder weitere Tag
 
- 
 
-Teilnahmebeitrag: 
+
+Teilnahmebeitrag:
 
 |  |  |  |  |
 | --- | --- | --- | --- |
@@ -740,13 +740,13 @@ Teilnahmebeitrag: 
 | **DBG Mitglieder** | 70€ | 40€ | 80€ |
 | **Nichtmitglieder** | 120€ | 80€ | 180€ |
 
-Die Teilnahme der DBG Mitglieder an der Mitgliederversammlung am Samstag (nach den Vorträgen) ist frei. 
+Die Teilnahme der DBG Mitglieder an der Mitgliederversammlung am Samstag (nach den Vorträgen) ist frei.
 
- 
 
-Wissenschaftliche Leitung: 
 
-**Sigrid Blehle, M.D., M.B.A.**
+Wissenschaftliche Leitung:
+
+**Sigrid Blehle, M.D., M.B.A.**
 
 ### Anmeldung
 [**>>> Zum Anmeldeformular <<<**](https://nextcloud.borreliose-gesellschaft.de/index.php/apps/forms/yp7g2J8SWXaXoLCa "Anmeldung zur Herbsttagung 2022 der DBG e.V.")
@@ -755,16 +755,16 @@ Anmeldungen zur Jahrestagung werden online mittels eines Anmeldeformulars durchg
 
 Anmeldungen per Email oder Telefon werden nicht angenommen.
 
-Das Formular wird von der DBG in ihrer eigens gehosteten Cloudplattform namens "Nextcloud", einer freien Open Source Software, gehostet. Ihre Anmeldedaten gelangen dadurch nicht an andere Anbieter. Wenn Sie Hilfe beim Ausfüllen brauchen oder weitere Fragen haben, wenden Sie sich aber gerne an die Geschäftsstelle.
+Das Formular wird von der DBG in ihrer eigens gehosteten Cloudplattform namens "Nextcloud", einer freien Open Source Software, gehostet. Ihre Anmeldedaten gelangen dadurch nicht an andere Anbieter. Wenn Sie Hilfe beim Ausfüllen brauchen oder weitere Fragen haben, wenden Sie sich aber gerne an die Geschäftsstelle.
 
 ### Programm
 **Zum Keynote-Speaker Prof. Lambert**
 
-Die Deutsche-Borreliose Gesellschaft e.V. freut sich außerordentlich, mit Prof. Lambert eine anerkannte Kapazität auf dem Gebiet der Infektionsforschung für die Keynote zur Herbsttagung/Jahrestagung 2022 gewonnen zu haben. 
+Die Deutsche-Borreliose Gesellschaft e.V. freut sich außerordentlich, mit Prof. Lambert eine anerkannte Kapazität auf dem Gebiet der Infektionsforschung für die Keynote zur Herbsttagung/Jahrestagung 2022 gewonnen zu haben.
 
- ![Prof. Lambert](johnlambert-profil.jpg)Prof. John (Jack) Lambert ist Professor für Medizin und Infektionskrankheiten am [Mater Misericordiae University Hospital](https://www.mater.ie/) und der [UCD School of Medicine in Dublin](https://www.ucd.ie/medicine/), Irland und verfügt sowohl über umfangreiche klinische wie Forschungserfahrung. Er war Direktor der [National Isolation Unit for Highly Infectious Diseases am Mater Misericordiae University Hospital](https://www.hpsc.ie/a-z/vectorborne/viralhaemorrhagicfever/nationalisolationunitatthematermisericordiaehospitaldublin/) und Mitglied des [National Viral Hemorrhagic Fever Committee der HSE](https://www.hpsc.ie/a-z/vectorborne/viralhaemorrhagicfever/sub-committee/). Er war auch an der Strategiegruppe für sexuelle Gesundheit in Irland beteiligt und unterrichtete Hausärzte in Irland zum Thema sexuell übertragbare Krankheiten. Er ist seit 2000 Fellow des [Royal College of Paediatrics and Child Health](https://www.rcpch.ac.uk/) und seit 2005 Fellow des [Royal College of Physicians](https://www.rcplondon.ac.uk/). Er hat seit 2016 auf Konferenzen in der EU und den USA, die von der [International Lyme and Associated Diseases Society (ILADS)](https://www.ilads.org/) unterstützt werden, zahlreiche Vorträge auf dem Gebiet der Lyme-Borreliose und Co-Infektionen gehalten. Er hat eine Fachausbildung durch ILADS absolviert und verfügt über umfangreiche Erfahrung in der Behandlung von Lyme-Borreliose und Co-Infektionen. Er organisierte und leitete die 1. und 2. Europäische Kryptoinfektionskonferenz, die sich mit der Wissenschaft hinter der Lyme-Borreliose und Co-Infektionen befasste und im Mai 2019 in Dublin und im September 2020 online stattfand.
+ ![Prof. Lambert](johnlambert-profil.jpg)Prof. John (Jack) Lambert ist Professor für Medizin und Infektionskrankheiten am [Mater Misericordiae University Hospital](https://www.mater.ie/) und der [UCD School of Medicine in Dublin](https://www.ucd.ie/medicine/), Irland und verfügt sowohl über umfangreiche klinische wie Forschungserfahrung. Er war Direktor der [National Isolation Unit for Highly Infectious Diseases am Mater Misericordiae University Hospital](https://www.hpsc.ie/a-z/vectorborne/viralhaemorrhagicfever/nationalisolationunitatthematermisericordiaehospitaldublin/) und Mitglied des [National Viral Hemorrhagic Fever Committee der HSE](https://www.hpsc.ie/a-z/vectorborne/viralhaemorrhagicfever/sub-committee/). Er war auch an der Strategiegruppe für sexuelle Gesundheit in Irland beteiligt und unterrichtete Hausärzte in Irland zum Thema sexuell übertragbare Krankheiten. Er ist seit 2000 Fellow des [Royal College of Paediatrics and Child Health](https://www.rcpch.ac.uk/) und seit 2005 Fellow des [Royal College of Physicians](https://www.rcplondon.ac.uk/). Er hat seit 2016 auf Konferenzen in der EU und den USA, die von der [International Lyme and Associated Diseases Society (ILADS)](https://www.ilads.org/) unterstützt werden, zahlreiche Vorträge auf dem Gebiet der Lyme-Borreliose und Co-Infektionen gehalten. Er hat eine Fachausbildung durch ILADS absolviert und verfügt über umfangreiche Erfahrung in der Behandlung von Lyme-Borreliose und Co-Infektionen. Er organisierte und leitete die 1. und 2. Europäische Kryptoinfektionskonferenz, die sich mit der Wissenschaft hinter der Lyme-Borreliose und Co-Infektionen befasste und im Mai 2019 in Dublin und im September 2020 online stattfand.
 
- 
+
 
 - <https://www.lymeresourcecentre.com/about-us/jlambert>
 - <https://www.mater.ie/consultants/dr-john-lambert/>
@@ -779,7 +779,7 @@ Die Deutsche-Borreliose Gesellschaft e.V. freut sich außerordentlich, mit Prof.
 |  |  |  |
 | --- | --- | --- |
 | **Uhrzeit** | **Thema** | **Referent\*in/en** |
-| 9.00 - 9.15 | **Begrüßung**  **durch den**  **Vorsitzenden** | Rixecker |
+| 9.00 - 9.15 | **Begrüßung**  **durch den**  **Vorsitzenden** | Rixecker |
 | 9.15 - 10.15 | **Keynote**  **„Lyme & Coinfections“**  (Vortrag in  englischer Sprache) | Jack Lambert |
 | 10.15 - 10.45 | **Pause** |  |
 | 10.45 - 11.45 | **„Updates**  **Borreliose-Therapie"** | Blehle / Bennefeld |
@@ -809,9 +809,9 @@ Die Deutsche-Borreliose Gesellschaft e.V. freut sich außerordentlich, mit Prof.
 | 11.15 - 12.00 | **„Phytotherapie / Artemisia annua“** | Reutter |
 
 ### Referenten
-Die Deutsche Borreliose-Gesellschaft e.V. freut sich sehr, so hochkarätige und anerkannte Experten als Referenten für die Vorträge gewonnen zu haben. 
+Die Deutsche Borreliose-Gesellschaft e.V. freut sich sehr, so hochkarätige und anerkannte Experten als Referenten für die Vorträge gewonnen zu haben.
 
- 
+
 
 **Univ.-Prof. Dr. Herbert Auer**
 
@@ -821,102 +821,102 @@ Institut für Spezifische Prophylaxe und Tropenmedizin der Medizinischen Univers
 
 <https://cluster.meduniwien.ac.at/index.php?id=3827>
 
- 
+
 
 **Dr med. Harald. Bennefeld**
 
-2. Vorsitzender der Deutschen Borreliose-Gesellschaft e.V. 
+2. Vorsitzender der Deutschen Borreliose-Gesellschaft e.V.
 
 Ärztlicher Direktor, Chefarzt der Fachklinik für Neurologie, Klinik am Brunnenberg, Bad Elster
 
 <https://www.klinik-am-brunnenberg.de/fachbereiche-krankheitsbilder/unsere-experten/experte/dr-med-harald-bennefeld/>
 
- 
+
 
 **Sigrid Blehle, M.D., M.B.A.**
 
-Mitglied des Vorstands der Deutschen Borreliose-Gesellschaft e.V. 
+Mitglied des Vorstands der Deutschen Borreliose-Gesellschaft e.V.
 
 Medizinische Direktorin und Geschäftsführerin Alviasana, Augsburg
 
 <https://www.alviasana.com/>
 
- 
+
 
 **Dr. Dr. Alexandra Bodmann-Peschke**
 
-Cellgym, Schorndorf 
+Cellgym, Schorndorf
 
 [https://cellgym.de](https://cellgym.de/)
 
- 
+
 
 **Dr. Albin Obiltschnig**
 
-Unfallchirurg, A-Klagenfurt
+Unfallchirurg, A-Klagenfurt
 
- 
+
 
 **Dr. Rainer Oehme**
 
-Leiter Labor Molekularbiologie 
+Leiter Labor Molekularbiologie
 
 Landesgesundheitsamt Baden-Württemberg, Stuttgart
 
 <https://www.gesundheitsamt-bw.de/lga/de/startseite/laboruntersuchungen/>
 
- 
+
 
 **Rosemarie Preyer**
 
-AID diagnostika GmbH, Straßberg 
+AID diagnostika GmbH, Straßberg
 
 <https://aid-diagnostika.de/>
 
- 
+
 
 **Dr. Lydia Reutter**
 
-Allgemeinmeidzinerin, Geschäftsführerin Amarys GmbH, Ulm 
+Allgemeinmeidzinerin, Geschäftsführerin Amarys GmbH, Ulm
 
-[reutter.com](http://reutter.com) / [amarys.de](http://www.amarys.de) 
+[reutter.com](http://reutter.com) / [amarys.de](http://www.amarys.de)
 
- 
+
 
 **Dr. med. Dr. med. dent. Herbert Rixecker**
 
-Arzt, Zahnarzt, Mund-, Kiefer-, Gesichts-Chirurg, Saarlouis 
+Arzt, Zahnarzt, Mund-, Kiefer-, Gesichts-Chirurg, Saarlouis
 
 <https://eic-online.de/wirueberuns.htm>
 
 1. Vorsitzender Deutsche Borreliose-Gesellschaft e.V.
 
- 
+
 
 **Dr. Armin Schwarzbach**
 
-Laborfacharzt "Infektiologie", Arminlabs.com, Augsburg 
+Laborfacharzt "Infektiologie", Arminlabs.com, Augsburg
 
 [arminlabs.com](http://www.arminlabs.com)
 
-Vorstandsmitglied Deutsche Borreliose-Gesellschaft e.V.
+Vorstandsmitglied Deutsche Borreliose-Gesellschaft e.V.
 
- 
+
 
 **Mag. Dr. Hans-Herwig Toriser**
 
-Rechtsanwalt, A-Klagenfurt
+Rechtsanwalt, A-Klagenfurt
 
- 
 
- 
 
- 
 
-Bei weiteren Fragen wenden Sie sich bitte an die Geschäftsstelle. 
+
+
+
+Bei weiteren Fragen wenden Sie sich bitte an die Geschäftsstelle.
 
 ### Erklärung
-Die Inhalte dieser Veranstaltung werden produkt- und dienstleistungsneutral gestaltet. Wir bestätigen, dass die wissenschaftliche Leitung und die Referenten potentielle Interessenkonflikte gegenüber den Teilnehmern offenlegen. Die Gesamtaufwendungen der Veranstaltung belaufen sich auf ca. 15000€. Die folgenden Unternehmen stellen aus und entrichten dafür eine Gebühr i.H.v. 600€:
+Die Inhalte dieser Veranstaltung werden produkt- und dienstleistungsneutral gestaltet. Wir bestätigen, dass die wissenschaftliche Leitung und die Referenten potentielle Interessenkonflikte gegenüber den Teilnehmern offenlegen. Die Gesamtaufwendungen der Veranstaltung belaufen sich auf ca. 15000€. Die folgenden Unternehmen stellen aus und entrichten dafür eine Gebühr i.H.v. 600€:
 
 - [AID diagnostika GmbH](https://aid-diagnostika.de/)
 - [Alviasana](https://www.alviasana.com/)
@@ -925,7 +925,7 @@ Die Inhalte dieser Veranstaltung werden produkt- und dienstleistungsneutral gest
 - [Buschkühl GmbH](https://www.buschkuehlgmbh.com/)
 - [Cellgym / CellAir Construction GmbH](https://cellgym.eu/)
 
- 
+
 
 Letzte Bearbeitung: November 2, 2022
 
@@ -938,30 +938,30 @@ Letzte Bearbeitung: November 2, 2022
 
 Veranstaltungsdatum: **13.11.2021, 9.00 Uhr – ca. 17.30 Uhr**, **online**
 
-Titel: **Lyme-Borreliose im Kontext mit Covid und anderen Infektionen**
+Titel: **Lyme-Borreliose im Kontext mit Covid und anderen Infektionen**
 
- 
 
-Teilnahmebeitrag: **DBG-Mitglieder kostenfrei**, Nichtmitglieder 60 Euro. Bei Abschluss einer [DBG-Mitgliedschaft](ueber-uns.html) entfällt der Teilnahmebeitrag. Zahlung per Überweisung.
 
- 
+Teilnahmebeitrag: **DBG-Mitglieder kostenfrei**, Nichtmitglieder 60 Euro. Bei Abschluss einer [DBG-Mitgliedschaft](ueber-uns.md) entfällt der Teilnahmebeitrag. Zahlung per Überweisung.
 
-Wissenschaftliche Leitung: **Prof. Dr. Dr. h.c. Reinhard Bretzel, Gießen**
 
- 
+
+Wissenschaftliche Leitung: **Prof. Dr. Dr. h.c. Reinhard Bretzel, Gießen**
+
+
 
 **Programm (Änderungen vorbehalten!)**
 
 |  |  |  |
 | --- | --- | --- |
 | **Uhrzeit** | **Thema** | **Referent\*in/en** |
-| 9.00-9.15 | **Begrüßung durch den Vorsitzenden** | Dr. Dr. H. Rixecker,   Saarlouis, Vorsitzender |
+| 9.00-9.15 | **Begrüßung durch den Vorsitzenden** | Dr. Dr. H. Rixecker,   Saarlouis, Vorsitzender |
 | 9.15-9.45 Uhr | **„Long-Covid-Syndrom: Potentielle Ursachen, Diagnostik und mögliche Therapieoptionen“** | Dr. A. Schwarzbach, Augsburg |
 | 9.45-10.15 Uhr | **„Therapieansätze Chronische Borreliose – Long Covid“** | S.Blehle, Augsburg |
-| 10.15-10.45 Uhr | **„Long-Covid-Syndrom – ist das SarsCov2-Virus die alleinige Ursache? - Weitere  Therapieansätze"** | Dr. H. Bennefeld,   C. Forek, Bad Elster |
+| 10.15-10.45 Uhr | **„Long-Covid-Syndrom – ist das SarsCov2-Virus die alleinige Ursache? - Weitere  Therapieansätze"** | Dr. H. Bennefeld,   C. Forek, Bad Elster |
 | 10.45-11.15 Uhr | **Pause** |  |
-| 11.15-11.45 Uhr | **„Vektorübertragende Infektionen und Gefässmedizin. Fallvortrag: Intrakranielle idiopathische Hypertension, Pseudotumor cerebri und Borreliose“** | Dr. M. Kacik, Emsdetten |
-| 11.45-12.15 Uhr | **„Zentralnervös ausgelöste Dysphagien bei Borreliose und/oder neurotropen Virusinfektionen“** | C. Forek, Bad Elster;   M. Steinbach,   Prof. Dr. B. Al Kadah, Plauen;   Dr. H. Bennefeld, Bad Elster |
+| 11.15-11.45 Uhr | **„Vektorübertragende Infektionen und Gefässmedizin. Fallvortrag: Intrakranielle idiopathische Hypertension, Pseudotumor cerebri und Borreliose“** | Dr. M. Kacik, Emsdetten |
+| 11.45-12.15 Uhr | **„Zentralnervös ausgelöste Dysphagien bei Borreliose und/oder neurotropen Virusinfektionen“** | C. Forek, Bad Elster;   M. Steinbach,   Prof. Dr. B. Al Kadah, Plauen;   Dr. H. Bennefeld, Bad Elster |
 | 12.15-13.15 Uhr | **Mittagspause** |  |
 | 13.15-13.45 Uhr | **„Irrtümer und Desinformation in der Wissenschaft am Beispiel des Lichen sclerosus“** | Dr. Kremer, Freiburg |
 | 13.45-14.15 Uhr | **„Intervall-Hypoxie-Training als eine effiziente physikalische Methode der Energie­produktion-Optimierung im Organismus bei Post-Covid/Post-Lyme“** | Dr. E. Egorov, Berlin |
@@ -969,13 +969,13 @@ Wissenschaftliche Leitung: **Prof. Dr. Dr. h.c. Reinhard Bretzel, Gießen**
 | 14.45-15.15 Uhr | **Pause** |  |
 | 15.15-15.45 Uhr | **„PHAGE TEST - Neue hochspezifische und sensitive diagnostische Methode im Sinne des Erregerdirektnachweises bei Borreliose-Verdacht“** | Dr. W. Klemann, Pforzheim |
 | 15.45-16.15 Uhr | **„IgY-Therapie bei Borreliose“** | M. Lorenz, Minden |
-| 16.15-16.45 Uhr | **„Disulfiram - Eine neue substanzielle therapeutische Option in der Behandlung zeckenübertragener Krankheiten"** | Dr. W. Klemann, Pforzheim |
+| 16.15-16.45 Uhr | **„Disulfiram - Eine neue substanzielle therapeutische Option in der Behandlung zeckenübertragener Krankheiten"** | Dr. W. Klemann, Pforzheim |
 | 16.45-17.15 Uhr | **„Disulfiram – Erfahrungen seit 2019“** | S. Blehle, Augsburg |
 | 17:15-17:30 Uhr | **Evaluation** |  |
 
 Die Mitgliederversammlung wird im Anschluß an die Tagung stattfinden.
 
-**Wenn Sie teilnehmen möchten (Mitglieder wie Nichtmitglieder) schreiben Sie bitte eine kurze Email an [geschaeftsstelle@borreliose-gesellschaft.de](mailto:geschaeftsstelle@borreliose-gesellschaft.de) unter Angabe Ihres Namens und ob Sie DBG Mitglied sind.**
+**Wenn Sie teilnehmen möchten (Mitglieder wie Nichtmitglieder) schreiben Sie bitte eine kurze Email an [geschaeftsstelle@borreliose-gesellschaft.de](mailto:geschaeftsstelle@borreliose-gesellschaft.de) unter Angabe Ihres Namens und ob Sie DBG Mitglied sind.**
 
 Die Zugangsdaten werden am 12.11.21 per Email an die Teilnehmer verschickt.
 

@@ -12,7 +12,7 @@ Wenn Sie die Arbeit der DBG mit einer Spende unterstützen möchten, freut uns d
 
 Sie können, ohne eine (Förder-)Mitgliedschaft eingehen zu wollen, sehr einfach spenden.
 
-Am schnellsten, online und unkompliziert via PayPal Spendenbutton, ein PayPal Account ist **nicht** erforderlich!
+Am schnellsten, online und unkompliziert via PayPal Spendenbutton, ein PayPal Account ist **nicht** erforderlich!
 
 Dabei werden Sie nach Ihrer Anschrift gefragt, damit wir Ihnen eine Spendenquittung ausstellen können.
 
