@@ -1,0 +1,25 @@
+# /etc/logrotate.d/dbg
+#
+# Zwei Fristen, passend zu deploy/apache-logging.conf und zur
+# Datenschutzerklaerung. Nach dem Ablegen pruefen mit:
+#     logrotate -d /etc/logrotate.d/dbg
+#
+# Das vollstaendige Protokoll (/var/log/apache2/access.log) deckt bereits die
+# mitgelieferte Regel /etc/logrotate.d/apache2 ab - dort muss lediglich
+# "rotate" auf 7 und "daily" stehen, damit die 7-Tage-Frist eingehalten wird.
+
+/var/log/apache2-stats/access-anon.log {
+        monthly
+        rotate 6              # 6 Monatsarchive = 6 Monate Aufbewahrung
+        missingok
+        notifempty
+        compress
+        delaycompress
+        create 640 root adm
+        sharedscripts
+        postrotate
+                if invoke-rc.d apache2 status > /dev/null 2>&1; then
+                        invoke-rc.d apache2 reload > /dev/null 2>&1
+                fi
+        endscript
+}
