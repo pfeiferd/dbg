@@ -24,4 +24,4 @@ Die Deutsche Borreliose-Gesellschaft hat heute ca. 200 ordentliche Mitglieder (W
 
 So auch das ehemalige Ehrenmitglied [Dr. Dr. med. h. c. mult. Willy Burgdorfer](https://de.wikipedia.org/wiki/Willy_Burgdorfer), der 1981 die nach ihm benannte Spirochäte *[Borrelia burgdorferi](https://de.wikipedia.org/wiki/Borrelia_burgdorferi)*, den Erreger der [Lyme-Borreliose,](https://de.wikipedia.org/wiki/Lyme-Borreliose) entdeckte.
 
-Zusammen mit ihren nicht stimmberechtigten Mitgliedern hat die Deutsche Borreliose-Gesellschaft zur Zeit rund 265 Mitglieder.
+Zusammen mit ihren nicht stimmberechtigten Mitgliedern hat die Deutsche Borreliose-Gesellschaft zurzeit rund 265 Mitglieder.

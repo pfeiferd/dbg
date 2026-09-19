@@ -8,7 +8,7 @@ navorder=04
 
 ## Die Deutsche Borreliose-Gesellschaft
 
-Die Deutsche Borreliose-Gesellschaft e. V. vereinigt Wissenschaftler und Ärzte, die sich mit der Borreliose und assoziierten Infektionskrankheiten befassen. Ziel ist die Entwicklung und Förderung der wissenschaftlichen und praktischen Kenntnisse über das komplizierte und vielfältige Krankheitsgeschehen der Lyme-Borreliose, insbesondere im fortgeschrittenen Stadium.
+Die Deutsche Borreliose-Gesellschaft e.V. vereinigt Wissenschaftler und Ärzte, die sich mit der Borreliose und assoziierten Infektionskrankheiten befassen. Ziel ist die Entwicklung und Förderung der wissenschaftlichen und praktischen Kenntnisse über das komplizierte und vielfältige Krankheitsgeschehen der Lyme-Borreliose, insbesondere im fortgeschrittenen Stadium.
 
 Im Einzelnen verfolgt die Gesellschaft folgende Ziele:
 
@@ -26,14 +26,14 @@ Hier die **[Satzung](files/satzung-2026.pdf)** zum Herunterladen.
 ```gallery
 width: 210
 ratio: 4/5
-vorstand-herbert-rixecker.jpg   | Dr. med. Dr. med. dent. Herbert Rixecker; 1. Vorsitzender; FA für Mund-Kiefer-Gesichtschirurgie; Saarlouis; rixecker(at)deubo.de
-vorstand-harald-bennefeld.jpg   | Dr. med. Harald Bennefeld; 2. Vorsitzender; FA für Neurochirurgie; Kirchberg; bennefeld(at)deubo.de
-vorstand-karsten-ostermann.jpg  | Dr. med. Karsten Ostermann M.A.; 3. Vorsitzender; FA für Allgemeinmedizin und Spezielle Schmerztherapie; Berlin/Teltow; ostermann(at)deubo.de
-vorstand-armin-schwarzbach.jpg  | Dr. med. Armin Schwarzbach; Beisitzer; FA für Labormedizin; Augsburg; schwarzbach(at)deubo.de
-vorstand-sigrid-blehle.jpg      | Dr. med. Sigrid Blehle; Beisitzerin; Ärztin; Augsburg; blehle(at)deubo.de
-vorstand-marion-schneider.jpg   | Prof. Dr. Marion Schneider; Professorin; Klinik für Anästhesiologie, Sektion Experimentelle Anästhesie; Uniklinik Ulm; schneider(at)deubo.de
-| N. N.; Sitz derzeit unbesetzt (tba.)
-vorstand-hartmut-prautzsch.jpg  | Prof. Dr. rer. nat. Hartmut Prautzsch; Ehrenvorsitzender; Karlsruhe; prautzsch(at)deubo.de
+vorstand-herbert-rixecker.jpg   | **Dr. med. Dr. med. dent. Herbert Rixecker**; 1. Vorsitzender; FA für Mund-Kiefer-Gesichtschirurgie; Saarlouis; rixecker(at)deubo.de
+vorstand-harald-bennefeld.jpg   | **Dr. med. Harald Bennefeld**; 2. Vorsitzender; FA für Neurochirurgie; Kirchberg; bennefeld(at)deubo.de
+vorstand-karsten-ostermann.jpg  | **Dr. med. Karsten Ostermann M.A.**; 3. Vorsitzender; FA für Allgemeinmedizin und Spezielle Schmerztherapie; Berlin/Teltow; ostermann(at)deubo.de
+vorstand-armin-schwarzbach.jpg  | **Dr. med. Armin Schwarzbach**; Beisitzer; FA für Labormedizin; Augsburg; schwarzbach(at)deubo.de
+vorstand-sigrid-blehle.jpg      | **Dr. med. Sigrid Blehle**; Beisitzerin; Ärztin; Augsburg; blehle(at)deubo.de
+vorstand-marion-schneider.jpg   | **Prof. Dr. Marion Schneider**; Professorin; Klinik für Anästhesiologie, Sektion Experimentelle Anästhesie; Uniklinik Ulm; schneider(at)deubo.de
+| **N. N.**; Sitz derzeit unbesetzt (tba.)
+vorstand-hartmut-prautzsch.jpg  | **Prof. Dr. rer. nat. Hartmut Prautzsch**; Ehrenvorsitzender; Karlsruhe; prautzsch(at)deubo.de
 ```
 
 ## Beirat

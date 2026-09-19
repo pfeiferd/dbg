@@ -21,27 +21,27 @@ Ferner wurde eine separate [Spendenseite](spenden.md) eingerichtet, die eine Spe
 ### 29.01.2026: Die [neue Leitlinie der DBG](wissenschaft.md "Neue DBG Leitlinie") ist online!
 ---
 
-### 16.09.2025: Das [Programm der Jahrestagung 2025](index.md) ist online!
+### 16.09.2025: Das [Programm der Jahrestagung 2025](veranstaltungen.md) ist online!
+Wir freuen uns, Ihnen das Programm der Herbsttagung / Jahrestagung 2025 endlich online präsentieren zu können. Änderungen vorbehalten.
+
+---
+
+### 23.10.2024: Das [Programm der Jahrestagung 2024](veranstaltungen.md) ist online!
+Wir freuen uns, Ihnen das Programm der Herbsttagung / Jahrestagung 2024 endlich online präsentieren zu können. Änderungen vorbehalten.
+
+---
+
+### 22.09.2023: Das [Programm der Jahrestagung 2023](veranstaltungen.md) ist online!
 Wir freuen uns, Ihnen das Programm der Herbsttagung / Jahrestagung 2023 endlich online präsentieren zu können. Änderungen vorbehalten.
 
 ---
 
-### 23.10.2024: Das [Programm der Jahrestagung 2024](index.md) ist online!
-Wir freuen uns, Ihnen das Programm der Herbsttagung / Jahrestagung 2023 endlich online präsentieren zu können. Änderungen vorbehalten.
-
----
-
-### 22.09.2023: Das [Programm der Jahrestagung 2023](index.md) ist online!
-Wir freuen uns, Ihnen das Programm der Herbsttagung / Jahrestagung 2023 endlich online präsentieren zu können. Änderungen vorbehalten.
-
----
-
-### 01.08.2022: Das [Programm der Jahrestagung 2022](index.md) ist online!
+### 01.08.2022: Das [Programm der Jahrestagung 2022](veranstaltungen.md) ist online!
 Wir freuen uns, Ihnen das Programm der Herbsttagung / Jahrestagung 2022 endlich online präsentieren zu können. Änderungen vorbehalten.
 
 ---
 
-### 28.10.2021: Das [Programm der Jahrestagung 2021](index.md) ist online!
+### 28.10.2021: Das [Programm der Jahrestagung 2021](veranstaltungen.md) ist online!
 Wir freuen uns, Ihnen das Programm der Herbsttagung / Jahrestagung 2021 endlich online präsentieren zu können. Änderungen vorbehalten.
 
 ---

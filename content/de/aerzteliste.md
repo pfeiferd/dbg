@@ -21,7 +21,7 @@ Diese Liste wird kontinuierlich aktualisiert.
 DBG Mitglieder, die in diese Liste aufgenommen werden möchten oder Änderungen wünschen, schicken dazu bitte eine Email an die Geschäftsstelle mit folgenden Angaben:
 
 - Name des/der Ansprechpartners/-In
-- (ggfs. Name der Einrichtung)
+- (ggf. Name der Einrichtung)
 - postalische Anschrift inkl. PLZ
 - Kontaktdaten (Telefon, Email, Website)
 - Spezialgebiete/Schwerpunkte

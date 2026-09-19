@@ -6,7 +6,7 @@ navorder=05
 
 [TOC]
 
-![](blut-w.jpg)
+![Rote Blutkörperchen in einem Blutgefäß](blut-w.jpg)
 
 ## Leitlinien
 
@@ -62,7 +62,7 @@ Die Deutsche Borreliose-Gesellschaft fördert den wissenschaftlichen und ärztli
 ```gallery
 width: 300
 ratio: 3/2
-preise-preis2010.jpg | 2010; **Primar Priv.-Doz. Dr. Klaus Eisendle** – Habilitationsschrift „Neue Aspekte kutaner Borreliosen“
+preise-preis2010.jpg | 2010; **Primar Priv.-Doz. DDr. Klaus Eisendle** – Habilitationsschrift „Neue Aspekte kutaner Borreliosen“
 preise-preis2011.jpg | 2011; **Dr. Ivan Bárcena-Uribarri** – „Porins in the genus Borrelia - Characterization of P66 and P13“; **Dr. Marcus Thein** – „Porins of Lyme Disease and Relapsing Fever Spirochetes“
 preise-preis2012.jpg | 2012; 1. Preis: **Dr. Corinna Siegel** – „Die Bedeutung verschiedener CRASP-Proteine für die Komplementresistenz von Borrelia burgdorferi s.s.“; 2. Preis: **Dr. Jasmin Skuballa** – „Die Rolle des Europäischen Igels (Erinaceus europaeus) in der Epidemiologie zeckenübertragener Krankheiten – Borrelia spp., Anaplasma spp., Rickettsia spp. und FSME-Viren“
 preise-preis2014.jpg | 2014; **Dr. Torsten Heinz** – „Immunreaktionen im zentralen Nervensystem bei Stimulation mit Bestandteilen von Borrelia burgdorferi“
@@ -71,7 +71,7 @@ preise-preis2014.jpg | 2014; **Dr. Torsten Heinz** – „Immunreaktionen im zen
 
 ## Der Forschungspreis
 
-Unser Preis besteht aus einer Dotation in Höhe von 2.000 Euro, einer bis zu 20 Farbseiten kostenlosen Verlagsveröffentlichung der Arbeit mit 20 Autorenfreiexemplaren sowie der Kostenübernahme für den Besuch der Jahrestagung der Deutschen Borreliose-Gesellschaft.
+Der Preis besteht aus einer Dotation in Höhe von 2.000 Euro, einer bis zu 20 Farbseiten kostenlosen Verlagsveröffentlichung der Arbeit mit 20 Autorenfreiexemplaren sowie der Kostenübernahme für den Besuch der Jahrestagung der Deutschen Borreliose-Gesellschaft.
 
 ### Teilnahmebedingungen
 Ausgezeichnet werden können Dissertationen und Habilitationen auf dem Gebiet der Lyme-Borreliose und allgemein zeckenübertragener Infektionskrankheiten, deren Veröffentlichung noch ansteht oder höchstens zwei Jahre zurückliegt. Eine kostenlose Verlagsveröffentlichung ist nur für noch unveröffentlichte Arbeiten vorgesehen. Berücksichtigt werden Arbeiten zu allen Aspekten zeckenübertragener Infektionskrankheiten wie unter anderem zur
@@ -85,10 +85,10 @@ Ausgezeichnet werden können Dissertationen und Habilitationen auf dem Gebiet de
 - Entwicklung eines Nachweises aktiver Infektionen,
 - häufige und relevante Begleitinfektionen oder zu Langzeitverläufen solcher Erkrankungen.
 
-Unser Forschungspreis wird auf der Jahrestagung der Deutschen Borreliose-Gesellschaft verliehen. Die Preisträger werden gebeten, dabei in einem Vortrag über ihre Arbeit zu berichten.
+Der Forschungspreis wird auf der Jahrestagung der Deutschen Borreliose-Gesellschaft verliehen. Die Preisträger werden gebeten, dabei in einem Vortrag über ihre Arbeit zu berichten.
 
 ### Bewerbung und Bewertung
-Berücksichtigt werden begutachtete Dissertationen oder Habilitationsschriften. Für eine Bewerbung sind die Arbeit mit der Stellungnahme eines Referenten, eine maximal zweiseitige Zusammenfassung, Lebenslauf mit Publikationsliste per E-Mail oder in zweifacher Ausfertigung in Papierform einzureichen über Prof. Dr. Prautzsch, Karlsruher Institut für Technologie (KIT), Am Fasanengarten 5, 76131 Karlsruhe, prautzsch(at)kit.edu. Die eingereichten Anträge verbleiben bei den Juroren. Eine Bewerbung ist jederzeit möglich.
+Berücksichtigt werden begutachtete Dissertationen oder Habilitationsschriften. Für eine Bewerbung sind die Arbeit mit der Stellungnahme eines Referenten, eine maximal zweiseitige Zusammenfassung, Lebenslauf mit Publikationsliste per Email oder in zweifacher Ausfertigung in Papierform einzureichen über Prof. Dr. Prautzsch, Karlsruher Institut für Technologie (KIT), Am Fasanengarten 5, 76131 Karlsruhe, prautzsch(at)kit.edu. Die eingereichten Anträge verbleiben bei den Juroren. Eine Bewerbung ist jederzeit möglich.
 
 ### Die Stifter des Preises
 

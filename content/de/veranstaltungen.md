@@ -242,7 +242,7 @@ Ort:
 
 Telefon: +49 69 33002 00
 
-E-Mail: [info.frankfurt.hochst@lindnerhotels.com](mailto:info.frankfurt.hochst@lindnerhotels.com)
+Email: [info.frankfurt.hochst@lindnerhotels.com](mailto:info.frankfurt.hochst@lindnerhotels.com)
 
 Website: <https://lindnerhotels.com/hotels/lindner-hotel-frankfurt-hoechst>
 
@@ -285,7 +285,7 @@ Wissenschaftliche Leitung:
 ### Anmeldung
 **>>> Zum Anmeldeformular <<<**
 
-**Anmeldeschluss verlängert bis 20.11.2024 0:00 Uhr**
+**Anmeldeschluss verlängert bis 20.11.2024 0.00 Uhr**
 
 Datenschutzerklärung:
 
@@ -422,7 +422,7 @@ Ort:
 
 Telefon: [+49 6831 980-0](tel:+4968319800)
 
-E-Mail:[info.saarlouis@victors.de](mailto:info.saarlouis@victors.de)
+Email:[info.saarlouis@victors.de](mailto:info.saarlouis@victors.de)
 
 Website: <https://www.victors.de/hotels/victor-s-residenz-hotel-saarlouis>
 
@@ -438,7 +438,7 @@ Sollten zum Zeitpunkt der Veranstaltung Covid-19 bedingte Einschränkungen gelte
 
 Die **Teilnehmer** werden gebeten, **selbst das Zimmer** im **[Victor's Residenz Hotel](https://www.victors.de/hotels/victor-s-residenz-hotel-saarlouis)** zu **buchen**.
 
-Wir haben ein **Kontingent an Zimmern zum Vorzugspreis** verlängert bis  zum **15.10.23**. Das **Stichwort** für die Buchung lautet: **Deutsche Borreliose-Gesellschaft e. V 10112023**. Bitte geben Sie das Stichwort bei der Buchung über die E-Mail-Adresse [info.saarlouis@victors.de](mailto:info.saarlouis@victors.de) oder telefonisch unter 06831 980 0 an. Ansonsten kann der Rabatt seitens des Hotels leider nicht gewährt werden!
+Wir haben ein **Kontingent an Zimmern zum Vorzugspreis** verlängert bis  zum **15.10.23**. Das **Stichwort** für die Buchung lautet: **Deutsche Borreliose-Gesellschaft e. V 10112023**. Bitte geben Sie das Stichwort bei der Buchung über die Email-Adresse [info.saarlouis@victors.de](mailto:info.saarlouis@victors.de) oder telefonisch unter 06831 980 0 an. Ansonsten kann der Rabatt seitens des Hotels leider nicht gewährt werden!
 
 Parkmöglichkeiten:
 
@@ -446,7 +446,7 @@ Parkmöglichkeiten:
 
 Der via Schranke zugängliche **Parkplatz** gehört dem Discounter **"Aldi" und wird nicht empfohlen.**
 
-Weitere öffentliche Parkplätze befinden sich in der näheren Umgebung des Hotels und des Bahnhofes. Bitte beachten Sie die ggfs. aushängenden Gebührensätze bzw. Parkregeln.
+Weitere öffentliche Parkplätze befinden sich in der näheren Umgebung des Hotels und des Bahnhofes. Bitte beachten Sie die ggf. aushängenden Gebührensätze bzw. Parkregeln.
 
 
 
@@ -487,13 +487,13 @@ Das Programm ist durch die [**Ärztekammer des Saarlandes**](https://www.aerztek
 | 10.15 - 11.15 | **Keynote**    **History and**  **review**  **of**  **crypto-infections** | Perronne | engl. |
 | 11.15 - 12.00 | **Necessary systemic approaches to improve the treatment and condition of patients with borreliosis and co-infections (example of Slovenia and SE Europe)** | Kralj | engl. |
 | 12.00 - 12.45 | **Veränderung der Zellatmung bei Borreliose und weiterer Infektionen** | Rixecker | dt. |
-| 12.45-14:00 | **Mittagspause** |  |  |
+| 12.45 - 14.00 | **Mittagspause** |  |  |
 | 14.00 - 14.45 | **Mikrobiom-Netzwerke: Mütterliche Übertragung, Stabilität und therapeutische Transplantation** | Fricke | dt. |
 | 14.45 - 15.30 | **The link between our microbiome and the development of neurologic & neuropsychiatric conditions** | de Saedeler | engl. |
-| 15.30-16.00 | **Pause** |  |  |
+| 15.30 - 16.00 | **Pause** |  |  |
 | 16.00 - 16.45 | **Persistent Borrelia Infection: New Frontiers in Research** | Gilbert | engl. |
 | 16.45 - 17.30 | **Phage Borrelia qPCR - 4 years of experience with this new diagnostic tool.** | de Meirleir | engl. |
-| ab 17:30 | **DBG**  **Mitglieder- versammlung****¹** | Vorstand | dt. |
+| ab 17.30 | **DBG**  **Mitglieder- versammlung****¹** | Vorstand | dt. |
 
 ¹ Teilnahme nur für DBG Mitglieder.
 
@@ -509,11 +509,11 @@ Das Programm ist durch die [**Ärztekammer des Saarlandes**](https://www.aerztek
 | 10.45 - 11.15 | **Pause** |  |  |
 | 11.15 - 12.00 | **Environmental**  **toxicity** | de Saedeler | engl. |
 | 12.00 - 12.45 | **Post Covid... und Lyme/Borreliose sowie andere chronische Infektionen** | Blehle | dt. |
-| 12.45-14.00 | **Mittagspause** |  |  |
-| 14.00-14.45 | **Supportive Oligonukleotid-Technik (SOT)****:**  **Neue Möglichkeiten bei Lyme-Borreliose und Co-Infektionen** | Mutschler | dt. |
-| 14.45-16.00 | **Kurzreferate Labore** | Schwarzbach, Meirleir, Jansen, Gilbert, NN | engl./dt. |
-| 16.00-18.00 | **Podiumsdiskussion:**  **Labordiagnostik bei einer Borreliose** | Schwarzbach, Meirleir, Jansen, Gilbert, NN | engl./dt. |
-| 18.00-18.15 | **Ende der Veranstaltung / Abschlusswort** | Rixecker | dt. |
+| 12.45 - 14.00 | **Mittagspause** |  |  |
+| 14.00 - 14.45 | **Supportive Oligonukleotid-Technik (SOT)****:**  **Neue Möglichkeiten bei Lyme-Borreliose und Co-Infektionen** | Mutschler | dt. |
+| 14.45 - 16.00 | **Kurzreferate Labore** | Schwarzbach, Meirleir, Jansen, Gilbert, NN | engl./dt. |
+| 16.00 - 18.00 | **Podiumsdiskussion:**  **Labordiagnostik bei einer Borreliose** | Schwarzbach, Meirleir, Jansen, Gilbert, NN | engl./dt. |
+| 18.00 - 18.15 | **Ende der Veranstaltung / Abschlusswort** | Rixecker | dt. |
 
 ### Referenten
 Die Deutsche Borreliose-Gesellschaft e.V. freut sich sehr, diese hochkarätigen und anerkannte Experten\*Innen als Referenten für die Vorträge gewonnen zu haben.
@@ -646,7 +646,7 @@ Kavalleriestraße 18
 66740 Saarlouis
 
 Telefon: +49 (06831) 48 028
-Telefax: +49 (06831) 48 95 321
+Fax: +49 (06831) 48 95 321
 
 Email: [info@eic-online.de](mailto:info@eic-online.de)
 
@@ -701,7 +701,7 @@ Am Luftbrückendenkmal 1
 
 Telefon +49 69 69709-9
 
-eMail: [frankfurt-airport@intercityhotel.de](mailto:frankfurt-airport@intercityhotel.de)
+Email: [frankfurt-airport@intercityhotel.de](mailto:frankfurt-airport@intercityhotel.de)
 
 Hotelwebsite: <https://www.intercityhotel.com/hotels/alle-hotels/deutschland/frankfurt/intercityhotel-frankfurt-airport>
 
@@ -955,23 +955,23 @@ Wissenschaftliche Leitung: **Prof. Dr. Dr. h.c. Reinhard Bretzel, Gießen**
 |  |  |  |
 | --- | --- | --- |
 | **Uhrzeit** | **Thema** | **Referent\*in/en** |
-| 9.00-9.15 | **Begrüßung durch den Vorsitzenden** | Dr. Dr. H. Rixecker,   Saarlouis, Vorsitzender |
-| 9.15-9.45 Uhr | **„Long-Covid-Syndrom: Potentielle Ursachen, Diagnostik und mögliche Therapieoptionen“** | Dr. A. Schwarzbach, Augsburg |
-| 9.45-10.15 Uhr | **„Therapieansätze Chronische Borreliose – Long Covid“** | S.Blehle, Augsburg |
-| 10.15-10.45 Uhr | **„Long-Covid-Syndrom – ist das SarsCov2-Virus die alleinige Ursache? - Weitere  Therapieansätze"** | Dr. H. Bennefeld,   C. Forek, Bad Elster |
-| 10.45-11.15 Uhr | **Pause** |  |
-| 11.15-11.45 Uhr | **„Vektorübertragende Infektionen und Gefässmedizin. Fallvortrag: Intrakranielle idiopathische Hypertension, Pseudotumor cerebri und Borreliose“** | Dr. M. Kacik, Emsdetten |
-| 11.45-12.15 Uhr | **„Zentralnervös ausgelöste Dysphagien bei Borreliose und/oder neurotropen Virusinfektionen“** | C. Forek, Bad Elster;   M. Steinbach,   Prof. Dr. B. Al Kadah, Plauen;   Dr. H. Bennefeld, Bad Elster |
-| 12.15-13.15 Uhr | **Mittagspause** |  |
-| 13.15-13.45 Uhr | **„Irrtümer und Desinformation in der Wissenschaft am Beispiel des Lichen sclerosus“** | Dr. Kremer, Freiburg |
-| 13.45-14.15 Uhr | **„Intervall-Hypoxie-Training als eine effiziente physikalische Methode der Energie­produktion-Optimierung im Organismus bei Post-Covid/Post-Lyme“** | Dr. E. Egorov, Berlin |
-| 14.15-14.45 Uhr | **„Beobachtung einer späten Verlaufsform der Borreliose unter besonderer Beachtung der Körpertemperatur von 2012-2019“** | H. Heller, Stralsund |
-| 14.45-15.15 Uhr | **Pause** |  |
-| 15.15-15.45 Uhr | **„PHAGE TEST - Neue hochspezifische und sensitive diagnostische Methode im Sinne des Erregerdirektnachweises bei Borreliose-Verdacht“** | Dr. W. Klemann, Pforzheim |
-| 15.45-16.15 Uhr | **„IgY-Therapie bei Borreliose“** | M. Lorenz, Minden |
-| 16.15-16.45 Uhr | **„Disulfiram - Eine neue substanzielle therapeutische Option in der Behandlung zeckenübertragener Krankheiten"** | Dr. W. Klemann, Pforzheim |
-| 16.45-17.15 Uhr | **„Disulfiram – Erfahrungen seit 2019“** | S. Blehle, Augsburg |
-| 17:15-17:30 Uhr | **Evaluation** |  |
+| 9.00 - 9.15 | **Begrüßung durch den Vorsitzenden** | Dr. Dr. H. Rixecker,   Saarlouis, Vorsitzender |
+| 9.15 - 9.45 Uhr | **„Long-Covid-Syndrom: Potentielle Ursachen, Diagnostik und mögliche Therapieoptionen“** | Dr. A. Schwarzbach, Augsburg |
+| 9.45 - 10.15 Uhr | **„Therapieansätze Chronische Borreliose – Long Covid“** | S.Blehle, Augsburg |
+| 10.15 - 10.45 Uhr | **„Long-Covid-Syndrom – ist das SarsCov2-Virus die alleinige Ursache? - Weitere  Therapieansätze"** | Dr. H. Bennefeld,   C. Forek, Bad Elster |
+| 10.45 - 11.15 Uhr | **Pause** |  |
+| 11.15 - 11.45 Uhr | **„Vektorübertragende Infektionen und Gefässmedizin. Fallvortrag: Intrakranielle idiopathische Hypertension, Pseudotumor cerebri und Borreliose“** | Dr. M. Kacik, Emsdetten |
+| 11.45 - 12.15 Uhr | **„Zentralnervös ausgelöste Dysphagien bei Borreliose und/oder neurotropen Virusinfektionen“** | C. Forek, Bad Elster;   M. Steinbach,   Prof. Dr. B. Al Kadah, Plauen;   Dr. H. Bennefeld, Bad Elster |
+| 12.15 - 13.15 Uhr | **Mittagspause** |  |
+| 13.15 - 13.45 Uhr | **„Irrtümer und Desinformation in der Wissenschaft am Beispiel des Lichen sclerosus“** | Dr. Kremer, Freiburg |
+| 13.45 - 14.15 Uhr | **„Intervall-Hypoxie-Training als eine effiziente physikalische Methode der Energie­produktion-Optimierung im Organismus bei Post-Covid/Post-Lyme“** | Dr. E. Egorov, Berlin |
+| 14.15 - 14.45 Uhr | **„Beobachtung einer späten Verlaufsform der Borreliose unter besonderer Beachtung der Körpertemperatur von 2012-2019“** | H. Heller, Stralsund |
+| 14.45 - 15.15 Uhr | **Pause** |  |
+| 15.15 - 15.45 Uhr | **„PHAGE TEST - Neue hochspezifische und sensitive diagnostische Methode im Sinne des Erregerdirektnachweises bei Borreliose-Verdacht“** | Dr. W. Klemann, Pforzheim |
+| 15.45 - 16.15 Uhr | **„IgY-Therapie bei Borreliose“** | M. Lorenz, Minden |
+| 16.15 - 16.45 Uhr | **„Disulfiram - Eine neue substanzielle therapeutische Option in der Behandlung zeckenübertragener Krankheiten"** | Dr. W. Klemann, Pforzheim |
+| 16.45 - 17.15 Uhr | **„Disulfiram – Erfahrungen seit 2019“** | S. Blehle, Augsburg |
+| 17.15 - 17.30 Uhr | **Evaluation** |  |
 
 Die Mitgliederversammlung wird im Anschluß an die Tagung stattfinden.
 

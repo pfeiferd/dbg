@@ -176,3 +176,50 @@ html[data-lang="en"] .site-header .lang-switch-btn[data-lang="en"] {
 .nav-collapsed .nav-header .product-label::before {
     order: 1;
 }
+
+/* ---------------------------------------------------------------
+   PayPal-Spendenbutton (Spendenseite).
+   Der Schriftzug ist PayPals offizielle SVG-Marke, liegt aber LOKAL unter
+   content/de/images/paypal-logo.svg. Von paypalobjects.com eingebunden wuerde
+   er schon beim blossen Aufruf der Seite eine Verbindung zu PayPal aufbauen -
+   also bevor jemand ueberhaupt spenden moechte. So fuehrt erst der Klick
+   dorthin und die Seite kommt ohne Drittanbieter-Anfrage aus.
+   Gelb und Dunkelblau sind die Knopffarben von PayPal; sie bleiben in beiden
+   Anzeigen gleich, weil die Marke nicht mit dem Farbschema kippen darf.
+   Das Ziel steht im Formular: hosted_button_id der DBG.
+   --------------------------------------------------------------- */
+.paypal-donate {
+    margin: 1.2rem 0;
+    text-align: center;
+}
+
+.paypal-donate button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: inherit;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #001c64;
+    background: #ffc439;
+    border: 1px solid #e0a824;
+    border-radius: 999px;          /* Pillenform wie bei Bezahlknoepfen ueblich */
+    padding: 0.55rem 1.6rem;
+    cursor: pointer;
+    transition: background 0.15s, box-shadow 0.15s, transform 0.1s;
+}
+
+.paypal-donate button:hover {
+    background: #f2b21f;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    transform: translateY(-1px);
+}
+
+/* Der Schriftzug skaliert mit der Knopfschrift. Zwei Klassen plus zwei
+   Elemente - damit gewinnt die Regel gegen ".page-article-body img:not(...)"
+   aus dem Basis-Stylesheet, das sonst die Hoehe auf "auto" zurueckdreht. */
+.page-article-body .paypal-donate button img {
+    height: 1.2em;
+    width: auto;
+    display: block;
+}

@@ -4,9 +4,11 @@ navorder=91
 
 # Datenschutz
 
+## Datenschutz auf einen Blick
+
 ### Allgemeine Hinweise
 
-Die folgenden Hinweise geben einen einfachen Überblick darüber, was mit Ihren personenbezogenen Daten passiert, wenn Sie unsere Website besuchen. Personenbezogene Daten sind alle Daten, mit denen Sie persönlich identifiziert werden können. Ausführliche Informationen zum Thema Datenschutz entnehmen Sie unserer unter diesem Text aufgeführten Datenschutzerklärung.
+Die folgenden Hinweise geben einen einfachen Überblick darüber, was mit Ihren personenbezogenen Daten passiert, wenn Sie unsere Website besuchen. Personenbezogene Daten sind alle Daten, mit denen Sie persönlich identifiziert werden können. Ausführliche Informationen zum Thema Datenschutz entnehmen Sie den folgenden Abschnitten.
 
 ### Datenerfassung auf unserer Website
 
@@ -16,13 +18,13 @@ Die Datenverarbeitung auf dieser Website erfolgt durch den Websitebetreiber. Des
 
 **Wie erfassen wir Ihre Daten?**
 
-Ihre Daten werden zum einen dadurch erhoben, dass Sie uns diese mitteilen. Hierbei kann es sich z.B. um Daten handeln, die Sie in ein Kontaktformular eingeben.
+Ihre Daten werden zum einen dadurch erhoben, dass Sie uns diese mitteilen. Hierbei kann es sich z.B. um Daten handeln, die Sie uns in einer Email mitteilen.
 
 Andere Daten werden automatisch beim Besuch der Website durch unsere IT-Systeme erfasst. Das sind vor allem technische Daten (z.B. Internetbrowser, Betriebssystem oder Uhrzeit des Seitenaufrufs). Die Erfassung dieser Daten erfolgt automatisch, sobald Sie unsere Website betreten.
 
 **Wofür nutzen wir Ihre Daten?**
 
-Ein Teil der Daten wird erhoben, um eine fehlerfreie Bereitstellung der Website zu gewährleisten. Andere Daten können zur Analyse Ihres Nutzerverhaltens verwendet werden.
+Die Daten werden erhoben, um eine fehlerfreie Bereitstellung der Website zu gewährleisten und um Angriffe auf den Server erkennen zu können. Zu Werbezwecken werden sie nicht genutzt.
 
 **Welche Rechte haben Sie bezüglich Ihrer Daten?**
 
@@ -30,38 +32,43 @@ Sie haben jederzeit das Recht unentgeltlich Auskunft über Herkunft, Empfänger 
 
 Außerdem haben Sie das Recht, unter bestimmten Umständen die Einschränkung der Verarbeitung Ihrer personenbezogenen Daten zu verlangen. Details hierzu entnehmen Sie der Datenschutzerklärung unter „Recht auf Einschränkung der Verarbeitung“.
 
-### Analyse-Tools und Tools von Drittanbietern
+### Analyse-Werkzeuge und Dienste Dritter
 
-Beim Besuch unserer Website kann Ihr Surf-Verhalten statistisch ausgewertet werden. Das geschieht vor allem mit Cookies und mit sogenannten Analyseprogrammen. Die Analyse Ihres Surf-Verhaltens erfolgt in der Regel anonym; das Surf-Verhalten kann nicht zu Ihnen zurückverfolgt werden. Sie können dieser Analyse widersprechen oder sie durch die Nichtbenutzung bestimmter Tools verhindern. Detaillierte Informationen dazu finden Sie in der folgenden Datenschutzerklärung.
+Diese Website bindet **keine Dienste Dritter** ein: kein Analyse- oder Statistikwerkzeug,
+keine Werbenetzwerke, keine sozialen Netzwerke, keine externen Schriftarten, Karten oder
+Videos. Beim Aufruf einer Seite werden ausschließlich Daten von unserem eigenen Server
+geladen. Ihr Surfverhalten wird nicht über verschiedene Websites hinweg verfolgt und es
+wird kein Nutzerprofil gebildet.
 
-Sie können dieser Analyse widersprechen. Über die Widerspruchsmöglichkeiten werden wir Sie in dieser Datenschutzerklärung informieren.
+Ausgewertet werden allein die Protokolldateien unseres Webservers, und zwar auf unserem
+eigenen Server; siehe „Server-Protokolldateien“.
 
-### 2. Allgemeine Hinweise und Pflichtinformationen
+## Allgemeine Hinweise und Pflichtinformationen
 
-### Datenschutz
+### Datenschutz auf dieser Website
 
 Die Betreiber dieser Seiten nehmen den Schutz Ihrer persönlichen Daten sehr ernst. Wir behandeln Ihre personenbezogenen Daten vertraulich und entsprechend der gesetzlichen Datenschutzvorschriften sowie dieser Datenschutzerklärung.
 
 Wenn Sie diese Website benutzen, werden verschiedene personenbezogene Daten erhoben. Personenbezogene Daten sind Daten, mit denen Sie persönlich identifiziert werden können. Die vorliegende Datenschutzerklärung erläutert, welche Daten wir erheben und wofür wir sie nutzen. Sie erläutert auch, wie und zu welchem Zweck das geschieht.
 
-Wir weisen darauf hin, dass die Datenübertragung im Internet (z.B. bei der Kommunikation per E-Mail) Sicherheitslücken aufweisen kann. Ein lückenloser Schutz der Daten vor dem Zugriff durch Dritte ist nicht möglich.
+Wir weisen darauf hin, dass die Datenübertragung im Internet (z.B. bei der Kommunikation per Email) Sicherheitslücken aufweisen kann. Ein lückenloser Schutz der Daten vor dem Zugriff durch Dritte ist nicht möglich.
 
 ### Hinweis zur verantwortlichen Stelle
 
 Die verantwortliche Stelle für die Datenverarbeitung auf dieser Website ist:
 
-Deutsche Borreliose-Gesellschaft e.V.
- Kavalleriestraße 18
+**Deutsche Borreliose-Gesellschaft e.V.**
+Kavalleriestraße 18
 66740 Saarlouis
 
 Telefon: +49 (0) 6831 5168828
- E-Mail: geschaeftsstelle(at)deubo.de
+Email: geschaeftsstelle(at)borreliose-gesellschaft.de
 
-Verantwortliche Stelle ist die natürliche oder juristische Person, die allein oder gemeinsam mit anderen über die Zwecke und Mittel der Verarbeitung von personenbezogenen Daten (z.B. Namen, E-Mail-Adressen o. Ä.) entscheidet.
+Verantwortliche Stelle ist die natürliche oder juristische Person, die allein oder gemeinsam mit anderen über die Zwecke und Mittel der Verarbeitung von personenbezogenen Daten (z.B. Namen, Email-Adressen o. Ä.) entscheidet.
 
 ### Widerruf Ihrer Einwilligung zur Datenverarbeitung
 
-Viele Datenverarbeitungsvorgänge sind nur mit Ihrer ausdrücklichen Einwilligung möglich. Sie können eine bereits erteilte Einwilligung jederzeit widerrufen. Dazu reicht eine formlose Mitteilung per E-Mail an uns. Die Rechtmäßigkeit der bis zum Widerruf erfolgten Datenverarbeitung bleibt vom Widerruf unberührt.
+Viele Datenverarbeitungsvorgänge sind nur mit Ihrer ausdrücklichen Einwilligung möglich. Sie können eine bereits erteilte Einwilligung jederzeit widerrufen. Dazu reicht eine formlose Mitteilung per Email an uns. Die Rechtmäßigkeit der bis zum Widerruf erfolgten Datenverarbeitung bleibt vom Widerruf unberührt.
 
 ### Widerspruchsrecht gegen die Datenerhebung in besonderen Fällen sowie gegen Direktwerbung (Art. 21 DSGVO)
 
@@ -92,63 +99,66 @@ Sie haben das Recht, die Einschränkung der Verarbeitung Ihrer personenbezogenen
 
 Wenn Sie die Verarbeitung Ihrer personenbezogenen Daten eingeschränkt haben, dürfen diese Daten – von ihrer Speicherung abgesehen – nur mit Ihrer Einwilligung oder zur Geltendmachung, Ausübung oder Verteidigung von Rechtsansprüchen oder zum Schutz der Rechte einer anderen natürlichen oder juristischen Person oder aus Gründen eines wichtigen öffentlichen Interesses der Europäischen Union oder eines Mitgliedstaats verarbeitet werden.
 
-### 3. Datenerfassung auf unserer Website
+## Datenerfassung auf dieser Website
 
-### Cookies
+### Lokale Speicherung im Browser
 
-Die Internetseiten verwenden teilweise so genannte Cookies. Cookies richten auf Ihrem Rechner keinen Schaden an und enthalten keine Viren. Cookies dienen dazu, unser Angebot nutzerfreundlicher, effektiver und sicherer zu machen. Cookies sind kleine Textdateien, die auf Ihrem Rechner abgelegt werden und die Ihr Browser speichert.
+Diese Website setzt **keine Cookies**. Sie merkt sich lediglich einige Bedieneinstellungen
+(etwa helle oder dunkle Darstellung und die gewählte Sprache) im lokalen Speicher Ihres
+Browsers, damit sie beim nächsten Besuch erhalten bleiben. Diese Angaben enthalten keine
+Kennung, verbleiben auf Ihrem Gerät und werden weder an uns noch an Dritte übertragen; Sie
+können sie jederzeit über die Websitedaten Ihres Browsers löschen.
 
-Die meisten der von uns verwendeten Cookies sind so genannte “Session-Cookies”. Sie werden nach Ende Ihres Besuchs automatisch gelöscht. Andere Cookies bleiben auf Ihrem Endgerät gespeichert bis Sie diese löschen. Diese Cookies ermöglichen es uns, Ihren Browser beim nächsten Besuch wiederzuerkennen.
+### Server-Protokolldateien
 
-Sie können Ihren Browser so einstellen, dass Sie über das Setzen von Cookies informiert werden und Cookies nur im Einzelfall erlauben, die Annahme von Cookies für bestimmte Fälle oder generell ausschließen sowie das automatische Löschen der Cookies beim Schließen des Browser aktivieren. Bei der Deaktivierung von Cookies kann die Funktionalität dieser Website eingeschränkt sein.
-
-Cookies, die zur Durchführung des elektronischen Kommunikationsvorgangs oder zur Bereitstellung bestimmter, von Ihnen erwünschter Funktionen (z.B. Warenkorbfunktion) erforderlich sind, werden auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO gespeichert. Der Websitebetreiber hat ein berechtigtes Interesse an der Speicherung von Cookies zur technisch fehlerfreien und optimierten Bereitstellung seiner Dienste. Soweit andere Cookies (z.B. Cookies zur Analyse Ihres Surfverhaltens) gespeichert werden, werden diese in dieser Datenschutzerklärung gesondert behandelt.
-
-### Server-Log-Dateien
-
-Der Provider der Seiten erhebt und speichert automatisch Informationen in so genannten Server-Log-Dateien, die Ihr Browser automatisch an uns übermittelt. Dies sind:
+Beim Aufruf einer Seite erhebt unser Webserver (Apache HTTP Server) automatisch
+Informationen, die Ihr Browser übermittelt, und speichert sie in Protokolldateien:
 
 - Browsertyp und Browserversion
 - verwendetes Betriebssystem
-- Referrer URL
-- Hostname des zugreifenden Rechners
-- Uhrzeit der Serveranfrage
+- zuvor besuchte Seite (Referrer)
+- Name der abgerufenen Datei und übertragene Datenmenge
+- Datum und Uhrzeit der Serveranfrage
 - IP-Adresse
 
-Eine Zusammenführung dieser Daten mit anderen Datenquellen wird nicht vorgenommen.
+Die Erfassung erfolgt auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO. Wir haben ein
+berechtigtes Interesse an der technisch fehlerfreien Auslieferung der Website, an der
+Erkennung und Abwehr von Angriffen sowie daran zu erfahren, welche Inhalte genutzt werden.
 
-Die Erfassung dieser Daten erfolgt auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO. Der Websitebetreiber hat ein berechtigtes Interesse an der technisch fehlerfreien Darstellung und der Optimierung seiner Website – hierzu müssen die Server-Log-Files erfasst werden.
+Die Protokolldateien werden **ausschließlich auf unserem eigenen Server** ausgewertet. Es
+kommen keine Werkzeuge Dritter zum Einsatz, die Daten werden nicht an Dritte weitergegeben
+und nicht mit anderen Datenquellen zusammengeführt.
 
-### Kontaktformular
+Wir speichern die Protokolle in zwei Fassungen mit unterschiedlicher Aufbewahrungsdauer:
 
-Wenn Sie uns per Kontaktformular Anfragen zukommen lassen, werden Ihre Angaben aus dem Anfrageformular inklusive der von Ihnen dort angegebenen Kontaktdaten zwecks Bearbeitung der Anfrage und für den Fall von Anschlussfragen bei uns gespeichert. Diese Daten geben wir nicht ohne Ihre Einwilligung weiter.
+| Fassung | Inhalt | Aufbewahrung | Zweck |
+|---------|--------|--------------|-------|
+| vollständig | mit vollständiger IP-Adresse | **7 Tage** | Fehlersuche, Erkennung und Abwehr von Angriffen |
+| gekürzt | IP-Adresse gekürzt, dadurch keiner Person mehr zuzuordnen | **6 Monate** | Ermittlung der Zugriffszahlen im Zeitverlauf |
 
-Die Verarbeitung der in das Kontaktformular eingegebenen Daten erfolgt somit ausschließlich auf Grundlage Ihrer Einwilligung (Art. 6 Abs. 1 lit. a DSGVO). Sie können diese Einwilligung jederzeit widerrufen. Dazu reicht eine formlose Mitteilung per E-Mail an uns. Die Rechtmäßigkeit der bis zum Widerruf erfolgten Datenverarbeitungsvorgänge bleibt vom Widerruf unberührt.
+Bei der gekürzten Fassung entfernt der Server die letzte Stelle der IP-Adresse, bevor er
+sie überhaupt niederschreibt (bei IPv4 das letzte Byte, bei IPv6 alles ab dem dritten
+Block). Ein Rückschluss auf einzelne Personen oder Anschlüsse ist damit nicht mehr möglich;
+ausgewertet werden nur zusammengefasste Zahlen, etwa die Aufrufe je Seite.
 
-Die von Ihnen im Kontaktformular eingegebenen Daten verbleiben bei uns, bis Sie uns zur Löschung auffordern, Ihre Einwilligung zur Speicherung widerrufen oder der Zweck für die Datenspeicherung entfällt (z.B. nach abgeschlossener Bearbeitung Ihrer Anfrage). Zwingende gesetzliche Bestimmungen – insbesondere Aufbewahrungsfristen – bleiben unberührt.
+Eine längere Speicherung der vollständigen Fassung erfolgt nur, wenn dies zur Aufklärung
+eines konkreten Angriffs erforderlich ist; die betroffenen Daten sind dann bis zur
+abschließenden Klärung gesperrt.
 
-### Anfrage per E-Mail, Telefon oder Telefax
+### Anfrage per Email, Telefon oder Fax
 
-Wenn Sie uns per E-Mail, Telefon oder Telefax kontaktieren, wird Ihre Anfrage inklusive aller daraus hervorgehenden personenbezogenen Daten (Name, Anfrage) zum Zwecke der Bearbeitung Ihres Anliegens bei uns gespeichert und verarbeitet. Diese Daten geben wir nicht ohne Ihre Einwilligung weiter.
+Wenn Sie uns per Email, Telefon oder Fax kontaktieren, wird Ihre Anfrage inklusive aller daraus hervorgehenden personenbezogenen Daten (Name, Anfrage) zum Zwecke der Bearbeitung Ihres Anliegens bei uns gespeichert und verarbeitet. Diese Daten geben wir nicht ohne Ihre Einwilligung weiter.
 
 Die Verarbeitung dieser Daten erfolgt auf Grundlage von Art. 6 Abs. 1 lit. b DSGVO, sofern Ihre Anfrage mit der Erfüllung eines Vertrags zusammenhängt oder zur Durchführung vorvertraglicher Maßnahmen erforderlich ist. In allen übrigen Fällen beruht die Verarbeitung auf Ihrer Einwilligung (Art. 6 Abs. 1 lit. a DSGVO) und / oder auf unseren berechtigten Interessen (Art. 6 Abs. 1 lit. f DSGVO), da wir ein berechtigtes Interesse an der effektiven Bearbeitung der an uns gerichteten Anfragen haben.
 
 Die von Ihnen an uns per Kontaktanfragen übersandten Daten verbleiben bei uns, bis Sie uns zur Löschung auffordern, Ihre Einwilligung zur Speicherung widerrufen oder der Zweck für die Datenspeicherung entfällt (z. B. nach abgeschlossener Bearbeitung Ihres Anliegens). Zwingende gesetzliche Bestimmungen – insbesondere gesetzliche Aufbewahrungsfristen – bleiben unberührt.
 
-### 4. Newsletter
+## Schriftarten
 
-### Newsletterdaten
+Diese Website verwendet die Schriftart „Rubik“. Die Schriftdateien werden von unserem
+eigenen Server ausgeliefert. Eine Verbindung zu Servern von Google oder anderen Anbietern
+findet dabei nicht statt, und es wird keine IP-Adresse an Dritte übertragen.
 
-Wenn Sie den auf der Website angebotenen Newsletter beziehen möchten, benötigen wir von Ihnen eine E-Mail-Adresse sowie Informationen, welche uns die Überprüfung gestatten, dass Sie der Inhaber der angegebenen E-Mail-Adresse sind und mit dem Empfang des Newsletters einverstanden sind. Weitere Daten werden nicht bzw. nur auf freiwilliger Basis erhoben. Diese Daten verwenden wir ausschließlich für den Versand der angeforderten Informationen und geben diese nicht an Dritte weiter.
+---
 
-Die Verarbeitung der in das Newsletteranmeldeformular eingegebenen Daten erfolgt ausschließlich auf Grundlage Ihrer Einwilligung (Art. 6 Abs. 1 lit. a DSGVO). Die erteilte Einwilligung zur Speicherung der Daten, der E-Mail-Adresse sowie deren Nutzung zum Versand des Newsletters können Sie jederzeit widerrufen, etwa über den "Austragen"-Link im Newsletter. Die Rechtmäßigkeit der bereits erfolgten Datenverarbeitungsvorgänge bleibt vom Widerruf unberührt.
-
-Die von Ihnen zum Zwecke des Newsletter-Bezugs bei uns hinterlegten Daten werden von uns bis zu Ihrer Austragung aus dem Newsletter gespeichert und nach der Abbestellung des Newsletters gelöscht. Daten, die zu anderen Zwecken bei uns gespeichert wurden bleiben hiervon unberührt.
-
-### 5. Plugins und Tools
-
-### Google Web Fonts
-
-Diese Seite nutzt zur einheitlichen Darstellung von Schriftarten so genannte Web Fonts, die von Google bereitgestellt werden. Die Google Fonts sind lokal installiert. Eine Verbindung zu Servern von Google findet dabei nicht statt.
-
-Quelle: <https://www.e-recht24.de/muster-datenschutzerklaerung.html>
+Diese Datenschutzerklärung beruht in Teilen auf dem [Muster von eRecht24](https://www.e-recht24.de/muster-datenschutzerklaerung.html).
