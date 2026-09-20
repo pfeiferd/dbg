@@ -8,7 +8,7 @@ Once a year the Deutsche Borreliose-Gesellschaft (DBG) holds a scientific confer
 
 ## Upcoming events
 
-This page lists upcoming events, international ones included, on the subjects of (Lyme) borreliosis, co-infections and chronic infections.
+The following table lists upcoming events, international ones included, on the subjects of (Lyme) borreliosis, co-infections and chronic infections.
 
 | Period | Event | Location | Link |
 |--------|-------|----------|------|
