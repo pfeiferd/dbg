@@ -1281,7 +1281,7 @@ Two effects nevertheless deserve attention when reading the table. First, the re
 
     \subsubsection{Application of refined $k$-mer databases}
     The database \texttt{strepto} of Table \ref{dbdesc} holds the genus with at most fifty genomes per species. Above the
-    data taxa its genus subtree stores \num{250398829} $k$-mers, and before any clustering runs those sit in exactly three
+    data taxa its genus subtree stores \num{250398828} $k$-mers, and before any clustering runs those sit in exactly three
     kinds of place: $47.99$\,\% at a species node or below it, $2.37$\,\% at one of the five \emph{species group} nodes
     NCBI supplies, and $49.64$\,\% at the genus itself. There is nothing in between. The five species groups hold
     \num{5924657} $k$-mers together against \num{124302068} at the genus, one part in twenty of the material whose
@@ -1294,9 +1294,9 @@ Two effects nevertheless deserve attention when reading the table. First, the re
     contig cap.}
 
     The refinement moves that material a long way down. The share of it at a node leaving more than a hundred species open
-    falls from $49.64$\,\% to $35.80$\,\%, and the share at a node naming ten species or fewer rises from $50.36$\,\% to
-    $60.35$\,\% --- \num{25014786} $k$-mers newly placed there, against the \num{5924657} of NCBI's own \emph{species
-    group} nodes, a factor of $4.2$. It also builds a node the taxonomy does not. One refined node holds the five species
+    falls from $49.64$\,\% to $3.49$\,\%, and the share at a node naming ten species or fewer rises from $50.36$\,\% to
+    $63.72$\,\% --- \num{33458263} $k$-mers newly placed there, against the \num{5924657} of NCBI's own \emph{species
+    group} nodes, a factor of $5.6$. It also builds a node the taxonomy does not. One refined node holds the five species
     of NCBI's own \emph{Streptococcus mitis group} --- \emph{S.~mitis}, \emph{S.~gwangjuensis}, \emph{S.~humanilactis},
     \emph{S.~chosunensis} and \emph{S.~toyakuensis} --- together with \emph{S.~pneumoniae}, \emph{S.~oralis} and
     \emph{S.~pseudopneumoniae}, which that group leaves outside and which hang off the genus instead. Those three are the
@@ -1305,46 +1305,47 @@ Two effects nevertheless deserve attention when reading the table. First, the re
     ancestor of the pneumococcus; afterwards it rests at a node leaving eight species open instead of \num{157}.
 
     That node has exactly two children, and the split is the point. One is \emph{S.~pneumoniae}, whose subtree holds
-    \num{1729440} $k$-mers. The other holds the seven commensals and \num{27408759} $k$-mers, and the pneumococcus is not
-    below it. Between the two, \num{707491} $k$-mers stay at the node itself, shared and undecidable --- $2.4$\,\% of the
-    \num{29845690} that reach the mitis complex at all. So the refined database can also answer \emph{a mitis-group
+    \num{1729433} $k$-mers. The other holds the seven commensals and \num{34228644} $k$-mers, and the pneumococcus is not
+    below it. Between the two, \num{3407518} $k$-mers stay at the node itself, shared and undecidable --- $8.7$\,\% of the
+    \num{39365595} that reach the mitis complex at all. So the refined database can also answer \emph{a mitis-group
     commensal, and not the pneumococcus} --- a negative answer on the pathogen, which is the distinction
-    \citet{lrinanopore} had to settle in the laboratory. The unrefined database cannot give it at all: the \num{895103}
-    $k$-mers that carry it sat at the genus, where they named all \num{157} species.
+    \citet{lrinanopore} had to settle in the laboratory. The unrefined database cannot give it at all: the \num{7420865}
+    $k$-mers that carry it sat at the genus or at NCBI's own mitis-group node, and neither of the two excludes the
+    pneumococcus.
 
     Two qualifications keep that from being more than it is. The node is not the mitis group of the clinical literature:
     \emph{S.~infantis}, \emph{S.~cristatus} and \emph{S.~sanguinis} sit elsewhere in the refined tree, because the
-    clustering groups by shared $k$-mers and not by nomenclature. And the \num{707491} $k$-mers at the node itself stay
+    clustering groups by shared $k$-mers and not by nomenclature. And the \num{3407518} $k$-mers at the node itself stay
     undecidable between the pathogen and its neighbours; that is the residue \citet{lrinanopore} needed a
     \emph{ply}-specific assay for, and no refinement can move it. The assay is still required. What the refined database
     adds is that it now says which reads require it.
 
     \paragraph{What a refinement cannot repair.} The pneumococcus is nameable in this database, and the credit belongs to
     the database rather than to the refinement. \emph{S.~pneumoniae} keeps \num{1273715} $k$-mers of its own and
-    \num{1729440} counting its whole subtree, and those are in the unrefined variant too. An earlier build left it
+    \num{1729433} counting its whole subtree, and those are in the unrefined variant too. An earlier build left it
     \num{656}; that figure was an artefact of a per-species cap that counted fasta entries instead of genomes and so gave
     the best-sequenced species of the genus two thirds of one assembly. It was not a fact about the mitis complex.
 
     What the refinement adds to the pneumococcus itself is nothing, and the quality file says so plainly. Its $\mathit{sprec}$ goes
-    from $0.26794262$ to $0.26793533$, and the $k$-mers at its own node from $0.00652790$ to $0.00652994$. The refinement does move
-    \num{1174677} of its $k$-mers into a strain cluster below the species, but the $k$-mers of that cluster average
-    $0.00652806$, which is $1/153$: the $k$-mers are carried by essentially every one of the \num{153} pneumococcal data
-    taxa. They are core genome, and Section \ref{dbrefinement} predicts that core cannot move.
+    from $0.99859434$ to $0.99860532$, and the $k$-mers at its own node from $0.99868259$ to $0.99866532$. There is nothing to add:
+    RefSeq files every one of its fifty admitted genomes at the species, so the species is a single data taxon and the
+    $k$-mers stored at it already score one. The refinement's work for this species happens above it, in the chain of
+    refined nodes between the genus and the species.
 
-    This is also where $\mathit{sprec}$ stops tracking the clinical question. Its per-$k$-mer precision is $1/|D(\nu(b))|$ over data taxa,
-    and data taxa are genomes, not species: the $k$-mers at \emph{S.~gordonii}, which has two of them, average $0.4997$,
-    those at \emph{S.~pneumoniae}, which has \num{153}, average $0.006528$. A $k$-mer that names the pneumococcus and nothing else therefore
-    scores $1/153$, and the refined mitis node, which separates the pathogen from seven commensal species, scores
-    $0.0060$. Neither $\mathit{sprec}$ nor $\widehat{\mathit{sprec}}$ can express the distinction this case study is about. The read-level $\rho$ of
-    Section \ref{groundtruthfree} has to carry it.
+    That chain is where the measure does register something. The last refined node before the species covers
+    \emph{S.~pneumoniae} and seven commensal neighbours --- \emph{S.~oralis}, \emph{S.~mitis},
+    \emph{S.~pseudopneumoniae} among them --- and its $k$-mers average $0.1770$, against $0.0142$ for the genus they
+    would otherwise sit at. What the measure cannot say is how often that helps a read: it counts $k$-mers where a
+    sample is read in reads, so the clinical claim rests on the read-level measure of Section \ref{groundtruthfree}.
 
-    Over the whole database the refinement raises $\mathit{sprec}$ from $0.6040$ to $0.6216$ and $\widehat{\mathit{sprec}}$ from $0.2046$ to $0.2401$, a
-    relative gain of $17.4$\,\% and the smallest of the databases in Table \ref{dbsp}. The gain is the right kind even so.
-    A refinement never moves a $k$-mer across the species boundary, so the $\widehat{\mathit{sprec}}$ numerator splits exactly by position
-    in the tree: \num{153303860} $k$-mers sit above the species rank in both variants, and their mean precision rises from
-    $0.0074$ to $0.0535$, a factor of $7.2$. That is $73$\,\% of the gain. The remaining $27$\,\% is strain clustering
-    inside species. The aggregate is small because half the material above the data taxa already sits at a species node,
-    not because the work between species failed.
+    Over the whole database the refinement raises $\mathit{sprec}$ from \sprecpair[4]{strepto/root} and $\widehat{\mathit{sprec}}$ from
+    \sprecpairx[4]{strepto/root}, a relative gain of $15.0$\,\% and the smallest of the databases in Table \ref{dbsp}. The
+    gain is the right kind even so. A refinement never moves a $k$-mer across the species boundary, so the
+    $\widehat{\mathit{sprec}}$ numerator splits exactly by position in the tree: \num{153303858} $k$-mers sit above the species rank in
+    both variants, and their mean precision rises from $0.0244$ to $0.1368$, a factor of $5.6$. That is $95$\,\% of the
+    gain; the remaining $5$\,\% is strain clustering inside the few species whose genomes the taxonomy files at strain
+    nodes. The aggregate is small because the other $44$\,\% of the material already sits at a species node and averages
+    $0.97$, not because the work between species failed.
 
     The genus supplies its own control for what the neighbourhood costs. \emph{S.~mutans}, which has no close relative
     here, keeps \num{4118045} $k$-mers in its subtree, \emph{S.~uberis} \num{4251160} and \emph{S.~suis} \num{3847928}.
@@ -1487,10 +1488,10 @@ Two effects nevertheless deserve attention when reading the table. First, the re
     classified is identical in every row of \texttt{strepto\_lri\_specificity.csv}, which is what makes the pair
     comparable at all.
 
-    Set that against the $17.4$\,\% by which the same refinement raises $\widehat{\mathit{sprec}}$. The two measures are averages of
+    Set that against the $15.0$\,\% by which the same refinement raises $\widehat{\mathit{sprec}}$. The two measures are averages of
     different things over different sets and neither bounds the other, but the direction of the difference is the one
-    Section \ref{dbrefinement} predicts: $\widehat{\mathit{sprec}}$ divides by data taxa, which are genomes, and fifty near-identical
-    pneumococcal genomes hold it near $1/153$ whatever the refinement does. The read-level measure divides by the species
+    Section \ref{dbrefinement} predicts: $\widehat{\mathit{sprec}}$ averages over every $k$-mer of the database, and the $44$\,\% of
+    them that already sit at a species node score near one whatever the refinement does. The read-level measure divides by the species
     a classification leaves open, which is the quantity a clinician reads, and on it the same refinement is worth a factor
     of $2.3$.
 
@@ -1622,7 +1623,7 @@ Two effects nevertheless deserve attention when reading the table. First, the re
               position
         \item the pneumococcus nameable at all, in four culture-confirmed samples
     \end{itemize}
-    \todo{And the weaknesses, so the balance is not lost in the rework: $\widehat{\mathit{sprec}}$ +$17.4$\,\% is the
+    \todo{And the weaknesses, so the balance is not lost in the rework: $\widehat{\mathit{sprec}}$ +$15.0$\,\% is the
     weakest of the five databases that gain; the sample-level call is identical in every sample; the
     pneumococcus is named by the \emph{unrefined} database, which is the genome-cap fix and not the
     refinement; and the refinement acts on about a tenth of the classified reads.}
