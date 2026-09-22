@@ -804,16 +804,15 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
 
     \subsubsection{Estimating the gain without ground truth}\label{groundtruthfree}
 
-    Both measures of Section \ref{classmeasures} rest on $\sigma(r)$, the species a read actually stems from. A simulation supplies it, a real sample does not. Of a real fastq file we can therefore still ask how far a classification narrows the species down --- only not whether it does so correctly. Dropping precisely that test from $q$ leaves
+    The measures from Section \ref{classmeasures} rest on $\sigma(r)$, which determines a read's species. For real-world data, where this ground truth is unknown, we can still assess how far a classification narrows the species down but not whether it does so correctly. Dropping the underlying test from $q$ leaves
 \[ \tilde{q}^v(r) = \frac{1}{|\Sigma(\kappa^v(r))|} \]
-    for a classified read, and $\tilde{q}^v(r) = 0$ for an unclassified one. Since $q^v(r)$ is $\tilde{q}^v(r)$ multiplied by the indicator of $\sigma(r) \in \Sigma(\kappa^v(r))$, we have $q^v(r) \le \tilde{q}^v(r)$ read by read, and hence for every average over reads as well. This needs no distributional assumption: $\tilde{q}^v$ bounds $q^v$ pointwise.
+    for a classified read, and $\tilde{q}^v(r) = 0$ for an unclassified one. Since $q^v(r)$ is $\tilde{q}^v(r)$ multiplied by the indicator of $\sigma(r) \in \Sigma(\kappa^v(r))$, we have $q^v(r) \le \tilde{q}^v(r)$ for each read, and hence for an average over reads as well.
 
-    Dropping the test from $q$ is only half of what a real sample forces, however. The subset $R^u_g$ is no more observable than $q$ is: it is defined through $\sigma(r)$, and asking whether the unrefined assignment sits below \emph{the read's own} genus presupposes the very answer the analysis is after. What can be observed is where the classification came to rest, and nothing else. The ungated measure is therefore taken over
+    The subset $R^u_g$ is unobservable as well, since it is defined through $\sigma(r)$. Nevertheless, we can still observe where the classification came to rest. An ungated version of precision is therefore taken over
 \[ \widetilde{R}^u_g = \{ r \in R^u_c : \kappa^u(r) \text{ lies at or below a genus and above any species} \} , \]
-    the reads the unrefined database placed no further than a genus --- right or wrong --- which is decided by $\kappa^u(r)$ alone. Writing
+    the reads the unrefined database placed no further than a genus. This gives the \emph{ungated precision}
 \[ \widetilde{\mathit{prec}}^v_g = \frac{1}{|\widetilde{R}^u_g|} \sum_{r \in \widetilde{R}^u_g} \tilde{q}^v(r) \]
-    gives what we call the \emph{ungated precision}, against $\mathit{prec}_g$ of Section \ref{classmeasures} for the gated one.
-
+    standing against its gated version $\mathit{prec}^v_g$ from Section \ref{classmeasures}.
 
 \section{Results}\label{results}
 
