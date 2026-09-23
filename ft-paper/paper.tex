@@ -446,7 +446,7 @@ with $k = 2$:
 	\item Genestrip-FT's refinement adds an artificial node $h$ to the taxonomy with $X$ and $Y$ as children but not $Z$. Also, the refinement \emph{pushes down} \texttt{CT} from $W$ to $h$. According to this refined database, a read \texttt{CT} would be classified as $h$ and so $Z$ is excluded as a candidate species for \texttt{CT}.
 \end{enumerate}
  So in general, this type of refinement potentially improves classification precision: E.g., if a read was classified under a genus taxon in an unrefined database, then \emph{the corresponding refined database may allow for narrowing down the candidate species to fewer than originally listed under that genus}.
-
+ Note that the refinement only moves $k$-mers, so a refined database stores exactly the same $k$-mers as the unrefined one it was derived from.
 \begin{figure}[!htbp]%
 \centering
 \small
@@ -813,29 +813,31 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
 
 \section{Results}\label{results}
 
-    \emph{Every measurement below compares a database against its refined variant}, as indicated by the superscripts $u$ and $f$ from Section \ref{classmeasures}. This means that the same reads are classified twice, or the same database is assessed twice, once before the refinement and once after it, with everything else held fixed. This design keeps the comparison narrow but fair, whereas a comparison across tools would vary the database and the classification algorithm along with the refinement. \emph{How Genestrip compares with other $k$-mer analysis tools is a separate question that has already been answered in \citep{genestrip-pub}.} In this previous study, various unrefined Genestrip databases compare favourably against KrakenUniq, Kraken 2 and Ganon regarding classification precision and recall as well as computational performance.
+    \emph{The experiments below compare a database against its refined variant}, as indicated by the superscripts $u$ and $f$ from Section \ref{classmeasures}. This means that the same reads are classified twice, or the same database is assessed twice, once before the refinement and once after it, with everything else held fixed. This design is narrow but fair, whereas a comparison across tools would vary the database and the classification algorithm along with the refinement. \emph{How Genestrip compares with other $k$-mer analysis tools is a separate question that has already been answered in \citep{genestrip-pub}.} In this previous study, various unrefined Genestrip databases outperformed KrakenUniq, Kraken 2 and Ganon regarding classification precision and recall as well as computational performance.
     
     \subsection{Subtree precision}
 
-    The subtree precision reported in Table \ref{dbsp} is defined in Section \ref{subtreeprecision}; the path precision of Appendix \ref{apppathprecision} is not reported here. Across all six databases of Table \ref{dbsp} the refinement raises $\mathit{sprec}$ at the root, and it does so most where the database is densest with close relatives: from \sprecpair[2]{nocardia/root} for \texttt{nocardia}, whose single genus holds \dbstat{species}{nocardia} taxa at the species rank and below with no node between them, against \sprecpair{parasites/root} for \texttt{parasites}, whose \dbstat{species}{parasites} invertebrate taxa share few $k$-mers to begin with. The genus rows show the same ordering, with the largest gains where a genus carries many closely related species.\footnote{Three entries move the other way, all by $10^{-3}$ at most and all already close to one: Toxoplasma ($\mathit{sprec}$ \sprecpair[5]{protozoa/Toxoplasma}, $\widehat{\mathit{sprec}}$ \sprecpairx{protozoa/Toxoplasma}) and Necator (\sprecpair[5]{parasites/Necator}). By the argument of Section \ref{subtreeprecision} a refinement can lower neither measure, since it neither changes $C(b)$ nor enlarges $D(\nu(b))$ for any $k$-mer. The cause lies in the measurement: the underlying goal deduplicates its counts through a probabilistic Bloom filter, whose occasional false positive discards a genuine one --- a similar effect to the one Section \ref{dbrefinement} notes for the $k$-mer counts of Figure \ref{simplerefdbtrans}. A decrease of this size is therefore expected noise rather than a counterexample.}
+    Every measurement of this section is made on the basis of the six databases of Table \ref{dbdesc}. The first covers the entire RefSeq category \enquote{Viral}, the second twelve tick-borne bacterial genera, the next two a single bacterial genus each, and the last two form comprehensive collections of human-pathogenic protozoa and invertebrates.
+
+    Table \ref{dbsp} presents the subtree precision according to Section \ref{subtreeprecision}. In all cases the refinement raises $\mathit{sprec}$ at the root, and it does so most where the database is densest with close relatives: from \sprecpair[2]{nocardia/root} for \texttt{nocardia}, whose single genus holds \dbstat{species}{nocardia} taxa at the species rank and below, against \sprecpair{parasites/root} for \texttt{parasites}, whose \dbstat{species}{parasites} invertebrate taxa share few $k$-mers to begin with. The genus rows show the same ordering, with the largest gains where a genus carries many closely related species.\footnote{Three entries move the other way, all by $10^{-3}$ at most and all already close to one: Toxoplasma ($\mathit{sprec}$ \sprecpair[5]{protozoa/Toxoplasma}, $\widehat{\mathit{sprec}}$ \sprecpairx{protozoa/Toxoplasma}) and Necator (\sprecpair[5]{parasites/Necator}). By the argument of Section \ref{subtreeprecision} a refinement can lower neither measure, since it neither changes $C(b)$ nor enlarges $D(\nu(b))$ for any $k$-mer. The cause lies in the measurement: the underlying goal deduplicates its counts through a probabilistic Bloom filter, whose occasional false positive discards a genuine one. This is a similar effect to the one Section \ref{dbrefinement} notes for the $k$-mer counts of Figure \ref{simplerefdbtrans}. A decrease of this size therefore constitutes noise rather than a counterexample.}
 
      \begin{table}[!htbp]
         \centering
 \sisetup{table-alignment-mode = format, table-number-alignment = center, group-separator = {,}, group-minimum-digits = 4}
         \begin{tabular}{c|p{1.8cm}|>{\raggedright\arraybackslash}p{3.7cm}|S[table-format=5.0]|S[table-format=10.0]}
             \textbf{DB name} & \textbf{Category} & \textbf{Description} &
-            \multicolumn{1}{c|}{\textbf{\shortstack{Species\\and below}}} &
+            \multicolumn{1}{c|}{\textbf{\shortstack{Species taxa\\and below}}} &
             \multicolumn{1}{c}{\textbf{\shortstack{Stored\\$k$-mers}}}\\
             \hline
-            \texttt{cv} & Viral & All RefSeq genomes of the category \enquote{Viral} & \dbstat{species}{viral} & \dbstat{kmers}{viral}\\
-            \texttt{tb} & Bacterial & 12 genera covering tick-borne bacterial pathogens: Anaplasma, Bartonella, Borrelia, Borreliella, Chlamydia, Ehrlichia, Francisella, Malacoplasma, Metamycoplasma, Mycoplasma, Mycoplasmoides and Rickettsia, all from RefSeq & \dbstat{species}{tick-borne} & \dbstat{kmers}{tick-borne}\\
-            \texttt{strepto} & Bacterial & The genus Streptococcus from RefSeq, at most 50 assemblies per species. It is the clinical counterpart to \texttt{tb}: the reference taxonomy places \emph{S.~pneumoniae} and its mitis-group neighbours \emph{S.~oralis}, \emph{S.~pseudopneumoniae} and \emph{S.~infantis} as direct children of the genus, so every $k$-mer they share is stranded there by the LCA update & \dbstat{species}{strepto} & \dbstat{kmers}{strepto}\\
-            \texttt{nocardia} & Bacterial & The genus Nocardia from RefSeq. Its taxonomy is flat: of its 125 populated children 124 are species and none is a species group, so the complexes clinical microbiology treats by --- \emph{N.~asteroides}, \emph{N.~nova}, \emph{N.~transvalensis}, \emph{N.~brasiliensis} --- have no node to hold what their members share & \dbstat{species}{nocardia} & \dbstat{kmers}{nocardia}\\
-            \texttt{protozoa} & Protozoa & Comprehensive collection of protozoans from RefSeq which are pathogenic to humans \citep{mehlhorn2012parasiten} & \dbstat{species}{protozoa} & \dbstat{kmers}{protozoa}\\
-            \texttt{parasites} & Invertebrate & Comprehensive collection of parasitic invertebrates from RefSeq which are pathogenic to humans \citep{mehlhorn2012parasiten} & \dbstat{species}{parasites} & \dbstat{kmers}{parasites}\\
+            \texttt{cv} & Viral & All RefSeq genomes of this category & \dbstat{species}{viral} & \dbstat{kmers}{viral}\\
+            \texttt{tb} & Bacterial & 12 genera of tick-borne bacterial pathogens from RefSeq, Borrelia and Rickettsia among them & \dbstat{species}{tick-borne} & \dbstat{kmers}{tick-borne}\\
+            \texttt{strepto} & Bacterial & The genus Streptococcus from RefSeq, at most 50 assemblies per species & \dbstat{species}{strepto} & \dbstat{kmers}{strepto}\\
+            \texttt{nocardia} & Bacterial & The genus Nocardia from RefSeq & \dbstat{species}{nocardia} & \dbstat{kmers}{nocardia}\\
+            \texttt{protozoa} & Protozoa & Protozoans from RefSeq that are pathogenic to humans \citep{mehlhorn2012parasiten} & \dbstat{species}{protozoa} & \dbstat{kmers}{protozoa}\\
+            \texttt{parasites} & Invertebrate & Parasitic invertebrates from RefSeq that are pathogenic to humans \citep{mehlhorn2012parasiten} & \dbstat{species}{parasites} & \dbstat{kmers}{parasites}\\
         \end{tabular}
 
-        \caption{Genestrip databases used for assessing refinement quality. \enquote{Species and below} counts the taxa of the database at the species rank and at any rank beneath it: subspecies, strain, isolate, serotype and genotype. The stored $k$-mer count is that of the \emph{unrefined} database. A refinement reassigns $k$-mers but adds none, so the count holds for both variants. All of them are refined between a genus and its species.}\label{dbdesc}
+        \caption{Genestrip databases used for assessing refinement quality. \texttt{cv}, \texttt{tb}, \texttt{protozoa} and \texttt{parasites} are the databases of the first study on Genestrip \citep{genestrip-pub}, which describes them in full. \enquote{Species taxa and below} counts the taxa at the species rank and at any rank beneath it, such as subspecies and strains.}\label{dbdesc}
     \end{table}
     
        \begin{table}[!htbp]
@@ -886,30 +888,19 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
             & Paragonimus & \dbstat{spu}{parasites/Paragonimus} & \dbstat{spf}{parasites/Paragonimus} & \dbstat{spux}{parasites/Paragonimus} & \dbstat{spfx}{parasites/Paragonimus}\\
             & Toxocara & \dbstat{spu}{parasites/Toxocara} & \dbstat{spf}{parasites/Toxocara} & \dbstat{spux}{parasites/Toxocara} & \dbstat{spfx}{parasites/Toxocara}\\
         \end{tabular}
-         \caption{Subtree precision $\mathit{sprec}_m$ for the databases of Table \ref{dbdesc}, each database in its two variants: the superscript $u$ marks the unrefined database and $f$ the refined one, so the pair $\mathit{sprec}^u_m$ and $\mathit{sprec}^f_m$ is one measure read on the same subtree before and after the refinement. The two columns on the right give $\widehat{\mathit{sprec}}_m$, the same average over the $k$-mers stored above the data taxa. That is where a refinement can act; the share of $k$-mers that sit at a data taxon and are thereby fixed at a precision of one is \dbstat{leafshare}{viral}\,\% for \texttt{cv}, \dbstat{leafshare}{tick-borne}\,\% for \texttt{tb}, \dbstat{leafshare}{strepto}\,\% for \texttt{strepto}, \dbstat{leafshare}{nocardia}\,\% for \texttt{nocardia}, \dbstat{leafshare}{protozoa}\,\% for \texttt{protozoa} and \dbstat{leafshare}{parasites}\,\% for \texttt{parasites}, so $\widehat{\mathit{sprec}}$ rests on a correspondingly small part of the database, for \texttt{parasites} on well under one percent of it. The \emph{root} row of each block gives $\mathit{sprec}_m$ for $m$ the taxonomic root, so the average runs over every $k$-mer in the database. The rows below break the same measure down by genus. For each database, the five genera with the largest $|\mathcal{A}_m|$ are listed in decreasing order of $|\mathcal{A}_m|$; \texttt{strepto} and \texttt{nocardia} hold one genus each and are listed with it. For \texttt{cv}, the genus Orthopoxvirus is listed in addition, as it serves as the running example of Section \ref{dbrefinement}. The genera are a selection and do not average to the \emph{root} row above them.}\label{dbsp}
+         \caption{Subtree precision for the databases of Table \ref{dbdesc}, with $\mathit{sprec}_m$ and $\widehat{\mathit{sprec}}_m$ as defined in Section \ref{subtreeprecision} and the variants $u$ and $f$ as in Section \ref{classmeasures}. The five genera with the largest $|\mathcal{A}_m|$ are shown in decreasing order of $|\mathcal{A}_m|$, for \texttt{cv} with Orthopoxvirus added as the running example of Section \ref{dbrefinement}, and for \texttt{strepto} and \texttt{nocardia} the single genus each of them holds. Being a selection, the genus rows do not average to the \emph{root} row above them. The $k$-mers that $\widehat{\mathcal{A}}_m$ leaves out amount to \dbstat{leafshare}{viral}\,\% of \texttt{cv}, \dbstat{leafshare}{tick-borne}\,\% of \texttt{tb}, \dbstat{leafshare}{strepto}\,\% of \texttt{strepto}, \dbstat{leafshare}{nocardia}\,\% of \texttt{nocardia}, \dbstat{leafshare}{protozoa}\,\% of \texttt{protozoa} and \dbstat{leafshare}{parasites}\,\% of \texttt{parasites}, so $\widehat{\mathit{sprec}}$ rests on a correspondingly small part of each database, for \texttt{parasites} on well under one percent of it.}\label{dbsp}
     \end{table}      
 
-    \paragraph{How the taxonomy limits $\widehat{\mathit{sprec}}$.} A refinement can only move $k$-mers between
-    nodes that exist, so what a database can reach depends on the tree it is given --- and the tree
-    carries more than named taxa. Below a genus the NCBI taxonomy commonly places a bucket of genomes
-    it cannot assign to a species, named \emph{unclassified} after that genus, and those genomes are
-    not passive. Under the least common ancestor update a $k$-mer that a named species shares with one
-    of them has its ancestor at the \emph{genus}, since the bucket hangs off the genus as a sibling of
-    the whole lineage the species belongs to. The species loses the $k$-mer, and it loses it to a
-    genome that carries no name to be told apart from.
-
-    The databases reported here therefore leave such branches out of both the database and the update.\footnote{Two kinds of node that look similar must be kept in, and the criterion is what
-    they contain rather than what they are called: an \emph{incertae sedis} node holds \emph{named}
-    species whose placement is unsettled --- \emph{Trypanosoma theileri} and \emph{Plasmodium simium}
-    --- and in \texttt{cv} every one of the \num{826} species below such buckets carries a name, because
-    in virus taxonomy \emph{unclassified} usually marks a genus that is not yet subdivided. Excluding
-    those would delete content, not filler.}
-    What would otherwise sit in them is substantial: nine buckets in \texttt{tb} holding \num{349}
-    unnamed species and \num{24}\,\% of that database, one in \texttt{nocardia} holding \num{287} and
-    \num{40}\,\%, four in \texttt{protozoa} holding \num{4}\,\%. The gain is real but small --- on
-    \texttt{protozoa}, where two genera have exactly one unnamed neighbour each, $\widehat{\mathit{sprec}}$ of
-    the unrefined database rises from $0.254$ to $0.287$ for \emph{Cryptosporidium} and from $0.234$ to
-    $0.259$ for \emph{Babesia}.
+    A refinement can only move $k$-mers from an unrefined node $n$ down to nodes newly entered below $n$. Below a genus, the NCBI taxonomy
+    commonly places a bucket of genomes it cannot assign to a species, named \emph{unclassified} after
+    that genus, and thus a $k$-mer that a named species shares with one of them has its LCA at the
+    \emph{genus} --- even after refinement. The
+    databases reported here therefore leave \enquote{unclassified} branches out of both the database and the
+    update, which in \texttt{tb} means nine buckets holding \num{349}
+    unnamed species and \num{24}\,\% of that database, and in \texttt{nocardia} one holding \num{287}
+    and \num{40}\,\%. The exception is \texttt{cv}, where every one of the \num{826} species below such
+    buckets carries a name, because in virus taxonomy \emph{unclassified} usually marks a genus that is
+    not yet subdivided, so excluding those would delete content, not filler.
 
     \subsection{Classification quality}\label{classificationquality}
 
@@ -1199,7 +1190,7 @@ Since a refined database is always generated \emph{on top of} an existing, unref
 
 As can be seen, the refinement costs less than the generation it builds upon for \texttt{cv} (46 \%), \texttt{protozoa} (47 \%), \texttt{parasites} (81 \%) and \texttt{tb} (89 \%), and more for \texttt{strepto} (141 \%) and \texttt{nocardia} (174 \%). That the two stay within the same order of magnitude follows from the goal \verb|kmerindexbloom|, which rereads all original sequences and so repeats the most expensive pass of the generation. What the refinement adds on top is the clustering and the update, whose cost grows with the number of species a genus holds: \texttt{strepto} and \texttt{nocardia} consist of a single genus with \num[group-separator={,},group-minimum-digits=4]{\dbstat{species}{strepto}} and \num{\dbstat{species}{nocardia}} taxa at the species rank and below, so each of their $k$-mers is tested against the most subtrees.
 Regarding main memory, the refinement holds the $k$-mer store and that Bloom filter at the same time, so the ratio states the size of the filter against the peak of the generation rather than the size of the database. It stays below where voluminous genomes were read for comparatively few species --- \texttt{protozoa} with 63 \%, \texttt{parasites} with 64 \%, \texttt{cv} with 71 \% and \texttt{nocardia} with 83 \% --- and exceeds it where that peak was modest: \texttt{strepto} with 123 \% and \texttt{tb} with 126 \%, whose lean bacterial genomes make for the cheapest generation of the six.
-Most notably, the refinement is almost for free in terms of disk space: a refined database is at most 3.5 \% larger than the corresponding unrefined one. This is because the refinement does not add any $k$-mers to the database --- it only reassigns them and adds a comparatively small number of new tree nodes.
+Most notably, the refinement is almost for free in terms of disk space: a refined database is at most 3.5 \% larger than the corresponding unrefined one, and that growth comes from the new tree nodes alone.
 
    \begin{table}[!htbp]
         \centering
@@ -1233,7 +1224,7 @@ Most notably, the refinement is almost for free in terms of disk space: a refine
 
 A refinement is only worthwhile if the resulting database can be used at no extra cost. We therefore classified the simulated fastq files of Section \ref{simreads} once against the unrefined and once against the refined database and measured wall time and maximum RAM of each run, as reported in Table \ref{matchperf}. Each variant was run in its own process, and separately from the quality measurements of Section \ref{classificationquality}, whose per-read scoring against the ground truth would otherwise be counted as classification work.
 
-There is little reason to expect a difference, and the saliva runs of Table \ref{matchperf} confirm it: $28.40$ minutes against $27.16$ and \num{6756} MB against \num{5977}, the refined variant marginally ahead of the unrefined one on both. Classifying a read amounts to looking up its $k$-mers in the store and aggregating the taxa they carry, and the refinement changes neither of the two: it stores exactly the same $k$-mers, merely under different nodes, and it leaves the store's data structure and its access path untouched. What it does change is the taxonomy tree the aggregation runs over, which gains the refined nodes --- some thirteen thousand entries at most, against hundreds of millions of $k$-mers, and it grows the database on disk by at most 3.5 \% (Section \ref{refinementperformance}). Memory follows the same argument, since the store dominates what a classification run holds.
+There is little reason to expect a difference, and the saliva runs of Table \ref{matchperf} confirm it: $28.40$ minutes against $27.16$ and \num{6756} MB against \num{5977}, the refined variant marginally ahead of the unrefined one on both. Classifying a read amounts to looking up its $k$-mers in the store and aggregating the taxa they carry, and the refinement changes neither of the two: it leaves the stored $k$-mers, the store's data structure and its access path untouched. What it does change is the taxonomy tree the aggregation runs over, which gains the refined nodes --- some thirteen thousand entries at most, against hundreds of millions of $k$-mers, and it grows the database on disk by at most 3.5 \% (Section \ref{refinementperformance}). Memory follows the same argument, since the store dominates what a classification run holds.
 
 Two effects nevertheless deserve attention when reading the table. First, the refined taxonomy is deeper, so aggregating the taxa of a read's $k$-mers may traverse a slightly longer path. Second, a read that the unrefined database leaves at a genus is assigned to a refined node instead, which is a different result but not a more expensive one to arrive at.
 
