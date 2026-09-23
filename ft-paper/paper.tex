@@ -819,7 +819,7 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
 
     Every measurement of this section is made on the basis of the six databases of Table \ref{dbdesc}. The first covers the entire RefSeq category \enquote{Viral}, the second twelve tick-borne bacterial genera, the next two a single bacterial genus each, and the last two form comprehensive collections of human-pathogenic protozoa and invertebrates.
 
-    Table \ref{dbsp} presents the subtree precision according to Section \ref{subtreeprecision}. In all cases the refinement raises $\mathit{sprec}$ at the root, and it does so most where the database is densest with close relatives: from \sprecpair[2]{nocardia/root} for \texttt{nocardia}, whose single genus holds \dbstat{species}{nocardia} taxa at the species rank and below, against \sprecpair{parasites/root} for \texttt{parasites}, whose \dbstat{species}{parasites} invertebrate taxa share few $k$-mers to begin with. The genus rows show the same ordering, with the largest gains where a genus carries many closely related species.\footnote{Three entries move the other way, all by $10^{-3}$ at most and all already close to one: Toxoplasma ($\mathit{sprec}$ \sprecpair[5]{protozoa/Toxoplasma}, $\widehat{\mathit{sprec}}$ \sprecpairx{protozoa/Toxoplasma}) and Necator (\sprecpair[5]{parasites/Necator}). By the argument of Section \ref{subtreeprecision} a refinement can lower neither measure, since it neither changes $C(b)$ nor enlarges $D(\nu(b))$ for any $k$-mer. The cause lies in the measurement: the underlying goal deduplicates its counts through a probabilistic Bloom filter, whose occasional false positive discards a genuine one. This is a similar effect to the one Section \ref{dbrefinement} notes for the $k$-mer counts of Figure \ref{simplerefdbtrans}. A decrease of this size therefore constitutes noise rather than a counterexample.}
+    Table \ref{dbsp} presents the subtree precision according to Section \ref{subtreeprecision}. In all cases the refinement raises $\mathit{sprec}$ at the root, and it does so most where the database is densest with close relatives: from \sprecpair[2]{nocardia/root} for \texttt{nocardia}, whose single genus holds \dbstat{species}{nocardia} taxa at the species rank and below, against \sprecpair[2]{parasites/root} for \texttt{parasites}, whose \dbstat{species}{parasites} invertebrate taxa share few $k$-mers to begin with. The genus rows show the same ordering, with the largest gains where a genus carries many closely related species.\footnote{Differences at the third decimal are noise, since the underlying goal deduplicates its counts through a Bloom filter, as Section \ref{dbrefinement} notes for the $k$-mer counts of Figure \ref{simplerefdbtrans}; Table \ref{dbsp} therefore reports two decimals.} The last column bounds what a refinement can achieve, since only the $k$-mers above the data taxa can move at all. $\widehat{\mathit{sprec}}_m$ measures against that share alone and therefore rises much further.
 
      \begin{table}[!htbp]
         \centering
@@ -842,53 +842,53 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
     
        \begin{table}[!htbp]
         \centering
-\sisetup{table-alignment-mode = format, table-number-alignment = center, table-format = 1.4, round-mode = places, round-precision = 4}
+\sisetup{table-alignment-mode = format, table-number-alignment = center, table-format = 1.2, round-mode = places, round-precision = 2}
         \setlength{\tabcolsep}{4pt}
-        \begin{tabular}{c|c|S|S|S|S}
-\textbf{Database} & \textbf{Root / Genus $m$}&\textbf{$\mathit{sprec}^u_m$}&\textbf{$\mathit{sprec}^f_m$}&\textbf{$\widehat{\mathit{sprec}}^u_m$}&\textbf{$\widehat{\mathit{sprec}}^f_m$}\\
+        \begin{tabular}{c|c|S|S|S|S|S[table-format=2.1, round-precision=1]}
+\textbf{Database} & \textbf{Root / Genus $m$}&\textbf{$\mathit{sprec}^u_m$}&\textbf{$\mathit{sprec}^f_m$}&\textbf{$\widehat{\mathit{sprec}}^u_m$}&\textbf{$\widehat{\mathit{sprec}}^f_m$}&\multicolumn{1}{c}{\textbf{\shortstack{$|\widehat{\mathcal{A}}_m|/|\mathcal{A}_m|$\\in \%}}}\\
           \hline
-            \multirow{7}{*}{\texttt{cv}} & \rule{0pt}{2.6ex}\emph{root} & \dbstat{spu}{viral/root} & \dbstat{spf}{viral/root} & \dbstat{spux}{viral/root} & \dbstat{spfx}{viral/root}\\
-          \cmidrule{2-6}
-            & Pandoravirus & \dbstat{spu}{viral/Pandoravirus} & \dbstat{spf}{viral/Pandoravirus} & \dbstat{spux}{viral/Pandoravirus} & \dbstat{spfx}{viral/Pandoravirus}\\
-            & Alphabaculovirus & \dbstat{spu}{viral/Alphabaculovirus} & \dbstat{spf}{viral/Alphabaculovirus} & \dbstat{spux}{viral/Alphabaculovirus} & \dbstat{spfx}{viral/Alphabaculovirus}\\
-            & Megavirus & \dbstat{spu}{viral/Megavirus} & \dbstat{spf}{viral/Megavirus} & \dbstat{spux}{viral/Megavirus} & \dbstat{spfx}{viral/Megavirus}\\
-            & Moumouvirus & \dbstat{spu}{viral/Moumouvirus} & \dbstat{spf}{viral/Moumouvirus} & \dbstat{spux}{viral/Moumouvirus} & \dbstat{spfx}{viral/Moumouvirus}\\
-            & Betabaculovirus & \dbstat{spu}{viral/Betabaculovirus} & \dbstat{spf}{viral/Betabaculovirus} & \dbstat{spux}{viral/Betabaculovirus} & \dbstat{spfx}{viral/Betabaculovirus}\\
-            & Orthopoxvirus & \dbstat{spu}{viral/Orthopoxvirus} & \dbstat{spf}{viral/Orthopoxvirus} & \dbstat{spux}{viral/Orthopoxvirus} & \dbstat{spfx}{viral/Orthopoxvirus}\\
+            \multirow{7}{*}{\texttt{cv}} & \rule{0pt}{2.6ex}\emph{root} & \dbstat{spu}{viral/root} & \dbstat{spf}{viral/root} & \dbstat{spux}{viral/root} & \dbstat{spfx}{viral/root} & \dbstat{above}{viral/root}\\
+          \cmidrule{2-7}
+            & Pandoravirus & \dbstat{spu}{viral/Pandoravirus} & \dbstat{spf}{viral/Pandoravirus} & \dbstat{spux}{viral/Pandoravirus} & \dbstat{spfx}{viral/Pandoravirus} & \dbstat{above}{viral/Pandoravirus}\\
+            & Alphabaculovirus & \dbstat{spu}{viral/Alphabaculovirus} & \dbstat{spf}{viral/Alphabaculovirus} & \dbstat{spux}{viral/Alphabaculovirus} & \dbstat{spfx}{viral/Alphabaculovirus} & \dbstat{above}{viral/Alphabaculovirus}\\
+            & Megavirus & \dbstat{spu}{viral/Megavirus} & \dbstat{spf}{viral/Megavirus} & \dbstat{spux}{viral/Megavirus} & \dbstat{spfx}{viral/Megavirus} & \dbstat{above}{viral/Megavirus}\\
+            & Moumouvirus & \dbstat{spu}{viral/Moumouvirus} & \dbstat{spf}{viral/Moumouvirus} & \dbstat{spux}{viral/Moumouvirus} & \dbstat{spfx}{viral/Moumouvirus} & \dbstat{above}{viral/Moumouvirus}\\
+            & Betabaculovirus & \dbstat{spu}{viral/Betabaculovirus} & \dbstat{spf}{viral/Betabaculovirus} & \dbstat{spux}{viral/Betabaculovirus} & \dbstat{spfx}{viral/Betabaculovirus} & \dbstat{above}{viral/Betabaculovirus}\\
+            & Orthopoxvirus & \dbstat{spu}{viral/Orthopoxvirus} & \dbstat{spf}{viral/Orthopoxvirus} & \dbstat{spux}{viral/Orthopoxvirus} & \dbstat{spfx}{viral/Orthopoxvirus} & \dbstat{above}{viral/Orthopoxvirus}\\
           \hline
-            \multirow{6}{*}{\texttt{tb}} & \rule{0pt}{2.6ex}\emph{root} & \dbstat{spu}{tick-borne/root} & \dbstat{spf}{tick-borne/root} & \dbstat{spux}{tick-borne/root} & \dbstat{spfx}{tick-borne/root}\\
-          \cmidrule{2-6}
-            & Bartonella & \dbstat{spu}{tick-borne/Bartonella} & \dbstat{spf}{tick-borne/Bartonella} & \dbstat{spux}{tick-borne/Bartonella} & \dbstat{spfx}{tick-borne/Bartonella}\\
-            & Mycoplasma & \dbstat{spu}{tick-borne/Mycoplasma} & \dbstat{spf}{tick-borne/Mycoplasma} & \dbstat{spux}{tick-borne/Mycoplasma} & \dbstat{spfx}{tick-borne/Mycoplasma}\\
-            & Francisella & \dbstat{spu}{tick-borne/Francisella} & \dbstat{spf}{tick-borne/Francisella} & \dbstat{spux}{tick-borne/Francisella} & \dbstat{spfx}{tick-borne/Francisella}\\
-            & Rickettsia & \dbstat{spu}{tick-borne/Rickettsia} & \dbstat{spf}{tick-borne/Rickettsia} & \dbstat{spux}{tick-borne/Rickettsia} & \dbstat{spfx}{tick-borne/Rickettsia}\\
-            & Chlamydia & \dbstat{spu}{tick-borne/Chlamydia} & \dbstat{spf}{tick-borne/Chlamydia} & \dbstat{spux}{tick-borne/Chlamydia} & \dbstat{spfx}{tick-borne/Chlamydia}\\
+            \multirow{6}{*}{\texttt{tb}} & \rule{0pt}{2.6ex}\emph{root} & \dbstat{spu}{tick-borne/root} & \dbstat{spf}{tick-borne/root} & \dbstat{spux}{tick-borne/root} & \dbstat{spfx}{tick-borne/root} & \dbstat{above}{tick-borne/root}\\
+          \cmidrule{2-7}
+            & Bartonella & \dbstat{spu}{tick-borne/Bartonella} & \dbstat{spf}{tick-borne/Bartonella} & \dbstat{spux}{tick-borne/Bartonella} & \dbstat{spfx}{tick-borne/Bartonella} & \dbstat{above}{tick-borne/Bartonella}\\
+            & Mycoplasma & \dbstat{spu}{tick-borne/Mycoplasma} & \dbstat{spf}{tick-borne/Mycoplasma} & \dbstat{spux}{tick-borne/Mycoplasma} & \dbstat{spfx}{tick-borne/Mycoplasma} & \dbstat{above}{tick-borne/Mycoplasma}\\
+            & Francisella & \dbstat{spu}{tick-borne/Francisella} & \dbstat{spf}{tick-borne/Francisella} & \dbstat{spux}{tick-borne/Francisella} & \dbstat{spfx}{tick-borne/Francisella} & \dbstat{above}{tick-borne/Francisella}\\
+            & Rickettsia & \dbstat{spu}{tick-borne/Rickettsia} & \dbstat{spf}{tick-borne/Rickettsia} & \dbstat{spux}{tick-borne/Rickettsia} & \dbstat{spfx}{tick-borne/Rickettsia} & \dbstat{above}{tick-borne/Rickettsia}\\
+            & Chlamydia & \dbstat{spu}{tick-borne/Chlamydia} & \dbstat{spf}{tick-borne/Chlamydia} & \dbstat{spux}{tick-borne/Chlamydia} & \dbstat{spfx}{tick-borne/Chlamydia} & \dbstat{above}{tick-borne/Chlamydia}\\
           \hline
-            \multirow{2}{*}{\texttt{strepto}} & \rule{0pt}{2.6ex}\emph{root} & \dbstat{spu}{strepto/root} & \dbstat{spf}{strepto/root} & \dbstat{spux}{strepto/root} & \dbstat{spfx}{strepto/root}\\
-          \cmidrule{2-6}
-            & Streptococcus & \dbstat{spu}{strepto/Streptococcus} & \dbstat{spf}{strepto/Streptococcus} & \dbstat{spux}{strepto/Streptococcus} & \dbstat{spfx}{strepto/Streptococcus}\\
+            \multirow{2}{*}{\texttt{strepto}} & \rule{0pt}{2.6ex}\emph{root} & \dbstat{spu}{strepto/root} & \dbstat{spf}{strepto/root} & \dbstat{spux}{strepto/root} & \dbstat{spfx}{strepto/root} & \dbstat{above}{strepto/root}\\
+          \cmidrule{2-7}
+            & Streptococcus & \dbstat{spu}{strepto/Streptococcus} & \dbstat{spf}{strepto/Streptococcus} & \dbstat{spux}{strepto/Streptococcus} & \dbstat{spfx}{strepto/Streptococcus} & \dbstat{above}{strepto/Streptococcus}\\
           \hline
-            \multirow{2}{*}{\texttt{nocardia}} & \rule{0pt}{2.6ex}\emph{root} & \dbstat{spu}{nocardia/root} & \dbstat{spf}{nocardia/root} & \dbstat{spux}{nocardia/root} & \dbstat{spfx}{nocardia/root}\\
-          \cmidrule{2-6}
-            & Nocardia & \dbstat{spu}{nocardia/Nocardia} & \dbstat{spf}{nocardia/Nocardia} & \dbstat{spux}{nocardia/Nocardia} & \dbstat{spfx}{nocardia/Nocardia}\\
+            \multirow{2}{*}{\texttt{nocardia}} & \rule{0pt}{2.6ex}\emph{root} & \dbstat{spu}{nocardia/root} & \dbstat{spf}{nocardia/root} & \dbstat{spux}{nocardia/root} & \dbstat{spfx}{nocardia/root} & \dbstat{above}{nocardia/root}\\
+          \cmidrule{2-7}
+            & Nocardia & \dbstat{spu}{nocardia/Nocardia} & \dbstat{spf}{nocardia/Nocardia} & \dbstat{spux}{nocardia/Nocardia} & \dbstat{spfx}{nocardia/Nocardia} & \dbstat{above}{nocardia/Nocardia}\\
           \hline
-            \multirow{6}{*}{\texttt{protozoa}} & \rule{0pt}{2.6ex}\emph{root} & \dbstat{spu}{protozoa/root} & \dbstat{spf}{protozoa/root} & \dbstat{spux}{protozoa/root} & \dbstat{spfx}{protozoa/root}\\
-          \cmidrule{2-6}
-            & Plasmodium & \dbstat{spu}{protozoa/Plasmodium} & \dbstat{spf}{protozoa/Plasmodium} & \dbstat{spux}{protozoa/Plasmodium} & \dbstat{spfx}{protozoa/Plasmodium}\\
-            & Leishmania & \dbstat{spu}{protozoa/Leishmania} & \dbstat{spf}{protozoa/Leishmania} & \dbstat{spux}{protozoa/Leishmania} & \dbstat{spfx}{protozoa/Leishmania}\\
-            & Toxoplasma & \dbstat{spu}{protozoa/Toxoplasma} & \dbstat{spf}{protozoa/Toxoplasma} & \dbstat{spux}{protozoa/Toxoplasma} & \dbstat{spfx}{protozoa/Toxoplasma}\\
-            & Babesia & \dbstat{spu}{protozoa/Babesia} & \dbstat{spf}{protozoa/Babesia} & \dbstat{spux}{protozoa/Babesia} & \dbstat{spfx}{protozoa/Babesia}\\
-            & Trypanosoma & \dbstat{spu}{protozoa/Trypanosoma} & \dbstat{spf}{protozoa/Trypanosoma} & \dbstat{spux}{protozoa/Trypanosoma} & \dbstat{spfx}{protozoa/Trypanosoma}\\
+            \multirow{6}{*}{\texttt{protozoa}} & \rule{0pt}{2.6ex}\emph{root} & \dbstat{spu}{protozoa/root} & \dbstat{spf}{protozoa/root} & \dbstat{spux}{protozoa/root} & \dbstat{spfx}{protozoa/root} & \dbstat{above}{protozoa/root}\\
+          \cmidrule{2-7}
+            & Plasmodium & \dbstat{spu}{protozoa/Plasmodium} & \dbstat{spf}{protozoa/Plasmodium} & \dbstat{spux}{protozoa/Plasmodium} & \dbstat{spfx}{protozoa/Plasmodium} & \dbstat{above}{protozoa/Plasmodium}\\
+            & Leishmania & \dbstat{spu}{protozoa/Leishmania} & \dbstat{spf}{protozoa/Leishmania} & \dbstat{spux}{protozoa/Leishmania} & \dbstat{spfx}{protozoa/Leishmania} & \dbstat{above}{protozoa/Leishmania}\\
+            & Toxoplasma & \dbstat{spu}{protozoa/Toxoplasma} & \dbstat{spf}{protozoa/Toxoplasma} & \dbstat{spux}{protozoa/Toxoplasma} & \dbstat{spfx}{protozoa/Toxoplasma} & \dbstat{above}{protozoa/Toxoplasma}\\
+            & Babesia & \dbstat{spu}{protozoa/Babesia} & \dbstat{spf}{protozoa/Babesia} & \dbstat{spux}{protozoa/Babesia} & \dbstat{spfx}{protozoa/Babesia} & \dbstat{above}{protozoa/Babesia}\\
+            & Trypanosoma & \dbstat{spu}{protozoa/Trypanosoma} & \dbstat{spf}{protozoa/Trypanosoma} & \dbstat{spux}{protozoa/Trypanosoma} & \dbstat{spfx}{protozoa/Trypanosoma} & \dbstat{above}{protozoa/Trypanosoma}\\
           \hline
-            \multirow{6}{*}{\texttt{parasites}} & \rule{0pt}{2.6ex}\emph{root} & \dbstat{spu}{parasites/root} & \dbstat{spf}{parasites/root} & \dbstat{spux}{parasites/root} & \dbstat{spfx}{parasites/root}\\
-          \cmidrule{2-6}
-            & Schistosoma & \dbstat{spu}{parasites/Schistosoma} & \dbstat{spf}{parasites/Schistosoma} & \dbstat{spux}{parasites/Schistosoma} & \dbstat{spfx}{parasites/Schistosoma}\\
-            & Necator & \dbstat{spu}{parasites/Necator} & \dbstat{spf}{parasites/Necator} & \dbstat{spux}{parasites/Necator} & \dbstat{spfx}{parasites/Necator}\\
-            & Echinococcus & \dbstat{spu}{parasites/Echinococcus} & \dbstat{spf}{parasites/Echinococcus} & \dbstat{spux}{parasites/Echinococcus} & \dbstat{spfx}{parasites/Echinococcus}\\
-            & Paragonimus & \dbstat{spu}{parasites/Paragonimus} & \dbstat{spf}{parasites/Paragonimus} & \dbstat{spux}{parasites/Paragonimus} & \dbstat{spfx}{parasites/Paragonimus}\\
-            & Toxocara & \dbstat{spu}{parasites/Toxocara} & \dbstat{spf}{parasites/Toxocara} & \dbstat{spux}{parasites/Toxocara} & \dbstat{spfx}{parasites/Toxocara}\\
+            \multirow{6}{*}{\texttt{parasites}} & \rule{0pt}{2.6ex}\emph{root} & \dbstat{spu}{parasites/root} & \dbstat{spf}{parasites/root} & \dbstat{spux}{parasites/root} & \dbstat{spfx}{parasites/root} & \dbstat{above}{parasites/root}\\
+          \cmidrule{2-7}
+            & Schistosoma & \dbstat{spu}{parasites/Schistosoma} & \dbstat{spf}{parasites/Schistosoma} & \dbstat{spux}{parasites/Schistosoma} & \dbstat{spfx}{parasites/Schistosoma} & \dbstat{above}{parasites/Schistosoma}\\
+            & Necator & \dbstat{spu}{parasites/Necator} & \dbstat{spf}{parasites/Necator} & \dbstat{spux}{parasites/Necator} & \dbstat{spfx}{parasites/Necator} & \dbstat{above}{parasites/Necator}\\
+            & Echinococcus & \dbstat{spu}{parasites/Echinococcus} & \dbstat{spf}{parasites/Echinococcus} & \dbstat{spux}{parasites/Echinococcus} & \dbstat{spfx}{parasites/Echinococcus} & \dbstat{above}{parasites/Echinococcus}\\
+            & Paragonimus & \dbstat{spu}{parasites/Paragonimus} & \dbstat{spf}{parasites/Paragonimus} & \dbstat{spux}{parasites/Paragonimus} & \dbstat{spfx}{parasites/Paragonimus} & \dbstat{above}{parasites/Paragonimus}\\
+            & Toxocara & \dbstat{spu}{parasites/Toxocara} & \dbstat{spf}{parasites/Toxocara} & \dbstat{spux}{parasites/Toxocara} & \dbstat{spfx}{parasites/Toxocara} & \dbstat{above}{parasites/Toxocara}\\
         \end{tabular}
-         \caption{Subtree precision for the databases of Table \ref{dbdesc}, with $\mathit{sprec}_m$ and $\widehat{\mathit{sprec}}_m$ as defined in Section \ref{subtreeprecision} and the variants $u$ and $f$ as in Section \ref{classmeasures}. The five genera with the largest $|\mathcal{A}_m|$ are shown in decreasing order of $|\mathcal{A}_m|$, for \texttt{cv} with Orthopoxvirus added as the running example of Section \ref{dbrefinement}, and for \texttt{strepto} and \texttt{nocardia} the single genus each of them holds. Being a selection, the genus rows do not average to the \emph{root} row above them. The $k$-mers that $\widehat{\mathcal{A}}_m$ leaves out amount to \dbstat{leafshare}{viral}\,\% of \texttt{cv}, \dbstat{leafshare}{tick-borne}\,\% of \texttt{tb}, \dbstat{leafshare}{strepto}\,\% of \texttt{strepto}, \dbstat{leafshare}{nocardia}\,\% of \texttt{nocardia}, \dbstat{leafshare}{protozoa}\,\% of \texttt{protozoa} and \dbstat{leafshare}{parasites}\,\% of \texttt{parasites}, so $\widehat{\mathit{sprec}}$ rests on a correspondingly small part of each database, for \texttt{parasites} on well under one percent of it.}\label{dbsp}
+         \caption{Subtree precision for the databases of Table \ref{dbdesc}, with $\mathit{sprec}_m$ and $\widehat{\mathit{sprec}}_m$ as defined in Section \ref{subtreeprecision} and the variants $u$ and $f$ as in Section \ref{classmeasures}. The five genera with the largest $|\mathcal{A}_m|$ are shown in decreasing order of $|\mathcal{A}_m|$, for \texttt{cv} with Orthopoxvirus added as the running example of Section \ref{dbrefinement}, and for \texttt{strepto} and \texttt{nocardia} the single genus each of them holds. Being a selection, the genus rows do not average to the \emph{root} row above them. The last column gives $|\widehat{\mathcal{A}}_m|$ as a percentage of $|\mathcal{A}_m|$, i.e.\ the part of the subtree a refinement can still move and the one $\widehat{\mathit{sprec}}_m$ averages over.}\label{dbsp}
     \end{table}      
 
     A refinement can only move $k$-mers from an unrefined node $n$ down to nodes newly entered below $n$. Below a genus, the NCBI taxonomy
