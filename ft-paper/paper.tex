@@ -904,19 +904,15 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
 
     \subsection{Classification quality}\label{classificationquality}
 
-    The measures of Section \ref{intrinsicqms} assess a database as such. We now turn to what the refinement means for the analysis of actual reads, using simulated fastq files whose ground truth is known by construction. The measures themselves are those of Section \ref{classmeasures}, together with the estimate of Section \ref{groundtruthfree} that a sample \emph{without} known ground truth still admits; Sections \ref{simreads} and \ref{realreads} describe the simulated data and the real sequencing runs they are applied to.
+    We present the effect of refinement on read classification quality and start with simulated fastq files whose ground truth is known by construction. Based on the measures from Section \ref{groundtruthfree} we are also able to estimate the precision gain of a refinement for real-world data with missing ground truth.
 
 %
 
     \subsubsection{Simulated read data}\label{simreads}
 
-    Following the first study on Genestrip \citep{genestrip-pub}, the simulated reads are produced with InSilicoSeq \citep{10.1093/bioinformatics/bty630}. Its two Illumina error models \enquote{MiSeq} and \enquote{HiSeq} are applied to exactly the genomes the database under consideration was built from, extracted by the goal \texttt{extractrefseqcsv}, yielding one pair of paired-end fastq files with one million reads per model. The models differ in read length as well as in error profile: InSilicoSeq emits 301 base pairs per mate for \enquote{MiSeq} and 126 for \enquote{HiSeq}.
+    Following the first study on Genestrip \citep{genestrip-pub}, the simulated reads are produced with InSilicoSeq \citep{10.1093/bioinformatics/bty630}. Its two Illumina error models \enquote{MiSeq} and \enquote{HiSeq} are applied to exactly the genomes the database under consideration was built from, yielding one pair of paired-end fastq files with one million reads per model. The models differ in read length as well as in error profile: InSilicoSeq emits 301 base pairs per mate for \enquote{MiSeq} and 126 for \enquote{HiSeq}. Table \ref{simdata} characterises the simulated fastq files generated for the evaluation, where the top four are based on InSilicoSeq and the database \texttt{cv}.
 
-    The ground truth follows from how InSilicoSeq names its reads: each read carries the accession of the fasta record it was drawn from, which Genestrip's accession map resolves to a taxon. A read whose accession cannot be resolved is reported as \emph{unresolved} and excluded from every count, in line with Section \ref{classmeasures}; no read of the sets used here is unresolved, and a number substantially above zero would point at a mismatch between the reads and the accession map rather than at a property of the database.
-
-    A read counts towards $R$ only if its true taxon lies at or below a taxon that the database explicitly requests. Drawn as they now are, every read meets that condition, so $|R|$ equals the number of simulated reads throughout Table \ref{simdata}. Earlier read sets were drawn from an entire RefSeq category and a large part of them fell outside what a database covers.
-
-    Besides \texttt{cv} we use \texttt{tb} from Table \ref{dbdesc} as the second database here. The two complement each other in the respect the refinement is about: \texttt{cv} is large and taxonomically broad, whereas \texttt{tb} is dense with close relatives --- twelve bacterial genera holding \dbstat{species}{tick-borne} taxa at the species rank and below --- which is the regime in which the LCA update strands the most $k$-mers above the species and a refinement therefore has the most to recover.
+    The remaining sets are produced with NanoSim \citep{10.1093/gigascience/gix010,10.1093/gigascience/giad013}, as in the first study on Genestrip: it trains a model of read length and error profile on a real nanopore run, aligned against the genomes that run was sequenced from, and then draws reads from the genomes of the database under consideration with that model. For \texttt{tb} one model is trained per tick run of \citep{nanoporeticks}, so that each simulated set carries the characteristics of the sample it is read against in Section \ref{realreads}; for \texttt{strepto} a single model is trained on a cross-section of the clinical nanopore runs of Section \ref{streptocase}.
 
 
 
