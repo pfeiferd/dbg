@@ -202,8 +202,8 @@
 \IfFileExists{#2}{%
 \csvreader[no head, separator=semicolon, late after line=\\,
            filter test=\ifnumgreater{\thecsvinputline}{1}]{#2}{}%
-{\texttt{#1} & \csvcolii & \csvcoliii & \fpeval{round(100 * \csvcoliv / \csvcoliii, 3)} & \csvcolvi & \csvcolvii & \csvcolviii & \csvcolix & \csvcolxii & \csvcolxiii}%
-}{\texttt{#1} & {---} & {---} & {---} & {---} & {---} & {---} & {---} & {---} & {---}\\}%
+{\texttt{#1} & \csvcolii & \csvcoliii & \fpeval{round(100 * \csvcoliv / \csvcoliii, 3)} & \csvcolvi & \csvcolvii & \csvcolviii & \csvcolix & \csvcolxii & \csvcolxiii & \fpeval{round(\csvcolxiii / \csvcolxii, 2)}}%
+}{\texttt{#1} & {---} & {---} & {---} & {---} & {---} & {---} & {---} & {---} & {---} & {---}\\}%
 }
 
 % One aggregated row of Table \ref{realgain}, read from the macros paper_stats.sh writes rather
@@ -215,7 +215,7 @@
 \texttt{#1} & #2 &
 \dbstat{rg}{#3/#4groupreads} & \fpeval{round(100 * \dbstat{rg}{#3/#4groupclassified} / \dbstat{rg}{#3/#4groupreads}, 3)} & \dbstat{rg}{#3/#4subset} &
 \dbstat{rg}{#3/#4groupshare} & \dbstat{rg}{#3/#4precu} & \dbstat{rg}{#3/#4precf} &
-\dbstat{rg}{#3/#4estu} & \dbstat{rg}{#3/#4estf}\\}
+\dbstat{rg}{#3/#4estu} & \dbstat{rg}{#3/#4estf} & \fpeval{round(\dbstat{rg}{#3/#4estf} / \dbstat{rg}{#3/#4estu}, 2)}\\}
 
 % One row of Table \ref{nearestnode}: the samples of one currency and one database variant, bucketed
 % by how many species the node their evidence stopped at still leaves open. #1 = currency, #2 =
@@ -942,9 +942,7 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
             \simdatarows{tb}{results/tick-borne_nanosim_simdata.csv}
             \hline
             \simdatarows{strepto}{results/strepto_nanosim_simdata.csv}
-% The saliva-like set for `strepto' has not been generated yet -- the row would be all em-dashes.
-% Uncomment once results/strepto_iss_saliva_simdata.csv exists.
-%            \simdatarows{strepto}{results/strepto_iss_saliva_simdata.csv}
+            \simdatarows{strepto}{results/strepto_iss_saliva_simdata.csv}
         \end{tabular}
         \caption{The simulated fastq files underlying Tables \ref{classquality} and \ref{genusonly}. Reads are drawn from the genomes the database itself was built from, so every read lies within its scope. Read lengths are per mate, and each mate counts as a read of its own.}\label{simdata}
     \end{table}
@@ -991,9 +989,7 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
             \boolqualityrows{tb}{results/tick-borne_nanosim_quality.csv}
             \hline
             \boolqualityrows{strepto}{results/strepto_nanosim_quality.csv}
-% Pending the `strepto' run on the saliva data -- the row would be all em-dashes.
-% Uncomment once results/strepto_iss_saliva_quality.csv exists.
-%            \boolqualityrows{strepto}{results/strepto_iss_saliva_quality.csv}
+            \boolqualityrows{strepto}{results/strepto_iss_saliva_quality.csv}
         \end{tabular}}\vspace{10pt}
         \centerline{\textbf{(b) Candidate-weighted ($q$)}}\vspace{3pt}
         \centerline{%
@@ -1013,9 +1009,7 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
             \candqualityrows{tb}{results/tick-borne_nanosim_quality.csv}
             \hline
             \candqualityrows{strepto}{results/strepto_nanosim_quality.csv}
-% Pending the `strepto' run on the saliva data -- the row would be all em-dashes.
-% Uncomment once results/strepto_iss_saliva_quality.csv exists.
-%            \candqualityrows{strepto}{results/strepto_iss_saliva_quality.csv}
+            \candqualityrows{strepto}{results/strepto_iss_saliva_quality.csv}
         \end{tabular}}
         \end{minipage}
         \caption{Read classification quality of the unrefined ($u$) and the refined ($f$) database for the simulated fastq files of Table \ref{simdata}, one row per read set. (a) gives the boolean counts at the genus and at the species rank, with precision and recall for the unrefined variant alone: Section \ref{simreads} explains the omission, which is that these columns are all but identical between the two variants; (b) the candidate-weighted species count of Section \ref{classmeasures} as precision, recall and $F_1$ for both variants.}\label{classquality}
@@ -1046,9 +1040,7 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
             \gainrows{tb}{results/tick-borne_nanosim_summary.csv}
             \hline
             \gainrows{strepto}{results/strepto_nanosim_summary.csv}
-% Pending the `strepto' run on the saliva data -- the row would be all em-dashes.
-% Uncomment once results/strepto_iss_saliva_summary.csv exists.
-%            \gainrows{strepto}{results/strepto_iss_saliva_summary.csv}
+            \gainrows{strepto}{results/strepto_iss_saliva_summary.csv}
         \end{tabular}
         \caption{The candidate-weighted species precision restricted to the reads a refinement can improve on at all, one row per read set of Table \ref{simdata}. The left block is the gated precision of Section \ref{classmeasures}, taken over $R^u_g$; the right one the ungated precision of Section \ref{groundtruthfree}, taken over $\widetilde{R}^u_g$, which a fastq file without ground truth admits as well. The last two columns give the factors $\rho^v_d(s)$ between them, one pair per row since they depend on the database $d$ and the read set $s$ alike.}\label{genusonly}
     \end{table}
@@ -1062,6 +1054,8 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
     Table \ref{realgain} reports the classification results for the refined and unrefined cases. On the tick samples the unrefined \texttt{tb} database leaves up to $1.8$ percent of the classified reads at a genus. Over that subset the refinement raises $\widetilde{\mathit{prec}}^v_g$ from $0.033$ to $0.153$ at most, a factor of three to four, and $\mathit{prec}^{v}_g{}'$ from $0.029$ to $0.148$. The estimated precision stays visibly below the ungated one here, since the factors of the tick rows of Table \ref{genusonly} run from $0.87$ to $0.97$.
 
     On the saliva runs the unrefined \texttt{cv} database classifies just under two percent of the reads, and between \num[group-separator={,},group-minimum-digits=4]{\dbstat{rg}{viral/subsetmin}} and \num[group-separator={,},group-minimum-digits=4]{\dbstat{rg}{viral/subsetmax}} of those come to rest at a genus, which is $0.003$ to $0.13$ percent of the classified reads. There $\widetilde{\mathit{prec}}^v_g$ rises from $0.166$ to $0.258$ on the weakest run and from $0.307$ to $0.328$ on the strongest, and $\mathit{prec}^{v}_g{}'$ stays close to it, since the factors in the \enquote{saliva-like} row of Table \ref{genusonly} are close to one. Long and error-rich reads leave more classifications at a genus than short and clean ones, and those are the reads a refinement can act on.
+
+    The saliva runs are classified against \texttt{strepto} as well. Saliva is a streptococcal habitat, so the two databases meet on identical material and the comparison is between them rather than between samples. Here the unrefined database leaves up to $16.0$ percent of the classified reads at a genus, against at most $0.13$ percent for \texttt{cv}, and $\widetilde{\mathit{prec}}^v_g$ rises by a factor of three to six where \texttt{cv} gains a factor of $1.1$ to $1.6$. The refinement pays off where a database is dense with close relatives: \texttt{strepto} holds \dbstat{species}{strepto} taxa at the species rank and below in a single genus, and \num[round-mode=places,round-precision=1]{\dbstat{above}{strepto/root}}\,\% of its $k$-mers sit above the data taxa, against \num[round-mode=places,round-precision=1]{\dbstat{above}{viral/root}}\,\% for \texttt{cv}.
 
     % ---------------------------------------------------------------------------------------------
 % NOT YET IN THE TEXT -- why |\widetilde{R}^u_g| here is so much smaller than |R^u_g| / |\widetilde{R}^u_g| of Table
@@ -1114,22 +1108,21 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
         \footnotesize
 \sisetup{table-alignment-mode = format, table-number-alignment = center, group-separator = {,}, group-minimum-digits = 4, group-digits = integer}
         \setlength{\tabcolsep}{1.5pt}
-        \begin{tabular}{@{}c|>{\raggedright\arraybackslash}p{2.3cm}|S[table-format=9.0]|S[table-format=2.3, round-mode=places, round-precision=3]|S[table-format=6.0]|S[table-format=2.3, round-mode=places, round-precision=3]|S[table-format=1.3, round-mode=places, round-precision=3]|S[table-format=1.3, round-mode=places, round-precision=3]|S[table-format=1.3, round-mode=places, round-precision=3]|S[table-format=1.3, round-mode=places, round-precision=3]@{}}
+        \begin{tabular}{@{}c|>{\raggedright\arraybackslash}p{2.3cm}|S[table-format=9.0]|S[table-format=2.3, round-mode=places, round-precision=3]|S[table-format=8.0]|S[table-format=2.3, round-mode=places, round-precision=3]|S[table-format=1.3, round-mode=places, round-precision=3]|S[table-format=1.3, round-mode=places, round-precision=3]|S[table-format=1.3, round-mode=places, round-precision=3]|S[table-format=1.3, round-mode=places, round-precision=3]|S[table-format=1.2, round-mode=places, round-precision=2]@{}}
             \shortstack{\textbf{DB}\\\textbf{$d$}} & \shortstack{\textbf{Read set}\\\textbf{$s'$}} &
             \multicolumn{1}{c|}{\textbf{Reads}} &
-            \multicolumn{1}{c|}{\textbf{\shortstack{Classified\\(\%)}}} &
+            \multicolumn{1}{c|}{\textbf{\shortstack{Class.\\(\%)}}} &
             \multicolumn{1}{c|}{\textbf{$|\widetilde{R}^u_g|$}} &
             \multicolumn{1}{c|}{\textbf{\shortstack{Share of\\classified (\%)}}} &
             \multicolumn{1}{c|}{\textbf{$\widetilde{\mathit{prec}}^u_g$}} &
             \multicolumn{1}{c|}{\textbf{$\widetilde{\mathit{prec}}^f_g$}} &
             \multicolumn{1}{c|}{\textbf{$\mathit{prec}^{u}_g{}'$}} &
-            \multicolumn{1}{c}{\textbf{$\mathit{prec}^{f}_g{}'$}}\\
+            \multicolumn{1}{c|}{\textbf{$\mathit{prec}^{f}_g{}'$}} &
+            \multicolumn{1}{c}{\textbf{\shortstack{Factor\\$\mathit{prec}_g{}'$\\$f/u$}}}\\
             \hline
             \realgainrows{cv}{results/viral_saliva_specificity.csv}
             \hline
-% Pending the `strepto' run on the saliva data -- the row would be all em-dashes.
-% Uncomment once results/strepto_saliva_specificity.csv exists.
-%            \realgainrows{strepto}{results/strepto_saliva_specificity.csv}
+            \realgainrows{strepto}{results/strepto_saliva_specificity.csv}
             \hline
             \realgainrows{tb}{results/tick-borne_ticks_specificity.csv}
             \hline
@@ -1138,7 +1131,7 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
             \realgainagg{strepto}{Pipeline called it, culture did not}{strepto}{pipe}
             \realgainagg{strepto}{Neither named it}{strepto}{none}
         \end{tabular}
-        \caption{The ungated precision of Section \ref{groundtruthfree} on real sequencing data: the saliva runs against \texttt{cv} and the tick samples against \texttt{tb}, and the clinical samples against \texttt{strepto}. $|\widetilde{R}^u_g|$ is the number of reads the unrefined database left at a genus, and the share relates it to the classified reads rather than to all of them, since a read the database does not recognise could never have been improved. $\widetilde{\mathit{prec}}^u_g$ and $\widetilde{\mathit{prec}}^f_g$ are the ungated precision over that subset before and after the refinement, $\mathit{prec}^{u}_g{}'$ and $\mathit{prec}^{f}_g{}'$ their gated counterparts estimated with the matching $\rho^v_d(s)$ from Table \ref{genusonly}. The \texttt{strepto} block aggregates the clinical samples of Section \ref{streptocase}, split by what its reference standard says about \emph{S.~pneumoniae}; each figure there is an average over $|\widetilde{R}^u_g|$ rather than over samples.}\label{realgain}
+        \caption{The ungated precision of Section \ref{groundtruthfree} on real sequencing data: the saliva runs against \texttt{cv} and the tick samples against \texttt{tb}, and the clinical samples against \texttt{strepto}. $|\widetilde{R}^u_g|$ is the number of reads the unrefined database left at a genus, and the share relates it to the classified reads rather than to all of them, since a read the database does not recognise could never have been improved. $\widetilde{\mathit{prec}}^u_g$ and $\widetilde{\mathit{prec}}^f_g$ are the ungated precision over that subset before and after the refinement, $\mathit{prec}^{u}_g{}'$ and $\mathit{prec}^{f}_g{}'$ their gated counterparts estimated with the matching $\rho^v_d(s)$ from Table \ref{genusonly}, and the last column is the ratio of the two. The \texttt{strepto} block aggregates the clinical samples of Section \ref{streptocase}, split by what its reference standard says about \emph{S.~pneumoniae}; each figure there is an average over $|\widetilde{R}^u_g|$ rather than over samples.}\label{realgain}
     \end{table}
 
 
@@ -1519,7 +1512,7 @@ Two effects nevertheless deserve attention when reading the table. First, the re
     \dbstat{rg}{strepto/noneprecf}. The refinement does not favour the pneumococcus; it removes the penalty the
     pneumococcus's own neighbourhood imposes.
 
-    The last two columns of Table \ref{realgain} hold $\mathit{prec}^{u}_g{}'$ and $\mathit{prec}^{f}_g{}'$, using $\rho^u_{\texttt{strepto}}$ and $\rho^f_{\texttt{strepto}}$ from the NanoSim set of Table \ref{genusonly}: the estimated gain over all eighty samples is $0.023$ to $0.117$, a factor of five.
+    The last two columns of Table \ref{realgain} hold $\mathit{prec}^{u}_g{}'$ and $\mathit{prec}^{f}_g{}'$, using $\rho^u_{\texttt{strepto}}$ and $\rho^f_{\texttt{strepto}}$ from the NanoSim set of Table \ref{genusonly}: the estimated gain over all \dbstat{rg}{strepto/samples} samples is \dbstat{rg}{strepto/estu} to \dbstat{rg}{strepto/estf}, a factor of five.
 
     \paragraph{What the sample-level standard says.} The reference standard also allows the cruder comparison, and it is
     worth reporting because it comes out flat. Naming one taxon per sample below the genus, from
