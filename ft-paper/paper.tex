@@ -1192,22 +1192,18 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
     neighbours as direct children of the genus, so a $k$-mer they share has no common ancestor below
     \emph{Streptococcus} and the LCA update leaves it there.
 
-    We base our case study on the clinical data of \citet{lrinanopore}, whose read counts Table \ref{streptogain}
+    We base our case study on the clinical data of that study \citep{lrinanopore}, whose read counts Table \ref{streptogain}
     carries: shotgun sequencing after saponin-based depletion of human DNA, about $2.7$\,kbp mean read length. The
     study reports, for every sample, the organism routine microbiology grew and the organism its own pipeline named,
     and we took both from there as our reference standard. Culture grew \emph{S.~pneumoniae} in
-    \dbstat{nn}{strepto/culture/names} samples and the pipeline named it in \dbstat{nn}{strepto/call/wimp/pos}. The difference between the two is what this section is about, and \citet{lrinanopore} settled it in the
+    \dbstat{nn}{strepto/culture/names} samples and the pipeline named it in \dbstat{nn}{strepto/call/wimp/pos}. The difference between the two is what this section is about, and the authors settled it in the
     laboratory: they ran a \emph{ply} assay on every sample their pipeline called pneumococcal, and in five the
     organism was absent.
 
     \paragraph{What the refinement can achieve here.}
-    Table \ref{streptogain} reads the measure of Section \ref{realreads} on these samples. Over the reads the unrefined database left at a genus, the refinement raises the estimated precision by a factor of \fpeval{round(\dbstat{rg}{strepto/estf} / \dbstat{rg}{strepto/estu}, 1)}. Where the reference standard puts the pneumococcus the gain is larger still: a factor of \fpeval{round(\dbstat{rg}{strepto/cultestf} / \dbstat{rg}{strepto/cultestu}, 1)} in the samples culture grew it from, against \fpeval{round(\dbstat{rg}{strepto/noneestf} / \dbstat{rg}{strepto/noneestu}, 1)} where neither culture nor pipeline named it.
+    Table \ref{streptogain} applies the measure of Section \ref{realreads} to these samples. Over the reads that the unrefined database left at a genus, the refinement raises the estimated precision by a factor of \fpeval{round(\dbstat{rg}{strepto/estf} / \dbstat{rg}{strepto/estu}, 1)}. The gain is larger where the reference standard puts the pneumococcus. It is a factor of \fpeval{round(\dbstat{rg}{strepto/cultestf} / \dbstat{rg}{strepto/cultestu}, 1)} in the samples culture grew it from and \fpeval{round(\dbstat{rg}{strepto/noneestf} / \dbstat{rg}{strepto/noneestu}, 1)} in those where neither culture nor pipeline named it.
 
-    Table \ref{streptocall} asks what the database alone can decide: a sample counts as positive for \emph{S.~pneumoniae} when its read evidence reaches the
-    species itself and holds at least \dbstat{nn}{strepto/call/threshold} reads there. Some threshold is needed,
-    since a single read on the pneumococcal lineage already reaches the species node and a sputum sample always
-    carries a few, and this one is fixed by the baseline rather than by us: it is the smallest at which the unrefined
-    database reaches the specificity of the source study's pipeline.
+    A sample counts as positive for \emph{S.~pneumoniae} when its read evidence reaches the species itself and holds at least a minimum number of reads there. Some threshold is needed, because a single read on the pneumococcal lineage already reaches the species node and a sputum sample always carries a few. We do not choose it ourselves but derive it from the baseline in two steps. Sensitivity comes first, because a clinician cannot trade it away. The threshold must therefore leave the unrefined database at the sensitivity of the source study's pipeline. Among the thresholds that do so, we take the one whose specificity comes closest to the pipeline's. This gives a threshold of \dbstat{nn}{strepto/call/threshold} reads, and we keep it unchanged for the refined database. Pipeline and unrefined database then stand at the same operating point, and only the database varies. Table \ref{streptocall} shows what the three callers decide this way.
 
     \begin{table}[!htbp]
         \centering
@@ -1240,20 +1236,22 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
 \sisetup{table-alignment-mode = format, table-number-alignment = center}
         \begin{tabular}{@{}l|S[table-format=2.0]|S[table-format=1.0]|S[table-format=1.0]|S[table-format=1.2]|S[table-format=1.2]@{}}
             \multicolumn{1}{c|}{\textbf{Caller}} &
-            \multicolumn{1}{c|}{\textbf{Positive}} &
+            \multicolumn{1}{c|}{\textbf{\shortstack{Positive\\calls}}} &
             \multicolumn{1}{c|}{\textbf{\shortstack{Culture\\confirmed}}} &
             \multicolumn{1}{c|}{\textbf{\shortstack{Not\\confirmed}}} &
             \multicolumn{1}{c|}{\textbf{Sensitivity}} &
             \multicolumn{1}{c}{\textbf{Specificity}}\\
             \hline
-            WIMP & \dbstat{nn}{strepto/call/wimp/pos} & \dbstat{nn}{strepto/call/wimp/tp} & \dbstat{nn}{strepto/call/wimp/fp} & \dbstat{nn}{strepto/call/wimp/sens} & \dbstat{nn}{strepto/call/wimp/spec}\\
+            WIMP from \citep{lrinanopore} & \dbstat{nn}{strepto/call/wimp/pos} & \dbstat{nn}{strepto/call/wimp/tp} & \dbstat{nn}{strepto/call/wimp/fp} & \dbstat{nn}{strepto/call/wimp/sens} & \dbstat{nn}{strepto/call/wimp/spec}\\
             Unrefined database & \dbstat{nn}{strepto/call/u/pos} & \dbstat{nn}{strepto/call/u/tp} & \dbstat{nn}{strepto/call/u/fp} & \dbstat{nn}{strepto/call/u/sens} & \dbstat{nn}{strepto/call/u/spec}\\
             Refined database & \dbstat{nn}{strepto/call/f/pos} & \dbstat{nn}{strepto/call/f/tp} & \dbstat{nn}{strepto/call/f/fp} & \dbstat{nn}{strepto/call/f/sens} & \dbstat{nn}{strepto/call/f/spec}\\
         \end{tabular}
-        \caption{A sample counts as positive for \emph{S.~pneumoniae} when its read evidence reaches the species itself and holds at least \dbstat{nn}{strepto/call/threshold} reads there, against the calls the source study's own pipeline made. That threshold is not chosen for the refinement: it is the smallest one at which the unrefined database reaches the specificity of that pipeline, so both stand at the same operating point. Sensitivity and specificity are against culture over the \dbstat{nn}{strepto/samples} samples, of which \dbstat{nn}{strepto/culture/names} grew the organism. Culture is insensitive --- that is the premise of \citet{lrinanopore} --- so a call it does not confirm need not be a false one, which is why the study settled the question with a \emph{ply} assay rather than with culture.}\label{streptocall}
+        \caption{Calls for \emph{S.~pneumoniae} on the clinical samples, made by the source study's pipeline and by the two database variants at a threshold of \dbstat{nn}{strepto/call/threshold} reads. Sensitivity and specificity are against culture over the \dbstat{nn}{strepto/samples} samples, of which \dbstat{nn}{strepto/culture/names} grew the organism. Culture is insensitive, so a call it does not confirm need not be a false one. The study therefore settled the question with a \emph{ply} assay.}\label{streptocall}
     \end{table}
 
-    Calibrated on the source study's pipeline, the unrefined database reproduces its balance exactly: \dbstat{nn}{strepto/call/u/pos} calls, \dbstat{nn}{strepto/call/u/tp} of them confirmed by culture. At the same threshold the refined database makes \dbstat{nn}{strepto/call/f/pos}, with the same \dbstat{nn}{strepto/call/f/tp} confirmed and \dbstat{nn}{strepto/call/f/fp} rather than \dbstat{nn}{strepto/call/u/fp} left unconfirmed. The refinement does not find more, it claims less: the calls it drops are the ones the reads did not carry. The point is not a knife edge: the unrefined database keeps that balance up to \dbstat{nn}{strepto/call/bandhigh} reads and the refined one up to \dbstat{nn}{strepto/call/fbandhigh}, above which a culture-positive sample carrying \num{56} refined reads against \num{58} unrefined falls below the cut. Clinically that is the saving: every call has to be confirmed in the laboratory, and the refined database leaves \dbstat{nn}{strepto/call/f/fp} such samples where the pipeline and the unrefined database leave \dbstat{nn}{strepto/call/wimp/fp}.
+    At this operating point the unrefined database reproduces the balance of the pipeline. It makes \dbstat{nn}{strepto/call/u/pos} calls, and culture confirms \dbstat{nn}{strepto/call/u/tp} of them. The refined database makes \dbstat{nn}{strepto/call/f/pos} calls at the same threshold, with the same \dbstat{nn}{strepto/call/f/tp} confirmed and \dbstat{nn}{strepto/call/f/fp} left unconfirmed instead of \dbstat{nn}{strepto/call/u/fp}. The refinement therefore does not find more, it claims less. The calls it drops are those the reads did not carry. Every call has to be confirmed in the laboratory, so the refined database asks for \dbstat{nn}{strepto/call/f/pos} tests where the pipeline and the unrefined database ask for \dbstat{nn}{strepto/call/wimp/pos}.
+
+    In conclusion, if we require the same sensitivity as the WIMP pipeline in \citep{lrinanopore} and, as a second priority, the same specificity for the unrefined \texttt{strepto} database, then the refinement brings the false positives against culture down from \dbstat{nn}{strepto/call/wimp/fp} to \dbstat{nn}{strepto/call/f/fp}, without sacrificing a true positive. The case is anecdotal, but it shows that a refinement may be worthwhile, as it lowers diagnostic cost by avoiding unnecessary laboratory work.
 
     \subsection{Performance}\label{performance}
 
