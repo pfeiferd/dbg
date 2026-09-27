@@ -206,36 +206,15 @@
 }{\texttt{#1} & {---} & {---} & {---} & {---} & {---} & {---} & {---} & {---} & {---} & {---}\\}%
 }
 
-% One aggregated row of Table \ref{realgain}, read from the macros paper_stats.sh writes rather
-% than from the CSV directly. `strepto' has eighty-three samples, which no table can print and no
-% \csvreader can average; the script does the weighting (by $|\widetilde{R}^u_g|$, not by sample) and this macro
-% only lays the result out. #1 = database label, #2 = row label, #3 = dbstat key prefix, #4 = group
-% tag, empty for all samples. The two estimate columns stay empty for want of a calibration.
-\newcommand{\realgainagg}[4]{%
-\texttt{#1} & #2 &
-\dbstat{rg}{#3/#4groupreads} & \fpeval{round(100 * \dbstat{rg}{#3/#4groupclassified} / \dbstat{rg}{#3/#4groupreads}, 3)} & \dbstat{rg}{#3/#4subset} &
-\dbstat{rg}{#3/#4groupshare} & \dbstat{rg}{#3/#4precu} & \dbstat{rg}{#3/#4precf} &
-\dbstat{rg}{#3/#4estu} & \dbstat{rg}{#3/#4estf} & \fpeval{round(\dbstat{rg}{#3/#4estf} / \dbstat{rg}{#3/#4estu}, 2)}\\}
-
-% One row of Table \ref{nearestnode}: the samples of one currency and one database variant, bucketed
-% by how many species the node their evidence stopped at still leaves open. #1 = currency, #2 =
-% variant, #3 = dbstat key prefix, #4 = the median share cell, which only a refined row has.
-% A bucket cell of Table \ref{nearestnode}: how many samples stopped there and, in brackets, the
-% median evidence the node holds. A bucket no sample reached has no median, and prints none rather
-% than a bracketed zero -- there is nothing to take a median of.
-\newcommand{\nnc}[2]{%
-\dbstat{nn}{#1/#2}\ifcsname dbstat@nn@#1/#2med\endcsname\,(\num{\dbstat{nn}{#1/#2med}})\fi}
-
-% A generated figure that wants \num formatting. Undefined it must still render, and as the marker
-% rather than as a siunitx error: the file it comes from is written by a run of the experiment, and
-% the paper has to build before that run as well as after it.
-\newcommand{\nnnum}[2]{%
-\ifcsname dbstat@nn@#1/#2\endcsname\num{\csname dbstat@nn@#1/#2\endcsname}\else\sysUnknown\fi}
-
-\newcommand{\nearestrow}[3]{%
-#1 & #2 &
-\nnc{#3}{species} & \nnc{#3}{fine} & \nnc{#3}{mid} & \nnc{#3}{coarse} & \nnc{#3}{genus} &
-\dbstat{nn}{#3/none} & {---} & \nnnum{#3}{mediantotal}\\}
+% The same row for a collection classified without a calibration: SpecificityReport leaves the two
+% estimate columns empty then, and a dash is the honest cell. Nothing else differs.
+\newcommand{\realgainrowsnoest}[2]{%
+\IfFileExists{#2}{%
+\csvreader[no head, separator=semicolon, late after line=\\,
+           filter test=\ifnumgreater{\thecsvinputline}{1}]{#2}{}%
+{\texttt{#1} & \csvcolii & \csvcoliii & \fpeval{round(100 * \csvcoliv / \csvcoliii, 3)} & \csvcolvi & \csvcolvii & \csvcolviii & \csvcolix & {---} & {---} & {---}}%
+}{\texttt{#1} & {---} & {---} & {---} & {---} & {---} & {---} & {---} & {---} & {---} & {---}\\}%
+}
 
 \newcommand{\dbfig}[2][]{%
 \iffinalsubmission
@@ -921,7 +900,7 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
 
     Following the first study on Genestrip \citep{genestrip-pub}, the simulated reads are produced with InSilicoSeq \citep{10.1093/bioinformatics/bty630}. Its two Illumina error models \enquote{MiSeq} and \enquote{HiSeq} are applied to exactly the genomes the database under consideration was built from, yielding one pair of paired-end fastq files with one million reads per model. The models differ in read length as well as in error profile: InSilicoSeq emits 301 base pairs per mate for \enquote{MiSeq} and 126 for \enquote{HiSeq}. Table \ref{simdata} characterises the simulated fastq files generated for the evaluation, where the top four are based on InSilicoSeq and the database \texttt{cv}.
 
-    For the remaining sets we employed NanoSim \citep{10.1093/gigascience/gix010,10.1093/gigascience/giad013} as in the first study on Genestrip, a tool which is capable of generating realistic long reads based on a set of genomes and a sample fastq file used for training. The tool tries to reflect the genomic abundance of organisms from the training fastq file. Moreover, it imitates long read sequencing errors resulting from Nanopore technology via an error model which is also estimated on the basis of the training fastq file. For \texttt{tb} one model is trained per tick run of \citep{nanoporeticks}, so that each simulated set carries the characteristics of the sample it was built on; for \texttt{strepto} a single model is trained on a cross-section of the clinical nanopore runs that will be introduced in Section \ref{streptocase}. Both the real nanopore runs and the sets trained on them are subject to high error in their bases, some $16$\,\% in Table \ref{simdata} and thus at the upper end of the per-base error between 5\,\% and 15\,\% that \citep{nanoporeerror} reports for Nanopore devices.\footnote{E.g.\ with a per-base error of $e_b = 0.06$, the probability for an erroneous $31$-mer is $1-(1-e_b)^{31} \approx 0.85$.}
+    For the remaining sets we employed NanoSim \citep{10.1093/gigascience/gix010,10.1093/gigascience/giad013} as in the first study on Genestrip, a tool which is capable of generating realistic long reads based on a set of genomes and a sample fastq file used for training. The tool tries to reflect the genomic abundance of organisms from the training fastq file. Moreover, it imitates long read sequencing errors resulting from Nanopore technology via an error model which is also estimated on the basis of the training fastq file. For \texttt{tb} one model is trained per tick run of \citep{nanoporeticks}, so that each simulated set carries the characteristics of the sample it was built on. Both the real nanopore runs and the sets trained on them are subject to high error in their bases, at the upper end of the per-base error between 5\,\% and 15\,\% that \citep{nanoporeerror} reports for Nanopore devices.\footnote{E.g.\ with a per-base error of $e_b = 0.06$, the probability for an erroneous $31$-mer is $1-(1-e_b)^{31} \approx 0.85$.}
 
 
 
@@ -941,13 +920,15 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
             \hline
             \simdatarows{tb}{results/tick-borne_nanosim_simdata.csv}
             \hline
-            \simdatarows{strepto}{results/strepto_nanosim_simdata.csv}
             \simdatarows{strepto}{results/strepto_iss_saliva_simdata.csv}
+            \hline
+            \simdatarows{nocardia}{results/nocardia_iss_simdata.csv}
+            \simdatarows{nocardia}{results/nocardia_iss_mngs_simdata.csv}
         \end{tabular}
         \caption{The simulated fastq files underlying Tables \ref{classquality} and \ref{genusonly}. Reads are drawn from the genomes the database itself was built from, so every read lies within its scope. Read lengths are per mate, and each mate counts as a read of its own.}\label{simdata}
     \end{table}
 
-    Table \ref{classquality} (a) confirms empirically what Section \ref{classmeasures} argued on principle: the boolean counts hardly register the refinement. At the genus rank the $F_1$-score is unchanged to four decimal places for \texttt{cv} under every one of the four read sets. This is not a shortcoming of the refinement but of the boolean measure: a read moved from a genus to a node grouping three of its species has not reached its species, so the species count still scores it as a miss, and it has not left the genus subtree either, so the genus count scored it as a hit all along. Block (a) therefore gives precision and recall for the unrefined variant alone and only the $F_1$ scores for both: over the fourteen read sets neither precision nor recall moves by more than $0.0008$ between the variants, so a second column of each would repeat the first.
+    Table \ref{classquality} (a) confirms empirically what Section \ref{classmeasures} argued on principle: the boolean counts hardly register the refinement. At the genus rank the $F_1$-score is unchanged to four decimal places for \texttt{cv} under every one of the four read sets. This is not a shortcoming of the refinement but of the boolean measure: a read moved from a genus to a node grouping three of its species has not reached its species, so the species count still scores it as a miss, and it has not left the genus subtree either, so the genus count scored it as a hit all along. Block (a) therefore gives precision and recall for the unrefined variant alone and only the $F_1$ scores for both: over the sixteen read sets neither precision nor recall moves by more than $0.0006$ between the variants, so a second column of each would repeat the first.
 
     In contrast, the candidate-weighted measure $\mathit{prec}^v$ does register the refinement, as shown in Table \ref{classquality} (b). E.g., precision rises by $0.010$ to $0.011$ for \texttt{cv}, consistently across all four read sets. These figures are small in absolute terms, and column 4 of Table \ref{genusonly} gives the reason: only between 8.4\,\% and 11.9\,\% of the reads can be improved on at all, because for the remainder the assignment is either at the species already or wrong above the genus. However, when focusing precision on the genus-only reads via $\mathit{prec}^u_g$ and $\mathit{prec}^f_g$ from Section \ref{classmeasures}, the numbers rise considerably, as Table \ref{genusonly} shows. For example, the \enquote{MiSeq} figure changes from $0.098$ to $0.210$ and the \enquote{HiSeq} one from $0.101$ to $0.192$. This means that the refinement halves the number of species left in question for a read that the unrefined database could not resolve.
 
@@ -988,8 +969,10 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
             \hline
             \boolqualityrows{tb}{results/tick-borne_nanosim_quality.csv}
             \hline
-            \boolqualityrows{strepto}{results/strepto_nanosim_quality.csv}
             \boolqualityrows{strepto}{results/strepto_iss_saliva_quality.csv}
+            \hline
+            \boolqualityrows{nocardia}{results/nocardia_iss_quality.csv}
+            \boolqualityrows{nocardia}{results/nocardia_iss_mngs_quality.csv}
         \end{tabular}}\vspace{10pt}
         \centerline{\textbf{(b) Candidate-weighted ($q$)}}\vspace{3pt}
         \centerline{%
@@ -1008,8 +991,10 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
             \hline
             \candqualityrows{tb}{results/tick-borne_nanosim_quality.csv}
             \hline
-            \candqualityrows{strepto}{results/strepto_nanosim_quality.csv}
             \candqualityrows{strepto}{results/strepto_iss_saliva_quality.csv}
+            \hline
+            \candqualityrows{nocardia}{results/nocardia_iss_quality.csv}
+            \candqualityrows{nocardia}{results/nocardia_iss_mngs_quality.csv}
         \end{tabular}}
         \end{minipage}
         \caption{Read classification quality of the unrefined ($u$) and the refined ($f$) database for the simulated fastq files of Table \ref{simdata}, one row per read set. (a) gives the boolean counts at the genus and at the species rank, with precision and recall for the unrefined variant alone: Section \ref{simreads} explains the omission, which is that these columns are all but identical between the two variants; (b) the candidate-weighted species count of Section \ref{classmeasures} as precision, recall and $F_1$ for both variants.}\label{classquality}
@@ -1039,8 +1024,10 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
             \hline
             \gainrows{tb}{results/tick-borne_nanosim_summary.csv}
             \hline
-            \gainrows{strepto}{results/strepto_nanosim_summary.csv}
             \gainrows{strepto}{results/strepto_iss_saliva_summary.csv}
+            \hline
+            \gainrows{nocardia}{results/nocardia_iss_summary.csv}
+            \gainrows{nocardia}{results/nocardia_iss_mngs_summary.csv}
         \end{tabular}
         \caption{The candidate-weighted species precision restricted to the reads a refinement can improve on at all, one row per read set of Table \ref{simdata}. The left block is the gated precision of Section \ref{classmeasures}, taken over $R^u_g$; the right one the ungated precision of Section \ref{groundtruthfree}, taken over $\widetilde{R}^u_g$, which a fastq file without ground truth admits as well. The last two columns give the factors $\rho^v_d(s)$ between them, one pair per row since they depend on the database $d$ and the read set $s$ alike.}\label{genusonly}
     \end{table}
@@ -1056,6 +1043,8 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
     On the saliva runs the unrefined \texttt{cv} database classifies just under two percent of the reads, and between \num[group-separator={,},group-minimum-digits=4]{\dbstat{rg}{viral/subsetmin}} and \num[group-separator={,},group-minimum-digits=4]{\dbstat{rg}{viral/subsetmax}} of those come to rest at a genus, which is $0.003$ to $0.13$ percent of the classified reads. There $\widetilde{\mathit{prec}}^v_g$ rises from $0.166$ to $0.258$ on the weakest run and from $0.307$ to $0.328$ on the strongest, and $\mathit{prec}^{v}_g{}'$ stays close to it, since the factors in the \enquote{saliva-like} row of Table \ref{genusonly} are close to one. Long and error-rich reads leave more classifications at a genus than short and clean ones, and those are the reads a refinement can act on.
 
     The saliva runs are classified against \texttt{strepto} as well. Saliva is a streptococcal habitat, so the two databases meet on identical material and the comparison is between them rather than between samples. Here the unrefined database leaves up to $16.0$ percent of the classified reads at a genus, against at most $0.13$ percent for \texttt{cv}, and $\widetilde{\mathit{prec}}^v_g$ rises by a factor of three to six where \texttt{cv} gains a factor of $1.1$ to $1.6$. The refinement pays off where a database is dense with close relatives: \texttt{strepto} holds \dbstat{species}{strepto} taxa at the species rank and below in a single genus, and \num[round-mode=places,round-precision=1]{\dbstat{above}{strepto/root}}\,\% of its $k$-mers sit above the data taxa, against \num[round-mode=places,round-precision=1]{\dbstat{above}{viral/root}}\,\% for \texttt{cv}.
+
+    The effect is stronger still on \texttt{nocardia}, whose block in Table \ref{realgain} holds the fourteen clinical runs of \citep{nocardiamngs}, metagenomic sequencing of patients with confirmed nocardiosis. A read the unrefined database leaves at the genus has all of \emph{Nocardia} open behind it, so $\widetilde{\mathit{prec}}^u_g$ is the same $0.002$ in every run. The refinement raises it to between $0.003$ and $0.431$, and to $0.087$ over the \num{28546} reads concerned, a factor of \num{36}. \texttt{nocardia} holds \dbstat{species}{nocardia} taxa at the species rank and below in one genus, twice as many as \texttt{strepto}.
 
     % ---------------------------------------------------------------------------------------------
 % NOT YET IN THE TEXT -- why |\widetilde{R}^u_g| here is so much smaller than |R^u_g| / |\widetilde{R}^u_g| of Table
@@ -1108,7 +1097,7 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
         \footnotesize
 \sisetup{table-alignment-mode = format, table-number-alignment = center, group-separator = {,}, group-minimum-digits = 4, group-digits = integer}
         \setlength{\tabcolsep}{1.5pt}
-        \begin{tabular}{@{}c|>{\raggedright\arraybackslash}p{2.3cm}|S[table-format=9.0]|S[table-format=2.3, round-mode=places, round-precision=3]|S[table-format=8.0]|S[table-format=2.3, round-mode=places, round-precision=3]|S[table-format=1.3, round-mode=places, round-precision=3]|S[table-format=1.3, round-mode=places, round-precision=3]|S[table-format=1.3, round-mode=places, round-precision=3]|S[table-format=1.3, round-mode=places, round-precision=3]|S[table-format=1.2, round-mode=places, round-precision=2]@{}}
+        \begin{tabular}{@{}c|>{\raggedright\arraybackslash}p{2.3cm}|S[table-format=9.0]|S[table-format=2.3, round-mode=places, round-precision=3]|S[table-format=8.0]|S[table-format=2.3, round-mode=places, round-precision=3]|S[table-format=1.3, round-mode=places, round-precision=3]|S[table-format=1.3, round-mode=places, round-precision=3]|S[table-format=1.3, round-mode=places, round-precision=3]|S[table-format=1.3, round-mode=places, round-precision=3]|S[table-format=3.2, round-mode=places, round-precision=2]@{}}
             \shortstack{\textbf{DB}\\\textbf{$d$}} & \shortstack{\textbf{Read set}\\\textbf{$s'$}} &
             \multicolumn{1}{c|}{\textbf{Reads}} &
             \multicolumn{1}{c|}{\textbf{\shortstack{Class.\\(\%)}}} &
@@ -1124,9 +1113,11 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
             \hline
             \realgainrows{strepto}{results/strepto_saliva_specificity.csv}
             \hline
+            \realgainrows{nocardia}{results/nocardia_mngs_specificity.csv}
+            \hline
             \realgainrows{tb}{results/tick-borne_ticks_specificity.csv}
         \end{tabular}
-        \caption{The ungated precision of Section \ref{groundtruthfree} on real sequencing data: the saliva runs against \texttt{cv} and against \texttt{strepto}, and the tick samples against \texttt{tb}. $|\widetilde{R}^u_g|$ is the number of reads the unrefined database left at a genus, and the share relates it to the classified reads rather than to all of them, since a read the database does not recognise could never have been improved. $\widetilde{\mathit{prec}}^u_g$ and $\widetilde{\mathit{prec}}^f_g$ are the ungated precision over that subset before and after the refinement, $\mathit{prec}^{u}_g{}'$ and $\mathit{prec}^{f}_g{}'$ their gated counterparts estimated with the matching $\rho^v_d(s)$ from Table \ref{genusonly}, and the last column is the ratio of the two.}\label{realgain}
+        \caption{The ungated precision of Section \ref{groundtruthfree} on real sequencing data: the saliva runs against \texttt{cv} and against \texttt{strepto}, the clinical runs of \citep{nocardiamngs} against \texttt{nocardia}, and the tick samples against \texttt{tb}. $|\widetilde{R}^u_g|$ is the number of reads the unrefined database left at a genus, and the share relates it to the classified reads rather than to all of them, since a read the database does not recognise could never have been improved. $\widetilde{\mathit{prec}}^u_g$ and $\widetilde{\mathit{prec}}^f_g$ are the ungated precision over that subset before and after the refinement, $\mathit{prec}^{u}_g{}'$ and $\mathit{prec}^{f}_g{}'$ their gated counterparts estimated with the matching $\rho^v_d(s)$ from Table \ref{genusonly}, and the last column is the ratio of the two.}\label{realgain}
     \end{table}
 
 
@@ -1175,83 +1166,6 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
 
 
 
-    \subsubsection{Case study: \emph{S.~pneumoniae}}\label{streptocase}
-
-    \paragraph{Clinical background and reference standard.}
-    Bacterial lower respiratory infection is diagnosed by culture. Culture is insensitive, and it is
-    \enquote{too slow to guide early, targeted antimicrobial therapy} \citep{lrinanopore}, so the first days of
-    treatment are empirical and broad-spectrum. Nanopore metagenomics shortens that wait: \citet{lrinanopore} report
-    a result six hours after the sample arrives. It is also a setting where a $k$-mer classifier has to name an
-    organism straight from a clinical specimen.
-
-    In the respiratory tract, naming the genus is rarely enough. \emph{S.~pneumoniae} is a leading cause of
-    community-acquired pneumonia and is treated as one. \emph{S.~oralis}, \emph{S.~mitis}, \emph{S.~infantis} and
-    \emph{S.~pseudopneumoniae} are oral commensals; healthy people carry them, and saliva brings them into any
-    respiratory specimen. An answer of \enquote{Streptococcus} therefore says nothing clinically, because it fits
-    the pathogen and the flora equally well. Unfortunately, NCBI places the pneumococcus and most of its commensal
-    neighbours as direct children of the genus, so a $k$-mer they share has no common ancestor below
-    \emph{Streptococcus} and the LCA update leaves it there.
-
-    We base our case study on the clinical data of that study \citep{lrinanopore}, whose read counts Table \ref{streptogain}
-    carries: shotgun sequencing after saponin-based depletion of human DNA, about $2.7$\,kbp mean read length. The
-    study reports, for every sample, the organism routine microbiology grew and the organism its own pipeline named,
-    and we took both from there as our reference standard. Culture grew \emph{S.~pneumoniae} in
-    \dbstat{nn}{strepto/culture/names} samples and the pipeline named it in \dbstat{nn}{strepto/call/wimp/pos}. The difference between the two is what this section is about, and the authors settled it in the
-    laboratory: they ran a \emph{ply} assay on every sample their pipeline called pneumococcal, and in five the
-    organism was absent.
-
-    \paragraph{What the refinement can achieve here.}
-    Table \ref{streptogain} applies the measure of Section \ref{realreads} to these samples. Over the reads that the unrefined database left at a genus, the refinement raises the estimated precision by a factor of \fpeval{round(\dbstat{rg}{strepto/estf} / \dbstat{rg}{strepto/estu}, 1)}. The gain is larger where the reference standard puts the pneumococcus. It is a factor of \fpeval{round(\dbstat{rg}{strepto/cultestf} / \dbstat{rg}{strepto/cultestu}, 1)} in the samples culture grew it from and \fpeval{round(\dbstat{rg}{strepto/noneestf} / \dbstat{rg}{strepto/noneestu}, 1)} in those where neither culture nor pipeline named it.
-
-    A sample counts as positive for \emph{S.~pneumoniae} when its read evidence reaches the species itself and holds at least a minimum number of reads there. Some threshold is needed, because a single read on the pneumococcal lineage already reaches the species node and a sputum sample always carries a few. We do not choose it ourselves but derive it from the baseline in two steps. Sensitivity comes first, because a clinician cannot trade it away. The threshold must therefore leave the unrefined database at the sensitivity of the source study's pipeline. Among the thresholds that do so, we take the one whose specificity comes closest to the pipeline's. This gives a threshold of \dbstat{nn}{strepto/call/threshold} reads, and we keep it unchanged for the refined database. Pipeline and unrefined database then stand at the same operating point, and only the database varies. Table \ref{streptocall} shows what the three callers decide this way.
-
-    \begin{table}[!htbp]
-        \centering
-        \footnotesize
-\sisetup{table-alignment-mode = format, table-number-alignment = center, group-separator = {,}, group-minimum-digits = 4, group-digits = integer}
-        \setlength{\tabcolsep}{1.5pt}
-        \begin{tabular}{@{}c|>{\raggedright\arraybackslash}p{2.3cm}|S[table-format=9.0]|S[table-format=2.3, round-mode=places, round-precision=3]|S[table-format=8.0]|S[table-format=2.3, round-mode=places, round-precision=3]|S[table-format=1.3, round-mode=places, round-precision=3]|S[table-format=1.3, round-mode=places, round-precision=3]|S[table-format=1.3, round-mode=places, round-precision=3]|S[table-format=1.3, round-mode=places, round-precision=3]|S[table-format=1.2, round-mode=places, round-precision=2]@{}}
-            \shortstack{\textbf{DB}\\\textbf{$d$}} & \shortstack{\textbf{Read set}\\\textbf{$s'$}} &
-            \multicolumn{1}{c|}{\textbf{Reads}} &
-            \multicolumn{1}{c|}{\textbf{\shortstack{Class.\\(\%)}}} &
-            \multicolumn{1}{c|}{\textbf{$|\widetilde{R}^u_g|$}} &
-            \multicolumn{1}{c|}{\textbf{\shortstack{Share of\\class. (\%)}}} &
-            \multicolumn{1}{c|}{\textbf{$\widetilde{\mathit{prec}}^u_g$}} &
-            \multicolumn{1}{c|}{\textbf{$\widetilde{\mathit{prec}}^f_g$}} &
-            \multicolumn{1}{c|}{\textbf{$\mathit{prec}^{u}_g{}'$}} &
-            \multicolumn{1}{c|}{\textbf{$\mathit{prec}^{f}_g{}'$}} &
-            \multicolumn{1}{c}{\textbf{\shortstack{Factor\\$\mathit{prec}_g{}'$\\$f/u$}}}\\
-            \hline
-            \realgainagg{strepto}{All \num{80} samples}{strepto}{}
-            \realgainagg{strepto}{Culture grew \emph{S.~pneumoniae}}{strepto}{cult}
-            \realgainagg{strepto}{Pipeline called it, culture did not}{strepto}{pipe}
-            \realgainagg{strepto}{Neither named it}{strepto}{none}
-        \end{tabular}
-        \caption{The ungated precision of Section \ref{groundtruthfree} on the clinical samples, read exactly as in Table \ref{realgain} and split by what the reference standard says about \emph{S.~pneumoniae}. Each figure is an average over $|\widetilde{R}^u_g|$ rather than over samples, so that a sample leaving one read at the genus does not weigh as much as one leaving four thousand. The first row covers the \dbstat{rg}{strepto/samples} samples that leave any read there; the remaining three of the \dbstat{nn}{strepto/samples} leave none and enter no row.}\label{streptogain}
-    \end{table}
-
-    \begin{table}[!htbp]
-        \centering
-        \footnotesize
-\sisetup{table-alignment-mode = format, table-number-alignment = center}
-        \begin{tabular}{@{}l|S[table-format=2.0]|S[table-format=1.0]|S[table-format=1.0]|S[table-format=1.2]|S[table-format=1.2]@{}}
-            \multicolumn{1}{c|}{\textbf{Caller}} &
-            \multicolumn{1}{c|}{\textbf{\shortstack{Positive\\calls}}} &
-            \multicolumn{1}{c|}{\textbf{\shortstack{Culture\\confirmed}}} &
-            \multicolumn{1}{c|}{\textbf{\shortstack{Not\\confirmed}}} &
-            \multicolumn{1}{c|}{\textbf{Sensitivity}} &
-            \multicolumn{1}{c}{\textbf{Specificity}}\\
-            \hline
-            WIMP from \citep{lrinanopore} & \dbstat{nn}{strepto/call/wimp/pos} & \dbstat{nn}{strepto/call/wimp/tp} & \dbstat{nn}{strepto/call/wimp/fp} & \dbstat{nn}{strepto/call/wimp/sens} & \dbstat{nn}{strepto/call/wimp/spec}\\
-            Unrefined database & \dbstat{nn}{strepto/call/u/pos} & \dbstat{nn}{strepto/call/u/tp} & \dbstat{nn}{strepto/call/u/fp} & \dbstat{nn}{strepto/call/u/sens} & \dbstat{nn}{strepto/call/u/spec}\\
-            Refined database & \dbstat{nn}{strepto/call/f/pos} & \dbstat{nn}{strepto/call/f/tp} & \dbstat{nn}{strepto/call/f/fp} & \dbstat{nn}{strepto/call/f/sens} & \dbstat{nn}{strepto/call/f/spec}\\
-        \end{tabular}
-        \caption{Calls for \emph{S.~pneumoniae} on the clinical samples, made by the source study's pipeline and by the two database variants at a threshold of \dbstat{nn}{strepto/call/threshold} reads. Sensitivity and specificity are against culture over the \dbstat{nn}{strepto/samples} samples, of which \dbstat{nn}{strepto/culture/names} grew the organism. Culture is insensitive, so a call it does not confirm need not be a false one. The study therefore settled the question with a \emph{ply} assay.}\label{streptocall}
-    \end{table}
-
-    At this operating point the unrefined database reproduces the balance of the pipeline. It makes \dbstat{nn}{strepto/call/u/pos} calls, and culture confirms \dbstat{nn}{strepto/call/u/tp} of them. The refined database makes \dbstat{nn}{strepto/call/f/pos} calls at the same threshold, with the same \dbstat{nn}{strepto/call/f/tp} confirmed and \dbstat{nn}{strepto/call/f/fp} left unconfirmed instead of \dbstat{nn}{strepto/call/u/fp}. The refinement therefore does not find more, it claims less. The calls it drops are those the reads did not carry. Every call has to be confirmed in the laboratory, so the refined database asks for \dbstat{nn}{strepto/call/f/pos} tests where the pipeline and the unrefined database ask for \dbstat{nn}{strepto/call/wimp/pos}.
-
-    In conclusion, if we require the same sensitivity as the WIMP pipeline in \citep{lrinanopore} and, as a second priority, the same specificity for the unrefined \texttt{strepto} database, then the refinement brings the false positives against culture down from \dbstat{nn}{strepto/call/wimp/fp} to \dbstat{nn}{strepto/call/f/fp}, without sacrificing a true positive. The case is anecdotal, but it shows that a refinement may be worthwhile, as it lowers diagnostic cost by avoiding unnecessary laboratory work.
 
     \subsection{Performance}\label{performance}
 
@@ -1301,6 +1215,8 @@ A refinement is only worthwhile if the resulting database can be used at no extr
 There is little reason to expect a difference, and the saliva runs of Table \ref{matchperf} confirm it: $28.40$ minutes against $27.16$ and \num{6756} MB against \num{5977}, the refined variant marginally ahead of the unrefined one on both. Classifying a read amounts to looking up its $k$-mers in the store and aggregating the taxa they carry, and the refinement changes neither of the two: it leaves the stored $k$-mers, the store's data structure and its access path untouched. What it does change is the taxonomy tree the aggregation runs over, which gains the refined nodes --- some thirteen thousand entries at most, against hundreds of millions of $k$-mers, and it grows the database on disk by at most 3.5 \% (Section \ref{refinementperformance}). Memory follows the same argument, since the store dominates what a classification run holds.
 
 Two effects nevertheless deserve attention when reading the table. First, the refined taxonomy is deeper, so aggregating the taxa of a read's $k$-mers may traverse a slightly longer path. Second, a read that the unrefined database leaves at a genus is assigned to a refined node instead, which is a different result but not a more expensive one to arrive at.
+
+The saliva runs also say where the time of such a run goes. Of their reads the unrefined \texttt{cv} database classifies under two percent (Table \ref{realgain}), and the refined variant still comes out marginally ahead, so it is not the classification that sets the pace but the stage before it, where one thread decompresses and parses the fastq file. A $k$-mer the database does not hold is rejected by the Blocked Bloom filter that \citet{genestrip-pub} describes, consulted before the store is searched, or by an empty radix bucket of Appendix \ref{radixstore}, and a read that classifies nowhere therefore costs little beyond being read.
 
 The figures also stand against those the first study reports for the same scenarios, measured with ten threads on a machine of the same core count: \citet{genestrip-pub} classified the tick runs at \num{27303} reads per second and the joint run at \num{116642}, where Table \ref{matchperf} is well above both. The refinement has no part in that. What changed is the $k$-mer store, which Appendix \ref{radixstore} describes: a lookup now resolves the trailing bases of a $k$-mer by address arithmetic and searches a bucket of a few dozen entries instead of running a binary search over the whole array, which is both fewer probes and cheaper ones.
 
@@ -1365,7 +1281,7 @@ Not applicable
 The exact code base for this publication is available under\\
 \url{https://github.com/pfeiferd/genestrip/releases/tag/v2.7}.\\
 
-The sequencing data are those of the studies this paper builds on: the human saliva runs and the nanopore tick runs under the accessions \citet{genestrip-pub} and \citet{nanoporeticks} give, and the clinical runs of Section \ref{streptocase} under ENA study PRJEB30781.
+The sequencing data are those of the studies this paper builds on: the human saliva runs and the nanopore tick runs under the accessions \citet{genestrip-pub} and \citet{nanoporeticks} give, and the clinical \emph{Nocardia} runs of \citet{nocardiamngs} under ENA study PRJEB34974.
 
 \subsection{Competing interests}
 
