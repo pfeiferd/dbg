@@ -165,12 +165,18 @@
 }{\texttt{#1} & {---} & {---} & {---} & {---} & {---} & {---} & {---} & {---} & {---} & {---}\\}%
 }
 
-\newcommand{\perfrows}[1]{%
+% The rows of one scenario of Table \ref{matchperf}, #2 being its label in the CSV's first column.
+% One call per scenario, with the rule between two of them written into the table itself: \hline may
+% only stand between rows, and csvsimple's row hooks are not such a place. The scenario column of the
+% CSV repeats the label on every row, and the table prints it once, on the first row of the block.
+\newcommand{\perfrows}[2]{%
 \IfFileExists{#1}{%
+\gdef\perfscenshown{0}%
 \csvreader[no head, separator=semicolon, late after line=\\,
-           filter test=\ifnumgreater{\thecsvinputline}{1}]{#1}{}%
-{\csvcoli & \csvcolii & \csvcoliii & \csvcoliv}%
-}{{---} & {---} & {---} & {---}\\}%
+           filter equal={\csvcoli}{#2}]{#1}{}%
+{\ifdefstring{\perfscenshown}{0}{\csvcoli\gdef\perfscenshown{1}}{}%
+ & \csvcolii & \csvcoliii & \csvcoliv}%
+}{#2 & {---} & {---} & {---}\\}%
 }
 
 \newcommand{\simdatarows}[2]{%
@@ -898,9 +904,30 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
 
     \subsubsection{Simulated read data}\label{simreads}
 
-    Following the first study on Genestrip \citep{genestrip-pub}, the simulated reads are produced with InSilicoSeq \citep{10.1093/bioinformatics/bty630}. Its two Illumina error models \enquote{MiSeq} and \enquote{HiSeq} are applied to exactly the genomes the database under consideration was built from, yielding one pair of paired-end fastq files with one million reads per model. The models differ in read length as well as in error profile: InSilicoSeq emits 301 base pairs per mate for \enquote{MiSeq} and 126 for \enquote{HiSeq}. Table \ref{simdata} characterises the simulated fastq files generated for the evaluation, where the top four are based on InSilicoSeq and the database \texttt{cv}.
+    We base our simulated reads on the real-world read sets of Table \ref{realdata}. For each of them we generate a counterpart via a matching simulation tool. Table \ref{simdata} characterises the simulated files. The real sets themselves are classified in Section \ref{realreads}.
 
-    For the remaining sets we employed NanoSim \citep{10.1093/gigascience/gix010,10.1093/gigascience/giad013} as in the first study on Genestrip, a tool which is capable of generating realistic long reads based on a set of genomes and a sample fastq file used for training. The tool tries to reflect the genomic abundance of organisms from the training fastq file. Moreover, it imitates long read sequencing errors resulting from Nanopore technology via an error model which is also estimated on the basis of the training fastq file. For \texttt{tb} one model is trained per tick run of \citep{nanoporeticks}, so that each simulated set carries the characteristics of the sample it was built on. Both the real nanopore runs and the sets trained on them are subject to high error in their bases, at the upper end of the per-base error between 5\,\% and 15\,\% that \citep{nanoporeerror} reports for Nanopore devices.\footnote{E.g.\ with a per-base error of $e_b = 0.06$, the probability for an erroneous $31$-mer is $1-(1-e_b)^{31} \approx 0.85$.}
+   \begin{table}[!htbp]
+        \centering
+        \footnotesize
+        \setlength{\tabcolsep}{2pt}
+\sisetup{group-separator = {,}, group-minimum-digits = 4}
+        \begin{tabular}{@{}l|>{\raggedright\arraybackslash}p{2.2cm}|c|>{\raggedright\arraybackslash}p{1.1cm}|S[table-format=9.0]|>{\raggedright\arraybackslash}p{1.5cm}|>{\raggedright\arraybackslash}p{2.7cm}@{}}
+            \textbf{Read set} & \textbf{Platform} & \textbf{Runs} & \multicolumn{1}{c|}{\textbf{\shortstack{Read\\length}}} &
+            \multicolumn{1}{c|}{\textbf{\shortstack{Avg. reads\\per run}}} &
+            \multicolumn{1}{c|}{\textbf{\shortstack{Prepa-\\ration}}} & \multicolumn{1}{c}{\textbf{Material}}\\
+            \hline
+            saliva & Illumina HiSeq 2000, short reads & 5 & 101 bp & 824743085 & none & Human genome sequencing from saliva, classified in \citep{genestrip-pub}\\
+            \hline
+            ticks & Oxford Nanopore MinION, long reads & 8 & 323 bp & 1000369 & adaptive sampling & Whole ticks of a surveillance study for tick-borne pathogens \citep{nanoporeticks}, classified in \citep{genestrip-pub} as well\\
+            \hline
+            \emph{Nocardia} mNGS & BGISEQ-500, short reads & 14 & 50--100 bp & 675379 & human reads removed & Spinal fluid, lavage, sputum, lung tissue and pus of ten patients with nocardiosis \citep{nocardiamngs}\\
+        \end{tabular}
+        \caption{The real sequencing data of this paper. Adaptive sampling rejects reads outside the target genera, enriching in ticks 1 to 4 and depleting in ticks 5 to 8. Of each saliva run only the first mate is analysed, as in \citep{genestrip-pub}.}\label{realdata}
+    \end{table}
+
+    Following the first study on Genestrip \citep{genestrip-pub}, the simulated Illumina reads are produced with InSilicoSeq \citep{10.1093/bioinformatics/bty630}. Its two Illumina error models \enquote{MiSeq} and \enquote{HiSeq} are applied to exactly the genomes the database under consideration was built from, yielding one pair of paired-end fastq files with one million reads per model. The models differ in read length as well as in error profile: InSilicoSeq emits 301 base pairs per mate for \enquote{MiSeq} and 126 for \enquote{HiSeq}. InSilicoSeq also has a mode that introduces no errors, which yields the error-free set of Table \ref{simdata}, and a \enquote{basic} model that takes the read length and the per-base error as parameters. We apply the latter wherever a simulated set is matched to real data, at 101 bp and 2.07\,\% for the \enquote{saliva-like} sets and at 70 bp and 2.05\,\% for the \enquote{mNGS-like} one. Both are the values the quality strings of the corresponding runs give.
+
+    For the remaining Nanopore read sets we employed NanoSim \citep{10.1093/gigascience/gix010,10.1093/gigascience/giad013} as in the first study on Genestrip, a tool which is capable of generating realistic long reads based on a set of genomes and a sample fastq file used for training. The tool tries to reflect the genomic abundance of organisms from the training fastq file. Moreover, it imitates long read sequencing errors resulting from Nanopore technology via an error model which is also estimated on the basis of the training fastq file. For \texttt{tb} one model is trained per tick run of \citep{nanoporeticks}, so that each simulated set carries the characteristics of the sample it was built on. Both the real nanopore runs and the sets trained on them are subject to high error in their bases, at the upper end of the per-base error between 5\,\% and 15\,\% that \citep{nanoporeerror} reports for Nanopore devices.\footnote{E.g.\ with a per-base error of $e_b = 0.06$, the probability for an erroneous $31$-mer is $1-(1-e_b)^{31} \approx 0.85$.}
 
 
 
@@ -922,13 +949,12 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
             \hline
             \simdatarows{strepto}{results/strepto_iss_saliva_simdata.csv}
             \hline
-            \simdatarows{nocardia}{results/nocardia_iss_simdata.csv}
             \simdatarows{nocardia}{results/nocardia_iss_mngs_simdata.csv}
         \end{tabular}
         \caption{The simulated fastq files underlying Tables \ref{classquality} and \ref{genusonly}. Reads are drawn from the genomes the database itself was built from, so every read lies within its scope. Read lengths are per mate, and each mate counts as a read of its own.}\label{simdata}
     \end{table}
 
-    Table \ref{classquality} (a) confirms empirically what Section \ref{classmeasures} argued on principle: the boolean counts hardly register the refinement. At the genus rank the $F_1$-score is unchanged to four decimal places for \texttt{cv} under every one of the four read sets. This is not a shortcoming of the refinement but of the boolean measure: a read moved from a genus to a node grouping three of its species has not reached its species, so the species count still scores it as a miss, and it has not left the genus subtree either, so the genus count scored it as a hit all along. Block (a) therefore gives precision and recall for the unrefined variant alone and only the $F_1$ scores for both: over the sixteen read sets neither precision nor recall moves by more than $0.0006$ between the variants, so a second column of each would repeat the first.
+    Table \ref{classquality} (a) confirms empirically what Section \ref{classmeasures} argued on principle: the boolean counts hardly register the refinement. At the genus rank the $F_1$-score is unchanged to four decimal places for \texttt{cv} under every one of the four read sets. This is not a shortcoming of the refinement but of the boolean measure: a read moved from a genus to a node grouping three of its species has not reached its species, so the species count still scores it as a miss, and it has not left the genus subtree either, so the genus count scored it as a hit all along. Block (a) therefore gives precision and recall for the unrefined variant alone and only the $F_1$ scores for both: over the fourteen read sets neither precision nor recall moves by more than $0.0006$ between the variants, so a second column of each would repeat the first.
 
     In contrast, the candidate-weighted measure $\mathit{prec}^v$ does register the refinement, as shown in Table \ref{classquality} (b). E.g., precision rises by $0.010$ to $0.011$ for \texttt{cv}, consistently across all four read sets. These figures are small in absolute terms, and column 4 of Table \ref{genusonly} gives the reason: only between 8.4\,\% and 11.9\,\% of the reads can be improved on at all, because for the remainder the assignment is either at the species already or wrong above the genus. However, when focusing precision on the genus-only reads via $\mathit{prec}^u_g$ and $\mathit{prec}^f_g$ from Section \ref{classmeasures}, the numbers rise considerably, as Table \ref{genusonly} shows. For example, the \enquote{MiSeq} figure changes from $0.098$ to $0.210$ and the \enquote{HiSeq} one from $0.101$ to $0.192$. This means that the refinement halves the number of species left in question for a read that the unrefined database could not resolve.
 
@@ -971,7 +997,6 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
             \hline
             \boolqualityrows{strepto}{results/strepto_iss_saliva_quality.csv}
             \hline
-            \boolqualityrows{nocardia}{results/nocardia_iss_quality.csv}
             \boolqualityrows{nocardia}{results/nocardia_iss_mngs_quality.csv}
         \end{tabular}}\vspace{10pt}
         \centerline{\textbf{(b) Candidate-weighted ($q$)}}\vspace{3pt}
@@ -993,7 +1018,6 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
             \hline
             \candqualityrows{strepto}{results/strepto_iss_saliva_quality.csv}
             \hline
-            \candqualityrows{nocardia}{results/nocardia_iss_quality.csv}
             \candqualityrows{nocardia}{results/nocardia_iss_mngs_quality.csv}
         \end{tabular}}
         \end{minipage}
@@ -1026,7 +1050,6 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
             \hline
             \gainrows{strepto}{results/strepto_iss_saliva_summary.csv}
             \hline
-            \gainrows{nocardia}{results/nocardia_iss_summary.csv}
             \gainrows{nocardia}{results/nocardia_iss_mngs_summary.csv}
         \end{tabular}
         \caption{The candidate-weighted species precision restricted to the reads a refinement can improve on at all, one row per read set of Table \ref{simdata}. The left block is the gated precision of Section \ref{classmeasures}, taken over $R^u_g$; the right one the ungated precision of Section \ref{groundtruthfree}, taken over $\widetilde{R}^u_g$, which a fastq file without ground truth admits as well. The last two columns give the factors $\rho^v_d(s)$ between them, one pair per row since they depend on the database $d$ and the read set $s$ alike.}\label{genusonly}
@@ -1034,9 +1057,7 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
 
     \subsubsection{Real-world read data}\label{realreads}
 
-    We partly reuse the scenarios of the first study on Genestrip \citep{genestrip-pub}: the tick samples sequenced with Nanopore, which are long and error-rich, and the human saliva runs from an Illumina instrument, which are short. Since the ground truth is missing for such real-world fastq data, we resort to the ungated precision of Section \ref{groundtruthfree} and the correction factor $\rho^v_d(s)$ of Section \ref{simreads}.
-
-    For \texttt{cv} these are five runs of DNA sequencing from human saliva at 100 to 101 base pairs per read; for \texttt{tb} they are the Nanopore runs of the tick surveillance study \citep{nanoporeticks}. The tick runs are the very samples the simulated reads of Section \ref{simreads} were trained on, so each of them has a simulated counterpart whose correction factor applies to it, as described there. Table \ref{realgain} names the samples and gives their read counts. Of each saliva run we analyse the first mate only, as the first study did, since Genestrip classifies mates independently.
+    Table \ref{realdata} lists the three real read sets we classify. The saliva runs are short Illumina reads, the tick runs are long Nanopore reads, and the \emph{Nocardia} runs are short BGISEQ reads. None of them comes with a ground truth, so we use the ungated precision of Section \ref{groundtruthfree} together with the correction factor $\rho^v_d(s)$ of Section \ref{simreads}. Each tick run has a simulated counterpart trained on it and therefore a factor of its own, while for the other two sets one simulated set stands for every run.
 
     Table \ref{realgain} reports the classification results for the refined and unrefined cases. On the tick samples the unrefined \texttt{tb} database leaves up to $1.8$ percent of the classified reads at a genus. Over that subset the refinement raises $\widetilde{\mathit{prec}}^v_g$ from $0.033$ to $0.153$ at most, a factor of three to four, and $\mathit{prec}^{v}_g{}'$ from $0.029$ to $0.148$. The estimated precision stays visibly below the ungated one here, since the factors of the tick rows of Table \ref{genusonly} run from $0.87$ to $0.97$.
 
@@ -1212,26 +1233,31 @@ Most notably, the refinement is almost for free in terms of disk space: a refine
 
 A refinement is only worthwhile if the resulting database can be used at no extra cost. We therefore classified the simulated fastq files of Section \ref{simreads} once against the unrefined and once against the refined database and measured wall time and maximum RAM of each run, as reported in Table \ref{matchperf}. Each variant was run in its own process, and separately from the quality measurements of Section \ref{classificationquality}, whose per-read scoring against the ground truth would otherwise be counted as classification work.
 
-There is little reason to expect a difference, and the saliva runs of Table \ref{matchperf} confirm it: $28.40$ minutes against $27.16$ and \num{6756} MB against \num{5977}, the refined variant marginally ahead of the unrefined one on both. Classifying a read amounts to looking up its $k$-mers in the store and aggregating the taxa they carry, and the refinement changes neither of the two: it leaves the stored $k$-mers, the store's data structure and its access path untouched. What it does change is the taxonomy tree the aggregation runs over, which gains the refined nodes --- some thirteen thousand entries at most, against hundreds of millions of $k$-mers, and it grows the database on disk by at most 3.5 \% (Section \ref{refinementperformance}). Memory follows the same argument, since the store dominates what a classification run holds.
+There is little reason to expect a difference, and the saliva runs of Table \ref{matchperf} confirm it: $17.97$ minutes against $18.00$ and \num{6251} MB against \num{6309}, the two variants level to within one percent. Classifying a read amounts to looking up its $k$-mers in the store and aggregating the taxa they carry, and the refinement changes neither of the two: it leaves the stored $k$-mers, the store's data structure and its access path untouched. What it does change is the taxonomy tree the aggregation runs over, which gains the refined nodes --- some thirteen thousand entries at most, against hundreds of millions of $k$-mers, and it grows the database on disk by at most 3.5 \% (Section \ref{refinementperformance}). Memory follows the same argument, since the store dominates what a classification run holds.
 
 Two effects nevertheless deserve attention when reading the table. First, the refined taxonomy is deeper, so aggregating the taxa of a read's $k$-mers may traverse a slightly longer path. Second, a read that the unrefined database leaves at a genus is assigned to a refined node instead, which is a different result but not a more expensive one to arrive at.
 
-The saliva runs also say where the time of such a run goes. Of their reads the unrefined \texttt{cv} database classifies under two percent (Table \ref{realgain}), and the refined variant still comes out marginally ahead, so it is not the classification that sets the pace but the stage before it, where one thread decompresses and parses the fastq file. A $k$-mer the database does not hold is rejected by the Blocked Bloom filter that \citet{genestrip-pub} describes, consulted before the store is searched, or by an empty radix bucket of Appendix \ref{radixstore}, and a read that classifies nowhere therefore costs little beyond being read.
 
-The figures also stand against those the first study reports for the same scenarios, measured with ten threads on a machine of the same core count: \citet{genestrip-pub} classified the tick runs at \num{27303} reads per second and the joint run at \num{116642}, where Table \ref{matchperf} is well above both. The refinement has no part in that. What changed is the $k$-mer store, which Appendix \ref{radixstore} describes: a lookup now resolves the trailing bases of a $k$-mer by address arithmetic and searches a bucket of a few dozen entries instead of running a binary search over the whole array, which is both fewer probes and cheaper ones.
+The figures also stand against those the first study reports for the same scenarios, measured with ten threads on a machine of the same core count: \citet{genestrip-pub} classified the tick runs at \num{27303} reads per second and the joint run at \num{116642}, where Table \ref{matchperf} reaches \num{39252} and \num{162814}. The refinement has no part in that. What changed is the $k$-mer store, which Appendix \ref{radixstore} describes: a lookup now resolves the trailing bases of a $k$-mer by address arithmetic and searches a bucket of a few dozen entries instead of running a binary search over the whole array, which is both fewer probes and cheaper ones.
 
    \begin{table}[!htbp]
         \centering
 \sisetup{table-alignment-mode = format, table-number-alignment = right, group-separator = {,}, group-minimum-digits = 4}
         \setlength{\tabcolsep}{4pt}
-        \begin{tabular}{c|l|S[table-format=7.2]|S[table-format=7.2]}
+        \begin{tabular}{c|l|S[table-format=6.2]|S[table-format=6.2]}
             \textbf{Scenario} & \textbf{Parameter} &
             \multicolumn{1}{c|}{\textbf{\shortstack{Unrefined\\database}}} &
             \multicolumn{1}{c}{\textbf{\shortstack{Refined\\database}}}\\
             \hline
-            \perfrows{results/matchperf.csv}
+            \perfrows{results/matchperf.csv}{(a)}
+            \hline
+            \perfrows{results/matchperf.csv}{(b)}
+            \hline
+            \perfrows{results/matchperf.csv}{(c)}
+            \hline
+            \perfrows{results/matchperf.csv}{(d)}
         \end{tabular}
-        \caption{Read classification performance of the unrefined against the refined database, in the three scenarios of Table 10 of \citep{genestrip-pub} --- which compares four tools where this compares the two variants of one --- and in a fourth that varies the database instead. \textbf{(a)} \texttt{cv} on the human saliva runs of that paper, each file analysed on its own. \textbf{(b)} \texttt{tb} on the real tick runs of \citep{nanoporeticks}, each file on its own. \textbf{(c)} the same tick files analysed \emph{jointly} in one Genestrip call, which loads the database once instead of once per file. The difference between (b) and (c) is what that load costs. \textbf{(d)} \texttt{strepto} on the saliva files of (a), so that the two differ in the database alone. Rows describing the data rather than a database variant carry the same figure in both columns. Wall time and RAM are measured with \texttt{cgmemtime}; RAM is the high-water resident set of the measured process, as in Table \ref{ftdbperf}. These runs are kept apart from the quality measurements of Section \ref{classificationquality}, whose per-read scoring against the ground truth would otherwise count as classification work.}\label{matchperf}
+        \caption{Read classification performance of the unrefined against the refined database, in the three scenarios of Table 10 of \citep{genestrip-pub} --- which compares four tools where this compares the two variants of one --- and in a fourth that varies the database instead. \textbf{(a)} \texttt{cv} on the human saliva runs of that paper, each file analysed on its own. \textbf{(b)} \texttt{tb} on the real tick runs of \citep{nanoporeticks}, each file on its own. \textbf{(c)} the same tick files analysed \emph{jointly} in one Genestrip call, which loads the database once instead of once per file. The difference between (b) and (c) is what that load costs. \textbf{(d)} \texttt{strepto} on the saliva files of (a), so that the two differ in the database alone. Wall time and RAM are measured with \texttt{cgmemtime}; RAM is the high-water resident set of the measured process, as in Table \ref{ftdbperf}. These runs are kept apart from the quality measurements of Section \ref{classificationquality}, whose per-read scoring against the ground truth would otherwise count as classification work.}\label{matchperf}
     \end{table}
 
 
