@@ -802,9 +802,11 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
 
     The subset $R^u_g$ is unobservable as well, since it is defined through $\sigma(r)$. Nevertheless, we can still observe where the classification came to rest. An ungated version of precision is therefore taken over
 \[ \widetilde{R}^u_g = \{ r \in R^u_c : \kappa^u(r) \text{ lies at or below a genus and above any species} \} , \]
-    the reads the unrefined database placed no further than a genus. This gives the \emph{ungated precision}
+    the reads the unrefined database placed no further than a genus. The window of ranks is the same as in $R^u_g$, only the correctness condition is gone. A read already placed at a species has $\tilde{q}^v(r) = 1$ under either variant and can gain nothing from a refinement, so keeping such reads in would pull the average towards one. This gives the \emph{ungated precision}
 \[ \widetilde{\mathit{prec}}^v_g = \frac{1}{|\widetilde{R}^u_g|} \sum_{r \in \widetilde{R}^u_g} \tilde{q}^v(r) \]
     standing against its gated version $\mathit{prec}^v_g$ from Section \ref{classmeasures}.
+
+    The same removal applies to recall, but we do not report an ungated version of it. Over the restricted set $\widetilde{R}^u_g$ recall and precision share their denominator, so the two coincide there. Over all reads of a file they differ, since an unclassified read contributes $\tilde{q}^v(r) = 0$. Such a measure states how much of a sample lies within the scope of a database, which depends on the sample and on the database, not on a refinement. And a refinement leaves the recall untouched anyway. The refined database stores the same $k$-mers and is path correct, so a classified read stays classified and its assignment moves at most further down the same path.
 
 \section{Results}\label{results}
 
