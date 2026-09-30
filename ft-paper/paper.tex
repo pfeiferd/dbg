@@ -180,6 +180,16 @@
 }{#3 & {---} & {---} & {---}\\}%
 }
 
+\newcommand{\storerows}[3]{%
+\IfFileExists{#1}{%
+\gdef\storescenshown{0}%
+\csvreader[no head, separator=semicolon, late after line=\\,
+           filter equal={\csvcoli}{#2}]{#1}{}%
+{\ifdefstring{\storescenshown}{0}{#3\gdef\storescenshown{1}}{}%
+ & \csvcolii & \csvcoliii & \fpeval{round(100 * \csvcoliv / \csvcoliii, 1)}}%
+}{#3 & {---} & {---} & {---}\\}%
+}
+
 \newcommand{\simdatarows}[2]{%
 \IfFileExists{#2}{%
 \csvreader[no head, separator=semicolon, late after line=\\,
@@ -1072,7 +1082,7 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
 
     On the tick samples the unrefined \texttt{tb} database leaves up to $1.8$ percent of the classified reads at a genus. Over that subset the refinement raises $\widetilde{\mathit{prec}}^v_g$ from $0.033$ to $0.153$ at most, a factor of three to four, and $\mathit{prec}^{v}_g{}'$ from $0.029$ to $0.148$. The estimated precision stays visibly below the ungated one here, since the factors of the tick rows of Table \ref{genusonly} run from $0.87$ to $0.97$.
 
-    The subset holds \num{147} to \num{859} reads per run. Most classified reads come from \emph{Rickettsia buchneri}. This endosymbiont dominates the microbiome of these ticks \citep{nanoporeticks}, and the database assigns its reads to a species. The reads that stay at a genus are about as many as the pathogen reads reported in \citep{nanoporeticks}, a few hundred per tick. Figure 4 of \citep{genestrip-pub} shows the same effect for tick 6, where most \emph{Ehrlichia} $k$-mers of \texttt{tb} sit at the genus. A tick surveillance asks about exactly these reads. Which pathogen a tick carries depends on the species. A read left at \emph{Anaplasma} does not say whether it is \emph{A.\ phagocytophilum}, the species that infects humans. The refinement raises the precision where this is decided.
+    Only \num{147} to \num{859} reads per \texttt{tb} run gain precision from the refinement, which seems little. This is because by far the most reads originate from the genome of the black-legged tick, and Genestrip in this case either filters them out or assigns them to a taxon near the root of the taxonomy \citep{genestrip-pub}. However, the reads that do reach a genus are the ones that matter for tick surveillance and pathogen detection. E.g.\ tick 6 leaves \num{370} of them at \emph{Borreliella}, a genus that holds \num{22} species of \texttt{tb}, among them \emph{B.~burgdorferi}, the agent of Lyme disease. After the refinement the genus itself holds \num{7} reads. Its new nodes hold \num{152} reads where two species are left, \num{50} where four are, \num{42} where five are, \num{21} where six are, \num{52} where ten are and \num{61} where \num{21} are.
 
     % ---------------------------------------------------------------------------------------------
 % NOT YET IN THE TEXT -- why |\widetilde{R}^u_g| here is so much smaller than |R^u_g| / |\widetilde{R}^u_g| of Table
@@ -1366,7 +1376,30 @@ The performance figures of Section \ref{performance} rest on a $k$-mer store tha
 	\item A technicality of the implementation language disappears. A Java array is indexed by a signed \texttt{int}, so a single array cannot hold more than $2^{31}$ entries. A bucket holds $n/2^{r}$ entries, so for any database that fits in memory it is an ordinary \texttt{int}-indexed array.
 \end{enumerate}
 
-\todo{Quantify: the same database built and queried with both stores, giving fill wall time, refinement wall time, classification throughput and database size. The reasoning above is architectural; the paper should state what it is worth.}
+\begin{table}[!htbp]
+     \centering
+\sisetup{table-alignment-mode = format, table-number-alignment = right, group-separator = {,}, group-minimum-digits = 4}
+     \setlength{\tabcolsep}{4pt}
+     \begin{minipage}{\textwidth}
+     \centering
+     \begin{tabular}{c|l|S[table-format=6.2]|S[table-format=3.1, round-mode=places, round-precision=1, table-number-alignment=center]}
+         \textbf{Scenario} & \textbf{Parameter} &
+         \multicolumn{1}{c|}{\textbf{\shortstack{Sorted\\array}}} &
+         \multicolumn{1}{c}{\textbf{\shortstack{Radix\\store (\%)}}}\\
+         \hline
+         \storerows{results/storecompare.csv}{(a)}{(a) \texttt{cv} / saliva}
+         \hline
+         \storerows{results/storecompare.csv}{(b)}{(b) \texttt{tb} / ticks}
+         \hline
+         \storerows{results/storecompare.csv}{(c)}{(c) \texttt{tb} / ticks}
+         \hline
+         \storerows{results/storecompare.csv}{(d)}{(d) \texttt{strepto} / saliva}
+     \end{tabular}
+     \end{minipage}
+     \caption{The two $k$-mer stores measured against each other on the refined database, in the scenarios of Table \ref{matchperf} and Section \ref{classificationperformance}. The radix column gives each figure as a percentage of the sorted array one.}\label{storeperf}
+\end{table}
+
+\todo{Table \ref{storeperf} is still empty and waits for \texttt{bin/store\_compare.sh}, which builds the \texttt{-sa} twin of every database and runs the four scenarios against them. Fill wall time, refinement wall time and database size come out of the same run, in \texttt{db\_gen\_perf-sa.csv} and \texttt{db\_disk\_sizes-sa.csv}, and belong here as well. The list above argues from the construction, so the paper should state what it is worth.}
 
 \bibliography{sn-bibliography}
 
