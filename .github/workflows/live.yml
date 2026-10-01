@@ -1,0 +1,136 @@
+# =============================================================================
+#  main  ->  die VM  (die öffentliche Site)
+#
+#  Ein Checkin oder ein Merge auf "main" baut die Site und liefert sie auf die
+#  VM aus. Das ist der Schritt, der die öffentliche Site verändert.
+#
+#  Wie die Auslieferung läuft:
+#
+#    tar czf - -C site . | ssh <deploy-benutzer>@<vm>
+#
+#  Auf der VM steht in der authorized_keys dieses Benutzers ein ERZWUNGENER
+#  BEFEHL: /usr/local/sbin/dbg-receive-site. Egal was dieser Lauf verlangt, es
+#  läuft immer nur dieses eine Programm - es nimmt das Archiv entgegen, prüft
+#  es und schaltet die Site um. Der Schlüssel kann also keine Shell öffnen,
+#  keine Pfade angeben und nichts anderes starten.
+#
+#  Deshalb braucht es dafür auch keinen zusätzlichen Port, kein Passwort und
+#  kein FTP - es geht über den SSH-Port, der ohnehin schon offen ist.
+#
+#  Benötigte Secrets (Settings > Secrets and variables > Actions).
+#  Die Werte zeigt auf der VM:  sudo ./show-deploy-secrets.sh
+#
+#    VM_HOST         Name oder IP-Adresse der VM
+#    VM_PORT         SSH-Port der VM (SSH_PORT aus dbg-vm.conf)
+#    VM_USER         Auslieferungsbenutzer (DEPLOY_USER, z.B. dbg-deploy)
+#    VM_SSH_KEY      privater Schlüssel, vollständig mit BEGIN/END-Zeile
+#    VM_KNOWN_HOSTS  Fingerabdruck der VM, aus ssh-keyscan
+#    ENGINE_TOKEN    nur nötig, wenn das Repo site-gen privat ist
+#
+#  Dazu eine Repository-VARIABLE (nicht Secret, gleiche Seite, Reiter
+#  "Variables"), rein für die Verknüpfung in der GitHub-Oberfläche:
+#
+#    SITE_URL        https://www.borreliose-gesellschaft.de/
+#
+#  Der Auslieferungs-Job hängt an der Umgebung "production". Wer zusätzlich
+#  eine Freigabe von Hand möchte, trägt unter Settings > Environments >
+#  production "Required reviewers" ein - dann wartet jeder Live-Gang auf einen
+#  Klick, ohne dass hier etwas zu ändern wäre.
+# =============================================================================
+name: Live (VM)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      engine-ref:
+        description: 'Stand der Engine site-gen (Zweig oder Tag)'
+        type: string
+        required: false
+        default: main
+
+permissions:
+  contents: read
+
+# Nie zwei Auslieferungen gleichzeitig - und eine laufende nicht abbrechen,
+# sonst bliebe die Site womöglich halb umgeschaltet.
+concurrency:
+  group: live-deploy
+  cancel-in-progress: false
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+    with:
+      engine-ref: ${{ inputs.engine-ref || 'main' }}
+    secrets:
+      ENGINE_TOKEN: ${{ secrets.ENGINE_TOKEN }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      # Nur die Verknüpfung, die GitHub an der Auslieferung anzeigt. In
+      # environment.url sind keine Secrets erlaubt, deshalb eine REPOSITORY-
+      # VARIABLE (Settings > Secrets and variables > Actions > Variables):
+      #     SITE_URL = https://www.borreliose-gesellschaft.de/
+      # Ist sie nicht gesetzt, fehlt lediglich die Verknüpfung.
+      url: ${{ vars.SITE_URL }}
+    steps:
+      - name: Diese Abläufe auschecken
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github
+          sparse-checkout-cone-mode: false
+
+      - name: Archiv holen
+        uses: actions/download-artifact@v4
+        with:
+          name: site-tarball
+
+      - name: Auf die öffentliche Site ausliefern
+        uses: ./.github/actions/deploy-to-vm
+        with:
+          action: deploy
+          host: ${{ secrets.VM_HOST }}
+          port: ${{ secrets.VM_PORT || '22' }}
+          user: ${{ secrets.VM_USER }}
+          ssh-key: ${{ secrets.VM_SSH_KEY }}
+          known-hosts: ${{ secrets.VM_KNOWN_HOSTS }}
+
+      - name: Nachsehen, ob die Site von außen antwortet
+        env:
+          VM_HOST: ${{ secrets.VM_HOST }}
+          VM_PORT: ${{ secrets.VM_PORT }}
+          VM_USER: ${{ secrets.VM_USER }}
+        run: |
+          set -uo pipefail
+
+          code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 25 "https://${VM_HOST}/")
+          rc=$?
+          [ -n "$code" ] || code=000
+
+          # 60 heißt: die Verbindung stand, nur das Zertifikat ließ sich nicht
+          # prüfen. Das ist genau der Fall, solange auf der VM noch
+          # TLS_MODE=selfsigned eingestellt ist - die Auslieferung selbst ist
+          # dann in Ordnung, und der Empfänger auf der VM hat die Site schon
+          # über die Loopback-Schnittstelle geprüft. Also ein Hinweis, kein
+          # Fehler.
+          if [ "$rc" -eq 60 ]; then
+            echo "::warning::Das Zertifikat von ${VM_HOST} ließ sich nicht prüfen (curl 60)."
+            echo "::warning::Auf der VM steht wohl noch TLS_MODE=selfsigned. Umstellen mit:"
+            echo "::warning::  sudo TLS_MODE=letsencrypt ./install.sh --only tls,site"
+            code=$(curl -skS -o /dev/null -w '%{http_code}' --max-time 25 "https://${VM_HOST}/") || true
+            [ -n "$code" ] || code=000
+          fi
+
+          echo "https://${VM_HOST}/ -> $code"
+
+          if [ "$code" != 200 ]; then
+            echo "::error::Die Site antwortet von außen mit $code statt 200."
+            echo "::error::Zurück zur vorherigen Fassung:"
+            echo "::error::  ssh -p ${VM_PORT:-22} ${VM_USER}@${VM_HOST} rollback"
+            exit 1
+          fi

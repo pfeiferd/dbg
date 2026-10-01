@@ -7,3 +7,6 @@ target/
 
 # OS
 .DS_Store
+
+# Von vm-install/make-bundle.sh erzeugtes Paket fuer die VM
+dbg-vm-install.tar.gz

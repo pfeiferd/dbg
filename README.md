@@ -24,6 +24,29 @@ fertige Site-Verzeichnis nach `target/website` geholt. Liegt die Engine woanders
 mvn package -Dengine.dir=/pfad/zu/site-gen
 ```
 
+## Veröffentlichen
+
+Gebaut wird auf GitHub, ausgeliefert auf die VM – je nach Zweig an eine andere
+Stelle:
+
+| Zweig | wohin | wann |
+|-------|-------|------|
+| `staging` | `https://<site>/staging/` – Vorschau, `noindex` | bei jedem Checkin |
+| `main` | `https://<site>/` – die öffentliche Site | bei jedem Checkin/Merge |
+
+Also: auf `staging` arbeiten, unter `/staging/` anschauen, und wenn es passt nach
+`main` mergen – damit geht es live. Beide bekommen **dasselbe Archiv**: was in
+der Vorschau abgenommen wurde, geht unverändert auf die öffentliche Site.
+
+Die Vorschau liegt in einem eigenen Verzeichnis *neben* dem DocumentRoot der
+öffentlichen Site, nicht darunter – sonst würde die nächste Auslieferung sie
+abräumen. Die Abläufe liegen in `.github/workflows/` (`build.yml` baut,
+`staging.yml` und `live.yml` liefern aus).
+
+Die VM selbst – Apache, https, Let's Encrypt, fail2ban, Firewall und der
+Zugang, über den GitHub ausliefert – wird mit **`vm-install/`** aufgesetzt;
+Einzelheiten in [vm-install/README.md](vm-install/README.md).
+
 ## Aufbau des Inhalts
 
 ```

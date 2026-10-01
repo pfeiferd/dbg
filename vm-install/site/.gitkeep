@@ -1,0 +1,3 @@
+Hierher kopiert make-bundle.sh den Inhalt von target/website/, damit beim
+Auspacken auf der VM alles beisammen ist. deploy-site.sh rollt ihn von hier
+nach DOC_ROOT aus.

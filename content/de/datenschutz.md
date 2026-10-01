@@ -34,11 +34,16 @@ Außerdem haben Sie das Recht, unter bestimmten Umständen die Einschränkung de
 
 ### Analyse-Werkzeuge und Dienste Dritter
 
-Diese Website bindet **keine Dienste Dritter** ein: kein Analyse- oder Statistikwerkzeug,
-keine Werbenetzwerke, keine sozialen Netzwerke, keine externen Schriftarten, Karten oder
-Videos. Beim Aufruf einer Seite werden ausschließlich Daten von unserem eigenen Server
-geladen. Ihr Surfverhalten wird nicht über verschiedene Websites hinweg verfolgt und es
-wird kein Nutzerprofil gebildet.
+Diese Website bindet **kein Analyse- oder Statistikwerkzeug** ein, keine Werbenetzwerke,
+keine sozialen Netzwerke, keine externen Schriftarten und keine Videos. Ihr Surfverhalten
+wird nicht über verschiedene Websites hinweg verfolgt und es wird kein Nutzerprofil
+gebildet.
+
+Einen Dienst eines Dritten gibt es: Auf der Seite „Ärzte- und Therapeutenliste“ zeigt eine
+Karte die Standorte, und deren Kartenbild wird von OpenStreetMap geladen. Dabei wird Ihre
+IP-Adresse an dessen Server übertragen. Alle übrigen Inhalte dieser Website – Texte,
+Bilder, Schriften, Skripte – kommen ausschließlich von unserem eigenen Server.
+Einzelheiten unter „Kartenanzeige in der Ärzte- und Therapeutenliste“.
 
 Ausgewertet werden allein die Protokolldateien unseres Webservers, und zwar auf unserem
 eigenen Server; siehe „Server-Protokolldateien“.
@@ -145,6 +150,40 @@ Eine längere Speicherung der vollständigen Fassung erfolgt nur, wenn dies zur 
 eines konkreten Angriffs erforderlich ist; die betroffenen Daten sind dann bis zur
 abschließenden Klärung gesperrt.
 
+### Kartenanzeige in der Ärzte- und Therapeutenliste
+
+Auf der Seite „Ärzte- und Therapeutenliste“ zeigt eine Karte, wo die aufgeführten
+Ärztinnen, Ärzte und Therapeuten zu finden sind. Die Angaben zu den Personen und
+Einrichtungen liegen auf unserem eigenen Server. Das Kartenbild selbst – es wird aus
+einzelnen Bildkacheln zusammengesetzt – ruft Ihr Browser dagegen direkt bei OpenStreetMap
+ab.
+
+Dabei wird an die Server von OpenStreetMap übertragen:
+
+- Ihre IP-Adresse
+- die übliche Browserkennung (Browsertyp und -version, Betriebssystem)
+- welche Kacheln abgerufen werden, also welcher Kartenausschnitt in welcher Zoomstufe
+  betrachtet wird
+
+Anbieter ist die OpenStreetMap Foundation (OSMF), St John’s Innovation Centre, Cowley
+Road, Cambridge, CB4 0WS, Vereinigtes Königreich. Deren Datenschutzerklärung finden Sie
+unter [osmfoundation.org/wiki/Privacy_Policy](https://osmfoundation.org/wiki/Privacy_Policy).
+
+Die OSMF hat ihren Sitz im Vereinigten Königreich, und die Kacheln werden über Server in
+verschiedenen Ländern ausgeliefert. Es kann dabei zu einer Übermittlung in ein Drittland
+kommen; für das Vereinigte Königreich gilt dafür der jeweils geltende
+Angemessenheitsbeschluss der Europäischen Kommission.
+
+Rechtsgrundlage der Einbindung ist Art. 6 Abs. 1 lit. f DSGVO. Wir haben ein berechtigtes
+Interesse daran, die Standorte verständlich darzustellen – das leistet eine Karte deutlich
+besser als eine reine Adressliste.
+
+Die Übertragung findet ausschließlich auf dieser einen Seite statt und beginnt, sobald die
+Seite geladen wird; vermeiden lässt sie sich daher nur, indem Sie diese Seite nicht
+aufrufen. Alle übrigen Seiten dieser Website laden nichts von Dritten. Die vollständigen
+Angaben zu den Ärztinnen, Ärzten und Therapeuten stehen auch ohne Karte in der Liste
+unterhalb der Karte; diese lässt sich ebenso durchsuchen und nach Land filtern.
+
 ### Anfrage per Email, Telefon oder Fax
 
 Wenn Sie uns per Email, Telefon oder Fax kontaktieren, wird Ihre Anfrage inklusive aller daraus hervorgehenden personenbezogenen Daten (Name, Anfrage) zum Zwecke der Bearbeitung Ihres Anliegens bei uns gespeichert und verarbeitet. Diese Daten geben wir nicht ohne Ihre Einwilligung weiter.
@@ -157,7 +196,8 @@ Die von Ihnen an uns per Kontaktanfragen übersandten Daten verbleiben bei uns, 
 
 Diese Website verwendet die Schriftart „Rubik“. Die Schriftdateien werden von unserem
 eigenen Server ausgeliefert. Eine Verbindung zu Servern von Google oder anderen Anbietern
-findet dabei nicht statt, und es wird keine IP-Adresse an Dritte übertragen.
+findet dabei nicht statt; beim Laden der Schriften wird keine IP-Adresse an Dritte
+übertragen.
 
 ---
 

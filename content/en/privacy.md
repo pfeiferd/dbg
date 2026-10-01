@@ -34,7 +34,9 @@ In addition, under certain circumstances you have the right to request the restr
 
 ### Analysis tools and third-party services
 
-This website embeds **no third-party services**: no analysis or statistics tool, no advertising networks, no social networks, no external fonts, maps or videos. When a page is requested, data is loaded exclusively from our own server. Your browsing behaviour is not tracked across different websites, and no user profile is created.
+This website embeds **no analysis or statistics tool**, no advertising networks, no social networks, no external fonts and no videos. Your browsing behaviour is not tracked across different websites, and no user profile is created.
+
+There is one third-party service: on the page "List of physicians and therapists" a map shows the locations, and the map image is loaded from OpenStreetMap. In the process your IP address is transmitted to its servers. All other content of this website – text, images, fonts, scripts – comes exclusively from our own server. Details under "Map display in the list of physicians and therapists".
 
 The only thing evaluated is the log files of our web server, and this is done on our own server; see "Server log files".
 
@@ -127,6 +129,24 @@ For the shortened version the server removes the last part of the IP address bef
 
 The full version is kept for longer only if this is necessary to investigate a specific attack; the data concerned is then blocked until the matter has been finally clarified.
 
+### Map display in the list of physicians and therapists
+
+On the page "List of physicians and therapists" a map shows where the listed physicians and therapists can be found. The details of the people and institutions are held on our own server. The map image itself – it is assembled from individual image tiles – is retrieved by your browser directly from OpenStreetMap.
+
+The following is transmitted to OpenStreetMap's servers in the process:
+
+- your IP address
+- the usual browser identification (browser type and version, operating system)
+- which tiles are retrieved, that is, which section of the map is being viewed at which zoom level
+
+The provider is the OpenStreetMap Foundation (OSMF), St John's Innovation Centre, Cowley Road, Cambridge, CB4 0WS, United Kingdom. Its privacy policy can be found at [osmfoundation.org/wiki/Privacy_Policy](https://osmfoundation.org/wiki/Privacy_Policy).
+
+The OSMF is based in the United Kingdom, and the tiles are delivered via servers in various countries. A transfer to a third country may therefore take place; for the United Kingdom the adequacy decision of the European Commission applicable at the time governs such a transfer.
+
+The legal basis for embedding the map is Art. 6(1)(f) GDPR. We have a legitimate interest in presenting the locations comprehensibly – a map does this considerably better than a plain list of addresses.
+
+The transmission takes place on this one page only, and it begins as soon as the page is loaded; it can therefore only be avoided by not opening this page. All other pages of this website load nothing from third parties. The full details of the physicians and therapists are also available without the map, in the list below it; that list can likewise be searched and filtered by country.
+
 ### Enquiries by email, telephone or fax
 
 If you contact us by email, telephone or fax, your enquiry including all personal data arising from it (name, enquiry) will be stored and processed by us for the purpose of dealing with your request. We do not pass this data on without your consent.
@@ -137,7 +157,7 @@ The data you send us in contact enquiries remains with us until you ask us to de
 
 ## Fonts
 
-This website uses the typeface "Rubik". The font files are delivered from our own server. No connection to servers of Google or other providers is made in the process, and no IP address is transmitted to third parties.
+This website uses the typeface "Rubik". The font files are delivered from our own server. No connection to servers of Google or other providers is made in the process; no IP address is transmitted to third parties when the fonts are loaded.
 
 ---
 
