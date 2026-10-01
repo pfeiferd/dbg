@@ -180,14 +180,14 @@
 }{#3 & {---} & {---} & {---}\\}%
 }
 
-\newcommand{\storerows}[3]{%
+\newcommand{\storebenchrows}[2]{%
 \IfFileExists{#1}{%
-\gdef\storescenshown{0}%
+\gdef\storedbshown{0}%
 \csvreader[no head, separator=semicolon, late after line=\\,
-           filter equal={\csvcoli}{#2}]{#1}{}%
-{\ifdefstring{\storescenshown}{0}{#3\gdef\storescenshown{1}}{}%
+           filter expr={test{\ifnumgreater{\thecsvinputline}{1}}}]{#1}{}%
+{\ifdefstring{\storedbshown}{0}{\texttt{#2}\gdef\storedbshown{1}}{}%
  & \csvcolii & \csvcoliii & \fpeval{round(100 * \csvcoliv / \csvcoliii, 1)}}%
-}{#3 & {---} & {---} & {---}\\}%
+}{\texttt{#2} & {---} & {---} & {---}\\}%
 }
 
 \newcommand{\simdatarows}[2]{%
@@ -364,7 +364,7 @@
 
     \author*[1]{\fnm{Helai} \sur{Zahelzai}}\email{hzahelzai@stud.hs-heilbronn.de}
     
-    \author*[1]{\fnm{Anton} \sur{Atanasov}}\email{atanasov@stud.hs-heilbronn.de}
+    \author*[1]{\fnm{Antoan} \sur{Atanasov}}\email{atanasov@stud.hs-heilbronn.de}
     
     \affil*[1]{\orgdiv{IT Faculty}, \orgname{Heilbronn University}, \orgaddress{\street{Max-Planck-Str. 39}, \city{Heilbronn}, \postcode{74081}, \state{Baden-W\"urttemberg}, \country{Germany}}}
 
@@ -1135,7 +1135,7 @@ So $X$, $Y$, $Z$ are data taxa but $X$ is not a leaf node.
         \footnotesize
 \sisetup{table-alignment-mode = format, table-number-alignment = center, group-separator = {,}, group-minimum-digits = 4, group-digits = integer}
         \setlength{\tabcolsep}{1.5pt}
-        \begin{tabular}{@{}c|>{\raggedright\arraybackslash}p{2.3cm}|S[table-format=9.0]|S[table-format=2.3, round-mode=places, round-precision=3]|S[table-format=8.0]|S[table-format=2.3, round-mode=places, round-precision=3]|S[table-format=1.3, round-mode=places, round-precision=3]|S[table-format=1.3, round-mode=places, round-precision=3]|S[table-format=1.3, round-mode=places, round-precision=3]|S[table-format=1.3, round-mode=places, round-precision=3]|S[table-format=3.2, round-mode=places, round-precision=2]@{}}
+        \begin{tabular}{@{}c|>{\raggedright\arraybackslash}p{1.6cm}|S[table-format=9.0]|S[table-format=2.3, round-mode=places, round-precision=3]|S[table-format=8.0]|S[table-format=2.3, round-mode=places, round-precision=3]|S[table-format=1.3, round-mode=places, round-precision=3]|S[table-format=1.3, round-mode=places, round-precision=3]|S[table-format=1.3, round-mode=places, round-precision=3]|S[table-format=1.3, round-mode=places, round-precision=3]|S[table-format=3.2, round-mode=places, round-precision=2]@{}}
             \shortstack{\textbf{DB}\\\textbf{$d$}} & \shortstack{\textbf{Read set}\\\textbf{$s'$}} &
             \multicolumn{1}{c|}{\textbf{Reads}} &
             \multicolumn{1}{c|}{\textbf{\shortstack{Class.\\(\%)}}} &
@@ -1255,7 +1255,7 @@ There is no reason to expect much of a difference and Table \ref{matchperf} conf
 
 
 
-The figures also stand against those the first study reports for the same scenarios, measured with ten threads on a machine of the same core count: \citet{genestrip-pub} classified the tick runs at \num{27303} reads per second and the joint run at \num{116642}, where Table \ref{matchperf} reaches \num{39252} and \num{162814}. This is due to an improvement of the $k$-mer database's underlying data structure, where we moved from a sorted array to a so-called radix store. The latter combines several favourable qualities detailed in Appendix \ref{radixstore}.
+The figures also stand against those the first study reports for the same scenarios, measured with ten threads on a machine of the same core count: \citet{genestrip-pub} classified the tick runs at \num{27303} reads per second and the joint run at \num{116642}, where Table \ref{matchperf} reaches \num{39252} and \num{162814}. This is due to several optimizations including an improvement of the $k$-mer database's underlying data structure, where we moved from a sorted array to a so-called radix store. The latter combines several favourable qualities detailed in Appendix \ref{radixstore}.
 
    \begin{table}[!htbp]
         \centering
@@ -1376,30 +1376,28 @@ The performance figures of Section \ref{performance} rest on a $k$-mer store tha
 	\item A technicality of the implementation language disappears. A Java array is indexed by a signed \texttt{int}, so a single array cannot hold more than $2^{31}$ entries. A bucket holds $n/2^{r}$ entries, so for any database that fits in memory it is an ordinary \texttt{int}-indexed array.
 \end{enumerate}
 
-\begin{table}[!htbp]
-     \centering
-\sisetup{table-alignment-mode = format, table-number-alignment = right, group-separator = {,}, group-minimum-digits = 4}
-     \setlength{\tabcolsep}{4pt}
-     \begin{minipage}{\textwidth}
-     \centering
-     \begin{tabular}{c|l|S[table-format=6.2]|S[table-format=3.1, round-mode=places, round-precision=1, table-number-alignment=center]}
-         \textbf{Scenario} & \textbf{Parameter} &
-         \multicolumn{1}{c|}{\textbf{\shortstack{Sorted\\array}}} &
-         \multicolumn{1}{c}{\textbf{\shortstack{Radix\\store (\%)}}}\\
-         \hline
-         \storerows{results/storecompare.csv}{(a)}{(a) \texttt{cv} / saliva}
-         \hline
-         \storerows{results/storecompare.csv}{(b)}{(b) \texttt{tb} / ticks}
-         \hline
-         \storerows{results/storecompare.csv}{(c)}{(c) \texttt{tb} / ticks}
-         \hline
-         \storerows{results/storecompare.csv}{(d)}{(d) \texttt{strepto} / saliva}
-     \end{tabular}
-     \end{minipage}
-     \caption{The two $k$-mer stores measured against each other on the refined database, in the scenarios of Table \ref{matchperf} and Section \ref{classificationperformance}. The radix column gives each figure as a percentage of the sorted array one.}\label{storeperf}
-\end{table}
+    The saving of the first point is smaller for a database as a whole. Both stores carry a Bloom filter of the same size, since the number of entries fixes it and the layout does not touch it. Table \ref{storeperf} states both figures, for \texttt{strepto} and for \texttt{tb}. The two stores of a database classify the same reads, \texttt{strepto} the saliva run SRR5571990 of Table \ref{realdata} and \texttt{tb} all eight tick runs. Each run uses two threads, one producer and one consumer. The producer reads, inflates and parses the file, and with more consumers it limits the run, so a faster lookup would hardly show. The figures stand against each other and not against Table \ref{matchperf}, which measures whole processes with \num{16} threads, loading included.
 
-\todo{Table \ref{storeperf} is still empty and waits for \texttt{bin/store\_compare.sh}, which builds the \texttt{-sa} twin of every database and runs the four scenarios against them. Fill wall time, refinement wall time and database size come out of the same run, in \texttt{db\_gen\_perf-sa.csv} and \texttt{db\_disk\_sizes-sa.csv}, and belong here as well. The list above argues from the construction, so the paper should state what it is worth.}
+    \begin{table}[!htbp]
+         \centering
+\sisetup{table-alignment-mode = format, table-number-alignment = center, group-separator = {,}, group-minimum-digits = 4}
+         \setlength{\tabcolsep}{3pt}
+         \begin{minipage}{\textwidth}
+         \centering
+         \begin{tabular}{@{}l|l|S[table-format=7.2]|S[table-format=3.1, round-mode=places, round-precision=1, table-number-alignment=center]@{}}
+             \textbf{DB} & \textbf{Parameter} &
+             \multicolumn{1}{c|}{\textbf{\shortstack{Sorted\\array}}} &
+             \multicolumn{1}{c}{\textbf{\shortstack{Radix\\store (\%)}}}\\
+             \hline
+             \storebenchrows{results/storebench_strepto.csv}{strepto}
+             \hline
+             \storebenchrows{results/storebench_tick-borne.csv}{tb}
+         \end{tabular}
+         \end{minipage}
+         \caption{The two $k$-mer stores of a database, measured as Section \ref{radixstore} describes. The first three rows follow from the entry count and the bytes per entry. \enquote{Store} is the sum of the two rows above it. \enquote{Heap} is what the JVM reported for the store after a collection. The last two rows cover the classification alone, without loading the database and without copying the store. The radix column gives each figure as a percentage of the sorted array one. Below 100\,\% is less heap and less time, above it is more reads per second.}\label{storeperf}
+    \end{table}
+
+
 
 \bibliography{sn-bibliography}
 
