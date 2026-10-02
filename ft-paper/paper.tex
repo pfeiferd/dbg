@@ -1376,7 +1376,7 @@ The performance figures of Section \ref{performance} rest on a $k$-mer store tha
 	\item A technicality of the implementation language disappears. A Java array is indexed by a signed \texttt{int}, so a single array cannot hold more than $2^{31}$ entries. A bucket holds $n/2^{r}$ entries, so for any database that fits in memory it is an ordinary \texttt{int}-indexed array.
 \end{enumerate}
 
-    The saving of the first point is smaller for a database as a whole. Both stores carry a Bloom filter of the same size, since the number of entries fixes it and the layout does not touch it. Table \ref{storeperf} states both figures, for \texttt{strepto} and for \texttt{tb}. The two stores of a database classify the same reads. These are the saliva run SRR5571990 of Table \ref{realdata} for \texttt{strepto} and all eight tick runs for \texttt{tb}. Each of them is classified with the Bloom filter of the match and again without it. A run uses just two threads: the producer thread reads, inflates and parses the file, whereas the consumer looks the $k$-mers up and classifies the reads. We limited the processing to a single consumer because otherwise the producer would have become the dominating bottleneck.
+    Table \ref{storeperf} reports an experiment on how the store and the Bloom filter in front of it affect classification performance. The sorted array and the radix store act on the same database and the same reads. The latter cover the saliva run SRR5571990 of Table \ref{realdata} for \texttt{strepto} and all eight tick runs for \texttt{tb}. A run uses just two threads: the producer thread reads, inflates and parses the file, whereas the consumer looks the $k$-mers up and classifies the reads. We limited the processing to a single consumer because otherwise the producer would have become the dominating bottleneck.
 
     \begin{table}[!htbp]
          \centering
@@ -1405,17 +1405,19 @@ The performance figures of Section \ref{performance} rest on a $k$-mer store tha
          \caption{The two $k$-mer stores of a database, measured as Section \ref{radixstore} describes. In the memory block the first three rows follow from the entry count and the bytes per entry, \enquote{Store} is the sum of the two rows above it, and \enquote{Heap} is what the JVM reported for the store after a collection. Blocks (a) and (b) cover the classification alone, without loading the database or copying the store. Only a single consumer thread processes the incoming reads here. The Bloom filter of the match is off in (a) and on in (b). The radix column gives each figure as a percentage of the sorted array one.}\label{storeperf}
     \end{table}
 
-    Three things stand out in Table \ref{storeperf}:
+    Four things stand out in Table \ref{storeperf}:
 
 \begin{enumerate}
-	\item Without the filter the radix store is nearly three times as fast, as block (a) shows. The probe count accounts for about two and a half of that: a bisection over the \num[group-separator={,},group-minimum-digits=4]{\dbstat{kmers}{strepto}} $k$-mers of \texttt{strepto} takes 29 probes, one over a bucket of them takes 12. The rest is locality. A bucket holds some 34 kilobytes, while the sorted array walks an array of five gigabytes.
+	\item The saving of the first point above is smaller for a database as a whole. Both stores carry a Bloom filter of the same size, since the number of entries fixes it and the layout does not touch it.
+
+	\item Without the Bloom filter all $k$-mers of each read must be looked up in the underlying store, and this is when the efficiency of the two store types can be compared: the radix store is nearly three times as fast in block (a). The probe count accounts for about two and a half of that. A bisection over the \num[group-separator={,},group-minimum-digits=4]{\dbstat{kmers}{strepto}} $k$-mers of \texttt{strepto} takes 29 probes, one over a bucket of them takes 12. The rest is locality. A bucket holds some 34 kilobytes, while the sorted array walks an array of five gigabytes.
 
 	\item With the filter on almost nothing of that is left, as block (b) shows. The filter answers most $k$-mers of a real read before any store is consulted. The radix store even pays for the indexed read that precedes its own filter query, which is why it falls slightly behind on the saliva run.
 
-	\item The two blocks also state what the filter is worth. It raises the throughput of the sorted array elevenfold and that of the radix store fourfold. The better layout needs it less.
+	\item The two blocks also state what the filter is worth. For the sorted array it raises the throughput elevenfold, which confirms the range of nine to eleven reported in \citep{genestrip-pub} already. For the radix store it is fourfold. The better layout needs the filter less.
 \end{enumerate}
 
-    Note that the figures stand against each other and not against Table \ref{matchperf}, which measures whole processes with \num{16} threads, loading included.
+    Note that the figures from Table \ref{storeperf} stand against each other but not against Table \ref{matchperf}, which measures whole processes with \num{16} threads, loading included.
 
 
 
