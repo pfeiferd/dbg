@@ -1311,19 +1311,29 @@ The figures also stand against those the first study reports for the same scenar
 \section{List of abbreviations}
 
 \begin{tabular}{lp{10cm}}
-LCA & Lowest common ancestor \\
-$t$ & Placeholder for taxon \\
-$f$ & Placeholder for fastq file \\
-$d$ & Placeholder for $k$-mer database \\
-$k_{t,f,d}$& Number of $k$-mers found for taxon $t$ in fastq file $f$ via database $d$\\
-$u_{t,f,d}$& Number of unique $k$-mers found for taxon $t$ in fastq file $f$  via database $d$\\
-$u_{t,d}$& Number of $k$-mers stored under taxon $t$ in database $d$ \\
-% $r_{t,f,d}$ &$k$-mer consistency ratio for $k$-mers found for taxon $t$ in fastq file $f$ with respect to database $d$ \\
-FPP & False positive probability of a probabilistic filter \\
-BPs & Base pairs \\
+bp & Base pairs \\
 \texttt{cv} & Complete viral database \\
+$d$ & Placeholder for a $k$-mer database \\
+DB & Database \\
+ENA & European Nucleotide Archive \\
+$f$ & The refined variant of a database \\
+FT & Finer taxonomy, as in Genestrip-FT \\
+GB & Gigabytes \\
+JVM & Java virtual machine \\
+LCA & Lowest common ancestor \\
+MB & Megabytes \\
+mNGS & Metagenomic next-generation sequencing \\
+NCBI & National Center for Biotechnology Information \\
+\texttt{nocardia} & \emph{Nocardia} database \\
+\texttt{parasites} & Parasite database \\
+\texttt{protozoa} & Protozoan database \\
+RAM & Random-access memory \\
+$s$ & Placeholder for a read set \\
+\texttt{strepto} & \emph{Streptococcus} database \\
+$t$ & Placeholder for a taxon \\
 \texttt{tb} & Tick-borne bacterial pathogens database \\
-DB & Database
+$u$ & The unrefined variant of a database \\
+$v$ & Placeholder for either variant, $u$ or $f$
 \end{tabular}
 
 \section{Declarations}
@@ -1339,7 +1349,9 @@ Not applicable
 \subsection{Availability of data and materials}
 
 The exact code base for this publication is available under\\
-\url{https://github.com/pfeiferd/genestrip/releases/tag/v2.7}.\\
+\url{https://github.com/pfeiferd/genestrip/releases/tag/v4.0}.\\
+The experiments of this paper are those of\\
+\url{https://github.com/pfeiferd/ft-db-exp/releases/tag/v1.0}.
 
 The sequencing data are those of the studies this paper builds on: the human saliva runs and the nanopore tick runs under the accessions \citet{genestrip-pub} and \citet{nanoporeticks} give, and the clinical \emph{Nocardia} runs of \citet{nocardiamngs} under ENA study PRJEB34974.
 
@@ -1364,7 +1376,7 @@ The tool was used to extend and optimize Genestrip-FT's code base and to produce
 
 \subsection{The radix store and its benefits}\label{radixstore}
 
-The performance figures of Section \ref{performance} rest on a $k$-mer store that has been replaced since \citep{genestrip-pub}. The store described there kept all $k$-mers in one sorted array and answered a lookup by binary search over it. It is now a \emph{radix store} where the entry point of a lookup is a radix index, an array of $2^{r}$ buckets with $r = 17$ by default. A $k$-mer is encoded with two bits per base, and its $r$ low bits are the address of the bucket it belongs to. Only the remaining $2k - r$ bits are kept in the bucket, i.e.\ a sorted array, and searched there. Resolving bits of a key by address arithmetic instead of by comparison is digital searching in the sense of \citet{knuthtaocp3}. Alternatively, the radix store can be seen as a cross between a very flat tree and a sorted array, and it holds several advantages:
+The performance figures of Section \ref{performance} rest on a $k$-mer store that has been replaced since \citep{genestrip-pub}. The store described there kept all $k$-mers in one sorted array and answered a lookup by binary search over it. It is now a \emph{radix store} where the entry point of a lookup is a radix index, an array of $2^{r}$ buckets. A $k$-mer is encoded with two bits per base, and its $r$ low bits are the address of the bucket it belongs to. Only the remaining $2k - r$ bits are kept in the bucket, i.e.\ a sorted array, and searched there. Resolving bits of a key by address arithmetic instead of by comparison is digital searching in the sense of \citet{knuthtaocp3}. Alternatively, the radix store can be seen as a cross between a very flat tree and a sorted array, and it holds several advantages:
 
 \begin{enumerate}
 	\item The store is compact by construction. The bits that address a bucket need not be stored in it, so an entry holds $2k - r$ bits of a $k$-mer instead of all $2k$. \emph{This is a reduction of $r/2k$ without any loss of information}, i.e.\ 27\,\% under Genestrip's default setting of $k = 31$ and $r = 17$.
@@ -1410,11 +1422,11 @@ The performance figures of Section \ref{performance} rest on a $k$-mer store tha
 \begin{enumerate}
 	\item The saving of the first point above is smaller for a database as a whole. Both stores carry a Bloom filter of the same size, since the number of entries fixes it and the layout does not touch it.
 
-	\item Without the Bloom filter all $k$-mers of each read must be looked up in the underlying store, and this is when the efficiency of the two store types can actually be compared: the radix store is nearly three times as fast in block (a). The probe count accounts for about two and a half of that. A bisection over the \num[group-separator={,},group-minimum-digits=4]{\dbstat{kmers}{strepto}} $k$-mers of \texttt{strepto} takes 29 probes, one over a bucket of them takes 12. The rest of the improvement is owed to memory access locality. A bucket holds some 34 kilobytes, while the sorted array walks an array of five gigabytes.
+	\item Without the Bloom filter all $k$-mers of each read must be looked up in the underlying store, and this is when the efficiency of the two store types can actually be compared: the radix store is nearly three times as fast in block (a). The probe count accounts for about two and a half of that. The rest of the improvement is owed to memory access locality: a bucket holds some 34 kilobytes, while the sorted array walks an array of five gigabytes.
 
-	\item With the filter switched on almost nothing of that is left, as block (b) shows. The filter answers most $k$-mers of a real read before any store is consulted. The radix store even pays for the indexed read that precedes its own filter query, which is why it falls slightly behind on the saliva run.
+	\item With the filter switched on almost nothing of that is left, as block (b) shows. The filter answers most $k$-mers of a real read before any store is consulted.
 
-	\item The two blocks also state what the filter is worth. For the sorted array it raises the throughput elevenfold, which confirms the range of nine to eleven reported in \citep{genestrip-pub} already. For the radix store it is fourfold. The better layout needs the filter less.
+	\item The two blocks also state what the filter is worth. For the sorted array it raises the throughput elevenfold, which confirms the range of nine to eleven reported in \citep{genestrip-pub} already. For the radix store it is merely fourfold because this layout is better to start with.
 \end{enumerate}
 
     Note that the figures from Table \ref{storeperf} stand against each other but not against Table \ref{matchperf}, which measures whole processes with \num{16} threads, loading included.
