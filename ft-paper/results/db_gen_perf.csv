@@ -1,0 +1,7 @@
+project;label;db_wall_min;db_ram_mb;db_disk_mb;ft_wall_pct;ft_ram_pct;ft_disk_pct;ft_wall_min;ft_ram_mb;db_group_ram_mb;ft_group_ram_mb
+viral;cv;23.0;9163;3214;46.3;70.8;100.4;10.6;6489;15499;10559
+tick-borne;tb;397.9;9434;2794;89.3;126.0;101.8;355.1;11887;47843;55039
+strepto;strepto;431.5;14221;3918;141.3;122.5;103.5;609.5;17423;51250;51250
+nocardia;nocardia;477.1;46433;17308;173.7;83.1;102.0;828.6;38564;56747;55550
+protozoa;protozoa;36.3;23894;8462;46.8;63.2;100.2;17.0;15092;32594;27285
+parasites;parasites;156.0;32850;11450;80.6;63.5;100.0;125.7;20873;56633;56179

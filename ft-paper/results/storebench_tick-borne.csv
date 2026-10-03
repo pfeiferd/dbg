@@ -1,0 +1,9 @@
+project;section;parameter;sorted array;radix store;
+tick-borne;memory;Arrays (MB);3801;3044;
+tick-borne;memory;Bloom filter (MB);475;475;
+tick-borne;memory;Store (MB);4276;3519;
+tick-borne;memory;Heap (MB);4329;3597;
+tick-borne;nofilter;Wall time (min);28.26;8.59;
+tick-borne;nofilter;Speed (reads / s);5926;19504;
+tick-borne;filter;Wall time (min);2.66;2.36;
+tick-borne;filter;Speed (reads / s);62945;71055;

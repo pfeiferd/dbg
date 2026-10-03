@@ -1,0 +1,2 @@
+db;fastq key;model;reads;classified;genus only;genus only share;prec g u;prec g f;obs genus only;prec g ungated u;prec g ungated f;rho u;rho f;
+viral;iss_perfect;error-free;1000000;999859;101439;10.1439;0.10152289408129446;0.19256013546262177;101439;0.10152289408129446;0.19256013546262177;1.0;1.0;

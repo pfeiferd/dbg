@@ -1,0 +1,3 @@
+db;fastq key;read set;read length;per-base error;simulated;in scope;in scope share;unresolved;
+viral;iss_miseq;MiSeq;301;0.7275;998572;998572;100.0;0;
+viral;iss_hiseq;HiSeq;126;0.1956;1000000;1000000;100.0;0;

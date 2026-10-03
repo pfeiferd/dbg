@@ -1,0 +1,2 @@
+db;fastq key;read set;read length;per-base error;simulated;in scope;in scope share;unresolved;
+viral;iss_perfect;error-free;125;0.0100;1000000;1000000;100.0;0;

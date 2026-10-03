@@ -1,0 +1,2 @@
+db;fastq key;model;reads;classified;genus only;genus only share;prec g u;prec g f;obs genus only;prec g ungated u;prec g ungated f;rho u;rho f;
+viral;iss_saliva;saliva-like;1000000;976969;118686;11.8686;0.10368426313438805;0.17963153877262705;115668;0.10647718938300303;0.18433186746607538;0.9737697222776166;0.9745007265533542;

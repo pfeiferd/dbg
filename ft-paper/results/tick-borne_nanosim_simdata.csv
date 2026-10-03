@@ -1,0 +1,9 @@
+db;fastq key;read set;read length;per-base error;simulated;in scope;in scope share;unresolved;
+tick-borne;tick1;Sim. Tick 1;;;;1306989;;0;
+tick-borne;tick2;Sim. Tick 2;;;;102577;;0;
+tick-borne;tick3;Sim. Tick 3;;;;126945;;0;
+tick-borne;tick4;Sim. Tick 4;;;;99348;;0;
+tick-borne;tick5;Sim. Tick 5;;;;189134;;0;
+tick-borne;tick6;Sim. Tick 6;;;;219079;;0;
+tick-borne;tick7;Sim. Tick 7;;;;189528;;0;
+tick-borne;tick8;Sim. Tick 8;;;;213171;;0;

@@ -1,0 +1,16 @@
+scenario;parameter;unrefined;refined;
+(a);Avg. RAM (MB);6251;6309;
+(a);Max. wall time (min);20.87;20.67;
+(a);Avg. wall time (min);17.97;18.00;
+(a);Avg. speed (reads / s);765125;763520;
+(b);Avg. RAM (MB);4141;4192;
+(b);Max. wall time (min);0.45;0.44;
+(b);Avg. wall time (min);0.42;0.42;
+(b);Avg. speed (reads / s);39252;39519;
+(c);RAM (MB);4361;4610;
+(c);Wall time (min);0.82;0.82;
+(c);Speed (reads / s);162814;163399;
+(d);Avg. RAM (MB);8263;8372;
+(d);Max. wall time (min);20.55;20.45;
+(d);Avg. wall time (min);17.94;18.03;
+(d);Avg. speed (reads / s);766144;762561;

@@ -1,0 +1,2 @@
+db;fastq key;model;reads;classified;genus only;genus only share;prec g u;prec g f;obs genus only;prec g ungated u;prec g ungated f;rho u;rho f;
+nocardia;iss_mngs;mNGS-like;1000000;906517;289235;28.9235;0.0024607257767091614;0.12195563770677288;276870;0.0025873718737620464;0.1283707124369866;0.9510522247160624;0.9500269601342074;
