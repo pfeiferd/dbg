@@ -1,0 +1,82 @@
+# =============================================================================
+#  staging  ->  die Vorschau auf der VM
+#
+#  Jeder Checkin auf dem Zweig "staging" wird gebaut und unter
+#  https://<VM>/staging/ abgelegt. Gleicher Server, gleiches Zertifikat,
+#  gleiche Kopfzeilen wie die öffentliche Site - die Vorschau verhält sich also
+#  genau wie das Original, und das Archiv, das dort abgenommen wird, geht später
+#  unverändert live.
+#
+#  Die öffentliche Site bleibt dabei unberührt: die Vorschau liegt in einem
+#  eigenen Verzeichnis neben deren DocumentRoot, nicht darunter.
+#
+#  Ist man zufrieden, merged man staging nach main - erst dann greift live.yml.
+#
+#  Pull Requests werden nur gebaut, nicht ausgeliefert: so merkt man einen
+#  kaputten Build, bevor er auf staging landet.
+#
+#  Secrets wie bei live.yml (VM_HOST, VM_PORT, VM_USER, VM_SSH_KEY,
+#  VM_KNOWN_HOSTS). Die Werte zeigt auf der VM: sudo ./show-deploy-secrets.sh
+# =============================================================================
+name: Staging (Vorschau auf der VM)
+
+on:
+  push:
+    branches: [staging]
+  pull_request:
+    branches: [staging, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Zwei Auslieferungen gleichzeitig würden sich ins Gehege kommen.
+concurrency:
+  group: staging-deploy
+  cancel-in-progress: false
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+    secrets:
+      ENGINE_TOKEN: ${{ secrets.ENGINE_TOKEN }}
+
+  deploy:
+    needs: build
+    # Bei einem Pull Request nur bauen - sonst würde ein beliebiger PR die
+    # Vorschau überschreiben, auf die sich gerade jemand verlässt.
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+      url: ${{ vars.STAGING_URL }}
+    steps:
+      - name: Diese Abläufe auschecken
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github
+          sparse-checkout-cone-mode: false
+
+      - name: Archiv holen
+        uses: actions/download-artifact@v4
+        with:
+          name: site-tarball
+
+      - name: In die Vorschau ausliefern
+        uses: ./.github/actions/deploy-to-vm
+        with:
+          action: deploy-staging
+          host: ${{ secrets.VM_HOST }}
+          port: ${{ secrets.VM_PORT || '22' }}
+          user: ${{ secrets.VM_USER }}
+          ssh-key: ${{ secrets.VM_SSH_KEY }}
+          known-hosts: ${{ secrets.VM_KNOWN_HOSTS }}
+
+      - name: Hinweis
+        run: |
+          {
+            echo "### Vorschau aktualisiert"
+            echo ""
+            echo "Die **öffentliche Site ist unverändert**. Sie wird erst"
+            echo "aktualisiert, wenn \`staging\` nach \`main\` gemerged wird."
+          } >> "$GITHUB_STEP_SUMMARY"

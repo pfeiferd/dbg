@@ -1,0 +1,136 @@
+# =============================================================================
+#  Ein gebautes Site-Archiv auf die VM ausliefern.
+#
+#  Von staging.yml (Vorschau) und live.yml (öffentliche Site) benutzt - der
+#  Weg ist derselbe, nur das Ziel unterscheidet sich.
+#
+#  Geliefert wird über ssh an einen erzwungenen Befehl: in der
+#  authorized_keys des Auslieferungsbenutzers steht
+#  command="sudo -n /usr/local/sbin/dbg-receive-site". Dieser Schlüssel kann
+#  damit nichts anderes als ein Archiv abliefern - keine Shell, keine Pfade.
+#  Welches Ziel gemeint ist, sagt das Wort hinter dem ssh-Aufruf ("deploy"
+#  oder "deploy-staging"); der Empfänger prüft es gegen eine feste Liste.
+# =============================================================================
+name: Auf die VM ausliefern
+description: Liefert site.tar.gz per ssh an den Empfänger auf der VM
+
+inputs:
+  archive:
+    description: Pfad des zu liefernden Archivs
+    required: false
+    default: site.tar.gz
+  action:
+    description: '"deploy" für die öffentliche Site, "deploy-staging" für die Vorschau'
+    required: true
+  host:
+    description: Name oder IP-Adresse der VM
+    required: true
+  port:
+    description: SSH-Port der VM
+    required: false
+    default: '22'
+  user:
+    description: Auslieferungsbenutzer
+    required: true
+  ssh-key:
+    description: privater Schlüssel
+    required: true
+  known-hosts:
+    description: Fingerabdruck der VM
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Secrets prüfen
+      shell: bash
+      env:
+        VM_HOST: ${{ inputs.host }}
+        VM_USER: ${{ inputs.user }}
+        VM_SSH_KEY: ${{ inputs.ssh-key }}
+        VM_KNOWN_HOSTS: ${{ inputs.known-hosts }}
+      run: |
+        set -euo pipefail
+        fehlt=0
+        for name in VM_HOST VM_USER VM_SSH_KEY VM_KNOWN_HOSTS; do
+          if [ -z "${!name:-}" ]; then
+            echo "::error::Das Secret $name ist nicht gesetzt."
+            fehlt=1
+          fi
+        done
+        if [ "$fehlt" -ne 0 ]; then
+          echo "::error::Werte auf der VM anzeigen mit: sudo ./show-deploy-secrets.sh"
+          exit 1
+        fi
+        test -f "${{ inputs.archive }}" \
+          || { echo "::error::${{ inputs.archive }} ist nicht vorhanden."; exit 1; }
+
+    - name: SSH einrichten
+      shell: bash
+      env:
+        VM_SSH_KEY: ${{ inputs.ssh-key }}
+        VM_KNOWN_HOSTS: ${{ inputs.known-hosts }}
+      run: |
+        set -euo pipefail
+        mkdir -p ~/.ssh
+        chmod 700 ~/.ssh
+
+        printf '%s\n' "$VM_SSH_KEY" > ~/.ssh/id_deploy
+        chmod 600 ~/.ssh/id_deploy
+
+        # Der Fingerabdruck der VM, damit nicht blind irgendeinem Gegenüber
+        # vertraut wird. StrictHostKeyChecking bleibt deshalb an.
+        printf '%s\n' "$VM_KNOWN_HOSTS" > ~/.ssh/known_hosts
+        chmod 600 ~/.ssh/known_hosts
+
+        ssh-keygen -l -f ~/.ssh/id_deploy > /dev/null \
+          || { echo "::error::Der Schlüssel ist nicht lesbar (führende Leerzeichen? BEGIN/END-Zeile fehlt?)."; exit 1; }
+
+    - name: Zustand vorher
+      shell: bash
+      env:
+        VM_HOST: ${{ inputs.host }}
+        VM_PORT: ${{ inputs.port }}
+        VM_USER: ${{ inputs.user }}
+      run: |
+        set -euo pipefail
+        ssh -T -i ~/.ssh/id_deploy -p "$VM_PORT" \
+            -o StrictHostKeyChecking=yes -o ConnectTimeout=20 -o BatchMode=yes \
+            "$VM_USER@$VM_HOST" status
+
+    - name: Ausliefern
+      shell: bash
+      env:
+        VM_HOST: ${{ inputs.host }}
+        VM_PORT: ${{ inputs.port }}
+        VM_USER: ${{ inputs.user }}
+        ZIEL: ${{ inputs.action }}
+      run: |
+        set -euo pipefail
+
+        # Der Empfänger prüft das Archiv (index.html, de/index.html,
+        # Mindestzahl an Dateien, keine absoluten Pfade) und schaltet erst dann
+        # um. Schlägt eine Prüfung fehl, bleibt der bisherige Stand stehen.
+        ssh -T -i ~/.ssh/id_deploy -p "$VM_PORT" \
+            -o StrictHostKeyChecking=yes -o ConnectTimeout=20 -o BatchMode=yes \
+            "$VM_USER@$VM_HOST" "$ZIEL" < "${{ inputs.archive }}" | tee ausgabe.txt
+
+        zurueck=rollback
+        [ "$ZIEL" = deploy-staging ] && zurueck=rollback-staging
+
+        {
+          echo '```'
+          cat ausgabe.txt
+          echo '```'
+          echo ""
+          echo "Zurück zum vorherigen Stand, falls etwas nicht stimmt:"
+          echo ""
+          echo '```'
+          echo "ssh -p ${VM_PORT} ${VM_USER}@${VM_HOST} ${zurueck}"
+          echo '```'
+        } >> "$GITHUB_STEP_SUMMARY"
+
+    - name: Schlüssel wieder entfernen
+      if: always()
+      shell: bash
+      run: rm -f ~/.ssh/id_deploy ~/.ssh/known_hosts

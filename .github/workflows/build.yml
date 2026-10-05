@@ -1,0 +1,128 @@
+# =============================================================================
+#  Baut die Site. Wird von den anderen Abläufen aufgerufen, nicht direkt
+#  ausgelöst (`workflow_call`) - so steht der Bauvorgang genau einmal da und
+#  "staging" und "main" bauen nachweislich dasselbe.
+#
+#  Dieses Repo enthält nur den Inhalt (`content/`). Die Engine - pom.xml, src/,
+#  templates/, assets/, jbake.properties - liegt im Repository `site-gen`. Der
+#  Lauf checkt beide aus und baut mit dem Pom der Engine, aber mit dem content/
+#  dieses Repos.
+#
+#  Ergebnis ist immer dasselbe: site.tar.gz als Artefakt. Beide Ziele - die
+#  Vorschau unter /staging/ und die öffentliche Site - bekommen damit ein
+#  bit-identisches Archiv. Was in der Vorschau abgenommen wird, geht also
+#  unverändert live; es wird keine Datei nachträglich angefasst.
+# =============================================================================
+name: Build
+
+on:
+  workflow_call:
+    inputs:
+      engine-ref:
+        description: 'Stand der Engine site-gen. Für reproduzierbare Builds ein Tag.'
+        type: string
+        required: false
+        default: main
+    outputs:
+      files:
+        description: 'Anzahl der gebauten Dateien'
+        value: ${{ jobs.build.outputs.files }}
+    secrets:
+      ENGINE_TOKEN:
+        description: 'Nur nötig, wenn das Repo site-gen privat ist'
+        required: false
+
+env:
+  # Repository der Engine.
+  ENGINE_REPO: pfeiferd/site-gen
+  # Inhaltsordner dieses Repos: das Verzeichnis mit index.md, meta.properties,
+  # de/, images/ ...  Liegt der Inhalt in der Wurzel, hier "." eintragen.
+  CONTENT_DIR: content
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      files: ${{ steps.check.outputs.files }}
+    steps:
+      - name: Inhalt auschecken
+        uses: actions/checkout@v4
+
+      - name: Engine auschecken
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.ENGINE_REPO }}
+          ref: ${{ inputs.engine-ref }}
+          path: .engine
+          # Leer, wenn site-gen öffentlich ist - dann greift der Standardtoken.
+          token: ${{ secrets.ENGINE_TOKEN || github.token }}
+
+      - name: Java einrichten
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      # PlantUML rendert mit Smetana und braucht fontconfig samt einer Schrift.
+      - name: Schriften für PlantUML
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq fontconfig fonts-dejavu-core
+
+      # Engine aus .engine/, Inhalt aus diesem Repo, fertige Site nach site/.
+      - name: Site bauen
+        run: >
+          mvn -B --no-transfer-progress -f .engine/pom.xml clean package
+          -Dcontent.dir="$GITHUB_WORKSPACE/${{ env.CONTENT_DIR }}"
+          -Dsite.dir="$GITHUB_WORKSPACE/site"
+
+      # Ein halb gebautes Ergebnis soll nicht bis zur Auslieferung kommen.
+      # Dieselben Bedingungen prüft der Empfänger auf der VM noch einmal -
+      # hier merkt man es nur früher und sieht es im Build-Protokoll.
+      - name: Ergebnis prüfen
+        id: check
+        run: |
+          set -euo pipefail
+          cd site
+
+          fehlt=0
+          for f in index.html de/index.html; do
+            if [ ! -f "$f" ]; then echo "::error::site/$f fehlt"; fehlt=1; fi
+          done
+          for d in de css js images; do
+            if [ ! -d "$d" ]; then echo "::error::site/$d/ fehlt"; fehlt=1; fi
+          done
+          [ "$fehlt" -eq 0 ] || exit 1
+
+          anzahl=$(find . -type f | wc -l)
+          if [ "$anzahl" -lt 20 ]; then
+            echo "::error::Nur $anzahl Dateien gebaut - das sieht nach einem Fehllauf aus."
+            exit 1
+          fi
+
+          # Reste vom Arbeitsrechner, falls sie über content/ hereingekommen sind.
+          find . -name '.DS_Store' -delete
+          find . -name '._*' -delete
+
+          echo "files=$anzahl" >> "$GITHUB_OUTPUT"
+
+          {
+            echo "### Site gebaut"
+            echo ""
+            echo "* Dateien: **$anzahl**"
+            echo "* Größe: **$(du -sh . | cut -f1)**"
+            echo "* Engine: \`${{ env.ENGINE_REPO }}@${{ inputs.engine-ref }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # Für die VM wird gepackt, nicht einzeln hochgeladen: ein Archiv behält
+      # die Verzeichnisstruktur, lädt schneller und ist genau das, was der
+      # Empfänger auf der VM erwartet.
+      - name: Archiv packen
+        run: tar czf site.tar.gz -C site .
+
+      - name: Archiv ablegen
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-tarball
+          path: site.tar.gz
+          retention-days: 7
+          if-no-files-found: error
