@@ -1,0 +1,298 @@
+#!/bin/bash
+# ---------------------------------------------------------------------------
+# Site von GitHub Actions entgegennehmen
+#
+# Das ist der EINZIGE Befehl, den der Auslieferungsschluessel ausfuehren kann:
+# in ~<deploy_user>/.ssh/authorized_keys steht er als erzwungener Befehl
+# (command="..."), zusammen mit "restrict". Wer den Schluessel besitzt, kann
+# damit also keine Shell oeffnen, keine Pfade angeben und nichts anderes
+# starten - nur hier ein Archiv abliefern.
+#
+# Aufruf ueber ssh, das Archiv kommt auf der Standardeingabe:
+#
+#     tar czf - -C site . | ssh -p PORT <deploy_user>@HOST
+#     tar czf - -C site . | ssh -p PORT <deploy_user>@HOST deploy-staging
+#     ssh -p PORT <deploy_user>@HOST status
+#     ssh -p PORT <deploy_user>@HOST rollback
+#     ssh -p PORT <deploy_user>@HOST rollback-staging
+#
+# "deploy" trifft die oeffentliche Site, "deploy-staging" die Vorschau unter
+# <staging_url_path>/ . Beide haben ihr eigenes Verzeichnis und ihren eigenen
+# Weg zurueck; eine Auslieferung der einen kann der anderen nichts anhaben.
+#
+# Laeuft als root (ueber sudo, siehe /etc/sudoers.d/dbg-deploy), weil
+# <doc_root> root gehoert - der Webserver soll dort nicht schreiben duerfen.
+#
+# Erzeugt von vm-install/scripts/90-deploy.sh - nicht von Hand aendern.
+# ---------------------------------------------------------------------------
+
+set -euo pipefail
+umask 022
+
+# Die beiden Ziele. Getrennte Verzeichnisse, denn beide gleichen mit
+# "rsync --delete" ab: laege die Vorschau unter dem DocumentRoot der
+# oeffentlichen Site, wuerde die naechste Auslieferung sie loeschen.
+DOC_ROOT="<doc_root>"
+STAGING_DOC_ROOT="<staging_doc_root>"
+STAGING_URL_PATH="<staging_url_path>"
+
+# Bewusst NICHT im Heimatverzeichnis des Auslieferungsbenutzers: hier wird das
+# Archiv ausgepackt und geprueft, bevor umgeschaltet wird. Laege das in seinem
+# Heimatverzeichnis, koennte er zwischen Pruefung und Umschalten noch etwas
+# austauschen. Das Verzeichnis gehoert root und ist nur fuer root lesbar.
+WORK_DIR="/var/lib/dbg-site-deploy"
+
+DEPLOY_LOG="/var/log/dbg-deploy.log"
+
+# Die generierte Site ist rund 25 MB. 300 MB als Obergrenze laesst Luft fuer
+# weitere Inhalte und verhindert, dass ein Fehllauf die Platte fuellt.
+MAX_BYTES=$((300 * 1024 * 1024))
+
+# Mindestzahl an Dateien: ein leeres oder halb gebautes Archiv soll die
+# laufende Site nicht ersetzen.
+MIN_FILES=20
+
+say() {
+	printf '%s\n' "$*" >&2
+	logger -t dbg-receive-site -- "$*" 2>/dev/null || true
+	printf '%s  %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" >> "$DEPLOY_LOG" 2>/dev/null || true
+}
+
+die() {
+	say "ABGEBROCHEN: $*"
+	say "Die bisherige Site ist unveraendert."
+	exit 1
+}
+
+mkdir -p "$WORK_DIR"
+chown root:root "$WORK_DIR"
+chmod 0700 "$WORK_DIR"
+touch "$DEPLOY_LOG" 2>/dev/null || true
+chmod 0640 "$DEPLOY_LOG" 2>/dev/null || true
+
+
+# --- Welche Handlung? ------------------------------------------------------
+#
+# Der erzwungene Befehl legt fest, DASS dieses Skript laeuft; was der Aufrufer
+# eigentlich wollte, steht in SSH_ORIGINAL_COMMAND. Deshalb hier eine
+# geschlossene Liste - alles andere wird abgewiesen.
+
+action="${SSH_ORIGINAL_COMMAND:-deploy}"
+action="${action%% *}"
+[ -n "$action" ] && [ "$action" != "-" ] || action=deploy
+
+case "$action" in
+	deploy|deploy-staging|status|rollback|rollback-staging) ;;
+	*) die "Unbekannte Handlung '$action'. Erlaubt sind: deploy, deploy-staging, status, rollback, rollback-staging." ;;
+esac
+
+# Welches Ziel, und wie heisst es in den Meldungen? Jedes Ziel hat sein eigenes
+# Unterverzeichnis unter WORK_DIR, damit sich die Vorgaengerfassungen nicht
+# gegenseitig ueberschreiben.
+case "$action" in
+	*-staging)
+		TARGET_ROOT="$STAGING_DOC_ROOT"
+		TARGET_NAME="Vorschau"
+		TARGET_URL="https://<site_name>${STAGING_URL_PATH}/"
+		TARGET_SLOT="staging"
+		;;
+	*)
+		TARGET_ROOT="$DOC_ROOT"
+		TARGET_NAME="oeffentliche Site"
+		TARGET_URL="https://<site_name>/"
+		TARGET_SLOT="live"
+		;;
+esac
+
+PREVIOUS_DIR="$WORK_DIR/$TARGET_SLOT/previous"
+STAGE="$WORK_DIR/$TARGET_SLOT/stage"
+mkdir -p "$WORK_DIR/$TARGET_SLOT"
+
+
+# --- status ----------------------------------------------------------------
+
+if [ "$action" = status ]; then
+	zeige_ziel() {
+		local name="$1" root="$2" slot="$3" url="$4"
+		printf '%s\n' "$name"
+		printf '  Adresse:      %s\n' "$url"
+		printf '  Verzeichnis:  %s\n' "$root"
+		printf '  Dateien:      %s\n' "$(find "$root" -type f 2>/dev/null | wc -l)"
+		printf '  Groesse:      %s\n' "$(du -sh "$root" 2>/dev/null | cut -f1)"
+		printf '  Stand:        %s\n' "$(date -r "$root/index.html" '+%Y-%m-%d %H:%M:%S' 2>/dev/null || echo unbekannt)"
+		if [ -f "$WORK_DIR/$slot/previous/index.html" ]; then
+			printf '  Vorgaenger:   %s (%s Dateien)\n' \
+				"$(date -r "$WORK_DIR/$slot/previous" '+%Y-%m-%d %H:%M:%S' 2>/dev/null || echo unbekannt)" \
+				"$(find "$WORK_DIR/$slot/previous" -type f 2>/dev/null | wc -l)"
+		else
+			printf '  Vorgaenger:   keiner\n'
+		fi
+		printf '\n'
+	}
+
+	zeige_ziel "Oeffentliche Site" "$DOC_ROOT" live "https://<site_name>/"
+	if [ -d "$STAGING_DOC_ROOT" ]; then
+		zeige_ziel "Vorschau (Zweig staging)" "$STAGING_DOC_ROOT" staging "https://<site_name>${STAGING_URL_PATH}/"
+	fi
+
+	printf 'Letzte Auslieferungen:\n'
+	tail -n 12 "$DEPLOY_LOG" 2>/dev/null | sed 's/^/  /'
+	exit 0
+fi
+
+
+# --- rollback --------------------------------------------------------------
+
+case "$action" in rollback|rollback-staging)
+	[ -f "$PREVIOUS_DIR/index.html" ] || die "Fuer die $TARGET_NAME ist kein Vorgaenger vorhanden."
+
+	say "ROLLBACK der $TARGET_NAME auf die vorherige Fassung"
+
+	# Die jetzige Fassung aufheben, damit der Rollback selbst umkehrbar ist.
+	rm -rf "$WORK_DIR/$TARGET_SLOT/rollback-from"
+	cp -a "$TARGET_ROOT" "$WORK_DIR/$TARGET_SLOT/rollback-from"
+
+	# --checksum: siehe die Begruendung weiter unten beim Umschalten.
+	rsync -a --delete --checksum "$PREVIOUS_DIR/" "$TARGET_ROOT/"
+	rm -rf "$PREVIOUS_DIR"
+	mv "$WORK_DIR/$TARGET_SLOT/rollback-from" "$PREVIOUS_DIR"
+
+	chown -R root:www-data "$TARGET_ROOT"
+	find "$TARGET_ROOT" -type d -exec chmod 0755 {} +
+	find "$TARGET_ROOT" -type f -exec chmod 0644 {} +
+
+	say "ROLLBACK fertig ($TARGET_URL). Ein weiterer Aufruf kehrt ihn wieder um."
+	exit 0
+	;;
+esac
+
+
+# --- deploy ----------------------------------------------------------------
+
+# SSH_CLIENT setzt sshd; sudo laesst sie durch (siehe /etc/sudoers.d/dbg-deploy).
+# Fehlt sie - etwa bei einem Aufruf von Hand auf der VM -, soll das kein Fehler
+# sein.
+client="${SSH_CLIENT:-}"
+client="${client%% *}"
+say "Auslieferung an die $TARGET_NAME beginnt (von ${client:-lokalem Aufruf})"
+
+ARCHIVE="$(mktemp "$WORK_DIR/$TARGET_SLOT/incoming-XXXXXX.tar.gz")"
+trap 'rm -f "$ARCHIVE"' EXIT
+
+# head -c begrenzt die Menge, die ueberhaupt gelesen wird: ein zu grosser
+# Datenstrom kann die Platte nicht fuellen.
+head -c "$((MAX_BYTES + 1))" > "$ARCHIVE"
+
+size="$(stat -c %s "$ARCHIVE")"
+[ "$size" -gt 0 ] || die "Es kamen keine Daten an."
+[ "$size" -le "$MAX_BYTES" ] || die "Das Archiv ist groesser als $((MAX_BYTES / 1024 / 1024)) MB."
+say "Archiv empfangen: $((size / 1024)) KiB"
+
+# Inhaltsverzeichnis pruefen, BEVOR etwas ausgepackt wird: absolute Pfade und
+# Verweise nach oben wuerden sonst ausserhalb des Zielverzeichnisses landen.
+tar tzf "$ARCHIVE" > "$ARCHIVE.list" 2>/dev/null || die "Das Archiv ist kein lesbares tar.gz."
+trap 'rm -f "$ARCHIVE" "$ARCHIVE.list"' EXIT
+
+if grep -qE '^/|^\.\./|/\.\./|^~' "$ARCHIVE.list"; then
+	die "Das Archiv enthaelt absolute Pfade oder Verweise nach oben."
+fi
+
+entries="$(wc -l < "$ARCHIVE.list")"
+[ "$entries" -ge "$MIN_FILES" ] || die "Das Archiv enthaelt nur $entries Eintraege - das sieht nach einem fehlgeschlagenen Build aus."
+
+# Auspacken in ein Zwischenverzeichnis. Die laufende Site bleibt dabei
+# unberuehrt; erst wenn alles geprueft ist, wird umgeschaltet.
+rm -rf "$STAGE"
+mkdir -p "$STAGE"
+tar xzf "$ARCHIVE" -C "$STAGE" --no-same-owner --no-same-permissions \
+	|| die "Das Archiv liess sich nicht auspacken."
+
+# Manche Archive bringen alles in einem einzelnen Oberverzeichnis mit.
+if [ ! -f "$STAGE/index.html" ]; then
+	inner="$(find "$STAGE" -mindepth 2 -maxdepth 2 -name index.html -printf '%h\n' 2>/dev/null | head -1)"
+	if [ -n "$inner" ]; then
+		say "Inhalt liegt in '$(basename "$inner")/' - wird eine Ebene hochgeholt."
+		mv "$inner" "$STAGE.inner"
+		rm -rf "$STAGE"
+		mv "$STAGE.inner" "$STAGE"
+	fi
+fi
+
+# --- Ist das eine brauchbare Site? -----------------------------------------
+
+[ -f "$STAGE/index.html" ]    || die "Im Archiv fehlt die index.html - das ist der Einstieg."
+[ -f "$STAGE/de/index.html" ] || die "Im Archiv fehlt de/index.html."
+
+for d in de css js images; do
+	[ -d "$STAGE/$d" ] || die "Im Archiv fehlt das Verzeichnis $d/."
+done
+
+files="$(find "$STAGE" -type f | wc -l)"
+say "Geprueft: $files Dateien, $(du -sh "$STAGE" | cut -f1)"
+
+# Sachen, die in einem Build nichts zu suchen haben.
+find "$STAGE" -name '.DS_Store' -delete 2>/dev/null || true
+find "$STAGE" -name '._*' -delete 2>/dev/null || true
+rm -rf "$STAGE/.git"
+
+# --- Vorgaenger aufheben ---------------------------------------------------
+#
+# Eine Fassung zurueck, damit ein missglueckter Build sofort umkehrbar ist
+# ("rollback"). Kein Backup im eigentlichen Sinn - die Site ist jederzeit neu
+# zu bauen -, sondern ein kurzer Weg zurueck.
+
+if [ -f "$TARGET_ROOT/index.html" ]; then
+	rm -rf "$PREVIOUS_DIR.tmp"
+	cp -a "$TARGET_ROOT" "$PREVIOUS_DIR.tmp"
+	rm -rf "$PREVIOUS_DIR"
+	mv "$PREVIOUS_DIR.tmp" "$PREVIOUS_DIR"
+fi
+
+# --- Umschalten ------------------------------------------------------------
+#
+# rsync gleicht ab statt zu ueberschreiben: Dateien, die es nicht mehr gibt,
+# verschwinden auch hier - eine geloeschte Seite bleibt nicht als Ruine
+# erreichbar. --delete-after loescht erst, wenn alles Neue uebertragen ist.
+
+# --checksum ist hier nicht Luxus, sondern notwendig: rsync entscheidet
+# normalerweise nach Groesse und Aenderungszeit, ob eine Datei uebertragen
+# werden muss. tar schreibt die Aenderungszeit aber nur sekundengenau - zwei
+# Faellen einer Seite, die gleich lang sind und in derselben Sekunde entstanden,
+# gelten damit als identisch und die Aenderung kaeme NICHT an. Genau das ist
+# beim Testen passiert. Mit --checksum entscheidet der Inhalt; fuer die rund
+# 25 MB der Site kostet das den Bruchteil einer Sekunde.
+mkdir -p "$TARGET_ROOT"
+rsync --archive --delete --delete-after --checksum \
+	--chown=root:www-data --chmod=D0755,F0644 \
+	"$STAGE/" "$TARGET_ROOT/"
+
+chown -R root:www-data "$TARGET_ROOT"
+find "$TARGET_ROOT" -type d -exec chmod 0755 {} +
+find "$TARGET_ROOT" -type f -exec chmod 0644 {} +
+
+rm -rf "$STAGE"
+
+# --- Nachsehen, ob die Site antwortet --------------------------------------
+
+# Mit --resolve ueber die Loopback-Schnittstelle, also unabhaengig von DNS und
+# Firewall; -k, weil das Zertifikat bei TLS_MODE=selfsigned nicht pruefbar ist.
+#
+# Ist die Vorschau mit einer Anmeldung geschuetzt, antwortet sie hier mit 401 -
+# das ist dann der Beweis, dass der Schutz greift, und kein Fehler.
+code="$(curl -sk -o /dev/null -w '%{http_code}' --max-time 10 \
+	--resolve "<site_name>:443:127.0.0.1" "$TARGET_URL" 2>/dev/null)" || true
+[ -n "$code" ] || code=000
+
+case "$code" in
+	200)
+		say "FERTIG: $files Dateien an die $TARGET_NAME ausgeliefert, $TARGET_URL antwortet mit 200."
+		;;
+	401)
+		say "FERTIG: $files Dateien an die $TARGET_NAME ausgeliefert. $TARGET_URL verlangt eine Anmeldung (401) - so gewollt."
+		;;
+	*)
+		say "FERTIG: $files Dateien ausgeliefert - aber $TARGET_URL antwortet mit $code."
+		say "Nachsehen auf der VM: tail /var/log/apache2/error.log"
+		exit 1
+		;;
+esac

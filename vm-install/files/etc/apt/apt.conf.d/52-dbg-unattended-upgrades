@@ -1,0 +1,33 @@
+// ---------------------------------------------------------------------------
+// Automatische Sicherheitsaktualisierungen fuer die DBG-Website-VM
+// Abgelegt als /etc/apt/apt.conf.d/52-dbg-unattended-upgrades
+//
+// Eine hohe Nummer im Dateinamen sorgt dafuer, dass diese Werte die der
+// mitgelieferten 20auto-upgrades und 50unattended-upgrades ueberschreiben.
+// ---------------------------------------------------------------------------
+
+APT::Periodic::Update-Package-Lists "1";
+APT::Periodic::Download-Upgradeable-Packages "1";
+APT::Periodic::Unattended-Upgrade "1";
+APT::Periodic::AutocleanInterval "7";
+
+// Nur Sicherheitsaktualisierungen einspielen - sonst kann ein normales
+// Paketupdate unbemerkt die Apache-Konfiguration umstellen.
+Unattended-Upgrade::Allowed-Origins {
+        "${distro_id}:${distro_codename}-security";
+        "${distro_id}ESMApps:${distro_codename}-apps-security";
+        "${distro_id}ESM:${distro_codename}-infra-security";
+};
+
+// Nicht mehr benoetigte Kernel und Abhaengigkeiten entfernen, damit /boot
+// nicht volllaeuft.
+Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";
+Unattended-Upgrade::Remove-New-Unused-Dependencies "true";
+
+// Nur neu starten, wenn es noetig ist - und dann nachts.
+Unattended-Upgrade::Automatic-Reboot "true";
+Unattended-Upgrade::Automatic-Reboot-WithUsers "false";
+Unattended-Upgrade::Automatic-Reboot-Time "04:30";
+
+Unattended-Upgrade::Mail "<admin_email>";
+Unattended-Upgrade::MailReport "on-change";

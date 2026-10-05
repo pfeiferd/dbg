@@ -1,0 +1,5 @@
+# Der generierte Site-Inhalt wird von make-bundle.sh hierher kopiert und
+# gehoert nicht in die Versionsverwaltung - er entsteht aus content/ und
+# target/website/.
+/site/*
+!/site/.gitkeep

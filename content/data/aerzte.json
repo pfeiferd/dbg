@@ -1,0 +1,507 @@
+[
+ {
+  "lat": 50.626816,
+  "lon": 12.562096,
+  "title": "Dr. med. Harald Bennefeld",
+  "land": "Deutschland",
+  "subtitle": "Heinrich-Braun-Klinikum Zwickau",
+  "lines": [
+   "Schneeberger Straße 36",
+   "08107 Kirchberg",
+   "Arzt für Neurochirurgie, Zusatzbezeichnungen: Sportmedizin, Verkehrsmedizin, Gesundheitlicher Umweltschutz (ÄKSH), Weitere Ausbildungen: Sozialmedizin, Naturheilkunde",
+   "Tel. 037602 81801",
+   "bennefeld.infections@gmail.com"
+  ],
+  "href": "https://www.heinrich-braun-klinikum.de/kirchberg.php",
+  "hrefText": "heinrich-braun-klinikum.de/kirchberg.php",
+  "land_en": "Germany"
+ },
+ {
+  "lat": 52.402275,
+  "lon": 13.257133,
+  "title": "Dr. med. Karsten Ostermann M.A.",
+  "land": "Deutschland",
+  "subtitle": "BIM Teltow",
+  "lines": [
+   "Potsdamer Str. 48",
+   "14513 Teltow",
+   "Tel. 03328 459450",
+   "info@bim-teltow.de",
+   "Privat"
+  ],
+  "href": "http://www.bim-teltow.de/",
+  "hrefText": "bim-teltow.de",
+  "land_en": "Germany"
+ },
+ {
+  "lat": 51.853139,
+  "lon": 13.709243,
+  "title": "Dr. med. Frank Riedel",
+  "land": "Deutschland",
+  "subtitle": "Praxis für Biologische Medizin",
+  "lines": [
+   "Karl-Marx-Str. 1",
+   "15926 Luckau",
+   "Allgemeinmedizin, Zusatzbezeichnung Akupunktur, Experte f. Biolog. Medizin & Schmerzmedizin",
+   "Tel. 03544 2232",
+   "info@riedel-luckau.de",
+   "Kasse und Privat"
+  ],
+  "href": "http://www.riedel-luckau.de/",
+  "hrefText": "riedel-luckau.de",
+  "land_en": "Germany"
+ },
+ {
+  "lat": 53.669179,
+  "lon": 10.070222,
+  "title": "Heilpraxis Elisabeth Gullans",
+  "land": "Deutschland",
+  "subtitle": "Heilpraxis Elisabeth Gullans",
+  "lines": [
+   "Poppenbütteler Bogen 31",
+   "22399 Hamburg",
+   "Heilpraktikerin & M.sc. Mikrobiologie",
+   "Tel. 040 24181218",
+   "heilpraxis.gullans@gmail.com",
+   "Privat und Selbstzahler"
+  ],
+  "href": "https://www.heilpraxis-gullans.de/",
+  "hrefText": "heilpraxis-gullans.de",
+  "land_en": "Germany"
+ },
+ {
+  "lat": 53.638907,
+  "lon": 10.15174,
+  "title": "Susanne Gullans",
+  "land": "Deutschland",
+  "subtitle": "Praxis für komplementäre Medizin",
+  "lines": [
+   "Wiesenkamp 5",
+   "22359 Hamburg",
+   "Tel. 040 688 70 999",
+   "susanne.gullans@gullans.de",
+   "Privat"
+  ],
+  "href": "http://www.gullans.de/",
+  "hrefText": "gullans.de",
+  "land_en": "Germany"
+ },
+ {
+  "lat": 54.164487,
+  "lon": 9.316788,
+  "title": "Dr. Ute Lang",
+  "land": "Deutschland",
+  "subtitle": "Hausarztpraxis Dr. Ute Lang",
+  "lines": [
+   "Dorfstr. 24",
+   "25767 Bunsoh",
+   "Allgemeinmedizin",
+   "Tel. 04835 553",
+   "Kasse"
+  ],
+  "href": "https://www.bunsohdoc.de/",
+  "hrefText": "bunsohdoc.de",
+  "land_en": "Germany"
+ },
+ {
+  "lat": 51.389069,
+  "lon": 7.002101,
+  "title": "Gernot Wagemanns",
+  "land": "Deutschland",
+  "subtitle": "Praxis für Allgemeinmedizin",
+  "lines": [
+   "Grafenstr. 52",
+   "45239 Essen",
+   "Allgemeinmedizin",
+   "Tel. 0201 49913",
+   "g.wagemanns@t-online.de",
+   "IgeL & Privat"
+  ],
+  "land_en": "Germany"
+ },
+ {
+  "lat": 50.903486,
+  "lon": 6.937983,
+  "title": "Dr. Marion Neumann",
+  "land": "Deutschland",
+  "subtitle": "Praxis Dr. Marion Neumann",
+  "lines": [
+   "Indianersiedlung, Kalscheurer Weg, Weg V 20",
+   "50969 Köln",
+   "Allgemeinmedizin, Naturheilkundliche Praxis",
+   "Tel. 0221 39 89 30 80",
+   "dr.marion.neumann@outlook.de"
+  ],
+  "href": "https://www.praxisnaturheilkunde.koeln/",
+  "hrefText": "praxisnaturheilkunde.koeln",
+  "land_en": "Germany"
+ },
+ {
+  "lat": 51.035217,
+  "lon": 7.049385,
+  "title": "Dr. med Michael Schwalb",
+  "land": "Deutschland",
+  "subtitle": "Praxiszentrum für Infektiologie/Borreliosetherapie",
+  "lines": [
+   "Münsters Gässchen 7",
+   "51375 Leverkusen",
+   "Tel. 0214 55630",
+   "doc.schwalb@netcologne.de",
+   "Privat"
+  ],
+  "href": "http://www.praxis-schwalb.de/",
+  "hrefText": "praxis-schwalb.de",
+  "land_en": "Germany"
+ },
+ {
+  "lat": 50.623876,
+  "lon": 6.939714,
+  "title": "Priv.Doz. Dr. med. W. Berghoff",
+  "land": "Deutschland",
+  "lines": [
+   "Telemannstr. 1",
+   "53359 Rheinbach",
+   "Tel. 02226 2043",
+   "dr.f.berghoff@praxis-berghoff.de",
+   "Privat"
+  ],
+  "href": "http://www.praxis-berghoff.de/",
+  "hrefText": "praxis-berghoff.de",
+  "land_en": "Germany"
+ },
+ {
+  "lat": 51.420467,
+  "lon": 7.448892,
+  "title": "Univ.-Prof. Dr. med. Michael Schietzel",
+  "land": "Deutschland",
+  "subtitle": "Praxis Herdecke",
+  "lines": [
+   "Wittbräucker Straße 16",
+   "58313 Herdecke",
+   "Tel. 02330 6062 183",
+   "praxis.drschietzel@mail.de",
+   "Privat"
+  ],
+  "href": "https://www.professor-schietzel.de/",
+  "hrefText": "professor-schietzel.de",
+  "land_en": "Germany"
+ },
+ {
+  "lat": 51.432335,
+  "lon": 7.466866,
+  "title": "Annette Siebert",
+  "land": "Deutschland",
+  "lines": [
+   "Viermärker Weg 5",
+   "58313 Herdecke",
+   "Fachärztin für Psychiatrie und Psychotherapie",
+   "Tel. 02330 8918 762",
+   "praxis-siebert@t-online.de",
+   "Privat"
+  ],
+  "href": "http://www.privat-praxis-siebert.de/",
+  "hrefText": "privat-praxis-siebert.de",
+  "land_en": "Germany"
+ },
+ {
+  "lat": 49.699994,
+  "lon": 9.261049,
+  "title": "Prof. Dr. med. Timo Lamersdorf",
+  "land": "Deutschland",
+  "lines": [
+   "Obere Walldürner Str. 17",
+   "63897 Miltenberg",
+   "Tel. 09371 6018340",
+   "info@medicoallianz.de",
+   "Privat"
+  ],
+  "href": "http://www.medicoallianz.de/",
+  "hrefText": "medicoallianz.de",
+  "land_en": "Germany"
+ },
+ {
+  "lat": 49.863202,
+  "lon": 8.664331,
+  "title": "Dr. med. Notburg Glass",
+  "land": "Deutschland",
+  "lines": [
+   "Osannstraße 26",
+   "64285 Darmstadt",
+   "Internistin",
+   "Tel. 0178 406 9020",
+   "Praxisglass@gmail.com",
+   "Privat & Selbstzahler"
+  ],
+  "href": "http://www.praxis-glass.de/",
+  "hrefText": "praxis-glass.de",
+  "land_en": "Germany"
+ },
+ {
+  "lat": 49.315795,
+  "lon": 6.752973,
+  "title": "Dr. med. Dr. med. dent. Herbert Rixecker",
+  "land": "Deutschland",
+  "lines": [
+   "Kavalleriestraße 18",
+   "66740 Saarlouis",
+   "Facharzt für Mund- Kiefer- Gesichtschirurgie",
+   "Tel. 06831 48028",
+   "info@eic-online.de",
+   "Kasse & Privat"
+  ],
+  "href": "http://www.eic-online.de/",
+  "hrefText": "eic-online.de",
+  "land_en": "Germany"
+ },
+ {
+  "lat": 49.325737,
+  "lon": 8.444584,
+  "title": "Dr. Rainer Mutschler M.A.",
+  "land": "Deutschland",
+  "subtitle": "BioMedicalCenter Speyer",
+  "lines": [
+   "Carl Dupré Str. 1",
+   "67346 Speyer",
+   "Tel. 06232 4991060",
+   "info@biomedical-center.de",
+   "Privat"
+  ],
+  "href": "https://biomedical-center.de/",
+  "hrefText": "biomedical-center.de",
+  "land_en": "Germany"
+ },
+ {
+  "lat": 48.777891,
+  "lon": 8.203088,
+  "title": "Dr. med. Bernhard Klima",
+  "land": "Deutschland",
+  "subtitle": "Privatpraxis für innere Medizin, Naturheilverfahren & integrative Medizin",
+  "lines": [
+   "Pariser Ring 37",
+   "76532 Baden-Baden",
+   "Facharzt für Innere Medizin",
+   "Tel. 07221 9964182",
+   "Privat & Selbstzahler"
+  ],
+  "href": "http://www.praxis-dr-klima.de/",
+  "hrefText": "praxis-dr-klima.de",
+  "land_en": "Germany"
+ },
+ {
+  "lat": 49.146569,
+  "lon": 9.22518,
+  "title": "Dr. med. Markus Pfisterer",
+  "land": "Deutschland",
+  "subtitle": "Praxis Dr. Pfisterer",
+  "lines": [
+   "Gartenstraße 75",
+   "74076 Heilbronn",
+   "Arzt für Naturheilverfahren und Akupunktur",
+   "Tel. 07131 204575",
+   "info@drpfisterer.de",
+   "Privat & Selbstzahler"
+  ],
+  "href": "http://www.drpfisterer.de/",
+  "hrefText": "drpfisterer.de",
+  "land_en": "Germany"
+ },
+ {
+  "lat": 48.889807,
+  "lon": 8.698949,
+  "title": "Dr. med. Jan-Olaf Reinhardt / Dr. med. Wolfgang Kleemann",
+  "land": "Deutschland",
+  "subtitle": "Praxis Dr. med. Jan-Olaf Reinhardt / Dr. med. Wolfgang Klemann",
+  "lines": [
+   "Leopoldstr. 17",
+   "75172 Pforzheim",
+   "Tel. 07231 313159",
+   "info@reinhardt-klemann.de",
+   "Privat"
+  ],
+  "href": "https://www.reinhardt-klemann.de/",
+  "hrefText": "reinhardt-klemann.de",
+  "land_en": "Germany"
+ },
+ {
+  "lat": 48.39633,
+  "lon": 10.879169,
+  "title": "Mihail Pruteanu",
+  "land": "Deutschland",
+  "subtitle": "ArminLabs GmbH",
+  "lines": [
+   "Zirbelstr. 58",
+   "86154 Augsburg",
+   "Labormedizin",
+   "Tel. 0821 780 931 50",
+   "info@arminlabs.com",
+   "IgeL & Privat"
+  ],
+  "href": "http://www.arminlabs.com/",
+  "hrefText": "arminlabs.com",
+  "land_en": "Germany"
+ },
+ {
+  "lat": 48.365026,
+  "lon": 10.910228,
+  "title": "Dr. med. Sigrid Blehle, MBA",
+  "land": "Deutschland",
+  "subtitle": "Alviasana - Privatpraxis für zeckenübertragene Erkrankungen und chronische Infektionen",
+  "lines": [
+   "Nagahama-Allee 75",
+   "86153 Augsburg",
+   "Allgemeinmedizin",
+   "Tel. 0821 2440 5600",
+   "info@alviasana.com",
+   "Privat & Selbstzahler"
+  ],
+  "href": "http://www.alviasana.com/",
+  "hrefText": "alviasana.com",
+  "land_en": "Germany"
+ },
+ {
+  "lat": 48.371925,
+  "lon": 10.892325,
+  "title": "Praxis Dr. med. Eva Dimmendaal",
+  "land": "Deutschland",
+  "subtitle": "Privatärztliche Praxis",
+  "lines": [
+   "Kohlergasse 7",
+   "86152 Augsburg",
+   "Tel. 0821 455 329 0",
+   "info@praxis-dimmendaal.de",
+   "Privat & Selbstzahler"
+  ],
+  "href": "http://www.praxis-dimmendaal.de/",
+  "hrefText": "praxis-dimmendaal.de",
+  "land_en": "Germany"
+ },
+ {
+  "lat": 48.348121,
+  "lon": 10.090983,
+  "title": "Dr. med. Peter Voss",
+  "land": "Deutschland",
+  "lines": [
+   "Eichenweg 23",
+   "89233 Neu-Ulm",
+   "Tel. 0176 36 50 70 90",
+   "prxdr.petervoss@t-online.de",
+   "Privat & Selbstzahler"
+  ],
+  "land_en": "Germany"
+ },
+ {
+  "lat": 49.468928,
+  "lon": 11.118578,
+  "title": "Praxis Dr. med. Charlotte Steiner",
+  "land": "Deutschland",
+  "lines": [
+   "Ewaldstr. 20",
+   "90491 Nürnberg",
+   "Tel. 0911 490 460 15",
+   "info@dr-charlotte-steiner.de"
+  ],
+  "href": "http://www.dr-charlotte-steiner.de/",
+  "hrefText": "dr-charlotte-steiner.de",
+  "land_en": "Germany"
+ },
+ {
+  "lat": 49.302195,
+  "lon": 10.569731,
+  "title": "Dr. med. Michael Wörrlein",
+  "land": "Deutschland",
+  "lines": [
+   "Bütten-Str. 18",
+   "91522 Ansbach",
+   "FA für Allgemeinmedizin",
+   "Tel. 0981 15222",
+   "praxis@dr-woerrlein.de",
+   "Privat"
+  ],
+  "href": "http://www.dr-woerrlein.de/",
+  "hrefText": "dr-woerrlein.de",
+  "land_en": "Germany"
+ },
+ {
+  "lat": 49.621271,
+  "lon": 12.33922,
+  "title": "Dr. med. Lothar Kiehl",
+  "land": "Deutschland",
+  "lines": [
+   "Don-Bosco-Str. 3",
+   "92648 Vohenstrauß",
+   "Tel. 09651 2287",
+   "info@dr-med-kiehl.de",
+   "Privat & Selbstzahler"
+  ],
+  "href": "http://www.dr-med-kiehl.de/",
+  "hrefText": "dr-med-kiehl.de",
+  "land_en": "Germany"
+ },
+ {
+  "lat": 49.660098,
+  "lon": 12.153773,
+  "title": "Dr. med. Lothar Kiehl",
+  "land": "Deutschland",
+  "lines": [
+   "Moosbürger Str. 13",
+   "92637 Weiden",
+   "Tel. 0961 3881783",
+   "info@dr-med-kiehl.de",
+   "Privat & Selbstzahler"
+  ],
+  "href": "http://www.dr-med-kiehl.de/",
+  "hrefText": "dr-med-kiehl.de",
+  "land_en": "Germany"
+ },
+ {
+  "lat": 47.500905,
+  "lon": 8.725135,
+  "title": "Dr. med. Karsten Ostermann M.A.",
+  "land": "Schweiz",
+  "subtitle": "Alpine BioMedical Clinic",
+  "lines": [
+   "Bahnhofplatz 12",
+   "8400 Winterthur",
+   "Allgemeinmedizin",
+   "Tel. +41 52 203 10 11",
+   "info@alpine-biomedical.ch",
+   "Privat"
+  ],
+  "href": "http://alpine-biomedical.ch/",
+  "hrefText": "alpine-biomedical.ch",
+  "land_en": "Switzerland"
+ },
+ {
+  "lat": 47.322214,
+  "lon": 8.529293,
+  "title": "Dr. med. Anwar Giryes",
+  "land": "Schweiz",
+  "subtitle": "Swiss Medical Clinic",
+  "lines": [
+   "Zürichstrasse 52",
+   "8134 Adliswiel",
+   "Tel. +41 44 575 75 95",
+   "info@swissmedicalclinic.com",
+   "Privat"
+  ],
+  "href": "http://www.swissmedicalclinic.com/",
+  "hrefText": "swissmedicalclinic.com",
+  "land_en": "Switzerland"
+ },
+ {
+  "lat": 47.392291,
+  "lon": 8.389235,
+  "title": "Dr.med.Claudio Lorenzet",
+  "land": "Schweiz",
+  "lines": [
+   "Im Schlittental 3",
+   "8962 Bergdietikon (AG)",
+   "Facharzt FMH für AllgemeineInnere Medizin",
+   "Tel. +41 44 741 06 91",
+   "clorenzet@bluewin.ch"
+  ],
+  "href": "http://www.lorenzet.ch/",
+  "hrefText": "lorenzet.ch",
+  "land_en": "Switzerland"
+ }
+]

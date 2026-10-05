@@ -1,0 +1,24 @@
+# ---------------------------------------------------------------------------
+# Der Auslieferungsbenutzer darf genau ein Programm als root starten:
+# den Empfaenger der Site. Und zwar ohne Parameter - das "" am Ende der Zeile
+# erlaubt ausdruecklich NUR den Aufruf ohne Argumente. Mit Parametern (etwa
+# einem anderen Zielpfad) weist sudo ihn ab.
+#
+# Noetig, weil <doc_root> root gehoert: der Webserver soll dort nur lesen
+# duerfen, und der Auslieferungsbenutzer soll ausserhalb dieses einen
+# Programms nichts koennen.
+#
+# Abgelegt als /etc/sudoers.d/dbg-deploy, Rechte 0440.
+# Erzeugt von vm-install/scripts/90-deploy.sh.
+# ---------------------------------------------------------------------------
+
+# Welche Handlung gewuenscht ist (deploy, status, rollback), steht in
+# SSH_ORIGINAL_COMMAND. sudo leert die Umgebung normalerweise, diese Variablen
+# muessen also durchgelassen werden. SSH_ORIGINAL_COMMAND wird im Empfaenger
+# gegen eine geschlossene Liste geprueft, nicht ausgefuehrt; SSH_CLIENT und
+# SSH_CONNECTION dienen nur dazu, die Herkunft der Auslieferung zu
+# protokollieren.
+Defaults:<deploy_user> env_keep += "SSH_ORIGINAL_COMMAND SSH_CLIENT SSH_CONNECTION"
+
+# Kein Passwort: der Aufruf kommt aus einer nicht interaktiven Sitzung.
+<deploy_user> ALL=(root) NOPASSWD: /usr/local/sbin/dbg-receive-site ""

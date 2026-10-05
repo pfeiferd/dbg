@@ -1,0 +1,111 @@
+# ---------------------------------------------------------------------------
+# fail2ban-Regeln fuer die DBG-Website-VM
+# Abgelegt als /etc/fail2ban/jail.d/dbg.local
+#
+# Bewusst eine eigene Datei unter jail.d/ und nicht die grosse jail.local:
+# so bleibt die mitgelieferte jail.conf unangetastet und ein Paketupdate
+# kann nichts ueberschreiben. Was hier nicht aufgefuehrt ist, bleibt aus.
+#
+# Stand ansehen:   fail2ban-client status
+#                  fail2ban-client status sshd
+# Sperre loesen:   fail2ban-client set sshd unbanip 203.0.113.5
+# ---------------------------------------------------------------------------
+
+[DEFAULT]
+
+# Sperren werden ueber ufw gesetzt - dieselbe Instanz, die auch die Firewall
+# verwaltet. Wichtig auf Ubuntu 24.04/26.04: ein Mischbetrieb von ufw und
+# direkten iptables-Regeln fuehrt sonst zu Sperren, die nie greifen.
+banaction = ufw
+banaction_allports = ufw
+
+bantime  = <fail2ban_bantime>
+findtime = <fail2ban_findtime>
+maxretry = <fail2ban_maxretry>
+
+# Wiederholungstaeter laenger sperren: beim zweiten Mal doppelt so lang usw.
+bantime.increment = true
+bantime.factor = 2
+bantime.maxtime = 1w
+
+ignoreip = <fail2ban_ignoreip>
+
+destemail = <admin_email>
+sender    = fail2ban@<site_name>
+action    = %(action_)s
+
+
+# --- SSH -------------------------------------------------------------------
+
+[sshd]
+enabled  = true
+port     = <ssh_port>
+mode     = aggressive
+
+# Die Anmeldeversuche aus dem Journal lesen statt aus /var/log/auth.log: das
+# funktioniert unabhaengig davon, ob rsyslog installiert ist - auf neueren
+# Ubuntu-Versionen ist es das nicht mehr zwingend. Nur hier gesetzt, denn die
+# Apache-Regeln weiter unten lesen echte Dateien.
+backend  = systemd
+
+
+# --- Apache ----------------------------------------------------------------
+#
+# Die Site ist statisch: es gibt keine Anmeldung, kein PHP, keine
+# Formularverarbeitung. Jeder Versuch in dieser Richtung ist ein Abtasten und
+# darf sofort gesperrt werden.
+
+# Fehlgeschlagene HTTP-Basic-Auth (derzeit nirgends eingerichtet, aber falls
+# spaeter ein geschuetzter Bereich dazukommt, greift die Regel sofort).
+[apache-auth]
+enabled  = true
+port     = http,https
+logpath  = %(apache_error_log)s
+
+# Suche nach Skripten, die es hier nicht gibt (/wp-login.php, /admin, ...).
+[apache-noscript]
+enabled  = true
+port     = http,https
+logpath  = %(apache_error_log)s
+maxretry = 2
+
+# Ueberlange oder missgebildete Anfragen.
+[apache-overflows]
+enabled  = true
+port     = http,https
+logpath  = %(apache_error_log)s
+maxretry = 2
+
+# Bekannte Schadbots und Abtastwerkzeuge im User-Agent.
+[apache-badbots]
+enabled  = true
+port     = http,https
+logpath  = %(apache_access_log)s
+maxretry = 2
+
+# Abtasten nach typischen Angriffspfaden.
+[apache-botsearch]
+enabled  = true
+port     = http,https
+logpath  = %(apache_error_log)s
+maxretry = 2
+
+# Versuche, ueber GET/POST eine fremde URL einzuschleusen.
+[php-url-fopen]
+enabled  = true
+port     = http,https
+logpath  = %(apache_access_log)s
+
+
+# --- Wiederholungstaeter ---------------------------------------------------
+#
+# Wer trotz mehrfacher Sperre wiederkommt, wird fuer eine Woche auf allen
+# Ports gesperrt.
+
+[recidive]
+enabled  = true
+logpath  = /var/log/fail2ban.log
+backend  = auto
+bantime  = 1w
+findtime = 1d
+maxretry = 5
