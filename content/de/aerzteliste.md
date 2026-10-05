@@ -5,7 +5,7 @@ headingNumbers=false
 ~~~~~~
 
 # Ärzte- und Therapeutenliste
-
+ 
 Es wenden sich immer mehr rat- und hilfesuchende Patienten mit dem Wunsch nach Ansprechpartnern zum Thema "Borreliose" und assoziierten Erkrankungen an die Deutsche Borreliose-Gesellschaft e.V.. Die DBG selbst darf aber als eingetragener Verein weder Beratung noch medizinische Ratschläge geben. Stattdessen stellen wir hier eine Liste von Medizinern und medizinischer Einrichtungen zur Verfügung, die Mitglieder der Deutschen Borreliose-Gesellschaft e.V. sind und die sich mit dem Thema Borreliose und assoziierten Erkrankungen beschäftigen.
 
 ```map
