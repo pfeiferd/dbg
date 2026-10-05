@@ -42,6 +42,23 @@ step "GitHub-Secrets fuer die Auslieferung"
 # die IP-Adresse, solange er auf diese Maschine zeigt.
 public_ip="$(curl -fsS --max-time 8 https://api.ipify.org 2>/dev/null || true)"
 
+# Zeigt der Name ueberhaupt schon hierher? Vor dem ersten DNS-Eintrag loest
+# $SITE_NAME nicht auf (oder auf etwas anderes) - dann wuerde GitHub Actions
+# den Namen nicht erreichen. In dem Fall uebergangsweise mit der IP-Adresse
+# arbeiten, sowohl fuer VM_HOST als auch fuer den known_hosts-Eintrag (ssh
+# prueft known_hosts gegen genau die Zeichenkette, mit der verbunden wird).
+dns_ready=no
+if [ -n "$public_ip" ]; then
+	resolved="$(getent hosts "$SITE_NAME" 2>/dev/null | awk '{print $1; exit}' || true)"
+	[ -n "$resolved" ] && [ "$resolved" = "$public_ip" ] && dns_ready=yes
+fi
+
+if [ "$dns_ready" = yes ]; then
+	connect_host="$SITE_NAME"
+else
+	connect_host="${public_ip:-$SITE_NAME}"
+fi
+
 cat <<KOPF
 
 Diese fuenf Secrets im GitHub-Repository anlegen
@@ -49,8 +66,16 @@ Diese fuenf Secrets im GitHub-Repository anlegen
 
 KOPF
 
-printf '  %-18s %s\n' "VM_HOST" "$SITE_NAME"
-[ -n "$public_ip" ] && printf '  %-18s (oeffentliche Adresse dieser VM: %s)\n' "" "$public_ip"
+if [ "$dns_ready" = yes ]; then
+	printf '  %-18s %s\n' "VM_HOST" "$SITE_NAME"
+	[ -n "$public_ip" ] && printf '  %-18s (oeffentliche Adresse dieser VM: %s)\n' "" "$public_ip"
+else
+	warn "$SITE_NAME zeigt noch nicht (oder nicht auf diese Maschine) - DNS-Eintrag fehlt noch."
+	printf '  %-18s %s  (uebergangsweise - %s loest noch nicht auf diese VM auf)\n' "VM_HOST" "$connect_host" "$SITE_NAME"
+	info "Sobald der DNS-Eintrag steht: dieses Skript erneut laufen lassen und VM_HOST"
+	info "sowie VM_KNOWN_HOSTS in GitHub auf die Werte fuer \"$SITE_NAME\" umstellen -"
+	info "der known_hosts-Eintrag gilt nur fuer die Zeichenkette, mit der verbunden wird."
+fi
 printf '  %-18s %s\n' "VM_PORT" "$SSH_PORT"
 printf '  %-18s %s\n' "VM_USER" "$DEPLOY_USER"
 
@@ -74,16 +99,17 @@ ERKL
 # Markierungszeilen einfuegen, die Markierungen selbst nicht.
 if command -v ssh-keyscan >/dev/null 2>&1; then
 	printf -- '----- ab hier kopieren -----\n'
-	# Von der VM selbst abgefragt: hier ist der Schluessel garantiert echt. Der
-	# Name wird eingesetzt, weil der Build die VM unter ihrem Namen anspricht,
-	# nicht unter 127.0.0.1.
+	# Von der VM selbst abgefragt: hier ist der Schluessel garantiert echt.
+	# Eingesetzt wird $connect_host - der Name, sobald DNS ihn hierher
+	# aufloest, sonst uebergangsweise die IP-Adresse - weil der Build die VM
+	# unter genau dieser Zeichenkette anspricht, nicht unter 127.0.0.1.
 	if [ "$SSH_PORT" = 22 ]; then
 		ssh-keyscan -t ssh-ed25519,ecdsa-sha2-nistp256,rsa 127.0.0.1 2>/dev/null \
-			| sed "s|^127\.0\.0\.1|${SITE_NAME}|" || true
+			| sed "s|^127\.0\.0\.1|${connect_host}|" || true
 	else
 		# Bei einem anderen Port verlangt known_hosts die Form [name]:port.
 		ssh-keyscan -p "$SSH_PORT" -t ssh-ed25519,ecdsa-sha2-nistp256,rsa 127.0.0.1 2>/dev/null \
-			| sed "s|^\[127\.0\.0\.1\]:${SSH_PORT}|[${SITE_NAME}]:${SSH_PORT}|" || true
+			| sed "s|^\[127\.0\.0\.1\]:${SSH_PORT}|[${connect_host}]:${SSH_PORT}|" || true
 	fi
 	printf -- '----- bis hier kopieren -----\n'
 else
@@ -151,7 +177,7 @@ cat <<ENDE
 Danach von Hand ausprobieren (vom eigenen Rechner, mit dem privaten
 Schluessel) - das geht auch ohne GitHub:
 
-    ssh -i dbg-deploy -p ${SSH_PORT} ${DEPLOY_USER}@${SITE_NAME} status
+    ssh -i dbg-deploy -p ${SSH_PORT} ${DEPLOY_USER}@${connect_host} status
 
 Das muss den Zustand der Site zeigen. Kommt stattdessen eine Shell, ist der
 erzwungene Befehl nicht aktiv - dann nicht weitermachen.
