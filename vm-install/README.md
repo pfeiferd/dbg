@@ -493,7 +493,16 @@ und Schriften ausnahmslos lokal. Von außen kommen nur die Kartenkacheln der
 Ärzteliste, deshalb stehen in `img-src` zusätzlich `tile.openstreetmap.org` und
 `tile.openstreetmap.de` (`CSP_IMG_HOSTS`).
 
-Kommt eine externe Quelle dazu, gehört sie in `CSP_IMG_HOSTS` bzw. in
+`form-action` begrenzt, wohin ein **Formular** abschicken darf. Die Suche
+bleibt auf der Site, der Spendenknopf auf der Seite „Spenden" schickt aber an
+PayPal – dafür steht `CSP_FORM_HOSTS` (`https://www.paypal.com`). Fehlt der
+Host, bricht der Browser das Abschicken ohne Rückmeldung ab: ein Klick, und
+scheinbar passiert nichts. Nur in der Konsole steht „Refused to send form data
+… violates … form-action". Ein gewöhnlicher Link ist davon nicht betroffen,
+deshalb funktioniert `paypal.me` auf derselben Seite auch ohne Eintrag.
+
+Kommt eine externe Quelle dazu, gehört sie in `CSP_IMG_HOSTS`,
+`CSP_FORM_HOSTS` bzw. in
 `files/etc/apache2/conf-available/dbg-csp.conf`. Zum Ausprobieren ohne
 Nebenwirkungen in dieser Datei `Content-Security-Policy` durch
 `Content-Security-Policy-Report-Only` ersetzen und in der Browser-Konsole
