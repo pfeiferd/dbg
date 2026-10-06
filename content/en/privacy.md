@@ -38,6 +38,8 @@ This website embeds **no analysis or statistics tool**, no advertising networks,
 
 There is one third-party service: on the page "List of physicians and therapists" a map shows the locations, and the map image is loaded from OpenStreetMap. In the process your IP address is transmitted to its servers. All other content of this website – text, images, fonts, scripts – comes exclusively from our own server. Details under "Map display in the list of physicians and therapists".
 
+There is one further third party, and only your click takes you there: on the page "Donations" the donation button takes you to PayPal. As long as you do not press it, nothing is transmitted there – even the PayPal logo on the button is held on our own server. Details under "Donating via PayPal".
+
 The only thing evaluated is the log files of our web server, and this is done on our own server; see "Server log files".
 
 ## General information and mandatory disclosures
@@ -146,6 +148,25 @@ The OSMF is based in the United Kingdom, and the tiles are delivered via servers
 The legal basis for embedding the map is Art. 6(1)(f) GDPR. We have a legitimate interest in presenting the locations comprehensibly – a map does this considerably better than a plain list of addresses.
 
 The transmission takes place on this one page only, and it begins as soon as the page is loaded; it can therefore only be avoided by not opening this page. All other pages of this website load nothing from third parties. The full details of the physicians and therapists are also available without the map, in the list below it; that list can likewise be searched and filtered by country.
+
+### Donating via PayPal
+
+On the page "Donations" there is a donation button that leads to PayPal. Nothing is transmitted to PayPal when the page is opened: the button is rendered by our own server, the PayPal logo on it is held by us as well, and nothing is loaded from PayPal. Only when you press the button does your browser move to PayPal; from that point on PayPal's privacy policy applies.
+
+With that click, the following is transmitted to PayPal:
+
+- your IP address
+- the usual browser identification (browser type and version, operating system)
+- the identifier of our donation form, which indicates that the donation is intended for the DBG
+- everything else you enter there yourself: name, postal address, donation amount and payment details
+
+A PayPal account is not required for this. PayPal asks for your postal address so that we can issue you a donation receipt; we receive from PayPal the name, postal address, amount and date of the donation. We do not receive your payment details – bank account or card number.
+
+The provider is PayPal (Europe) S.à r.l. et Cie, S.C.A., 22–24 Boulevard Royal, L-2449 Luxembourg. Its privacy policy can be found at [paypal.com/de/webapps/mpp/ua/privacy-full](https://www.paypal.com/de/webapps/mpp/ua/privacy-full). PayPal also processes data outside the European Union, in particular in the United States; the basis for this is set out in PayPal's own privacy policy.
+
+The legal basis for handling the donation is Art. 6(1)(b) GDPR (performance of the donation relationship). The donation receipt and the recording of the donation in our accounts serve to comply with legal obligations (Art. 6(1)(c) GDPR); the retention periods applicable to these also determine how long we store this information.
+
+These transmissions can be avoided by not pressing the button. The same page offers the declaration of support for download: anyone who fills it in and sends it to us by post or email donates without any third party being involved. The paypal.me link also given there likewise leads to PayPal; it does not ask for your postal address, but in that case we cannot issue a donation receipt.
 
 ### Enquiries by email, telephone or fax
 
