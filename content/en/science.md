@@ -1,5 +1,5 @@
 title=Science
-navorder=05
+navorder=04
 ~~~~~~
 
 # Science
@@ -77,11 +77,11 @@ preise-preis2014.jpg | 2014; **Dr. Torsten Heinz** – „Immunreaktionen im zen
 
 ## The research prize
 
-The prize consists of an endowment of 2,000 euros, publication of the work by a publishing house free of charge with up to 20 colour pages and 20 free author's copies, as well as the costs of attending the annual conference of the German Borreliosis Society.
+The prize consists of an endowment of 2,000 euros and the costs of attending the annual conference of the German Borreliosis Society.
 
 ### Conditions of participation
 
-Doctoral and postdoctoral theses in the field of Lyme borreliosis and of tick-borne infectious diseases in general may be considered, provided publication is still pending or took place no more than two years ago. Free publication by a publishing house is only envisaged for works not yet published. Works on all aspects of tick-borne infectious diseases will be considered, including
+Doctoral and postdoctoral theses in the field of Lyme borreliosis and of tick-borne infectious diseases in general may be considered, provided publication is still pending or took place no more than two years ago. Works on all aspects of tick-borne infectious diseases will be considered, including
 
 - immunology (interaction between the immune system and the pathogen),
 - pathogenesis,
@@ -96,10 +96,4 @@ The research prize is awarded at the annual conference of the German Borreliosis
 
 ### Application and assessment
 
-Peer-reviewed doctoral or postdoctoral theses will be considered. An application must include the work together with a referee's statement, a summary of no more than two pages, and a curriculum vitae with a list of publications, submitted by email or in duplicate in paper form to Prof. Dr. Prautzsch, Karlsruher Institut für Technologie (KIT), Am Fasanengarten 5, 76131 Karlsruhe, Germany, prautzsch(at)kit.edu. Submitted applications remain with the jury. Applications are possible at any time.
-
-### The donors of the prize
-
-- Deutsche Borreliose-Gesellschaft
-- Dr. Friedrich Eberth Arzneimittel GmbH
-- Josef Eul Verlag
+Peer-reviewed doctoral or postdoctoral theses will be considered. An application must include the work together with a referee's statement, a summary of no more than two pages, and a curriculum vitae with a list of publications, submitted by email or in duplicate in paper form to Prof. Dr. Prautzsch, Karlsruher Institut für Technologie (KIT), Adenauerring 2, 76131 Karlsruhe, Germany, prautzsch(at)kit.edu. Submitted applications remain with the jury. Applications are possible at any time.

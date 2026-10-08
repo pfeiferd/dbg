@@ -1,5 +1,5 @@
 title=Über uns
-navorder=04
+navorder=03
 ~~~~~~
 
 # Über uns
@@ -8,7 +8,7 @@ navorder=04
 
 ## Die Deutsche Borreliose-Gesellschaft
 
-Die Deutsche Borreliose-Gesellschaft e.V. vereinigt Wissenschaftler und Ärzte, die sich mit der Borreliose und assoziierten Infektionskrankheiten befassen. Ziel ist die Entwicklung und Förderung der wissenschaftlichen und praktischen Kenntnisse über das komplizierte und vielfältige Krankheitsgeschehen der Lyme-Borreliose, insbesondere im fortgeschrittenen Stadium.
+Die Deutsche Borreliose-Gesellschaft vereinigt Wissenschaftler und Ärzte, die sich mit der Borreliose und assoziierten Infektionskrankheiten befassen. Ziel ist die Entwicklung und Förderung der wissenschaftlichen und praktischen Kenntnisse über das komplizierte und vielfältige Krankheitsgeschehen der Lyme-Borreliose, insbesondere im fortgeschrittenen Stadium.
 
 Im Einzelnen verfolgt die Gesellschaft folgende Ziele:
 
@@ -36,15 +36,9 @@ vorstand-marion-schneider.jpg   | **Prof. Dr. Marion Schneider**; Professorin; K
 vorstand-hartmut-prautzsch.jpg  | **Prof. Dr. rer. nat. Hartmut Prautzsch**; Ehrenvorsitzender; Karlsruhe; prautzsch(at)deubo.de
 ```
 
-## Beirat
-
-Der neue Beirat wird vrsl. nach erfolgter Vorstandswahl 2026 ebenfalls neu gebildet und dann zeitnah an dieser Stelle aufgeführt.
-
-Es werden noch Bewerber für die Mitarbeit im Beirat gesucht. Bei Interesse melden Sie sich gerne bei der Geschäftsstelle.
-
 ## Mitgliedschaft
 
-Die Deutsche Borreliose-Gesellschaft e.V. freut sich über neue Mitglieder, die sich für die Arbeit der DBG interessieren und an einem Austausch zum Thema Lyme-Borreliose interessiert sind. Sie helfen damit, die Forschung zu dieser Erkrankung anzuregen und unterstützen die Arbeit der Gesellschaft bei Aufklärung und Fortbildung rund um diese Erkrankung. Die Mitglieder tauschen sich dazu untereinander aus und einmal im Jahr findet auch eine Tagung statt. Dort finden dann interessante Vorträge aus Forschung und Praxis statt und anschließend gibt es auch die Möglichkeit zum persönlichen Austausch.
+Die Deutsche Borreliose-Gesellschaft freut sich über neue Mitglieder, die sich für die Arbeit der DBG interessieren und an einem Austausch zum Thema Lyme-Borreliose interessiert sind. Sie helfen damit, die Forschung zu dieser Erkrankung anzuregen und unterstützen die Arbeit der Gesellschaft bei Aufklärung und Fortbildung rund um diese Erkrankung. Die Mitglieder tauschen sich dazu untereinander aus und einmal im Jahr findet auch eine Tagung statt. Dort finden dann interessante Vorträge aus Forschung und Praxis statt und anschließend gibt es auch die Möglichkeit zum persönlichen Austausch.
 
 Die Mitglieder der DBG sind ÄrztInnen oder auf dem Gebiet zeckenübertragener und assoziierter Krankheiten arbeitende WissenschaftlerInnen und LabordiagnostikerInnen. Des Weiteren kann jede/r die DBG als Fördermitglied unterstützen.
 
@@ -57,7 +51,7 @@ Die Mitglieder der DBG sind ÄrztInnen oder auf dem Gebiet zeckenübertragener u
 
 Spenden und Beiträge sind steuerlich abzugsfähig.
 
-Um Mitglied der Deutschen Borreliose-Gesellschaft e.V. zu werden, laden Sie bitte den Mitgliedsantrag bzw. die Förder- oder die Unterstützungserklärung als PDF Datei herunter, füllen diese/n aus und schicken diese/n unterschrieben per Post/Fax/Email (als Scan!) an die darin angegebene Anschrift.  Vielen herzlichen Dank!
+Um Mitglied der Deutschen Borreliose-Gesellschaft zu werden, laden Sie bitte den Mitgliedsantrag bzw. die Förder- oder die Unterstützungserklärung als PDF Datei herunter, füllen diese/n aus und schicken diese/n unterschrieben per Post/Fax/Email (als Scan!) an die darin angegebene Anschrift.  Vielen herzlichen Dank!
 
 Hier der **[Mitgliedsantrag](files/dbg-mitgliedsantrag-2026.pdf)** und die **[Fördererklärung](files/dbg-foerdererklaerung-2026.pdf)** zum Herunterladen.
 
@@ -65,7 +59,7 @@ Hier der **[Mitgliedsantrag](files/dbg-mitgliedsantrag-2026.pdf)** und die **[F�
 
 <img src="gasthof-schwaenlein.jpg" alt="Gasthof Schwänlein" title="Gasthof Schwänlein" style="max-width:420px">
 
-Im November 2003 beschlossen die Mitglieder eines Vereins zur Förderung eines Therapiezentrums, diesen zu beenden. Im Gasthof "Zum Schwänlein" in Nürnberg kam die Idee auf, stattdessen allgemeiner eine medizinische Gesellschaft zu gründen, die der Lyme-Borreliose gewidmet ist. So kam es 2004 zur Gründung der Deutschen Borreliose-Gesellschaft e.V., zu deren Anfangszeit nachfolgend Auszüge aus einer Rede zum 10 jährigen Jubiläum zitiert sind:
+Im November 2003 beschlossen die Mitglieder eines Vereins zur Förderung eines Therapiezentrums, diesen zu beenden. Im Gasthof "Zum Schwänlein" in Nürnberg kam die Idee auf, stattdessen allgemeiner eine medizinische Gesellschaft zu gründen, die der Lyme-Borreliose gewidmet ist. So kam es 2004 zur Gründung der Deutschen Borreliose-Gesellschaft, zu deren Anfangszeit nachfolgend Auszüge aus einer Rede zum 10 jährigen Jubiläum zitiert sind:
 
 *Anders als bei vermutlich den meisten medizinischen und wissenschaftlichen Gesellschaften, führte nicht ein gemeinsames berufliches und fachliches Interesse von Kollegen zur Gründung, sondern eigene Betroffenheit, geschart um die Ideen und Analysen des Pathologen Prof. Johannes Roßner.*
 

@@ -104,6 +104,23 @@
   "land_en": "Germany"
  },
  {
+  "lat": 50.5905273,
+  "lon": 8.7172603,
+  "title": "Dr. med. Tunay Aslan",
+  "land": "Deutschland",
+  "subtitle": "Bioscientia MVZ Labor Mittelhessen",
+  "lines": [
+   "Rudolf-Diesel-Straße 4",
+   "35394 Gießen",
+   "Facharzt für Transfusionsmedizin, Facharzt für Laboratoriumsmedizin, Zusatzbezeichnungen: Hämostaseologie, Ärztliches Qualitätsmanagement",
+   "Tel. 06132 781-0",
+   "Kasse und Privat"
+  ],
+  "href": "https://www.bioscientia.de/",
+  "hrefText": "bioscientia.de",
+  "land_en": "Germany"
+ },
+ {
   "lat": 51.389069,
   "lon": 7.002101,
   "title": "Gernot Wagemanns",
@@ -151,22 +168,6 @@
   ],
   "href": "http://www.praxis-schwalb.de/",
   "hrefText": "praxis-schwalb.de",
-  "land_en": "Germany"
- },
- {
-  "lat": 50.623876,
-  "lon": 6.939714,
-  "title": "Priv.Doz. Dr. med. W. Berghoff",
-  "land": "Deutschland",
-  "lines": [
-   "Telemannstr. 1",
-   "53359 Rheinbach",
-   "Tel. 02226 2043",
-   "dr.f.berghoff@praxis-berghoff.de",
-   "Privat"
-  ],
-  "href": "http://www.praxis-berghoff.de/",
-  "hrefText": "praxis-berghoff.de",
   "land_en": "Germany"
  },
  {
@@ -486,22 +487,6 @@
   ],
   "href": "http://www.swissmedicalclinic.com/",
   "hrefText": "swissmedicalclinic.com",
-  "land_en": "Switzerland"
- },
- {
-  "lat": 47.392291,
-  "lon": 8.389235,
-  "title": "Dr.med.Claudio Lorenzet",
-  "land": "Schweiz",
-  "lines": [
-   "Im Schlittental 3",
-   "8962 Bergdietikon (AG)",
-   "Facharzt FMH für AllgemeineInnere Medizin",
-   "Tel. +41 44 741 06 91",
-   "clorenzet@bluewin.ch"
-  ],
-  "href": "http://www.lorenzet.ch/",
-  "hrefText": "lorenzet.ch",
   "land_en": "Switzerland"
  }
 ]

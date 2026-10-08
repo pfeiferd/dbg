@@ -1,5 +1,5 @@
 title=Aktuelles
-navorder=02
+navorder=01
 # Meldungsliste, keine Gliederung - Abschnitte nicht durchnummerieren.
 headingNumbers=false
 ~~~~~~
@@ -43,8 +43,3 @@ Wir freuen uns, Ihnen das Programm der Herbsttagung / Jahrestagung 2022 endlich 
 
 ### 28.10.2021: Das [Programm der Jahrestagung 2021](veranstaltungen.md) ist online!
 Wir freuen uns, Ihnen das Programm der Herbsttagung / Jahrestagung 2021 endlich online präsentieren zu können. Änderungen vorbehalten.
-
----
-
-### 01.09.2020: Die [Ärzteliste](aerzteliste.md) ist online
-Die Deutsche Borreliose-Gesellschaft e.V. freut sich mitteilen zu können, dass die kurzfristig initiierte [Ärzteliste](aerzteliste.md) nun online verfügbar ist. Die Liste enthält sowohl Mediziner wie auch medizinische Einrichtungen, die sich mit der Behandlung der Borreliose eingehend beschäftigen. Die Liste befindet sich noch im Aufbau und wird kontinuierlich aktualisiert.

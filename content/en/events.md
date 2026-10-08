@@ -1,10 +1,10 @@
 title=Events
-navorder=03
+navorder=02
 ~~~~~~
 
 # Events
 
-Once a year the Deutsche Borreliose-Gesellschaft (DBG) holds a scientific conference for physicians, which is usually recognised by the regional medical associations as continuing medical education and credited with CME points. **The next DBG conference is planned for April 2027 and is being prepared.**
+Once a year the Deutsche Borreliose-Gesellschaft (DBG) holds a scientific conference for physicians, which is usually recognised by the regional medical associations as continuing medical education and credited with CME points. **The next DBG annual conference will take place on 16 and 17 April 2027 in Heilbronn.**
 
 ## Upcoming events
 
@@ -13,7 +13,7 @@ The following table lists upcoming events, international ones included, on the s
 | Period | Event | Location | Link |
 |--------|-------|----------|------|
 | 22 to 25 October 2026 | ILADS Annual Scientific Conference 2026 | Herndon, VA, USA | [Website](http://membercompass.ilads.org/events/2026-ilads-annual-scientific-conference "ILADS Annual Scientific Conference 2026") |
-| April 2027 | DBG conference | to be announced | to be announced |
+| 16 to 17 April 2027 | DBG annual conference 2027 | Heilbronn | to be announced |
 
 ## Past DBG conferences
 

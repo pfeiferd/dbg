@@ -1,5 +1,5 @@
 title=About us
-navorder=04
+navorder=03
 ~~~~~~
 
 # About us
@@ -8,7 +8,7 @@ navorder=04
 
 ## The German Borreliosis Society
 
-The Deutsche Borreliose-Gesellschaft e.V. brings together scientists and physicians who deal with borreliosis and associated infectious diseases. Its aim is to develop and promote scientific and practical knowledge about the complex and varied clinical picture of Lyme borreliosis, particularly at an advanced stage.
+The Deutsche Borreliose-Gesellschaft brings together scientists and physicians who deal with borreliosis and associated infectious diseases. Its aim is to develop and promote scientific and practical knowledge about the complex and varied clinical picture of Lyme borreliosis, particularly at an advanced stage.
 
 In detail, the society pursues the following aims:
 
@@ -36,15 +36,9 @@ vorstand-marion-schneider.jpg   | **Prof. Dr. Marion Schneider**; Professor; Dep
 vorstand-hartmut-prautzsch.jpg  | **Prof. Dr. rer. nat. Hartmut Prautzsch**; Honorary chair; Karlsruhe; prautzsch(at)deubo.de
 ```
 
-## Advisory board
-
-The new advisory board is expected to be formed after the board elections in 2026 and will then be listed here shortly afterwards.
-
-We are still looking for candidates willing to serve on the advisory board. If you are interested, please contact the office.
-
 ## Membership
 
-The Deutsche Borreliose-Gesellschaft e.V. welcomes new members who take an interest in the work of the DBG and in exchanging views on Lyme borreliosis. In doing so you help to stimulate research into this disease and support the society's work in education and training around it. Members exchange their experience with one another, and once a year a conference takes place, with interesting talks from research and practice followed by an opportunity for personal exchange.
+The Deutsche Borreliose-Gesellschaft welcomes new members who take an interest in the work of the DBG and in exchanging views on Lyme borreliosis. In doing so you help to stimulate research into this disease and support the society's work in education and training around it. Members exchange their experience with one another, and once a year a conference takes place, with interesting talks from research and practice followed by an opportunity for personal exchange.
 
 The members of the DBG are physicians, or scientists and laboratory diagnosticians working in the field of tick-borne and associated diseases. In addition, anyone may support the DBG as a sustaining member.
 
@@ -57,7 +51,7 @@ The members of the DBG are physicians, or scientists and laboratory diagnosticia
 
 Donations and membership fees are tax-deductible (in Germany).
 
-To become a member of the Deutsche Borreliose-Gesellschaft e.V., please download the membership application, the sustaining-member declaration or the declaration of support as a PDF file, fill it in and send it signed by post, fax or email (as a scan) to the address given in the form. Thank you very much!
+To become a member of the Deutsche Borreliose-Gesellschaft, please download the membership application, the sustaining-member declaration or the declaration of support as a PDF file, fill it in and send it signed by post, fax or email (as a scan) to the address given in the form. Thank you very much!
 
 The **[membership application](files/dbg-mitgliedsantrag-2026.pdf)** and the **[sustaining-member declaration](files/dbg-foerdererklaerung-2026.pdf)** (both German) are available for download here.
 
@@ -65,7 +59,7 @@ The **[membership application](files/dbg-mitgliedsantrag-2026.pdf)** and the **[
 
 <img src="gasthof-schwaenlein.jpg" alt="Gasthof Schwänlein" title="Gasthof Schwänlein" style="max-width:420px">
 
-In November 2003 the members of an association for the promotion of a therapy centre decided to wind it up. At the inn "Zum Schwänlein" in Nuremberg the idea arose of founding, instead, a medical society devoted more broadly to Lyme borreliosis. This led to the founding of the Deutsche Borreliose-Gesellschaft e.V. in 2004. The following passages about its early days are quoted from a speech given on its tenth anniversary:
+In November 2003 the members of an association for the promotion of a therapy centre decided to wind it up. At the inn "Zum Schwänlein" in Nuremberg the idea arose of founding, instead, a medical society devoted more broadly to Lyme borreliosis. This led to the founding of the Deutsche Borreliose-Gesellschaft in 2004. The following passages about its early days are quoted from a speech given on its tenth anniversary:
 
 *Unlike, presumably, most medical and scientific societies, it was not a shared professional and technical interest among colleagues that led to its foundation, but personal affliction, gathered around the ideas and analyses of the pathologist Prof. Johannes Roßner.*
 

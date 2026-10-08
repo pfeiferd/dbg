@@ -1,5 +1,5 @@
 title=News
-navorder=02
+navorder=01
 # List of news items, not an outline - do not number the sections.
 headingNumbers=false
 ~~~~~~
@@ -43,8 +43,3 @@ We are pleased to be able to present the programme of the 2022 autumn/annual con
 
 ### 28 October 2021: The [programme of the 2021 annual conference](../de/veranstaltungen.md "German only") is online!
 We are pleased to be able to present the programme of the 2021 autumn/annual conference online at last. Subject to change.
-
----
-
-### 1 September 2020: The [list of practitioners](practitioners.md) is online
-The Deutsche Borreliose-Gesellschaft e.V. is pleased to announce that the [list of practitioners](practitioners.md), set up at short notice, is now available online. The list contains both physicians and medical institutions that deal intensively with the treatment of borreliosis. It is still being expanded and is updated continuously.

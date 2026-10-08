@@ -1,5 +1,5 @@
 title=Wissenschaft
-navorder=05
+navorder=04
 ~~~~~~
 
 # Wissenschaft
@@ -71,10 +71,10 @@ preise-preis2014.jpg | 2014; **Dr. Torsten Heinz** – „Immunreaktionen im zen
 
 ## Der Forschungspreis
 
-Der Preis besteht aus einer Dotation in Höhe von 2.000 Euro, einer bis zu 20 Farbseiten kostenlosen Verlagsveröffentlichung der Arbeit mit 20 Autorenfreiexemplaren sowie der Kostenübernahme für den Besuch der Jahrestagung der Deutschen Borreliose-Gesellschaft.
+Der Preis besteht aus einer Dotation in Höhe von 2.000 Euro und der Kostenübernahme für den Besuch der Jahrestagung der Deutschen Borreliose-Gesellschaft.
 
 ### Teilnahmebedingungen
-Ausgezeichnet werden können Dissertationen und Habilitationen auf dem Gebiet der Lyme-Borreliose und allgemein zeckenübertragener Infektionskrankheiten, deren Veröffentlichung noch ansteht oder höchstens zwei Jahre zurückliegt. Eine kostenlose Verlagsveröffentlichung ist nur für noch unveröffentlichte Arbeiten vorgesehen. Berücksichtigt werden Arbeiten zu allen Aspekten zeckenübertragener Infektionskrankheiten wie unter anderem zur
+Ausgezeichnet werden können Dissertationen und Habilitationen auf dem Gebiet der Lyme-Borreliose und allgemein zeckenübertragener Infektionskrankheiten, deren Veröffentlichung noch ansteht oder höchstens zwei Jahre zurückliegt. Berücksichtigt werden Arbeiten zu allen Aspekten zeckenübertragener Infektionskrankheiten wie unter anderem zur
 
 - Immunologie (Interaktion zwischen Immunsystem und Erreger),
 - Pathogenese,
@@ -88,11 +88,4 @@ Ausgezeichnet werden können Dissertationen und Habilitationen auf dem Gebiet de
 Der Forschungspreis wird auf der Jahrestagung der Deutschen Borreliose-Gesellschaft verliehen. Die Preisträger werden gebeten, dabei in einem Vortrag über ihre Arbeit zu berichten.
 
 ### Bewerbung und Bewertung
-Berücksichtigt werden begutachtete Dissertationen oder Habilitationsschriften. Für eine Bewerbung sind die Arbeit mit der Stellungnahme eines Referenten, eine maximal zweiseitige Zusammenfassung, Lebenslauf mit Publikationsliste per Email oder in zweifacher Ausfertigung in Papierform einzureichen über Prof. Dr. Prautzsch, Karlsruher Institut für Technologie (KIT), Am Fasanengarten 5, 76131 Karlsruhe, prautzsch(at)kit.edu. Die eingereichten Anträge verbleiben bei den Juroren. Eine Bewerbung ist jederzeit möglich.
-
-### Die Stifter des Preises
-
-- Deutsche Borreliose-Gesellschaft
-- Dr. Friedrich Eberth Arzneimittel GmbH
-- Josef Eul Verlag
-
+Berücksichtigt werden begutachtete Dissertationen oder Habilitationsschriften. Für eine Bewerbung sind die Arbeit mit der Stellungnahme eines Referenten, eine maximal zweiseitige Zusammenfassung, Lebenslauf mit Publikationsliste per Email oder in zweifacher Ausfertigung in Papierform einzureichen über Prof. Dr. Prautzsch, Karlsruher Institut für Technologie (KIT), Adenauerring 2, 76131 Karlsruhe, prautzsch(at)kit.edu. Die eingereichten Anträge verbleiben bei den Juroren. Eine Bewerbung ist jederzeit möglich.

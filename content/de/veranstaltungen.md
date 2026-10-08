@@ -1,10 +1,10 @@
 title=Veranstaltungen
-navorder=03
+navorder=02
 ~~~~~~
 
 # Veranstaltungen
 
-Die Deutsche Borreliose-Gesellschaft (DBG) veranstaltet einmal jährlich eine wissenschaftliche Fachkonferenz für Ärztinnen und Ärzte, die gewöhnlich von den Ärztekammern als ärztliche Fortbildung anerkannt und mit Fortbildungspunkten (FP) bewertet wird. **Die nächste Fachkonferenz der DBG ist für April 2027 geplant und in Vorbereitung.**
+Die Deutsche Borreliose-Gesellschaft (DBG) veranstaltet einmal jährlich eine wissenschaftliche Fachkonferenz für Ärztinnen und Ärzte, die gewöhnlich von den Ärztekammern als ärztliche Fortbildung anerkannt und mit Fortbildungspunkten (FP) bewertet wird. **Die nächste Jahrestagung der DBG findet am 16. und 17. April 2027 in Heilbronn statt.**
 
 ## Kommende Veranstaltungen
 
@@ -13,7 +13,7 @@ Hier werden kommende, auch internationale Veranstaltungen zu den Themenkomplexen
 | Zeitraum | Veranstaltung | Ort | Link |
 |----------|---------------|-----|------|
 | 22. bis 25.10.2026 | ILADS Annual Scientific Conference 2026 | Herndon, VA, USA | [Website](http://membercompass.ilads.org/events/2026-ilads-annual-scientific-conference "ILADS Annual Scientific Conference 2026") |
-| April 2027 | Fachkonferenz der DBG | noch offen | noch offen |
+| 16. bis 17.04.2027 | Jahrestagung 2027 der DBG | Heilbronn | noch offen |
 
 ## Vergangene Fachkonferenzen der DBG
 
