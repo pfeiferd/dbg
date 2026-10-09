@@ -45,6 +45,11 @@ IP-Adresse an dessen Server übertragen. Alle übrigen Inhalte dieser Website �
 Bilder, Schriften, Skripte – kommen ausschließlich von unserem eigenen Server.
 Einzelheiten unter „Kartenanzeige in der Ärzte- und Therapeutenliste“.
 
+Hinzu kommt ein Dritter, zu dem erst Ihr Klick führt: Auf der Seite „Spenden“ bringt Sie
+der Spendenknopf zu PayPal. Solange Sie ihn nicht drücken, wird dorthin nichts
+übertragen – auch das PayPal-Logo auf dem Knopf liegt auf unserem eigenen Server.
+Einzelheiten unter „Spenden über PayPal“.
+
 Ausgewertet werden allein die Protokolldateien unseres Webservers, und zwar auf unserem
 eigenen Server; siehe „Server-Protokolldateien“.
 
@@ -183,6 +188,47 @@ Seite geladen wird; vermeiden lässt sie sich daher nur, indem Sie diese Seite n
 aufrufen. Alle übrigen Seiten dieser Website laden nichts von Dritten. Die vollständigen
 Angaben zu den Ärztinnen, Ärzten und Therapeuten stehen auch ohne Karte in der Liste
 unterhalb der Karte; diese lässt sich ebenso durchsuchen und nach Land filtern.
+
+### Spenden über PayPal
+
+Auf der Seite „Spenden“ steht ein Spendenknopf, der zu PayPal führt. Beim Aufruf der
+Seite wird noch nichts an PayPal übertragen: Der Knopf wird auf unserem Server
+dargestellt, das PayPal-Logo darauf liegt ebenfalls bei uns, und es wird nichts von
+PayPal nachgeladen. Erst wenn Sie den Knopf drücken, wechselt Ihr Browser zu PayPal; von
+dort an gilt die Datenschutzerklärung von PayPal.
+
+Mit diesem Klick werden an PayPal übertragen:
+
+- Ihre IP-Adresse
+- die übliche Browserkennung (Browsertyp und -version, Betriebssystem)
+- die Kennung unseres Spendenformulars, aus der hervorgeht, dass die Spende der DBG
+  zugedacht ist
+- alles Weitere, was Sie dort selbst eingeben: Name, Anschrift, Spendenbetrag und
+  Zahlungsdaten
+
+Ein PayPal-Konto ist dafür nicht erforderlich. Nach Ihrer Anschrift fragt PayPal, damit
+wir Ihnen eine Spendenquittung ausstellen können; wir erhalten von PayPal Name,
+Anschrift, Betrag und Datum der Spende. Ihre Zahlungsdaten – Bankverbindung oder
+Kartennummer – erhalten wir nicht.
+
+Anbieter ist die PayPal (Europe) S.à r.l. et Cie, S.C.A., 22–24 Boulevard Royal, L-2449
+Luxemburg. Deren Datenschutzerklärung finden Sie unter
+[paypal.com/de/webapps/mpp/ua/privacy-full](https://www.paypal.com/de/webapps/mpp/ua/privacy-full).
+PayPal verarbeitet Daten auch außerhalb der Europäischen Union, insbesondere in den
+Vereinigten Staaten; die Grundlagen dafür nennt PayPal in der eigenen Erklärung.
+
+Rechtsgrundlage für die Abwicklung der Spende ist Art. 6 Abs. 1 lit. b DSGVO
+(Durchführung des Spendenverhältnisses). Die Spendenquittung und die Aufzeichnung der
+Spende in unserer Buchführung erfolgen zur Erfüllung rechtlicher Pflichten
+(Art. 6 Abs. 1 lit. c DSGVO); die dafür geltenden Aufbewahrungsfristen bestimmen auch,
+wie lange wir diese Angaben speichern.
+
+Vermeiden lassen sich diese Übermittlungen, indem Sie den Knopf nicht drücken. Auf
+derselben Seite steht die Unterstützungserklärung zum Herunterladen: Wer sie ausgefüllt
+per Post oder Email an uns sendet, spendet ohne Beteiligung eines Dritten. Der dort
+ebenfalls genannte Link auf paypal.me führt gleichfalls zu PayPal; dort wird nach Ihrer
+Anschrift nicht gefragt, dafür können wir in diesem Fall keine Spendenquittung
+ausstellen.
 
 ### Anfrage per Email, Telefon oder Fax
 

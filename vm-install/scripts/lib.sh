@@ -69,7 +69,7 @@ placeholder_names() {
 		redirect_certificate_file redirect_certificate_key_file \
 		ssh_port ssh_permit_root_login ssh_password_auth ssh_allow_users \
 		ssl_certificate_file ssl_certificate_key_file ssl_stapling \
-		hsts_header csp_img_hosts deploy_user \
+		hsts_header csp_img_hosts csp_form_hosts deploy_user \
 		staging_url_path staging_doc_root \
 		fail2ban_bantime fail2ban_findtime fail2ban_maxretry fail2ban_ignoreip
 }
@@ -96,6 +96,7 @@ placeholder_value() {
 		ssl_stapling)             printf '%s' "${SSL_STAPLING_DIRECTIVE}" ;;
 		hsts_header)              printf '%s' "${HSTS_HEADER_DIRECTIVE}" ;;
 		csp_img_hosts)            printf '%s' "${CSP_IMG_HOSTS}" ;;
+		csp_form_hosts)           printf '%s' "${CSP_FORM_HOSTS}" ;;
 		deploy_user)              printf '%s' "${DEPLOY_USER}" ;;
 		staging_url_path)         printf '%s' "${STAGING_URL_PATH}" ;;
 		staging_doc_root)         printf '%s' "${STAGING_DOC_ROOT}" ;;
