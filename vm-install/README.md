@@ -279,6 +279,7 @@ vm-install/
     etc/apache2/conf-available/dbg-staging-auth.conf  deren Anmeldung (optional)
     etc/apache2/sites-available/dbg-http.conf         Port 80 → https
     etc/apache2/sites-available/dbg-ssl.conf          die Site
+    etc/apache2/sites-available/dbg-weiterleitung.conf  Weiterleitung (REDIRECT_DOMAINS)
     etc/fail2ban/jail.d/dbg.local
     etc/logrotate.d/dbg
     etc/sudoers.d/dbg-deploy                          eine Zeile, ein Programm
@@ -359,6 +360,31 @@ Zertifikate nur beim Start einliest.
 Browser die Site für die angegebene Dauer nur noch per https aufrufen – bei
 einem ungültigen Zertifikat gäbe es dann keinen Weg mehr hinein, und
 zurücknehmen lässt sich die Zusage nicht.
+
+## Weitere Domains, die weiterleiten (`REDIRECT_DOMAINS`)
+
+Domains wie `deubo.de` zeigen nicht die Site, sondern leiten dauerhaft (301) auf
+`https://<SITE_NAME>/` weiter, der Pfad bleibt dabei erhalten. Sie stehen in
+`config/dbg-vm.conf`:
+
+```bash
+REDIRECT_DOMAINS="deubo.de www.deubo.de"
+```
+
+Dafür gibt es ein **eigenes Zertifikat** (`/etc/letsencrypt/live/<erster Name>/`)
+und einen eigenen https-vHost (`files/etc/apache2/sites-available/dbg-weiterleitung.conf`).
+Das Zertifikat der Site hängt damit nicht an diesen Namen: Fehlt bei einem
+davon der DNS-Eintrag, bleibt die Site unberührt. Über http beantwortet sie
+`dbg-http.conf` mit – Nachweispfad für Let's Encrypt inklusive.
+
+- Jeder Name braucht einen DNS-Eintrag (A, ggf. AAAA) auf die VM. `60-tls.sh`
+  prüft vor der Anfrage jeden einzeln und bricht sonst ab.
+- Nachträglich hinzufügen: Namen eintragen, dann
+  `sudo ./install.sh --only apache,tls,site`.
+- Kein HSTS für diese Namen: global steht es mit `includeSubDomains`, das
+  würde sonst alle Subdomains dieser Domain auf https festlegen.
+- Der Dateiname `dbg-weiterleitung.conf` sortiert bewusst hinter `dbg-ssl.conf`:
+  so bleibt die Site der Standard-vHost für Port 443.
 
 ## Offene Ports
 

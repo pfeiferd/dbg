@@ -15,6 +15,10 @@
 #                draussen. Damit laeuft die Site vollstaendig, solange der
 #                DNS-Eintrag noch nicht umgestellt ist; der Browser warnt.
 #
+# Mit REDIRECT_DOMAINS gibt es ein zweites Zertifikat fuer die
+# Weiterleitungsdomains (Name = erster Eintrag). Es wird nach dem der Site
+# beschafft, ein Fehler dort laesst das Zertifikat der Site also unberuehrt.
+#
 # Die Nachweismethode ist webroot, nicht --apache: certbot fasst dann die
 # Apache-Konfiguration nicht an. Was in sites-available steht, bleibt also
 # genau das, was in files/ liegt - nachvollziehbar und wiederholbar.
@@ -23,40 +27,44 @@
 step "Zertifikat beschaffen (TLS_MODE=$TLS_MODE)"
 
 SELFSIGNED_DIR=/etc/ssl/dbg
+SELFSIGNED_REDIRECT_DIR=/etc/ssl/dbg-redirect
 
 # --- selbst ausgestelltes Zertifikat ---------------------------------------
 
+# make_selfsigned <verzeichnis> <name> [weitere namen ...]
 make_selfsigned() {
+	local dir="$1" cn="$2"
+	shift
 	apt_install openssl
 
-	mkdir -p "$SELFSIGNED_DIR"
-	chmod 0700 "$SELFSIGNED_DIR"
+	mkdir -p "$dir"
+	chmod 0700 "$dir"
 
-	if [ -s "$SELFSIGNED_DIR/fullchain.pem" ] && [ -s "$SELFSIGNED_DIR/privkey.pem" ] \
-		&& openssl x509 -in "$SELFSIGNED_DIR/fullchain.pem" -noout -checkend 604800 >/dev/null 2>&1; then
-		info "selbst ausgestelltes Zertifikat ist vorhanden und noch mindestens eine Woche gueltig"
+	if [ -s "$dir/fullchain.pem" ] && [ -s "$dir/privkey.pem" ] \
+		&& openssl x509 -in "$dir/fullchain.pem" -noout -checkend 604800 >/dev/null 2>&1; then
+		info "selbst ausgestelltes Zertifikat fuer $cn ist vorhanden und noch mindestens eine Woche gueltig"
 		return 0
 	fi
 
-	local alt="DNS:${SITE_NAME}" name
-	for name in $SITE_ALIASES; do
-		alt="$alt,DNS:$name"
+	local alt="" name
+	for name in "$@"; do
+		alt="${alt:+$alt,}DNS:$name"
 	done
 
 	openssl req -x509 -newkey rsa:2048 -nodes -sha256 -days 825 \
-		-keyout "$SELFSIGNED_DIR/privkey.pem" \
-		-out    "$SELFSIGNED_DIR/fullchain.pem" \
-		-subj   "/CN=${SITE_NAME}" \
+		-keyout "$dir/privkey.pem" \
+		-out    "$dir/fullchain.pem" \
+		-subj   "/CN=${cn}" \
 		-addext "subjectAltName=${alt}" \
 		-addext "basicConstraints=CA:FALSE" \
 		-addext "keyUsage=digitalSignature,keyEncipherment" \
 		-addext "extendedKeyUsage=serverAuth" \
 		2>/dev/null
 
-	chmod 0600 "$SELFSIGNED_DIR/privkey.pem"
-	chmod 0644 "$SELFSIGNED_DIR/fullchain.pem"
+	chmod 0600 "$dir/privkey.pem"
+	chmod 0644 "$dir/fullchain.pem"
 
-	ok "selbst ausgestelltes Zertifikat erzeugt: $SELFSIGNED_DIR/fullchain.pem"
+	ok "selbst ausgestelltes Zertifikat erzeugt: $dir/fullchain.pem ($*)"
 	warn "Der Browser wird warnen. Fuer ein gueltiges Zertifikat TLS_MODE=letsencrypt setzen"
 	warn "und erneut laufen lassen:  sudo ./install.sh --only tls,site"
 }
@@ -64,7 +72,10 @@ make_selfsigned() {
 
 # --- Let's Encrypt ---------------------------------------------------------
 
-make_letsencrypt() {
+# request_letsencrypt <zertifikatsname> <name> [weitere namen ...]
+request_letsencrypt() {
+	local cert_name="$1"
+	shift
 	# certbot aus den Ubuntu-Paketquellen, nicht als snap: dann braucht die
 	# VM kein snapd, und die Erneuerung haengt am regulaeren Paketstand.
 	# Der Timer certbot.timer kommt mit dem Paket und laeuft zweimal taeglich.
@@ -78,22 +89,24 @@ make_letsencrypt() {
 	mkdir -p "$(dirname "$probe")"
 	echo "dbg-install-probe" > "$probe"
 
-	local url="http://${SITE_NAME}/.well-known/acme-challenge/dbg-install-probe"
-	if curl -fsS --max-time 15 "$url" 2>/dev/null | grep -q dbg-install-probe; then
-		ok "Nachweisweg erreichbar: $url"
-	else
-		rm -f "$probe"
-		warn "$url ist von hier aus nicht erreichbar."
-		warn "Moegliche Ursachen: der DNS-Eintrag von ${SITE_NAME} zeigt noch nicht auf diese VM,"
-		warn "oder Port 80 ist von aussen gesperrt (Sicherheitsgruppe/Router des Anbieters)."
-		fail "Abbruch, damit kein Fehlversuch auf das Rate Limit von Let's Encrypt geht. Pruefen mit: dig +short ${SITE_NAME}  -  oder vorlaeufig TLS_MODE=selfsigned setzen."
-	fi
-	rm -f "$probe"
-
-	local domain_args="-d ${SITE_NAME}" name
-	for name in $SITE_ALIASES; do
+	# Let's Encrypt prueft JEDEN Namen des Zertifikats - einer, der nicht
+	# auf diese VM zeigt, laesst die ganze Anfrage scheitern. Deshalb alle
+	# vorab pruefen.
+	local name url domain_args=""
+	for name in "$@"; do
+		url="http://${name}/.well-known/acme-challenge/dbg-install-probe"
+		if curl -fsS --max-time 15 "$url" 2>/dev/null | grep -q dbg-install-probe; then
+			ok "Nachweisweg erreichbar: $url"
+		else
+			rm -f "$probe"
+			warn "$url ist von hier aus nicht erreichbar."
+			warn "Moegliche Ursachen: der DNS-Eintrag von ${name} zeigt noch nicht auf diese VM,"
+			warn "oder Port 80 ist von aussen gesperrt (Sicherheitsgruppe/Router des Anbieters)."
+			fail "Abbruch, damit kein Fehlversuch auf das Rate Limit von Let's Encrypt geht. Pruefen mit: dig +short ${name}  -  den Namen aus der Konfiguration nehmen oder vorlaeufig TLS_MODE=selfsigned setzen."
+		fi
 		domain_args="$domain_args -d $name"
 	done
+	rm -f "$probe"
 
 	local staging_arg=""
 	if [ "$TLS_MODE" = staging ]; then
@@ -103,8 +116,12 @@ make_letsencrypt() {
 
 	# --keep-until-expiring macht den Aufruf wiederholbar: ein noch lange
 	# gueltiges Zertifikat wird nicht unnoetig neu ausgestellt.
+	# --cert-name haelt den Ablageort fest (/etc/letsencrypt/live/<name>/),
+	# auch wenn sich die Liste der Namen spaeter aendert - darauf verweist
+	# die Apache-Konfiguration.
 	# shellcheck disable=SC2086
 	certbot certonly \
+		--cert-name "$cert_name" \
 		--webroot --webroot-path "$ACME_WEBROOT" \
 		$domain_args \
 		$staging_arg \
@@ -115,7 +132,11 @@ make_letsencrypt() {
 		--no-eff-email \
 		|| fail "certbot ist fehlgeschlagen - Einzelheiten in /var/log/letsencrypt/letsencrypt.log"
 
-	ok "Zertifikat liegt in /etc/letsencrypt/live/${SITE_NAME}/"
+	ok "Zertifikat liegt in /etc/letsencrypt/live/${cert_name}/ ($*)"
+}
+
+# Erneuerung einrichten - einmal fuer alle Zertifikate.
+setup_renewal() {
 
 	# Nach der Erneuerung muss Apache das neue Zertifikat einlesen. certbot
 	# ruft dafuer alles auf, was in renewal-hooks/deploy/ liegt.
@@ -154,12 +175,20 @@ make_letsencrypt() {
 
 # --- Betriebsart auswaehlen ------------------------------------------------
 
+# shellcheck disable=SC2086
 case "$TLS_MODE" in
 	letsencrypt|staging)
-		make_letsencrypt
+		request_letsencrypt "$SITE_NAME" "$SITE_NAME" $SITE_ALIASES
+		if [ -n "$REDIRECT_DOMAINS" ]; then
+			request_letsencrypt "$REDIRECT_NAME" $REDIRECT_DOMAINS
+		fi
+		setup_renewal
 		;;
 	selfsigned)
-		make_selfsigned
+		make_selfsigned "$SELFSIGNED_DIR" "$SITE_NAME" $SITE_ALIASES
+		if [ -n "$REDIRECT_DOMAINS" ]; then
+			make_selfsigned "$SELFSIGNED_REDIRECT_DIR" $REDIRECT_DOMAINS
+		fi
 		;;
 	*)
 		fail "TLS_MODE muss letsencrypt, staging oder selfsigned sein (ist: $TLS_MODE)"

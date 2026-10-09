@@ -34,6 +34,25 @@ for f in "$SSL_CERTIFICATE_FILE" "$SSL_CERTIFICATE_KEY_FILE"; do
 done
 ok "Zertifikat: $SSL_CERTIFICATE_FILE"
 
+# Zweites Zertifikat fuer die Weiterleitungsdomains (REDIRECT_DOMAINS).
+# shellcheck disable=SC2034
+if [ -n "$REDIRECT_DOMAINS" ]; then
+	case "$TLS_MODE" in
+		letsencrypt|staging)
+			REDIRECT_CERTIFICATE_FILE="/etc/letsencrypt/live/${REDIRECT_NAME}/fullchain.pem"
+			REDIRECT_CERTIFICATE_KEY_FILE="/etc/letsencrypt/live/${REDIRECT_NAME}/privkey.pem"
+			;;
+		selfsigned)
+			REDIRECT_CERTIFICATE_FILE="/etc/ssl/dbg-redirect/fullchain.pem"
+			REDIRECT_CERTIFICATE_KEY_FILE="/etc/ssl/dbg-redirect/privkey.pem"
+			;;
+	esac
+	for f in "$REDIRECT_CERTIFICATE_FILE" "$REDIRECT_CERTIFICATE_KEY_FILE"; do
+		[ -s "$f" ] || fail "$f fehlt. Erst den Schritt 'tls' laufen lassen: sudo ./install.sh --only tls"
+	done
+	ok "Zertifikat der Weiterleitung: $REDIRECT_CERTIFICATE_FILE"
+fi
+
 # HSTS steht schon in install.sh fest (es haengt allein an TLS_MODE und
 # HSTS_MAX_AGE) und ist damit bereits in dbg-hardening.conf eingetragen - hier
 # nur noch die Ausgabe, damit man sieht, was gilt.
@@ -166,6 +185,18 @@ fi
 render etc/apache2/sites-available/dbg-ssl.conf /etc/apache2/sites-available/dbg-ssl.conf
 a2ensite -q dbg-ssl
 ok "dbg-ssl eingeschaltet (Port 443)"
+
+# Weiterleitungsdomains: eigener https-vHost mit eigenem Zertifikat.
+# Der Dateiname steht alphabetisch NACH dbg-ssl.conf ("w" > "s") - so bleibt dbg-ssl der erste vHost
+# fuer *:443 und damit der, den Apache fuer unbekannte Namen nimmt.
+if [ -n "$REDIRECT_DOMAINS" ]; then
+	render etc/apache2/sites-available/dbg-weiterleitung.conf /etc/apache2/sites-available/dbg-weiterleitung.conf
+	a2ensite -q dbg-weiterleitung
+	ok "dbg-weiterleitung eingeschaltet: $REDIRECT_DOMAINS -> https://$SITE_NAME/"
+else
+	a2dissite -q dbg-weiterleitung 2>/dev/null || true
+	info "Keine Weiterleitungsdomains (REDIRECT_DOMAINS ist leer)"
+fi
 
 if ! apache_configtest; then
 	fail "Die Apache-Konfiguration ist fehlerhaft - es wird nicht neu gestartet."

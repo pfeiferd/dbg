@@ -65,6 +65,8 @@ check_ubuntu() {
 placeholder_names() {
 	printf '%s\n' \
 		site_name server_alias admin_email doc_root acme_webroot \
+		redirect_name redirect_alias http_redirect_alias \
+		redirect_certificate_file redirect_certificate_key_file \
 		ssh_port ssh_permit_root_login ssh_password_auth ssh_allow_users \
 		ssl_certificate_file ssl_certificate_key_file ssl_stapling \
 		hsts_header csp_img_hosts deploy_user \
@@ -77,6 +79,11 @@ placeholder_value() {
 	case "$1" in
 		site_name)                printf '%s' "${SITE_NAME}" ;;
 		server_alias)             printf '%s' "${SERVER_ALIAS_DIRECTIVE}" ;;
+		redirect_name)            printf '%s' "${REDIRECT_NAME}" ;;
+		redirect_alias)           printf '%s' "${REDIRECT_ALIAS_DIRECTIVE}" ;;
+		http_redirect_alias)      printf '%s' "${HTTP_REDIRECT_ALIAS_DIRECTIVE}" ;;
+		redirect_certificate_file)     printf '%s' "${REDIRECT_CERTIFICATE_FILE}" ;;
+		redirect_certificate_key_file) printf '%s' "${REDIRECT_CERTIFICATE_KEY_FILE}" ;;
 		admin_email)              printf '%s' "${ADMIN_EMAIL}" ;;
 		doc_root)                 printf '%s' "${DOC_ROOT}" ;;
 		acme_webroot)             printf '%s' "${ACME_WEBROOT}" ;;

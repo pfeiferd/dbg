@@ -103,6 +103,17 @@ case "$https_code" in
 	*)   warn "  https liefert $https_code, erwartet war 200"; CHECKS_FAILED=$((CHECKS_FAILED + 1)) ;;
 esac
 
+# Weiterleitungsdomains: 301 auf die Hauptsite, mit passendem Zertifikat.
+for name in $REDIRECT_DOMAINS; do
+	redirect_out="$(curl -sk -o /dev/null -w '%{http_code} %{redirect_url}' --max-time 10 \
+		--resolve "${name}:443:127.0.0.1" "https://${name}/" 2>/dev/null)" || true
+	case "$redirect_out" in
+		"301 https://${SITE_NAME}/") ok "  https://${name}/ leitet weiter auf https://${SITE_NAME}/" ;;
+		*) warn "  https://${name}/ liefert '${redirect_out:-000}', erwartet war 301 auf https://${SITE_NAME}/"
+		   CHECKS_FAILED=$((CHECKS_FAILED + 1)) ;;
+	esac
+done
+
 # Ist der Inhalt schon da, oder noch die Platzhalterseite?
 if [ -f "$DOC_ROOT/de/index.html" ]; then
 	ok "  Inhalt ist ausgerollt ($DOC_ROOT/de/index.html vorhanden)"
@@ -221,6 +232,9 @@ info ""
 info "Zertifikat:"
 if [ "$TLS_MODE" = selfsigned ]; then
 	openssl x509 -in /etc/ssl/dbg/fullchain.pem -noout -subject -enddate 2>/dev/null | sed 's/^/    /' || true
+	if [ -n "$REDIRECT_DOMAINS" ]; then
+		openssl x509 -in /etc/ssl/dbg-redirect/fullchain.pem -noout -subject -enddate 2>/dev/null | sed 's/^/    /' || true
+	fi
 	warn "  selbst ausgestellt - fuer den Betrieb TLS_MODE=letsencrypt setzen"
 else
 	certbot certificates 2>/dev/null | grep -E 'Certificate Name|Domains|Expiry' | sed 's/^/    /' || true

@@ -105,7 +105,7 @@ done
 # Werte, die bereits in der Umgebung stehen, sollen gewinnen - deshalb werden
 # sie vor dem Einlesen gemerkt und danach wieder gesetzt.
 declare -A OVERRIDES=()
-for var in SITE_NAME SITE_ALIASES ADMIN_EMAIL DOC_ROOT TLS_MODE HSTS_MAX_AGE \
+for var in SITE_NAME SITE_ALIASES REDIRECT_DOMAINS ADMIN_EMAIL DOC_ROOT TLS_MODE HSTS_MAX_AGE \
 	HSTS_PRELOAD SSH_PORT SSH_PERMIT_ROOT_LOGIN SSH_DISABLE_PASSWORD_AUTH \
 	SSH_ALLOW_USERS FIREWALL_EXTRA_ALLOW FIREWALL_IPV6 FAIL2BAN_BANTIME \
 	FAIL2BAN_FINDTIME FAIL2BAN_MAXRETRY FAIL2BAN_IGNOREIP TIMEZONE \
@@ -139,6 +139,7 @@ done
 # Schritt, der sie fuellt, in diesem Durchlauf nicht laeuft.
 
 : "${SITE_ALIASES:=}"
+: "${REDIRECT_DOMAINS:=}"
 : "${SSH_ALLOW_USERS:=}"
 : "${FIREWALL_EXTRA_ALLOW:=}"
 : "${FAIL2BAN_IGNOREIP:=}"
@@ -164,12 +165,31 @@ else
 	SERVER_ALIAS_DIRECTIVE="# ServerAlias - keine weiteren Namen (SITE_ALIASES ist leer)"
 fi
 
+# Weiterleitungsdomains: der erste Name ist ServerName des eigenen
+# https-vHosts und Name seines Zertifikats, die uebrigen sind ServerAlias.
+# Im http-vHost stehen alle als ServerAlias - dort leitet ohnehin alles auf
+# https://SITE_NAME/ weiter, nur der Nachweispfad fuer Let's Encrypt nicht.
+# shellcheck disable=SC2034
+REDIRECT_NAME="${REDIRECT_DOMAINS%% *}"
+# shellcheck disable=SC2034
+if [ -n "$REDIRECT_DOMAINS" ]; then
+	_rest="${REDIRECT_DOMAINS#"$REDIRECT_NAME"}"; _rest="${_rest# }"
+	REDIRECT_ALIAS_DIRECTIVE="${_rest:+ServerAlias $_rest}"
+	REDIRECT_ALIAS_DIRECTIVE="${REDIRECT_ALIAS_DIRECTIVE:-# ServerAlias - keine weiteren Namen}"
+	HTTP_REDIRECT_ALIAS_DIRECTIVE="ServerAlias $REDIRECT_DOMAINS"
+else
+	REDIRECT_ALIAS_DIRECTIVE="# ServerAlias - keine Weiterleitungsdomains"
+	HTTP_REDIRECT_ALIAS_DIRECTIVE="# ServerAlias - keine Weiterleitungsdomains (REDIRECT_DOMAINS ist leer)"
+fi
+
 # Werden in den jeweiligen Schritten gefuellt.
 SSH_PASSWORD_AUTH_EFFECTIVE="${SSH_PASSWORD_AUTH_EFFECTIVE:-yes}"
 SSH_ALLOW_USERS_DIRECTIVE="${SSH_ALLOW_USERS_DIRECTIVE:-# AllowUsers - keine Beschraenkung}"
 SSL_CERTIFICATE_FILE="${SSL_CERTIFICATE_FILE:-}"
 SSL_CERTIFICATE_KEY_FILE="${SSL_CERTIFICATE_KEY_FILE:-}"
 SSL_STAPLING_DIRECTIVE="${SSL_STAPLING_DIRECTIVE:-}"
+REDIRECT_CERTIFICATE_FILE="${REDIRECT_CERTIFICATE_FILE:-}"
+REDIRECT_CERTIFICATE_KEY_FILE="${REDIRECT_CERTIFICATE_KEY_FILE:-}"
 # HSTS nur mit einem Zertifikat, dem der Browser traut. Mit diesem Kopf darf
 # der Browser die Site fuer die angegebene Dauer nur noch per https aufrufen -
 # bei einem ungueltigen Zertifikat gaebe es dann keinen Weg mehr hinein, und
@@ -290,6 +310,9 @@ validate_config
 
 info "Konfiguration:   $CONFIG_FILE"
 info "Site:            $SITE_NAME${SITE_ALIASES:+  (auch: $SITE_ALIASES)}"
+if [ -n "$REDIRECT_DOMAINS" ]; then
+	info "Weiterleitung:   $REDIRECT_DOMAINS  ->  https://$SITE_NAME/"
+fi
 info "DocumentRoot:    $DOC_ROOT"
 info "Zertifikat:      $TLS_MODE"
 if [ "${ENABLE_STAGING:-no}" = yes ]; then
