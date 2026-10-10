@@ -32,7 +32,6 @@ vorstand-karsten-ostermann.jpg  | **Dr. med. Karsten Ostermann M.A.**; Second de
 vorstand-armin-schwarzbach.jpg  | **Dr. med. Armin Schwarzbach**; Assessor; laboratory medicine; Augsburg; schwarzbach(at)deubo.de
 vorstand-sigrid-blehle.jpg      | **Dr. med. Sigrid Blehle**; Assessor; physician; Augsburg; blehle(at)deubo.de
 vorstand-marion-schneider.jpg   | **Prof. Dr. Marion Schneider**; Professor; Department of Anaesthesiology, Section of Experimental Anaesthesiology; Ulm University Hospital; schneider(at)deubo.de
-| **N. N.**; seat currently vacant (tba.)
 vorstand-hartmut-prautzsch.jpg  | **Prof. Dr. rer. nat. Hartmut Prautzsch**; Honorary chair; Karlsruhe; prautzsch(at)deubo.de
 ```
 

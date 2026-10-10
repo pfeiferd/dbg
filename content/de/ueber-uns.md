@@ -32,7 +32,6 @@ vorstand-karsten-ostermann.jpg  | **Dr. med. Karsten Ostermann M.A.**; 3. Vorsit
 vorstand-armin-schwarzbach.jpg  | **Dr. med. Armin Schwarzbach**; Beisitzer; FA für Labormedizin; Augsburg; schwarzbach(at)deubo.de
 vorstand-sigrid-blehle.jpg      | **Dr. med. Sigrid Blehle**; Beisitzerin; Ärztin; Augsburg; blehle(at)deubo.de
 vorstand-marion-schneider.jpg   | **Prof. Dr. Marion Schneider**; Professorin; Klinik für Anästhesiologie, Sektion Experimentelle Anästhesie; Uniklinik Ulm; schneider(at)deubo.de
-| **N. N.**; Sitz derzeit unbesetzt (tba.)
 vorstand-hartmut-prautzsch.jpg  | **Prof. Dr. rer. nat. Hartmut Prautzsch**; Ehrenvorsitzender; Karlsruhe; prautzsch(at)deubo.de
 ```
 
