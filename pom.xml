@@ -19,31 +19,140 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!-- Lage der Engine. Vorgabe: Schwesterordner neben diesem Projekt.
+        <!-- Lage der Engine. Vorgabe: Schwesterordner neben diesem Projekt;
+             fehlt der, eine Ebene hoeher (Profil "engine-two-up" unten).
              Ueberschreibbar per -Dengine.dir=/pfad/zu/site-gen . -->
         <engine.dir>${project.basedir}/../site-gen</engine.dir>
-        <!-- Inhaltsordner dieses Projekts, wird der Engine durchgereicht. -->
+        <!-- Inhaltsordner dieses Projekts. -->
         <content.dir>${project.basedir}/content</content.dir>
-        <!-- Maven-Startskript der laufenden Installation (mvn.cmd unter Windows). -->
-        <maven.executable>${maven.home}/bin/mvn</maven.executable>
+        <!-- Wohin die fertige Site geschrieben wird. -->
+        <site.dir>${project.build.directory}/website</site.dir>
+        <!-- Zwischenstaende der Build-Werkzeuge (staged-content, staged-assets).
+             Sie muessen im target/ der ENGINE liegen: JBake liest content.folder
+             und asset.folder aus der jbake.properties der Engine und loest die
+             Pfade relativ zur Engine auf. -->
+        <engine.build.dir>${engine.dir}/target</engine.build.dir>
+
+        <!-- Versionen wie in site-gen/pom.xml - bei einem Update der Engine
+             hier nachziehen. -->
+        <jbake.version>2.7.0</jbake.version>
+        <plantuml.version>1.2024.7</plantuml.version>
+        <citeproc.version>3.5.2</citeproc.version>
+        <csl.locales.version>26.8</csl.locales.version>
     </properties>
+
+    <!-- Laufzeitabhaengigkeiten der Build-Werkzeuge der Engine
+         (de.hshn.lectures.build.*): PlantUML-Rendering und Literaturverzeichnisse.
+         Dieselben wie in site-gen/pom.xml. -->
+    <dependencies>
+        <dependency>
+            <groupId>net.sourceforge.plantuml</groupId>
+            <artifactId>plantuml</artifactId>
+            <version>${plantuml.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.undercouch</groupId>
+            <artifactId>citeproc-java</artifactId>
+            <version>${citeproc.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.citationstyles</groupId>
+            <artifactId>locales</artifactId>
+            <version>${csl.locales.version}</version>
+        </dependency>
+    </dependencies>
 
     <build>
         <!--
-          Bauablauf (mvn package):
-            1. clean – raeumt NUR target/website dieses Projekts
-            2. exec  – startet die Engine als eigenen Maven-Lauf mit
-                         -Dcontent.dir=<dieses Projekt>/content
-                         -Dsite.dir=<dieses Projekt>/target/website
-                       Die fertige Site landet damit hier; das target/ der Engine
-                       behaelt ihre eigene (Tutorial-)Site.
+          Bauablauf (mvn package) - dieselben Schritte wie in der Engine, nur
+          hier direkt an die Plugins gebunden, ohne einen zweiten Maven-Lauf:
 
-          Die Engine laeuft ohne "clean", sonst loeschte sie ihr eigenes target/
-          mitsamt Tutorial-Site. Weil JBake sein Ausgabeverzeichnis nicht
-          aufraeumt, wird es hier vorher geleert - sonst blieben geloeschte
-          Seiten stehen.
+            1. resources/compile  – uebersetzt die Build-Werkzeuge der Engine
+                                    (src/main/java und src/main/resources von
+                                    site-gen) nach target/classes
+            2. clean              – leert target/website; JBake raeumt sein
+                                    Ausgabeverzeichnis nicht, sonst blieben
+                                    geloeschte Seiten stehen
+            3. exec               – startet de.hshn.lectures.build.PlantumlPreprocessor
+                                    in einer eigenen JVM: rendert PlantUML,
+                                    mischt meta.properties ein (MetaMerge),
+                                    Bild-Kaskade, Index-Weiterleitungen,
+                                    Daten-Buendel, AssetStrip
+            4. jbake              – generiert die Site mit Templates, Assets und
+                                    jbake.properties der Engine nach target/website
+
+          Weil packaging "pom" ist, bindet Maven resources und compile nicht
+          selbst; deshalb stehen beide ausdruecklich unten.
         -->
+        <sourceDirectory>${engine.dir}/src/main/java</sourceDirectory>
+        <resources>
+            <resource>
+                <directory>${engine.dir}/src/main/resources</directory>
+            </resource>
+        </resources>
+
         <plugins>
+            <!-- 0. Frueh und verstaendlich abbrechen, wenn die Engine fehlt -
+                    sonst legte der exec-Schritt ein leeres site-gen/target an und
+                    erst JBake meldete einen fehlenden templates-Ordner.
+                    (antrun statt enforcer: dessen requireFilesExist lehnt Pfade
+                    mit ".." ab.) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>require-engine</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <available file="${engine.dir}/jbake.properties" property="engine.present"/>
+                                <fail unless="engine.present" message="Engine site-gen nicht gefunden unter ${engine.dir} - site-gen neben dieses Projekt (oder eine Ebene hoeher) klonen oder -Dengine.dir=/pfad/zu/site-gen angeben."/>
+                                <echo message="Engine: ${engine.dir}"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- 1. Build-Werkzeuge der Engine uebersetzen. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
+                <executions>
+                    <execution>
+                        <id>engine-resources</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>resources</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <release>17</release>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>engine-compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- 2. Nur target/website leeren, nicht das ganze target/. -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
@@ -59,7 +168,7 @@
                             <excludeDefaultDirectories>true</excludeDefaultDirectories>
                             <filesets>
                                 <fileset>
-                                    <directory>${project.build.directory}/website</directory>
+                                    <directory>${site.dir}</directory>
                                 </fileset>
                             </filesets>
                         </configuration>
@@ -67,31 +176,73 @@
                 </executions>
             </plugin>
 
+            <!-- 3. Build-Werkzeuge ausfuehren (eigene JVM, Klassenpfad = target/classes
+                    plus Abhaengigkeiten; <classpath/> setzt das exec-Plugin ein). -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.5.0</version>
                 <executions>
                     <execution>
-                        <id>build-with-site-gen</id>
+                        <id>run-build-tools</id>
                         <phase>package</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>${maven.executable}</executable>
+                            <executable>${java.home}/bin/java</executable>
                             <arguments>
-                                <argument>-f</argument>
-                                <argument>${engine.dir}/pom.xml</argument>
-                                <argument>-Dcontent.dir=${content.dir}</argument>
-                                <argument>-Dsite.dir=${project.build.directory}/website</argument>
-                                <argument>package</argument>
+                                <argument>-Djava.awt.headless=true</argument>
+                                <argument>-classpath</argument>
+                                <classpath/>
+                                <argument>de.hshn.lectures.build.PlantumlPreprocessor</argument>
+                                <argument>${content.dir}</argument>
+                                <argument>${engine.build.dir}</argument>
+                                <argument>${site.dir}</argument>
+                                <argument>${engine.dir}</argument>
                             </arguments>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
 
+            <!-- 4. Website generieren: Quelle ist die Engine (jbake.properties,
+                    templates/, target/staged-*), Ziel unser target/website. -->
+            <plugin>
+                <groupId>org.jbake</groupId>
+                <artifactId>jbake-maven-plugin</artifactId>
+                <version>${jbake.version}</version>
+                <configuration>
+                    <inputDirectory>${engine.dir}</inputDirectory>
+                    <outputDirectory>${site.dir}</outputDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>jbake-generate</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <!-- Liegt kein site-gen neben diesem Projekt (z. B. weil es als
+             .../jbake-website/trunk ausgecheckt ist), eine Ebene hoeher suchen.
+             Ein -Dengine.dir auf der Kommandozeile hat weiterhin Vorrang. -->
+        <profile>
+            <id>engine-two-up</id>
+            <activation>
+                <file>
+                    <missing>${basedir}/../site-gen/pom.xml</missing>
+                </file>
+            </activation>
+            <properties>
+                <engine.dir>${project.basedir}/../../site-gen</engine.dir>
+            </properties>
+        </profile>
+    </profiles>
 </project>

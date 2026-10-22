@@ -16,13 +16,22 @@ Das Ergebnis liegt in `target/website/`. Anschauen z. B. mit
 cd target/website && python3 -m http.server 8080
 ```
 
-Der Build startet die Engine als eigenen Maven-Lauf und reicht ihr den Inhalt
-dieses Projekts durch (`-Dcontent.dir=<hier>/content`); anschließend wird das
-fertige Site-Verzeichnis nach `target/website` geholt. Liegt die Engine woanders:
+Die `pom.xml` bindet die Schritte der Engine direkt an Maven-Plugins, es gibt
+keinen zweiten Maven-Lauf: Sie übersetzt die Build-Werkzeuge der Engine
+(`site-gen/src/main/java`) nach `target/classes`, leert `target/website`,
+startet die Werkzeuge (PlantUML, MetaMerge, Bild-Kaskade, Index-Weiterleitungen,
+AssetStrip) in einer eigenen JVM und lässt dann das JBake-Maven-Plugin die Site
+mit Templates, Assets und `jbake.properties` der Engine nach `target/website`
+generieren. Die Zwischenstände `staged-content` und `staged-assets` landen dabei
+in `site-gen/target/`, weil JBake diese Pfade relativ zur Engine auflöst.
+Liegt die Engine woanders:
 
 ```bash
 mvn package -Dengine.dir=/pfad/zu/site-gen
 ```
+
+Die Versionen von JBake, PlantUML und citeproc stehen in der `pom.xml` noch
+einmal; ändert sie die Engine, hier nachziehen.
 
 ## Veröffentlichen
 
