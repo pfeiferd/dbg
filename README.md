@@ -16,9 +16,9 @@ Das Ergebnis liegt in `target/website/`. Anschauen z. B. mit
 cd target/website && python3 -m http.server 8080
 ```
 
-Der Build startet die Engine als eigenen Maven-Lauf und reicht ihr den Inhalt
-dieses Projekts durch (`-Dcontent.dir=<hier>/content`); anschließend wird das
-fertige Site-Verzeichnis nach `target/website` geholt. Liegt die Engine woanders:
+Der Build übersetzt die Build-Werkzeuge der Engine aus `../site-gen` direkt mit
+und lässt sie zusammen mit JBake auf den Inhalt dieses Projekts los – ein einziger
+Maven-Lauf, kein zweites `mvn`. Liegt die Engine woanders:
 
 ```bash
 mvn package -Dengine.dir=/pfad/zu/site-gen
