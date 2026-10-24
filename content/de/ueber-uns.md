@@ -27,11 +27,10 @@ Hier die **[Satzung](files/satzung-2026.pdf)** zum Herunterladen.
 width: 210
 ratio: 4/5
 vorstand-herbert-rixecker.jpg   | **Dr. med. Dr. med. dent. Herbert Rixecker**; 1. Vorsitzender; FA für Mund-Kiefer-Gesichtschirurgie; Saarlouis; rixecker(at)deubo.de
-vorstand-harald-bennefeld.jpg   | **Dr. med. Harald Bennefeld**; 2. Vorsitzender; FA für Neurochirurgie; Kirchberg; bennefeld(at)deubo.de
-vorstand-karsten-ostermann.jpg  | **Dr. med. Karsten Ostermann M.A.**; 3. Vorsitzender; FA für Allgemeinmedizin und Spezielle Schmerztherapie; Berlin/Teltow; ostermann(at)deubo.de
-vorstand-armin-schwarzbach.jpg  | **Dr. med. Armin Schwarzbach**; Beisitzer; FA für Labormedizin; Augsburg; schwarzbach(at)deubo.de
-vorstand-sigrid-blehle.jpg      | **Dr. med. Sigrid Blehle**; Beisitzerin; Ärztin; Augsburg; blehle(at)deubo.de
-vorstand-marion-schneider.jpg   | **Prof. Dr. Marion Schneider**; Professorin; Klinik für Anästhesiologie, Sektion Experimentelle Anästhesie; Uniklinik Ulm; schneider(at)deubo.de
+                                | **Gernot Wagemanns**; 2. Vorsitzender; Facharzt für Allgemeinmedizin; Essen; wagemanns(at)deubo.de
+vorstand-markus-pfisterer.jpg   | **Dr. med. Markus Pfisterer**; 3. Vorsitzender; Arzt für Naturheilverfahren und Akupunktur; Heilbronn; pfisterer(at)deubo.de
+vorstand-joe-diederich.jpg      | **Dr. med. Joé Diederich, M.Sc.**; Beisitzer; Allgemeinmedizin – klinische Umweltmedizin; Colmar-Berg, Luxemburg; diederich(at)deubo.de
+vorstand-mihail-pruteanu.jpg    | **Mihail Pruteanu**; Beisitzer; Arzt im infektiologischen Labor, Manager CAP; ArminLabs, Augsburg; pruteanu(at)deubo.de
 vorstand-hartmut-prautzsch.jpg  | **Prof. Dr. rer. nat. Hartmut Prautzsch**; Ehrenvorsitzender; Karlsruhe; prautzsch(at)deubo.de
 ```
 
