@@ -183,8 +183,9 @@ Nullpunkt.
 ## Ärzte- und Therapeutenliste
 
 Die Karte auf `de/aerzteliste.md` ist ein `map`-Block von site-gen mit
-`data: aerzte`; die Einträge stehen in `content/data/aerzte.json` (30 Stück,
-alle mit Koordinaten).
+`data: aerzte`; die Einträge stehen in `content/data/aerzte.json` (29 Stück,
+alle mit Koordinaten). Eine reine Ziffernfolge im Suchfeld gilt als PLZ und
+trifft nur am Anfang der Zeile „PLZ Ort" (site-gen `map.js`).
 
 Die Originalseite lädt dieselben Daten über ein CMSimple-Plugin von
 `/?&aerztekarte_ajax=1` nach. Von dort stammen sie – einmalig geholt und in das

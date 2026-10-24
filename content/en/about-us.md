@@ -27,11 +27,10 @@ The **[statutes](files/satzung-2026.pdf)** (German) are available for download h
 width: 210
 ratio: 4/5
 vorstand-herbert-rixecker.jpg   | **Dr. med. Dr. med. dent. Herbert Rixecker**; Chair; oral and maxillofacial surgery; Saarlouis; rixecker(at)deubo.de
-vorstand-harald-bennefeld.jpg   | **Dr. med. Harald Bennefeld**; Deputy chair; neurosurgery; Kirchberg; bennefeld(at)deubo.de
-vorstand-karsten-ostermann.jpg  | **Dr. med. Karsten Ostermann M.A.**; Second deputy chair; general medicine and specialised pain therapy; Berlin/Teltow; ostermann(at)deubo.de
-vorstand-armin-schwarzbach.jpg  | **Dr. med. Armin Schwarzbach**; Assessor; laboratory medicine; Augsburg; schwarzbach(at)deubo.de
-vorstand-sigrid-blehle.jpg      | **Dr. med. Sigrid Blehle**; Assessor; physician; Augsburg; blehle(at)deubo.de
-vorstand-marion-schneider.jpg   | **Prof. Dr. Marion Schneider**; Professor; Department of Anaesthesiology, Section of Experimental Anaesthesiology; Ulm University Hospital; schneider(at)deubo.de
+                                | **Gernot Wagemanns**; Deputy chair; general medicine; Essen; wagemanns(at)deubo.de
+vorstand-markus-pfisterer.jpg   | **Dr. med. Markus Pfisterer**; Second deputy chair; naturopathy and acupuncture; Heilbronn; pfisterer(at)deubo.de
+vorstand-joe-diederich.jpg      | **Dr. med. Joé Diederich, M.Sc.**; Assessor; general medicine – clinical environmental medicine; Colmar-Berg, Luxembourg; diederich(at)deubo.de
+vorstand-mihail-pruteanu.jpg    | **Mihail Pruteanu**; Assessor; physician in the infectious-disease laboratory, CAP manager; ArminLabs, Augsburg; pruteanu(at)deubo.de
 vorstand-hartmut-prautzsch.jpg  | **Prof. Dr. rer. nat. Hartmut Prautzsch**; Honorary chair; Karlsruhe; prautzsch(at)deubo.de
 ```
 
