@@ -715,7 +715,7 @@ durchgelaufen:
 
 * Installation von Grund auf, anschließend ein zweiter Durchlauf, der **keine
   einzige Datei** neu schreibt
-* https mit http/2 und 200, Weiterleitung von http mit 301, alle
+* https (damals mit http/2, inzwischen abgeschaltet) und 200, Weiterleitung von http mit 301, alle
   Antwortkopfzeilen gesetzt (CSP einschließlich der Kachelserver)
 * SSH über die Socket-Unit, auf Port 22 und auf 4382, je über IPv4 **und** IPv6
   geprüft; Passwort-Anmeldung automatisch abgeschaltet, weil ein Schlüssel

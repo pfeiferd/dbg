@@ -18,7 +18,7 @@ apt_install apache2 apache2-utils
 # Bewusst knapp: alles, was die Site nicht braucht, bleibt aus. Kein PHP, kein
 # CGI, kein proxy, kein mod_jk - die Site ist statisch.
 
-for mod in ssl headers rewrite expires deflate mime setenvif reqtimeout http2; do
+for mod in ssl headers rewrite expires deflate mime setenvif reqtimeout; do
 	if a2query -m "$mod" >/dev/null 2>&1; then
 		info "Modul bereits aktiv: $mod"
 	else
@@ -37,9 +37,30 @@ else
 	info "libapache2-mod-brotli ist nicht verfuegbar - es bleibt bei deflate"
 fi
 
-# http/2 braucht mpm_event; mpm_prefork waere nur fuer PHP als Modul noetig.
+# HTTP/2 bleibt wegen eines Sicherheitsproblems aus: Modul abschalten und global
+# "Protocols http/1.1" vorgeben (die VirtualHosts setzen es zusaetzlich selbst).
+# Auf bereits laufenden VMs erledigt das vm-install-common/common/scripts/
+# apache_tomcat/disable-http2.sh.
+for mod in http2 proxy_http2; do
+	if a2query -m "$mod" >/dev/null 2>&1; then
+		a2dismod -q -f "$mod"
+		ok "Modul abgeschaltet: $mod"
+	fi
+done
+NO_HTTP2_CONF='# HTTP/2 ist wegen eines Sicherheitsproblems abgeschaltet.
+Protocols http/1.1'
+if ! printf '%s\n' "$NO_HTTP2_CONF" | cmp -s - /etc/apache2/conf-available/no-http2.conf; then
+	printf '%s\n' "$NO_HTTP2_CONF" > /etc/apache2/conf-available/no-http2.conf
+	ok "no-http2.conf geschrieben"
+fi
+if ! a2query -c no-http2 >/dev/null 2>&1; then
+	a2enconf -q no-http2
+	ok "no-http2 eingeschaltet (nur http/1.1)"
+fi
+
+# mpm_event ist der Standard; mpm_prefork waere nur fuer PHP als Modul noetig.
 if a2query -M 2>/dev/null | grep -q event; then
-	info "MPM: event (richtig fuer http/2)"
+	info "MPM: event"
 else
 	info "wechsle auf mpm_event"
 	a2dismod -q -f mpm_prefork mpm_worker 2>/dev/null || true
