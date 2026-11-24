@@ -39,8 +39,8 @@ fi
 
 # HTTP/2 bleibt wegen eines Sicherheitsproblems aus: Modul abschalten und global
 # "Protocols http/1.1" vorgeben (die VirtualHosts setzen es zusaetzlich selbst).
-# Auf bereits laufenden VMs erledigt das vm-install-common/common/scripts/
-# apache_tomcat/disable-http2.sh.
+# Auf bereits laufenden VMs erledigt das disable-http2.sh im Hauptordner
+# (neben den Projektordnern).
 for mod in http2 proxy_http2; do
 	if a2query -m "$mod" >/dev/null 2>&1; then
 		a2dismod -q -f "$mod"

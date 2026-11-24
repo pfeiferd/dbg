@@ -52,6 +52,7 @@ on:
 
 permissions:
   contents: read
+  actions: write   # zum Löschen des eigenen Artifacts nach dem Deploy
 
 # Nie zwei Auslieferungen gleichzeitig - und eine laufende nicht abbrechen,
 # sonst bliebe die Site womöglich halb umgeschaltet.
@@ -134,3 +135,14 @@ jobs:
             echo "::error::  ssh -p ${VM_PORT:-22} ${VM_USER}@${VM_HOST} rollback"
             exit 1
           fi
+
+      # Das Archiv wird nach erfolgreicher Auslieferung nicht mehr gebraucht.
+      # Sofort löschen, damit das Speicherkontingent für Artifacts nicht volläuft.
+      # Bei einem Fehlschlag bleibt es (1 Tag) erhalten, damit "Re-run failed jobs" geht.
+      - name: Artifact löschen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts" \
+              --jq '.artifacts[].id' |
+            xargs -r -I{} gh api -X DELETE "repos/${{ github.repository }}/actions/artifacts/{}"
