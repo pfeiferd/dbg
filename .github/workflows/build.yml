@@ -8,7 +8,7 @@
 #  Lauf checkt beide aus und baut mit dem Pom der Engine, aber mit dem content/
 #  dieses Repos.
 #
-#  Ergebnis ist immer dasselbe: site.tar.gz als Artefakt. Beide Ziele - die
+#  Ergebnis ist immer dasselbe: site.tar.gz im Actions-Cache. Beide Ziele - die
 #  Vorschau unter /staging/ und die öffentliche Site - bekommen damit ein
 #  bit-identisches Archiv. Was in der Vorschau abgenommen wird, geht also
 #  unverändert live; es wird keine Datei nachträglich angefasst.
@@ -119,10 +119,12 @@ jobs:
       - name: Archiv packen
         run: tar czf site.tar.gz -C site .
 
+      # Übergabe an den Deploy-Job über den Actions-Cache, nicht als Artifact:
+      # Der Cache zählt nicht zum Speicherkontingent für Artifacts, alte
+      # Einträge räumt GitHub selbst ab. Der Schlüssel enthält die Lauf-ID,
+      # "Re-run failed jobs" findet das Archiv also wieder.
       - name: Archiv ablegen
-        uses: actions/upload-artifact@v4
+        uses: actions/cache/save@v4
         with:
-          name: site-tarball
           path: site.tar.gz
-          retention-days: 1
-          if-no-files-found: error
+          key: site-tarball-${{ github.run_id }}-${{ github.run_attempt }}
